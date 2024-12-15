@@ -4,9 +4,9 @@ import { Container } from '@mui/material';
 
 import { Movie } from '../model/movies';
 import { Episode, Season, Show } from '../model/show';
-import MovieList from './content/movieList';
-import SeasonList from './content/seasonList';
-import ShowList from './content/showList';
+import MoviesCards from './content/moviesCards';
+import SeasonsCards from './content/seasonsCards';
+import ShowsCards from './content/showsCards';
 import Header from './header/header';
 
 function App() {
@@ -82,9 +82,9 @@ function App() {
     <Container>
       <Header />
       <main>
-        <ShowList shows={shows} />
-        <SeasonList seasons={seasons} episodes={episodes} />
-        <MovieList movies={movies} />
+        <ShowsCards shows={shows} />
+        <SeasonsCards seasons={seasons} episodes={episodes} />
+        <MoviesCards movies={movies} />
       </main>
     </Container>
   );

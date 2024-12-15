@@ -1,37 +1,34 @@
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 
-import { Show } from '../../model/show';
+import { Movie } from '../../model/movies';
 
-const ShowList: React.FC<{ shows: Show[] }> = ({ shows }) => (
+const MoviesCards: React.FC<{ movies: Movie[] }> = ({ movies }) => (
   <Grid container spacing={3}>
-    {shows.map((show) => (
-      <Grid item xs={12} sm={6} md={4} key={show.id}>
+    {movies.map((movie) => (
+      <Grid item xs={12} sm={6} md={4} key={movie.id}>
         <Card>
-          <CardMedia component="img" height="140" image={show.image} alt={show.title} />
+          <CardMedia component="img" height="140" image={movie.image} alt={movie.title} />
           <CardContent>
             <Typography variant="h5" component="div">
-              {show.title}
+              {movie.title}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {show.description}
+              {movie.description}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Genre:</strong> {show.genre}
+              <strong>Genre:</strong> {movie.genre}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Release Date:</strong> {show.release_date}
+              <strong>Release Date:</strong> {movie.release_date}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>User Rating:</strong> {show.user_rating || 'N/A'}
+              <strong>Duration:</strong> {movie.duration} minutes
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>TV Guidelines:</strong> {show.tv_parental_guidelines}
+              <strong>User Rating:</strong> {movie.user_rating || 'N/A'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Seasons:</strong> {show.number_of_seasons}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Total Episodes:</strong> {show.total_episodes}
+              <strong>MPA Rating:</strong> {movie.mpa_rating}
             </Typography>
           </CardContent>
         </Card>
@@ -40,4 +37,4 @@ const ShowList: React.FC<{ shows: Show[] }> = ({ shows }) => (
   </Grid>
 );
 
-export default ShowList;
+export default MoviesCards;

@@ -7,7 +7,7 @@ type PropTypes = {
   episodes: Episode[];
 };
 
-function SeasonList(props: PropTypes) {
+function SeasonsCards(props: PropTypes) {
   const seasons: Season[] = props.seasons;
   const episodes: Episode[] = props.episodes;
 
@@ -43,4 +43,4 @@ function SeasonList(props: PropTypes) {
   );
 }
 
-export default SeasonList;
+export default SeasonsCards;
