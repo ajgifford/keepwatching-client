@@ -7,16 +7,13 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.2.0",
     "@mui/material": "^6.2.0",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^13.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-images": "^1.2.0-beta.7",
+    "react-router": "^7.0.2",
     "react-scripts": "5.0.1",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
@@ -25,7 +22,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "prettier --config ../prettier.config.js . --write"
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +45,19 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@eslint/js": "^9.16.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.0",
+    "@types/jest": "^27.0.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.9.0",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.13.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.18.0"
   }
 }
