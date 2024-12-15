@@ -4,9 +4,9 @@ import { Container } from '@mui/material';
 
 import { Movie } from '../model/movies';
 import { Episode, Season, Show } from '../model/show';
-import MoviesCards from './content/moviesCards';
-import SeasonsCards from './content/seasonsCards';
-import ShowsCards from './content/showsCards';
+import MoviesCards from './watchableContent/moviesCards';
+import SeasonsCards from './watchableContent/seasonsCards';
+import ShowsCards from './watchableContent/showsCards';
 import Header from './header/header';
 
 function App() {
