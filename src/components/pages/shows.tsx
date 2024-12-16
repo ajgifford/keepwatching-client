@@ -1,13 +1,27 @@
 import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Avatar, Container, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
+import {
+  Avatar,
+  Container,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 
 import { Show } from '../../model/show';
 
 const Shows = () => {
   const navigate = useNavigate();
   const [shows, setShows] = useState<Show[]>([]);
+  const [watchedShows, setWatchedShows] = useState<Record<string, boolean>>({});
 
   async function fetchAllShows() {
     const response = await fetch(`/api/shows`);
@@ -25,6 +39,13 @@ const Shows = () => {
   useEffect(() => {
     fetchAllShows();
   }, []);
+
+  const toggleShowWatched = (showId: string) => {
+    setWatchedShows((prev) => ({
+      ...prev,
+      [showId]: !prev[showId],
+    }));
+  };
 
   return (
     <Container maxWidth="xl" sx={{ p: 4 }}>
@@ -53,6 +74,17 @@ const Shows = () => {
                   </>
                 }
               />
+              <Tooltip title={watchedShows[show.id] ? 'Mark Unwatched' : 'Mark Watched'}>
+                <IconButton
+                  color={watchedShows[show.id] ? 'success' : 'default'}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toggleShowWatched(show.id);
+                  }}
+                >
+                  {watchedShows[show.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                </IconButton>
+              </Tooltip>
             </ListItem>
             <Divider variant="inset" component="li" />
           </Fragment>

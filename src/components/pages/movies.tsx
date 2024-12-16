@@ -1,11 +1,25 @@
 import { Fragment, useEffect, useState } from 'react';
 
-import { Avatar, Container, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
+import {
+  Avatar,
+  Container,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 
 import { Movie } from '../../model/movies';
 
 const Movies = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [watchedMovies, setWatchedMovies] = useState<Record<string, boolean>>({});
 
   async function fetchAllMovies() {
     const response = await fetch(`/api/movies`);
@@ -23,6 +37,13 @@ const Movies = () => {
   useEffect(() => {
     fetchAllMovies();
   }, []);
+
+  const toggleMovieWatched = (movieId: string) => {
+    setWatchedMovies((prev) => ({
+      ...prev,
+      [movieId]: !prev[movieId],
+    }));
+  };
 
   return (
     <Container maxWidth="xl" sx={{ p: 4 }}>
@@ -51,6 +72,17 @@ const Movies = () => {
                   </>
                 }
               />
+              <Tooltip title={watchedMovies[movie.id] ? 'Mark Unwatched' : 'Mark Watched'}>
+                <IconButton
+                  color={watchedMovies[movie.id] ? 'success' : 'default'}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toggleMovieWatched(movie.id);
+                  }}
+                >
+                  {watchedMovies[movie.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                </IconButton>
+              </Tooltip>
             </ListItem>
             <Divider variant="inset" component="li" />
           </Fragment>

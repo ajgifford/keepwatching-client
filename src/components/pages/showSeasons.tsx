@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
+import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  AppBar,
   Avatar,
   Box,
   Container,
@@ -18,6 +20,8 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material';
 
@@ -25,6 +29,7 @@ import { Season, Show } from '../../model/show';
 
 const ShowSeasons = () => {
   let { id } = useParams();
+  const navigate = useNavigate();
   const [show, setShow] = useState<Show>();
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);
   const [watchedEpisodes, setWatchedEpisodes] = useState<Record<string, boolean>>({});
@@ -46,7 +51,7 @@ const ShowSeasons = () => {
 
   useEffect(() => {
     fetchShow(id);
-  }, []);
+  }, [id]);
 
   const isSeasonFullyWatched = (season: Season) => season.episodes.every((episode) => watchedEpisodes[episode.id]);
 
@@ -73,12 +78,29 @@ const ShowSeasons = () => {
 
   return (
     <Container maxWidth="xl" sx={{ p: 4 }}>
-      <Typography variant="h4">{show?.title}</Typography>
-      <Typography variant="subtitle1" fontStyle="italic">
-        {show?.description}
-      </Typography>
-      <Typography variant="body1">{show?.genre}</Typography>
-      <Typography variant="body1">{show?.streaming_service}</Typography>
+      <AppBar position="sticky" color="inherit" elevation={0}>
+        <Toolbar>
+          <Tooltip title="Back">
+            <IconButton
+              edge="start"
+              aria-label="back"
+              onClick={() => {
+                navigate('/shows');
+              }}
+            >
+              <ArrowBackIosIcon />
+            </IconButton>
+          </Tooltip>
+          <Box sx={{ p: 2 }}>
+            <Typography variant="h4">{show?.title}</Typography>
+            <Typography variant="subtitle1" fontStyle="italic">
+              {show?.description}
+            </Typography>
+            <Typography variant="body1">{show?.genre}</Typography>
+            <Typography variant="body1">{show?.streaming_service}</Typography>
+          </Box>
+        </Toolbar>
+      </AppBar>
       <br></br>
       {seasons ? (
         <Box>
@@ -94,20 +116,22 @@ const ShowSeasons = () => {
                     {season.number_of_episodes} Episodes | First Aired: {season.release_date}
                   </Typography>
                 </Box>
-                <IconButton
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    toggleSeasonWatched(season);
-                  }}
-                >
-                  {isSeasonFullyWatched(season) ? (
-                    <CheckCircleIcon color="success" />
-                  ) : isSeasonPartiallyWatched(season) ? (
-                    <IndeterminateCheckBoxIcon color="warning" />
-                  ) : (
-                    <RadioButtonUncheckedIcon />
-                  )}
-                </IconButton>
+                <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Unwatched' : 'Mark Watched'}>
+                  <IconButton
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleSeasonWatched(season);
+                    }}
+                  >
+                    {isSeasonFullyWatched(season) ? (
+                      <WatchLaterIcon color="success" />
+                    ) : isSeasonPartiallyWatched(season) ? (
+                      <WatchLaterTwoToneIcon color="success" />
+                    ) : (
+                      <WatchLaterOutlinedIcon />
+                    )}
+                  </IconButton>
+                </Tooltip>
               </AccordionSummary>
               <AccordionDetails>
                 {season.episodes ? (
@@ -122,12 +146,14 @@ const ShowSeasons = () => {
                             primary={episode.title}
                             secondary={`Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
                           />
-                          <IconButton
-                            color={watchedEpisodes[episode.id] ? 'success' : 'default'}
-                            onClick={() => toggleEpisodeWatched(episode.id)}
-                          >
-                            {watchedEpisodes[episode.id] ? <CheckCircleIcon /> : <RadioButtonUncheckedIcon />}
-                          </IconButton>
+                          <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Unwatched' : 'Mark Watched'}>
+                            <IconButton
+                              color={watchedEpisodes[episode.id] ? 'success' : 'default'}
+                              onClick={() => toggleEpisodeWatched(episode.id)}
+                            >
+                              {watchedEpisodes[episode.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                            </IconButton>
+                          </Tooltip>
                         </ListItem>
                         <Divider />
                       </React.Fragment>
