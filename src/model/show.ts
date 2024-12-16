@@ -27,6 +27,7 @@ export type Episode = {
   id: string;
   season_id: string;
   title: string;
+  summary: string;
   duration: number;
   episode_number: number;
   release_date: string;

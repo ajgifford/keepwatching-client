@@ -11,7 +11,7 @@ const Profiles = () => (
   </div>
 );
 
-const FamilyProfile = () => {
+const ManageFamily = () => {
   return (
     <Container maxWidth="xl" sx={{ p: 4 }}>
       <Profiles />
@@ -20,4 +20,4 @@ const FamilyProfile = () => {
   );
 };
 
-export default FamilyProfile;
+export default ManageFamily;

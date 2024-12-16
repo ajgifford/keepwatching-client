@@ -144,7 +144,7 @@ const ShowSeasons = () => {
                           </ListItemAvatar>
                           <ListItemText
                             primary={episode.title}
-                            secondary={`Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
+                            secondary={`Summary: ${episode.summary} | Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
                           />
                           <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Unwatched' : 'Mark Watched'}>
                             <IconButton

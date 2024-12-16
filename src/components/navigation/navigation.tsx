@@ -31,9 +31,14 @@ function Navigation() {
     setMobileMenuAnchor(null);
   };
 
-  const handlePageChange = (page: string, to: string) => {
+  const handleMenuPageChange = (page: string, to: string) => {
     navigate(to);
+    setActivePage(page);
     handleMobileMenuClose();
+  };
+
+  const handleToolbarPageChange = (page: string) => {
+    setActivePage(page);
   };
 
   const navigationItems = [
@@ -41,16 +46,17 @@ function Navigation() {
     { id: 'shows', label: 'Shows', icon: <FaTv className="icon" />, to: '/shows' },
     { id: 'movies', label: 'Movies', icon: <FaFilm className="icon" />, to: '/movies' },
     { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
-    { id: 'profile', label: 'Profile', icon: <FaUser className="icon" />, to: '/profile' },
+    { id: 'manageFamily', label: 'Manage Family', icon: <FaUser className="icon" />, to: '/manageFamily' },
   ];
 
   const renderNavigationButtons = () =>
     navigationItems.map((item) => (
       <Button
-        color="inherit"
+        color={activePage === item.id ? "warning" : "inherit"}
         key={item.id}
         component={NavLink}
         to={item.to}
+        onClick={() => handleToolbarPageChange(item.id)}
         aria-label={item.label}
         startIcon={item.icon}
       >
@@ -73,7 +79,7 @@ function Navigation() {
       }}
     >
       {navigationItems.map((item) => (
-        <MenuItem key={item.id} onClick={() => handlePageChange(item.id, item.to)} selected={activePage === item.id}>
+        <MenuItem key={item.id} onClick={() => handleMenuPageChange(item.id, item.to)} selected={activePage === item.id}>
           {item.icon}
           <Box sx={{ ml: 2 }}>{item.label}</Box>
         </MenuItem>
