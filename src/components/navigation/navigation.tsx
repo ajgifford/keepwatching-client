@@ -52,7 +52,7 @@ function Navigation() {
   const renderNavigationButtons = () =>
     navigationItems.map((item) => (
       <Button
-        color={activePage === item.id ? "warning" : "inherit"}
+        color={activePage === item.id ? 'warning' : 'inherit'}
         key={item.id}
         component={NavLink}
         to={item.to}
@@ -79,7 +79,11 @@ function Navigation() {
       }}
     >
       {navigationItems.map((item) => (
-        <MenuItem key={item.id} onClick={() => handleMenuPageChange(item.id, item.to)} selected={activePage === item.id}>
+        <MenuItem
+          key={item.id}
+          onClick={() => handleMenuPageChange(item.id, item.to)}
+          selected={activePage === item.id}
+        >
           {item.icon}
           <Box sx={{ ml: 2 }}>{item.label}</Box>
         </MenuItem>

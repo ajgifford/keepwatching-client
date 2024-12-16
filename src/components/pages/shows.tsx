@@ -76,7 +76,7 @@ const Shows = () => {
   return (
     <Container maxWidth="xl" sx={{ p: 4 }}>
       <Typography variant="h4">Shows</Typography>
-      <Stack direction="row" spacing={1} sx={{ p: 2 }}>
+      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
         {profiles.map((profile) => (
           <Chip
             id={profile.id}
