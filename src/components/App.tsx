@@ -1,92 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { Container } from '@mui/material';
-
-import { Movie } from '../model/movies';
-import { Episode, Season, Show } from '../model/show';
-import MoviesCards from './watchableContent/moviesCards';
-import SeasonsCards from './watchableContent/seasonsCards';
-import ShowsCards from './watchableContent/showsCards';
-import Header from './header/header';
+import Navigation from './navigation/navigation';
+import Discover from './pages/discover';
+import FamilyProfile from './pages/familyProfile';
+import Home from './pages/home';
+import Movies from './pages/movies';
+import ShowSeasons from './pages/showSeasons';
+import Shows from './pages/shows';
 
 function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [shows, setShows] = useState<Show[]>([]);
-  const [seasons, setSeasons] = useState<Season[]>([]);
-  const [episodes, setEpisodes] = useState<Episode[]>([]);
-
-  async function fetchAllMovies() {
-    const response = await fetch(`/api/movies`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const movies: Movie[] = JSON.parse(data);
-    console.log('All Movies API Call', movies);
-    setMovies(movies);
-  }
-
-  async function fetchAllShows() {
-    const response = await fetch(`/api/shows`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const shows: Show[] = JSON.parse(data);
-    console.log('All Shows API Call', shows);
-    setShows(shows);
-  }
-
-  async function fetchSeasons(show_id: number) {
-    const response = await fetch(`/api/seasons/${show_id}`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const seasons: Season[] = JSON.parse(data);
-    console.log('Seasons API Call', seasons);
-    setSeasons(seasons);
-  }
-
-  async function fetchEpisodes(season_id: number) {
-    const response = await fetch(`/api/episodes/${season_id}`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const episodes: Episode[] = JSON.parse(data);
-    console.log('Episodes API Call', episodes);
-    setEpisodes(episodes);
-  }
-
-  useEffect(() => {
-    fetchAllMovies();
-    fetchAllShows();
-    fetchSeasons(1);
-    fetchEpisodes(1);
-  }, []);
-
   return (
-    <Container>
-      <Header />
-      <main>
-        <ShowsCards shows={shows} />
-        <SeasonsCards seasons={seasons} episodes={episodes} />
-        <MoviesCards movies={movies} />
-      </main>
-    </Container>
+    <BrowserRouter>
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/shows" element={<Shows />} />
+        <Route path="/shows/:id" element={<ShowSeasons />} />
+        <Route path="/movies" element={<Movies />} />
+        <Route path="/discover" element={<Discover />} />
+        <Route path="/profile" element={<FamilyProfile />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

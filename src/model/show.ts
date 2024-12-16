@@ -4,6 +4,7 @@ export type Show = {
   description: string;
   release_date: string;
   genre: string;
+  streaming_service: string;
   image: string;
   user_rating: number | null;
   tv_parental_guidelines: string;
@@ -16,8 +17,10 @@ export type Season = {
   id: string;
   show_id: string;
   title: string;
+  image: string;
+  release_date: string;
   number_of_episodes: number;
-  episodes?: Episode[];
+  episodes: Episode[];
 };
 
 export type Episode = {
@@ -26,4 +29,6 @@ export type Episode = {
   title: string;
   duration: number;
   episode_number: number;
+  release_date: string;
+  image: string;
 };

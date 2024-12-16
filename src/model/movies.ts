@@ -8,4 +8,5 @@ export type Movie = {
   image: string;
   user_rating: number | null;
   mpa_rating: string;
+  streaming_service: string;
 };

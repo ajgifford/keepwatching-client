@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from '@mui/material';
 
-function FamilyProfile() {
+function CreateUser() {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
@@ -22,4 +22,4 @@ function FamilyProfile() {
   );
 }
 
-export default FamilyProfile;
+export default CreateUser;
