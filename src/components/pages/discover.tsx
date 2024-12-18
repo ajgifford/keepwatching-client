@@ -24,7 +24,6 @@ function Discover() {
 
     const data = await response.json();
     const movies: Movie[] = JSON.parse(data);
-    console.log('All Movies API Call', movies);
     setMovies(movies);
   }
 
@@ -38,7 +37,6 @@ function Discover() {
 
     const data = await response.json();
     const shows: Show[] = JSON.parse(data);
-    console.log('All Shows API Call', shows);
     setShows(shows);
   }
 

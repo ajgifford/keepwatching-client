@@ -8,6 +8,7 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Avatar,
+  Box,
   Button,
   Divider,
   Drawer,
@@ -25,10 +26,10 @@ import {
   Typography,
 } from '@mui/material';
 
+import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../model/filters';
 import { Show } from '../../model/show';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
-import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../model/filters';
 
 const showData: Show[] = [
   {
@@ -38,7 +39,8 @@ const showData: Show[] = [
     genres: ['Drama'],
     streaming_service: 'Netflix',
     watched: 'Watched',
-    image: 'https://via.placeholder.com/150',
+    image: 'https://via.placeholder.com/96?text=Breaking+Bad&font=roboto',
+    profiles: ['1'],
   },
   {
     id: '2',
@@ -47,7 +49,8 @@ const showData: Show[] = [
     genres: ['Sci-Fi', 'Drama'],
     streaming_service: 'Netflix',
     watched: 'Not Watched',
-    image: 'https://via.placeholder.com/150',
+    image: 'https://via.placeholder.com/96?text=Stranger+Things&font=roboto',
+    profiles: ['1'],
   },
   {
     id: '3',
@@ -56,7 +59,8 @@ const showData: Show[] = [
     genres: ['Comedy'],
     streaming_service: 'Peacock',
     watched: 'Watched',
-    image: 'https://via.placeholder.com/150',
+    image: 'https://via.placeholder.com/96?text=The+Office&font=roboto',
+    profiles: ['3'],
   },
   {
     id: '4',
@@ -65,7 +69,8 @@ const showData: Show[] = [
     genres: ['Sci-Fi', 'Action'],
     streaming_service: 'Disney+',
     watched: 'Watching',
-    image: 'https://via.placeholder.com/150',
+    image: 'https://via.placeholder.com/96?text=The+Madalorain&font=roboto',
+    profiles: ['4'],
   },
   {
     id: '5',
@@ -74,7 +79,8 @@ const showData: Show[] = [
     genres: ['Comedy'],
     streaming_service: 'Peacock',
     watched: 'Watched',
-    image: 'https://via.placeholder.com/150',
+    image: 'https://via.placeholder.com/96?text=Parks+and+Rec&font=roboto',
+    profiles: ['3'],
   },
 ];
 
@@ -101,14 +107,22 @@ const FilteredShows = () => {
     return 'Not Watched';
   };
 
-  const filteredShows = showData.filter((show) => {
-    return (
-      (genreFilter === '' || show.genres.includes(genreFilter)) &&
-      (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
-      (watchedFilter === '' || show.watched === watchedFilter) &&
-      (profileFilter === '' || show.description === profileFilter)
-    );
-  });
+  const filteredShows = showData
+    .filter((show) => {
+      return (
+        (genreFilter === '' || show.genres.includes(genreFilter)) &&
+        (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
+        (watchedFilter === '' || show.watched === watchedFilter) &&
+        (profileFilter === '' || show.profiles.includes(profileFilter))
+      );
+    })
+    .sort((a, b) => {
+      const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
+      if (watchedOrder[a.watched] !== watchedOrder[b.watched]) {
+        return watchedOrder[a.watched] - watchedOrder[b.watched];
+      }
+      return a.title.localeCompare(b.title);
+    });
 
   return (
     <>
@@ -123,51 +137,52 @@ const FilteredShows = () => {
           >
             Filter
           </Button>
-          <List>
-            {filteredShows.map((show) => (
-              <Fragment key={show.id}>
-                <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.id}`)}>
-                  <ListItemAvatar>
-                    <Avatar alt={show.title} src={show.image} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={show.title}
-                    secondary={
-                      <>
-                        <Typography component="span" variant="body2" color="text.primary">
-                          {show.genres}
-                        </Typography>
-                        {` — ${show.description}`}
-                        <br />
-                        <Typography variant="caption" color="text.secondary">
-                          Genre: {show.genres}
+          {filteredShows.length > 0 ? (
+            <List>
+              {filteredShows.map((show) => (
+                <Fragment key={show.id}>
+                  <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.id}`)}>
+                    <ListItemAvatar sx={{ width: 96, height: 96, p:1 }}>
+                      <Avatar alt={show.title} src={show.image} variant='rounded' sx={{ width: 96, height: 96 }}/>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={show.title}
+                      secondary={
+                        <>
+                          <Typography variant="body2">{show.description}</Typography>
+                          <Typography variant="caption">Genres: {show.genres.join(', ')}</Typography>
                           <br />
-                          Streaming on: {show.streaming_service}
-                        </Typography>
-                      </>
-                    }
-                  />
-                  <Tooltip title={show.watched === 'Watched' ? 'Mark Unwatched' : 'Mark Watched'}>
-                    <IconButton
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        console.log('Before', show.title, show.watched);
-                        show.watched = handleWatchStatusChange(show.watched);
-                        console.log('After 1', show.title, show.watched);
-                        setGenreFilter((prev) => prev); // Trigger re-render
-                        console.log('After 2', show.title, show.watched);
-                      }}
-                    >
-                      {show.watched === 'Not Watched' && <WatchLaterOutlinedIcon />}
-                      {show.watched === 'Watching' && <WatchLaterTwoToneIcon color="success" />}
-                      {show.watched === 'Watched' && <WatchLaterIcon color="success" />}
-                    </IconButton>
-                  </Tooltip>
-                </ListItem>
-                <Divider variant="inset" component="li" />
-              </Fragment>
-            ))}
-          </List>
+                          <Typography variant="caption">Streaming Service: {show.streaming_service}</Typography>
+                          <br />
+                          <Typography variant="caption">Release Date: {show.release_date}</Typography>
+                        </>
+                      }
+                    />
+                    <Tooltip title={show.watched === 'Watched' ? 'Mark Unwatched' : 'Mark Watched'}>
+                      <IconButton
+                        onClick={(event) => {
+                          show.watched = handleWatchStatusChange(show.watched);
+                          setGenreFilter((prev) => prev); // Trigger re-render
+                          event.stopPropagation();
+                        }}
+                      >
+                        {show.watched === 'Not Watched' && <WatchLaterOutlinedIcon />}
+                        {show.watched === 'Watching' && <WatchLaterTwoToneIcon color="success" />}
+                        {show.watched === 'Watched' && <WatchLaterIcon color="success" />}
+                      </IconButton>
+                    </Tooltip>
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </Fragment>
+              ))}
+            </List>
+          ) : (
+            <Box>
+              <Typography variant="h6" align="center">
+                No Shows Match Current Filters
+              </Typography>
+            </Box>
+          )}
           <Drawer open={filterDrawerOpen} onClose={toggleDrawer(false)}>
             {
               <>
@@ -181,7 +196,7 @@ const FilteredShows = () => {
                   <FormControl fullWidth>
                     <InputLabel>Profiles</InputLabel>
                     <Select value={profileFilter} onChange={(e) => setProfileFilter(e.target.value)}>
-                    <MenuItem value=''>--All--</MenuItem>
+                      <MenuItem value="">--All--</MenuItem>
                       {sortedProfiles?.map((profile) => <MenuItem value={profile.id}>{profile.name}</MenuItem>)}
                     </Select>
                   </FormControl>

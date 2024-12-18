@@ -12,6 +12,7 @@ export type Show = {
   total_episodes?: number;
   watched: 'Watched' | 'Watching' | 'Not Watched';
   seasons?: Season[];
+  profiles: string[];
 };
 
 export type Season = {
