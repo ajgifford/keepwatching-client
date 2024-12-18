@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 
-import { Container, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { Movie } from '../../model/movies';
 import { Show } from '../../model/show';
+import { useAccount } from '../context/accountContext';
+import NotLoggedIn from '../login/notLoggedIn';
 import MoviesCards from '../watchableContent/moviesCards';
 import ShowsCards from '../watchableContent/showsCards';
 
 function Discover() {
+  const { account } = useAccount();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [shows, setShows] = useState<Show[]>([]);
 
@@ -45,11 +48,17 @@ function Discover() {
   }, []);
 
   return (
-    <Container maxWidth="xl" sx={{ p: 4 }}>
-      <Typography variant="h4">Discover</Typography>
-      <ShowsCards shows={shows} />
-      <MoviesCards movies={movies} />
-    </Container>
+    <>
+      {!account ? (
+        <NotLoggedIn />
+      ) : (
+        <>
+          <Typography variant="h4">Discover</Typography>
+          <ShowsCards shows={shows} />
+          <MoviesCards movies={movies} />
+        </>
+      )}
+    </>
   );
 }
 

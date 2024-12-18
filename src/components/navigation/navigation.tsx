@@ -46,7 +46,7 @@ function Navigation() {
     { id: 'shows', label: 'Shows', icon: <FaTv className="icon" />, to: '/shows' },
     { id: 'movies', label: 'Movies', icon: <FaFilm className="icon" />, to: '/movies' },
     { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
-    { id: 'manageFamily', label: 'Manage Family', icon: <FaUser className="icon" />, to: '/manageFamily' },
+    { id: 'manageAccount', label: 'Manage Account', icon: <FaUser className="icon" />, to: '/manageAccount' },
   ];
 
   const renderNavigationButtons = () =>

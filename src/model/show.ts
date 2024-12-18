@@ -2,14 +2,15 @@ export type Show = {
   id: string;
   title: string;
   description: string;
-  release_date: string;
+  release_date?: string;
   genre: string;
   streaming_service: string;
   image: string;
-  user_rating: number | null;
-  tv_parental_guidelines: string;
-  number_of_seasons: number;
-  total_episodes: number;
+  user_rating?: number | null;
+  tv_parental_guidelines?: string;
+  number_of_seasons?: number;
+  total_episodes?: number;
+  watched: 'Watched' | 'Watching' | 'Not Watched';
   seasons?: Season[];
 };
 
