@@ -78,7 +78,7 @@ const Movies = () => {
                       </>
                     }
                   />
-                  <Tooltip title={watchedMovies[movie.id] ? 'Mark Unwatched' : 'Mark Watched'}>
+                  <Tooltip title={watchedMovies[movie.id] ? 'Mark Not Watched' : 'Mark Watched'}>
                     <IconButton
                       color={watchedMovies[movie.id] ? 'success' : 'default'}
                       onClick={(event) => {

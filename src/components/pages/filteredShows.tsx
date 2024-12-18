@@ -1,5 +1,5 @@
 // Import necessary libraries
-import React, { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -31,59 +31,6 @@ import { ShowWithProfiles } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 
-const showData: ShowWithProfiles[] = [
-  {
-    id: '1',
-    title: 'Breaking Bad',
-    description: 'A chemistry teacher turned meth producer.',
-    genres: ['Drama'],
-    streaming_service: 'Netflix',
-    watched: 'Watched',
-    image: 'https://via.placeholder.com/96?text=Breaking+Bad&font=roboto',
-    profiles: ['1'],
-  },
-  {
-    id: '2',
-    title: 'Stranger Things',
-    description: 'A group of kids uncover supernatural mysteries.',
-    genres: ['Sci-Fi', 'Drama'],
-    streaming_service: 'Netflix',
-    watched: 'Not Watched',
-    image: 'https://via.placeholder.com/96?text=Stranger+Things&font=roboto',
-    profiles: ['1'],
-  },
-  {
-    id: '3',
-    title: 'The Office',
-    description: 'A comedic look at office life.',
-    genres: ['Comedy'],
-    streaming_service: 'Peacock',
-    watched: 'Watched',
-    image: 'https://via.placeholder.com/96?text=The+Office&font=roboto',
-    profiles: ['3'],
-  },
-  {
-    id: '4',
-    title: 'The Mandalorian',
-    description: 'A bounty hunter in the Star Wars universe.',
-    genres: ['Sci-Fi', 'Action'],
-    streaming_service: 'Disney+',
-    watched: 'Watching',
-    image: 'https://via.placeholder.com/96?text=The+Madalorain&font=roboto',
-    profiles: ['4'],
-  },
-  {
-    id: '5',
-    title: 'Parks and Recreation',
-    description: 'The quirky employees of Pawnee, Indiana.',
-    genres: ['Comedy'],
-    streaming_service: 'Peacock',
-    watched: 'Watched',
-    image: 'https://via.placeholder.com/96?text=Parks+and+Rec&font=roboto',
-    profiles: ['3'],
-  },
-];
-
 const FilteredShows = () => {
   const navigate = useNavigate();
   const { account } = useAccount();
@@ -92,12 +39,37 @@ const FilteredShows = () => {
   const [watchedFilter, setWatchedFilter] = useState<string>('');
   const [profileFilter, setProfileFilter] = useState<string>('');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [shows, setShows] = useState<ShowWithProfiles[]>([]);
+
+  useEffect(() => {
+    if (account) {
+      async function fetchShows() {
+        const response = await fetch(`/api/account/${account?.id}/shows`);
+
+        if (!response.ok) {
+          const message = `An error has occured: ${response.status}`;
+          throw new Error(message);
+        }
+
+        const data = await response.json();
+        const retrievedShows: ShowWithProfiles[] = JSON.parse(data);
+
+        retrievedShows.sort((a, b) => {
+          const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
+          if (watchedOrder[a.watched] !== watchedOrder[b.watched]) {
+            return watchedOrder[a.watched] - watchedOrder[b.watched];
+          }
+          return a.title.localeCompare(b.title);
+        });
+        setShows(retrievedShows);
+      }
+      fetchShows();
+    }
+  }, [account]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setFilterDrawerOpen(newOpen);
   };
-
-  const sortedProfiles = account?.profiles.sort((a, b) => (a.name < b.name ? -1 : 1));
 
   const handleWatchStatusChange = (
     currentStatus: 'Watched' | 'Watching' | 'Not Watched',
@@ -107,22 +79,14 @@ const FilteredShows = () => {
     return 'Not Watched';
   };
 
-  const filteredShows = showData
-    .filter((show) => {
-      return (
-        (genreFilter === '' || show.genres.includes(genreFilter)) &&
-        (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
-        (watchedFilter === '' || show.watched === watchedFilter) &&
-        (profileFilter === '' || show.profiles.includes(profileFilter))
-      );
-    })
-    .sort((a, b) => {
-      const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
-      if (watchedOrder[a.watched] !== watchedOrder[b.watched]) {
-        return watchedOrder[a.watched] - watchedOrder[b.watched];
-      }
-      return a.title.localeCompare(b.title);
-    });
+  const filteredShows = shows.filter((show) => {
+    return (
+      (genreFilter === '' || show.genres.includes(genreFilter)) &&
+      (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
+      (watchedFilter === '' || show.watched === watchedFilter) &&
+      (profileFilter === '' || show.profiles.includes(profileFilter))
+    );
+  });
 
   return (
     <>
@@ -158,7 +122,7 @@ const FilteredShows = () => {
                         </>
                       }
                     />
-                    <Tooltip title={show.watched === 'Watched' ? 'Mark Unwatched' : 'Mark Watched'}>
+                    <Tooltip title={show.watched === 'Watched' ? 'Mark Not Watched' : 'Mark Watched'}>
                       <IconButton
                         onClick={(event) => {
                           show.watched = handleWatchStatusChange(show.watched);
@@ -197,7 +161,9 @@ const FilteredShows = () => {
                     <InputLabel>Profiles</InputLabel>
                     <Select value={profileFilter} onChange={(e) => setProfileFilter(e.target.value)}>
                       <MenuItem value="">--All--</MenuItem>
-                      {sortedProfiles?.map((profile) => <MenuItem value={profile.id}>{profile.name}</MenuItem>)}
+                      {account.profiles.map((profile) => (
+                        <MenuItem value={profile.id}>{profile.name}</MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                   <FormControl fullWidth>

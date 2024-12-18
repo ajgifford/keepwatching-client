@@ -16,6 +16,9 @@ const Home = () => {
 
     const data = await response.json();
     const account: Account = JSON.parse(data);
+    if (account) {
+      account.profiles.sort((a, b) => (a.name < b.name ? -1 : 1));
+    }
     setAccount(account);
   }
 

@@ -122,7 +122,7 @@ const ShowSeasons = () => {
                         {season.number_of_episodes} Episodes | First Aired: {season.release_date}
                       </Typography>
                     </Box>
-                    <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Unwatched' : 'Mark Watched'}>
+                    <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Not Watched' : 'Mark Watched'}>
                       <IconButton
                         onClick={(event) => {
                           event.stopPropagation();
@@ -152,7 +152,7 @@ const ShowSeasons = () => {
                                 primary={episode.title}
                                 secondary={`Summary: ${episode.summary} | Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
                               />
-                              <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Unwatched' : 'Mark Watched'}>
+                              <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}>
                                 <IconButton
                                   color={watchedEpisodes[episode.id] ? 'success' : 'default'}
                                   onClick={() => toggleEpisodeWatched(episode.id)}

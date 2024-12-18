@@ -104,7 +104,7 @@ const Shows = () => {
                         </>
                       }
                     />
-                    <Tooltip title={watchedShows[show.id] ? 'Mark Unwatched' : 'Mark Watched'}>
+                    <Tooltip title={watchedShows[show.id] ? 'Mark Not Watched' : 'Mark Watched'}>
                       <IconButton
                         color={watchedShows[show.id] ? 'success' : 'default'}
                         onClick={(event) => {

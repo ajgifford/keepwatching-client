@@ -10,7 +10,6 @@ import Home from './pages/home';
 import ManageAccount from './pages/manageAccount';
 import Movies from './pages/movies';
 import ShowSeasons from './pages/showSeasons';
-import Shows from './pages/shows';
 
 function App() {
   return (

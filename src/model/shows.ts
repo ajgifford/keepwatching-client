@@ -42,7 +42,6 @@ export type ShowWithProfiles = {
   number_of_seasons?: number;
   total_episodes?: number;
   watched: 'Watched' | 'Watching' | 'Not Watched';
-  seasons?: Season[];
   profiles: string[];
 };
 
