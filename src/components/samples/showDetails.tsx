@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom';
 
 import { Avatar, Box, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
-import { Season, Show } from '../../model/shows';
+import { Season, ShowWithSeasons } from '../../model/shows';
 
 const ShowDetails = () => {
   let { id } = useParams();
-  const [show, setShow] = useState<Show>();
+  const [show, setShow] = useState<ShowWithSeasons>();
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);
 
   async function fetchShow(show_id: string | undefined) {
@@ -19,7 +19,7 @@ const ShowDetails = () => {
     }
 
     const data = await response.json();
-    const show: Show = JSON.parse(data);
+    const show: ShowWithSeasons = JSON.parse(data);
     const seasons = show.seasons;
     setShow(show);
     setSeasons(seasons);

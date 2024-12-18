@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { Movie } from '../../model/movies';
-import { Show } from '../../model/shows';
+import { DiscoverShow } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 import MoviesCards from '../watchableContent/moviesCards';
@@ -12,7 +12,7 @@ import ShowsCards from '../watchableContent/showsCards';
 function Discover() {
   const { account } = useAccount();
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [shows, setShows] = useState<Show[]>([]);
+  const [shows, setShows] = useState<DiscoverShow[]>([]);
 
   async function fetchAllMovies() {
     const response = await fetch(`/api/movies`);
@@ -36,7 +36,7 @@ function Discover() {
     }
 
     const data = await response.json();
-    const shows: Show[] = JSON.parse(data);
+    const shows: DiscoverShow[] = JSON.parse(data);
     setShows(shows);
   }
 

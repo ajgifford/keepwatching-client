@@ -27,11 +27,11 @@ import {
 } from '@mui/material';
 
 import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../model/filters';
-import { Show } from '../../model/shows';
+import { ShowWithProfiles } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 
-const showData: Show[] = [
+const showData: ShowWithProfiles[] = [
   {
     id: '1',
     title: 'Breaking Bad',
@@ -142,8 +142,8 @@ const FilteredShows = () => {
               {filteredShows.map((show) => (
                 <Fragment key={show.id}>
                   <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.id}`)}>
-                    <ListItemAvatar sx={{ width: 96, height: 96, p:1 }}>
-                      <Avatar alt={show.title} src={show.image} variant='rounded' sx={{ width: 96, height: 96 }}/>
+                    <ListItemAvatar sx={{ width: 96, height: 96, p: 1 }}>
+                      <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 96 }} />
                     </ListItemAvatar>
                     <ListItemText
                       primary={show.title}

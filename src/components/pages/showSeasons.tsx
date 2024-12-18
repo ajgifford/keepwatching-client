@@ -24,7 +24,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Season, Show } from '../../model/shows';
+import { Season, ShowWithSeasons } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 
@@ -32,7 +32,7 @@ const ShowSeasons = () => {
   let { id } = useParams();
   const { account } = useAccount();
   const navigate = useNavigate();
-  const [show, setShow] = useState<Show>();
+  const [show, setShow] = useState<ShowWithSeasons>();
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);
   const [watchedEpisodes, setWatchedEpisodes] = useState<Record<string, boolean>>({});
 
@@ -45,7 +45,7 @@ const ShowSeasons = () => {
     }
 
     const data = await response.json();
-    const show: Show = JSON.parse(data);
+    const show: ShowWithSeasons = JSON.parse(data);
     const seasons = show.seasons;
     setShow(show);
     setSeasons(seasons);
