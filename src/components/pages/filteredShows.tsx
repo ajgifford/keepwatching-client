@@ -75,7 +75,26 @@ const showData: Show[] = [
   },
 ];
 
-const watchStatuses = [{value: "", display:'All'}, {value: "Not Watched", display:'Not Watched'},{value: "Watching", display:'Watching'},{value: "Watched", display:'Watched'}];
+const watchStatuses = [
+  { value: '', display: 'All' },
+  { value: 'Not Watched', display: 'Not Watched' },
+  { value: 'Watching', display: 'Watching' },
+  { value: 'Watched', display: 'Watched' },
+];
+
+const streamingServices = [
+  { value: '', display: 'All' },
+  { value: 'Max', display: 'Max' },
+  { value: 'Netflix', display: 'Netflix' },
+  { value: 'Disney+', display: 'Disney+' },
+  { value: 'Amazon Prime', display: 'Amazon Prime' },
+  { value: 'Hulu', display: 'Hulu' },
+  { value: 'Peacock', display: 'Peacock' },
+  { value: 'Paramount+', display: 'Paramount+' },
+  { value: 'Apple TV', display: 'Apple TV' },
+];
+
+const sortedStreamingServices = streamingServices.sort((a, b) => (a.display < b.display ? -1 : 1));
 
 const FilteredShows = () => {
   const navigate = useNavigate();
@@ -107,7 +126,6 @@ const FilteredShows = () => {
       ) : (
         <>
           <Grid container spacing={2}>
-            {/* Filters */}
             <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl fullWidth>
                 <InputLabel>Genre</InputLabel>
@@ -123,10 +141,9 @@ const FilteredShows = () => {
               <FormControl fullWidth>
                 <InputLabel>Streaming Service</InputLabel>
                 <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="Netflix">Netflix</MenuItem>
-                  <MenuItem value="Peacock">Peacock</MenuItem>
-                  <MenuItem value="Disney+">Disney+</MenuItem>
+                  {sortedStreamingServices.map((service) => (
+                    <MenuItem value={service.value}>{service.display}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -134,7 +151,9 @@ const FilteredShows = () => {
               <FormControl fullWidth>
                 <InputLabel>Watched Status</InputLabel>
                 <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
-                {watchStatuses.map((status) => (<MenuItem value={status.value}>{status.display}</MenuItem>))}
+                  {watchStatuses.map((status) => (
+                    <MenuItem value={status.value}>{status.display}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -165,7 +184,6 @@ const FilteredShows = () => {
                   />
                   <Tooltip title={show.watched === 'Watched' ? 'Mark Unwatched' : 'Mark Watched'}>
                     <IconButton
-                      // color={show.watched === 'Watched' ? 'success' : 'default'}
                       onClick={(event) => {
                         event.stopPropagation();
                         console.log('Before', show.title, show.watched);
