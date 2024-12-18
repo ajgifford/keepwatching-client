@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { Movie } from '../../model/movies';
-import { Show } from '../../model/show';
+import { Show } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 import MoviesCards from '../watchableContent/moviesCards';

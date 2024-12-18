@@ -24,7 +24,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Season, Show } from '../../model/show';
+import { Season, Show } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 

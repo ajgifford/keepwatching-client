@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 
 import { Profile } from '../../model/account';
-import { Show } from '../../model/show';
+import { Show } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 

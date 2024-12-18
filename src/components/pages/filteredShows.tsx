@@ -27,7 +27,7 @@ import {
 } from '@mui/material';
 
 import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../model/filters';
-import { Show } from '../../model/show';
+import { Show } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 

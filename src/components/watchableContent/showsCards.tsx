@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 
-import { Show } from '../../model/show';
+import { Show } from '../../model/shows';
 
 const ShowsCards: React.FC<{ shows: Show[] }> = ({ shows }) => (
   <Grid container spacing={3}>

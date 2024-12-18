@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { Avatar, Box, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
-import { Season, Show } from '../../model/show';
+import { Season, Show } from '../../model/shows';
 
 const ShowDetails = () => {
   let { id } = useParams();
