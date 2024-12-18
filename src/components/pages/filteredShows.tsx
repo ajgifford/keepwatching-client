@@ -111,14 +111,16 @@ const FilteredShows = () => {
                     </ListItemAvatar>
                     <ListItemText
                       primary={show.title}
+                      slotProps={{primary:{variant:"subtitle1"}, secondary:{variant:"caption"}}}
                       secondary={
                         <>
-                          <Typography variant="body2">{show.description}</Typography>
-                          <Typography variant="caption">Genres: {show.genres.join(', ')}</Typography>
-                          <br />
-                          <Typography variant="caption">Streaming Service: {show.streaming_service}</Typography>
-                          <br />
-                          <Typography variant="caption">Release Date: {show.release_date}</Typography>
+                          <i>{show.description}</i>
+                          <br/>
+                          Genres: {show.genres.join(', ')}
+                          <br/>
+                          Streaming Service: {show.streaming_service}
+                          <br/>
+                          Release Date: {show.release_date}
                         </>
                       }
                     />
@@ -160,9 +162,9 @@ const FilteredShows = () => {
                   <FormControl fullWidth>
                     <InputLabel>Profiles</InputLabel>
                     <Select value={profileFilter} onChange={(e) => setProfileFilter(e.target.value)}>
-                      <MenuItem value="">--All--</MenuItem>
+                      <MenuItem key="displayAllProfiles" value="">--All--</MenuItem>
                       {account.profiles.map((profile) => (
-                        <MenuItem value={profile.id}>{profile.name}</MenuItem>
+                        <MenuItem key={profile.id} value={profile.id}>{profile.name}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -170,7 +172,7 @@ const FilteredShows = () => {
                     <InputLabel>Genre</InputLabel>
                     <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
                       {sortedGenres.map((genre) => (
-                        <MenuItem value={genre.value}>{genre.display}</MenuItem>
+                        <MenuItem key={genre.value} value={genre.value}>{genre.display}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -178,7 +180,7 @@ const FilteredShows = () => {
                     <InputLabel>Streaming Service</InputLabel>
                     <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
                       {sortedStreamingServices.map((service) => (
-                        <MenuItem value={service.value}>{service.display}</MenuItem>
+                        <MenuItem key={service.value} value={service.value}>{service.display}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -186,7 +188,7 @@ const FilteredShows = () => {
                     <InputLabel>Watched Status</InputLabel>
                     <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
                       {watchStatuses.map((status) => (
-                        <MenuItem value={status.value}>{status.display}</MenuItem>
+                        <MenuItem key={status.value} value={status.value}>{status.display}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
