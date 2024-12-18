@@ -2,12 +2,15 @@
 import React, { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import FilterListIcon from '@mui/icons-material/FilterList';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Avatar,
+  Button,
   Divider,
+  Drawer,
   FormControl,
   IconButton,
   InputLabel,
@@ -17,22 +20,22 @@ import {
   ListItemText,
   MenuItem,
   Select,
+  Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
 import { Show } from '../../model/show';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
+import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../model/filters';
 
-// Sample data
 const showData: Show[] = [
   {
     id: '1',
     title: 'Breaking Bad',
     description: 'A chemistry teacher turned meth producer.',
-    genre: 'Drama',
+    genres: ['Drama'],
     streaming_service: 'Netflix',
     watched: 'Watched',
     image: 'https://via.placeholder.com/150',
@@ -41,7 +44,7 @@ const showData: Show[] = [
     id: '2',
     title: 'Stranger Things',
     description: 'A group of kids uncover supernatural mysteries.',
-    genre: 'Sci-Fi',
+    genres: ['Sci-Fi', 'Drama'],
     streaming_service: 'Netflix',
     watched: 'Not Watched',
     image: 'https://via.placeholder.com/150',
@@ -50,7 +53,7 @@ const showData: Show[] = [
     id: '3',
     title: 'The Office',
     description: 'A comedic look at office life.',
-    genre: 'Comedy',
+    genres: ['Comedy'],
     streaming_service: 'Peacock',
     watched: 'Watched',
     image: 'https://via.placeholder.com/150',
@@ -59,7 +62,7 @@ const showData: Show[] = [
     id: '4',
     title: 'The Mandalorian',
     description: 'A bounty hunter in the Star Wars universe.',
-    genre: 'Sci-Fi',
+    genres: ['Sci-Fi', 'Action'],
     streaming_service: 'Disney+',
     watched: 'Watching',
     image: 'https://via.placeholder.com/150',
@@ -68,33 +71,12 @@ const showData: Show[] = [
     id: '5',
     title: 'Parks and Recreation',
     description: 'The quirky employees of Pawnee, Indiana.',
-    genre: 'Comedy',
+    genres: ['Comedy'],
     streaming_service: 'Peacock',
     watched: 'Watched',
     image: 'https://via.placeholder.com/150',
   },
 ];
-
-const watchStatuses = [
-  { value: '', display: 'All' },
-  { value: 'Not Watched', display: 'Not Watched' },
-  { value: 'Watching', display: 'Watching' },
-  { value: 'Watched', display: 'Watched' },
-];
-
-const streamingServices = [
-  { value: '', display: 'All' },
-  { value: 'Max', display: 'Max' },
-  { value: 'Netflix', display: 'Netflix' },
-  { value: 'Disney+', display: 'Disney+' },
-  { value: 'Amazon Prime', display: 'Amazon Prime' },
-  { value: 'Hulu', display: 'Hulu' },
-  { value: 'Peacock', display: 'Peacock' },
-  { value: 'Paramount+', display: 'Paramount+' },
-  { value: 'Apple TV', display: 'Apple TV' },
-];
-
-const sortedStreamingServices = streamingServices.sort((a, b) => (a.display < b.display ? -1 : 1));
 
 const FilteredShows = () => {
   const navigate = useNavigate();
@@ -102,6 +84,14 @@ const FilteredShows = () => {
   const [genreFilter, setGenreFilter] = useState<string>('');
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>('');
   const [watchedFilter, setWatchedFilter] = useState<string>('');
+  const [profileFilter, setProfileFilter] = useState<string>('');
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setFilterDrawerOpen(newOpen);
+  };
+
+  const sortedProfiles = account?.profiles.sort((a, b) => (a.name < b.name ? -1 : 1));
 
   const handleWatchStatusChange = (
     currentStatus: 'Watched' | 'Watching' | 'Not Watched',
@@ -113,9 +103,10 @@ const FilteredShows = () => {
 
   const filteredShows = showData.filter((show) => {
     return (
-      (genreFilter === '' || show.genre === genreFilter) &&
+      (genreFilter === '' || show.genres.includes(genreFilter)) &&
       (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
-      (watchedFilter === '' || show.watched === watchedFilter)
+      (watchedFilter === '' || show.watched === watchedFilter) &&
+      (profileFilter === '' || show.description === profileFilter)
     );
   });
 
@@ -125,39 +116,13 @@ const FilteredShows = () => {
         <NotLoggedIn />
       ) : (
         <>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>Genre</InputLabel>
-                <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="Drama">Drama</MenuItem>
-                  <MenuItem value="Sci-Fi">Sci-Fi</MenuItem>
-                  <MenuItem value="Comedy">Comedy</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>Streaming Service</InputLabel>
-                <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
-                  {sortedStreamingServices.map((service) => (
-                    <MenuItem value={service.value}>{service.display}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>Watched Status</InputLabel>
-                <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
-                  {watchStatuses.map((status) => (
-                    <MenuItem value={status.value}>{status.display}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
+          <Button
+            key="filterButton"
+            onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
+            startIcon={<FilterListIcon className="icon" />}
+          >
+            Filter
+          </Button>
           <List>
             {filteredShows.map((show) => (
               <Fragment key={show.id}>
@@ -170,12 +135,12 @@ const FilteredShows = () => {
                     secondary={
                       <>
                         <Typography component="span" variant="body2" color="text.primary">
-                          {show.genre}
+                          {show.genres}
                         </Typography>
                         {` — ${show.description}`}
                         <br />
                         <Typography variant="caption" color="text.secondary">
-                          Genre: {show.genre}
+                          Genre: {show.genres}
                           <br />
                           Streaming on: {show.streaming_service}
                         </Typography>
@@ -203,6 +168,51 @@ const FilteredShows = () => {
               </Fragment>
             ))}
           </List>
+          <Drawer open={filterDrawerOpen} onClose={toggleDrawer(false)}>
+            {
+              <>
+                <Stack
+                  spacing={{ xs: 1, sm: 2 }}
+                  direction="column"
+                  useFlexGap
+                  sx={{ flexWrap: 'wrap', p: 2, width: 300 }}
+                >
+                  <Typography variant="h6">Show Filters</Typography>
+                  <FormControl fullWidth>
+                    <InputLabel>Profiles</InputLabel>
+                    <Select value={profileFilter} onChange={(e) => setProfileFilter(e.target.value)}>
+                    <MenuItem value=''>--All--</MenuItem>
+                      {sortedProfiles?.map((profile) => <MenuItem value={profile.id}>{profile.name}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel>Genre</InputLabel>
+                    <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
+                      {sortedGenres.map((genre) => (
+                        <MenuItem value={genre.value}>{genre.display}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel>Streaming Service</InputLabel>
+                    <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
+                      {sortedStreamingServices.map((service) => (
+                        <MenuItem value={service.value}>{service.display}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel>Watched Status</InputLabel>
+                    <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
+                      {watchStatuses.map((status) => (
+                        <MenuItem value={status.value}>{status.display}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
+              </>
+            }
+          </Drawer>
         </>
       )}
     </>

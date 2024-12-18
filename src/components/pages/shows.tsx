@@ -92,7 +92,7 @@ const Shows = () => {
                       secondary={
                         <>
                           <Typography component="span" variant="body2" color="text.primary">
-                            {show.genre}
+                            {show.genres}
                           </Typography>
                           {` — ${show.description}`}
                           <br />

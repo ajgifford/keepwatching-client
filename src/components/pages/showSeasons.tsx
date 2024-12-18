@@ -102,7 +102,7 @@ const ShowSeasons = () => {
                 <Typography variant="subtitle1" fontStyle="italic">
                   {show?.description}
                 </Typography>
-                <Typography variant="body1">{show?.genre}</Typography>
+                <Typography variant="body1">{show?.genres}</Typography>
                 <Typography variant="body1">{show?.streaming_service}</Typography>
               </Box>
             </Toolbar>

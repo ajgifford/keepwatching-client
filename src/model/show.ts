@@ -3,7 +3,7 @@ export type Show = {
   title: string;
   description: string;
   release_date?: string;
-  genre: string;
+  genres: string[];
   streaming_service: string;
   image: string;
   user_rating?: number | null;

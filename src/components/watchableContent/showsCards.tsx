@@ -16,7 +16,7 @@ const ShowsCards: React.FC<{ shows: Show[] }> = ({ shows }) => (
               {show.description}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Genre:</strong> {show.genre}
+              <strong>Genre:</strong> {show.genres}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               <strong>Release Date:</strong> {show.release_date}
