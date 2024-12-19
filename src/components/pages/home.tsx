@@ -2,24 +2,40 @@ import { Box, Button, Typography } from '@mui/material';
 
 import { Account } from '../../model/account';
 import { useAccount } from '../context/accountContext';
+import axios from 'axios';
 
 const Home = () => {
   const { account, setAccount } = useAccount();
 
   async function handleLogin() {
-    const response = await fetch(`/api/account/1`);
+    try {
+      const response = await axios.get(`/api/account/1`);
+      const account: Account = JSON.parse(response.data);
+      if (account) {
+        account.profiles.sort((a, b) => (a.name < b.name ? -1 : 1));
+      }
+      setAccount(account);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Handle Axios specific errors
+        if (error.response) {
+          console.error('Response error:', error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('Request error:', error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error('Error:', error.message);
+        }
+      } else {
+        // Handle other types of errors
+        console.error('Unexpected error:', error);
+      }
 
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
+      // Rethrow the error to be handled further up the call stack,
+      // or return a default value if appropriate
+      throw error;
     }
-
-    const data = await response.json();
-    const account: Account = JSON.parse(data);
-    if (account) {
-      account.profiles.sort((a, b) => (a.name < b.name ? -1 : 1));
-    }
-    setAccount(account);
   }
 
   return (

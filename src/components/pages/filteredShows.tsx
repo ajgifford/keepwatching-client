@@ -54,7 +54,6 @@ const FilteredShows = () => {
 
         const data = await response.json();
         const retrievedShows: ShowWithProfile[] = JSON.parse(data);
-        console.log(retrievedShows);
 
         retrievedShows.sort((a, b) => {
           const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
@@ -73,6 +72,14 @@ const FilteredShows = () => {
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setFilterDrawerOpen(newOpen);
+  };
+
+  const clearFilters = () => {
+    setGenreFilter('');
+    setStreamingServiceFilter('');
+    setProfileFilter('');
+    setWatchedFilter('');
+    setFilterDrawerOpen(false);
   };
 
   const handleWatchStatusChange = (
@@ -169,7 +176,9 @@ const FilteredShows = () => {
                   useFlexGap
                   sx={{ flexWrap: 'wrap', p: 2, width: 300 }}
                 >
-                  <Typography variant="h6">Show Filters</Typography>
+                  <Typography variant="h6" color="primary">
+                    Show Filters
+                  </Typography>
                   <FormControl fullWidth>
                     <InputLabel>Profiles</InputLabel>
                     <Select value={profileFilter} onChange={(e) => setProfileFilter(e.target.value)}>
@@ -212,6 +221,11 @@ const FilteredShows = () => {
                         </MenuItem>
                       ))}
                     </Select>
+                  </FormControl>
+                  <FormControl>
+                    <Button key="clearFilterButton" onClick={() => clearFilters()}>
+                      Clear Filters
+                    </Button>
                   </FormControl>
                 </Stack>
               </>
