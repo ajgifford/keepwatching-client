@@ -22,6 +22,7 @@ import Grid from '@mui/material/Grid2';
 import { Account, Profile } from '../../model/account';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
+import axios from 'axios';
 
 const ManageAccount = () => {
   const { account, setAccount } = useAccount();
@@ -41,10 +42,19 @@ const ManageAccount = () => {
   };
 
   const handleSaveButton = () => {
-    //make save API call
+    saveAccount();
     setAccount(editedAccount);
     setSaveSnackOpen(true);
   };
+
+  async function saveAccount() {
+    try {
+      const response = await axios.put('/api/account', editedAccount);
+      // get the 'saved' account from the response and update the state
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
 
   const handleAddProfileButton = () => {
     setAddProfileDialogOpen(true);
