@@ -29,7 +29,7 @@ export type ShowWithSeasons = {
   profiles: string[];
 };
 
-export type ShowWithProfiles = {
+export type ShowWithProfile = {
   id: string;
   title: string;
   description: string;
@@ -41,8 +41,13 @@ export type ShowWithProfiles = {
   tv_parental_guidelines?: string;
   number_of_seasons?: number;
   total_episodes?: number;
+  profile: WatchProfile;
+};
+
+export type WatchProfile = {
+  id: string;
+  name: string;
   watched: 'Watched' | 'Watching' | 'Not Watched';
-  profiles: string[];
 };
 
 export type Season = {

@@ -27,19 +27,20 @@ import {
 } from '@mui/material';
 
 import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../model/filters';
-import { ShowWithProfiles } from '../../model/shows';
+import { ShowWithProfile } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 
 const FilteredShows = () => {
   const navigate = useNavigate();
   const { account } = useAccount();
+  const [shows, setShows] = useState<ShowWithProfile[]>([]);
+
   const [genreFilter, setGenreFilter] = useState<string>('');
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>('');
   const [watchedFilter, setWatchedFilter] = useState<string>('');
   const [profileFilter, setProfileFilter] = useState<string>('');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-  const [shows, setShows] = useState<ShowWithProfiles[]>([]);
 
   useEffect(() => {
     if (account) {
@@ -52,12 +53,15 @@ const FilteredShows = () => {
         }
 
         const data = await response.json();
-        const retrievedShows: ShowWithProfiles[] = JSON.parse(data);
+        const retrievedShows: ShowWithProfile[] = JSON.parse(data);
+        console.log(retrievedShows);
 
         retrievedShows.sort((a, b) => {
           const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
-          if (watchedOrder[a.watched] !== watchedOrder[b.watched]) {
-            return watchedOrder[a.watched] - watchedOrder[b.watched];
+          const aWatched = watchedOrder[a.profile.watched];
+          const bWatched = watchedOrder[b.profile.watched];
+          if (aWatched !== bWatched) {
+            return aWatched - bWatched;
           }
           return a.title.localeCompare(b.title);
         });
@@ -83,8 +87,8 @@ const FilteredShows = () => {
     return (
       (genreFilter === '' || show.genres.includes(genreFilter)) &&
       (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
-      (watchedFilter === '' || show.watched === watchedFilter) &&
-      (profileFilter === '' || show.profiles.includes(profileFilter))
+      (watchedFilter === '' || show.profile.watched === watchedFilter) &&
+      (profileFilter === '' || show.profile.id === profileFilter)
     );
   });
 
@@ -111,30 +115,37 @@ const FilteredShows = () => {
                     </ListItemAvatar>
                     <ListItemText
                       primary={show.title}
-                      slotProps={{primary:{variant:"subtitle1"}, secondary:{variant:"caption"}}}
+                      slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}
                       secondary={
                         <>
                           <i>{show.description}</i>
-                          <br/>
+                          <br />
                           Genres: {show.genres.join(', ')}
-                          <br/>
+                          <br />
                           Streaming Service: {show.streaming_service}
-                          <br/>
+                          <br />
                           Release Date: {show.release_date}
+                          <br />
+                          Profiles: {show.profile.name}
                         </>
                       }
                     />
-                    <Tooltip title={show.watched === 'Watched' ? 'Mark Not Watched' : 'Mark Watched'}>
+
+                    <Tooltip
+                      key={show.profile.id}
+                      title={show.profile.watched === 'Watched' ? `Mark Not Watched` : `Mark Watched`}
+                    >
                       <IconButton
+                        key={show.profile.id}
                         onClick={(event) => {
-                          show.watched = handleWatchStatusChange(show.watched);
-                          setGenreFilter((prev) => prev); // Trigger re-render
+                          show.profile.watched = handleWatchStatusChange(show.profile.watched);
+                          setShows([...shows]);
                           event.stopPropagation();
                         }}
                       >
-                        {show.watched === 'Not Watched' && <WatchLaterOutlinedIcon />}
-                        {show.watched === 'Watching' && <WatchLaterTwoToneIcon color="success" />}
-                        {show.watched === 'Watched' && <WatchLaterIcon color="success" />}
+                        {show.profile.watched === 'Not Watched' && <WatchLaterOutlinedIcon />}
+                        {show.profile.watched === 'Watching' && <WatchLaterTwoToneIcon color="success" />}
+                        {show.profile.watched === 'Watched' && <WatchLaterIcon color="success" />}
                       </IconButton>
                     </Tooltip>
                   </ListItem>
@@ -162,9 +173,13 @@ const FilteredShows = () => {
                   <FormControl fullWidth>
                     <InputLabel>Profiles</InputLabel>
                     <Select value={profileFilter} onChange={(e) => setProfileFilter(e.target.value)}>
-                      <MenuItem key="displayAllProfiles" value="">--All--</MenuItem>
-                      {account.profiles.map((profile) => (
-                        <MenuItem key={profile.id} value={profile.id}>{profile.name}</MenuItem>
+                      <MenuItem key="displayAllProfiles" value="">
+                        --All--
+                      </MenuItem>
+                      {Array.from(new Set(shows.map((show) => show.profile))).map((profile) => (
+                        <MenuItem key={profile.id} value={profile.id}>
+                          {profile.name}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -172,7 +187,9 @@ const FilteredShows = () => {
                     <InputLabel>Genre</InputLabel>
                     <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
                       {sortedGenres.map((genre) => (
-                        <MenuItem key={genre.value} value={genre.value}>{genre.display}</MenuItem>
+                        <MenuItem key={genre.value} value={genre.value}>
+                          {genre.display}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -180,7 +197,9 @@ const FilteredShows = () => {
                     <InputLabel>Streaming Service</InputLabel>
                     <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
                       {sortedStreamingServices.map((service) => (
-                        <MenuItem key={service.value} value={service.value}>{service.display}</MenuItem>
+                        <MenuItem key={service.value} value={service.value}>
+                          {service.display}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -188,7 +207,9 @@ const FilteredShows = () => {
                     <InputLabel>Watched Status</InputLabel>
                     <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
                       {watchStatuses.map((status) => (
-                        <MenuItem key={status.value} value={status.value}>{status.display}</MenuItem>
+                        <MenuItem key={status.value} value={status.value}>
+                          {status.display}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>

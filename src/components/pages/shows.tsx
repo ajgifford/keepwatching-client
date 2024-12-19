@@ -18,14 +18,14 @@ import {
 } from '@mui/material';
 
 import { Profile } from '../../model/account';
-import { ShowWithProfiles } from '../../model/shows';
+import { ShowWithProfile } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 
 const Shows = () => {
   const navigate = useNavigate();
   const { account } = useAccount();
-  const [shows, setShows] = useState<ShowWithProfiles[]>([]);
+  const [shows, setShows] = useState<ShowWithProfile[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeProfile, setActiveProfile] = useState<string>('');
   const [watchedShows, setWatchedShows] = useState<Record<string, boolean>>({});
@@ -39,7 +39,7 @@ const Shows = () => {
     }
 
     const data = await response.json();
-    const shows: ShowWithProfiles[] = JSON.parse(data);
+    const shows: ShowWithProfile[] = JSON.parse(data);
     setShows(shows);
   }
 
