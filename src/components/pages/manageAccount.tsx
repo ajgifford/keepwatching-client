@@ -29,6 +29,8 @@ const ManageAccount = () => {
   const [saveSnackOpen, setSaveSnackOpen] = useState<boolean>(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [discardChangesDialogOpen, setDiscardChangesDialogOpen] = useState<boolean>(false);
+  const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
+  const [deleteProfile, setDeleteProfile] = useState<Profile>();
 
   const handleSaveSnackClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
     if (reason === 'clickaway') {
@@ -63,6 +65,27 @@ const ManageAccount = () => {
   const handleConfirmDiscard = () => {
     setDiscardChangesDialogOpen(false);
     setEditedAccount(account);
+  };
+
+  const handleDeleteProfileButton = (profile: Profile) => {
+    setDeleteProfile(profile);
+    setDeleteProfileDialogOpen(true);
+  };
+
+  const handleCloseDeleteProfileDialog = () => {
+    setDeleteProfileDialogOpen(false);
+  };
+
+  const handleConfirmDeleteProfile = () => {
+    if (editedAccount) {
+      const filteredProfiles = editedAccount.profiles.filter((profile) => profile !== deleteProfile);
+      const updatedAccount: Account = {
+        ...editedAccount,
+        profiles: filteredProfiles,
+      };
+      setEditedAccount(updatedAccount);
+    }
+    setDeleteProfileDialogOpen(false);
   };
 
   const handleAdProfile = (profileName: string) => {
@@ -101,7 +124,16 @@ const ManageAccount = () => {
             <Typography variant="h4">Profiles</Typography>
             <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
               {editedAccount.profiles.map((profile) => (
-                <Chip id={profile.id} key={profile.id} label={profile.name} variant="filled" color="primary" />
+                <Chip
+                  id={profile.id}
+                  key={profile.id}
+                  label={profile.name}
+                  variant="filled"
+                  color="primary"
+                  onDelete={() => {
+                    handleDeleteProfileButton(profile);
+                  }}
+                />
               ))}
               <Chip
                 id="addProfile"
@@ -191,6 +223,27 @@ const ManageAccount = () => {
           </Button>
           <Button onClick={handleConfirmDiscard} color="error" autoFocus>
             Discard
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deleteProfileDialogOpen}
+        onClose={handleCloseDeleteProfileDialog}
+        aria-labelledby="delete-profile-dialog-title"
+        aria-describedby="delete-profile-dialog-description"
+      >
+        <DialogTitle id="delete-profile-dialog-title">Confirm Profile Deletion - {deleteProfile?.name}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-profile-dialog-description">
+            Deleting this profile will also delete all linked shows for this profile.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteProfileDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDeleteProfile} color="error" autoFocus>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
