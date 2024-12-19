@@ -8,41 +8,28 @@ import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
 import MoviesCards from '../watchableContent/moviesCards';
 import ShowsCards from '../watchableContent/showsCards';
+import axios from 'axios';
 
 function Discover() {
   const { account } = useAccount();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [shows, setShows] = useState<DiscoverShow[]>([]);
 
-  async function fetchAllMovies() {
-    const response = await fetch(`/api/movies`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const movies: Movie[] = JSON.parse(data);
-    setMovies(movies);
-  }
-
-  async function fetchAllShows() {
-    const response = await fetch(`/api/shows`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const shows: DiscoverShow[] = JSON.parse(data);
-    setShows(shows);
-  }
-
   useEffect(() => {
-    fetchAllMovies();
-    fetchAllShows();
+    async function fetchData() {
+      try {
+        const [moviesResponse, showsResponse] = await axios.all([axios.get('/api/movies'), axios.get('/api/shows')]);
+
+        const shows: DiscoverShow[] = JSON.parse(showsResponse.data);
+        setShows(shows);
+        const movies: Movie[] = JSON.parse(moviesResponse.data);
+        setMovies(movies);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    fetchData();
   }, []);
 
   return (

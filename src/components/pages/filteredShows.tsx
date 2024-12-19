@@ -30,6 +30,7 @@ import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../mode
 import { ShowWithProfile } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
+import axios from 'axios';
 
 const FilteredShows = () => {
   const navigate = useNavigate();
@@ -45,26 +46,23 @@ const FilteredShows = () => {
   useEffect(() => {
     if (account) {
       async function fetchShows() {
-        const response = await fetch(`/api/account/${account?.id}/shows`);
+        try {
+          const response = await axios.get(`/api/account/${account?.id}/shows`);
+          const retrievedShows: ShowWithProfile[] = JSON.parse(response.data);
 
-        if (!response.ok) {
-          const message = `An error has occured: ${response.status}`;
-          throw new Error(message);
+          retrievedShows.sort((a, b) => {
+            const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
+            const aWatched = watchedOrder[a.profile.watched];
+            const bWatched = watchedOrder[b.profile.watched];
+            if (aWatched !== bWatched) {
+              return aWatched - bWatched;
+            }
+            return a.title.localeCompare(b.title);
+          });
+          setShows(retrievedShows);
+        } catch (error) {
+          console.error('Error:', error);
         }
-
-        const data = await response.json();
-        const retrievedShows: ShowWithProfile[] = JSON.parse(data);
-
-        retrievedShows.sort((a, b) => {
-          const watchedOrder = { 'Not Watched': 1, Watching: 2, Watched: 3 };
-          const aWatched = watchedOrder[a.profile.watched];
-          const bWatched = watchedOrder[b.profile.watched];
-          if (aWatched !== bWatched) {
-            return aWatched - bWatched;
-          }
-          return a.title.localeCompare(b.title);
-        });
-        setShows(retrievedShows);
       }
       fetchShows();
     }

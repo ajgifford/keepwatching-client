@@ -17,27 +17,24 @@ import {
 import { Movie } from '../../model/movies';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
+import axios from 'axios';
 
 const Movies = () => {
   const { account } = useAccount();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [watchedMovies, setWatchedMovies] = useState<Record<string, boolean>>({});
 
-  async function fetchAllMovies() {
-    const response = await fetch(`/api/movies`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const movies: Movie[] = JSON.parse(data);
-    setMovies(movies);
-  }
-
   useEffect(() => {
-    fetchAllMovies();
+    async function fetchMovies() {
+      try {
+        const response = await axios.get(`/api/movies`);
+        const movies: Movie[] = JSON.parse(response.data);
+        setMovies(movies);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    fetchMovies();
   }, []);
 
   const toggleMovieWatched = (movieId: string) => {

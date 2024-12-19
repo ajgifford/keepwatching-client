@@ -16,25 +16,7 @@ const Home = () => {
       }
       setAccount(account);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle Axios specific errors
-        if (error.response) {
-          console.error('Response error:', error.response.data);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.error('Request error:', error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.error('Error:', error.message);
-        }
-      } else {
-        // Handle other types of errors
-        console.error('Unexpected error:', error);
-      }
-
-      // Rethrow the error to be handled further up the call stack,
-      // or return a default value if appropriate
-      throw error;
+      console.error('Error:', error);
     }
   }
 

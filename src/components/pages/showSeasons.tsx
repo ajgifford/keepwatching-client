@@ -27,6 +27,7 @@ import {
 import { Season, ShowWithSeasons } from '../../model/shows';
 import { useAccount } from '../context/accountContext';
 import NotLoggedIn from '../login/notLoggedIn';
+import axios from 'axios';
 
 const ShowSeasons = () => {
   let { id } = useParams();
@@ -36,23 +37,18 @@ const ShowSeasons = () => {
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);
   const [watchedEpisodes, setWatchedEpisodes] = useState<Record<string, boolean>>({});
 
-  async function fetchShow(show_id: string | undefined) {
-    const response = await fetch(`/api/shows/${show_id}`);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const data = await response.json();
-    const show: ShowWithSeasons = JSON.parse(data);
-    const seasons = show.seasons;
-    setShow(show);
-    setSeasons(seasons);
-  }
-
   useEffect(() => {
-    fetchShow(id);
+    async function fetchSeasons() {
+      try {
+        const response = await axios.get(`/api/shows/${id}`);
+        const showWithSeasons: ShowWithSeasons = JSON.parse(response.data);
+        setShow(showWithSeasons);
+        setSeasons(showWithSeasons.seasons);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    fetchSeasons();
   }, [id]);
 
   const isSeasonFullyWatched = (season: Season) => season.episodes.every((episode) => watchedEpisodes[episode.id]);
