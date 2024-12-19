@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import { Box, Button, Typography } from '@mui/material';
 
 import { Account } from '../../model/account';
@@ -33,7 +35,9 @@ const Home = () => {
           KeepWatching!
         </Typography>
         {!account ? (
-          <Button onClick={handleLogin}>Log In</Button>
+          <Button component={Link} to={'/login'}>
+            Log In
+          </Button>
         ) : (
           <Button onClick={() => setAccount(null)}>Log Out</Button>
         )}

@@ -7,8 +7,10 @@ import Navigation from './navigation/navigation';
 import Discover from './pages/discover';
 import FilteredShows from './pages/filteredShows';
 import Home from './pages/home';
+import Login from './pages/login';
 import ManageAccount from './pages/manageAccount';
 import Movies from './pages/movies';
+import Register from './pages/register';
 import ShowSeasons from './pages/showSeasons';
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
               <Route path="/movies" element={<Movies />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/manageAccount" element={<ManageAccount />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
             </Routes>
           </Container>
         </div>
