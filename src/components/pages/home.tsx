@@ -12,7 +12,7 @@ const Home = () => {
       const response = await axios.get(`/api/account/1`);
       const account: Account = JSON.parse(response.data);
       if (account) {
-        account.profiles.sort((a, b) => (a.name < b.name ? -1 : 1));
+        account.profiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
       }
       setAccount(account);
     } catch (error) {

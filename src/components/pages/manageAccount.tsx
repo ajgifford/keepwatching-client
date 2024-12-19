@@ -26,12 +26,11 @@ import axios from 'axios';
 
 const ManageAccount = () => {
   const { account, setAccount } = useAccount();
-  const [editedAccount, setEditedAccount] = useState<Account>(account);
   const [saveSnackOpen, setSaveSnackOpen] = useState<boolean>(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
-  const [discardChangesDialogOpen, setDiscardChangesDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfile, setDeleteProfile] = useState<Profile>();
+  const [snackMessage, setSnackMessage] = useState<string>('');
 
   const handleSaveSnackClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
     if (reason === 'clickaway') {
@@ -41,40 +40,12 @@ const ManageAccount = () => {
     setSaveSnackOpen(false);
   };
 
-  const handleSaveButton = () => {
-    saveAccount();
-    setAccount(editedAccount);
-    setSaveSnackOpen(true);
-  };
-
-  async function saveAccount() {
-    try {
-      const response = await axios.put('/api/account', editedAccount);
-      // get the 'saved' account from the response and update the state
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
   const handleAddProfileButton = () => {
     setAddProfileDialogOpen(true);
   };
 
   const handleCloseAddProfileDialog = () => {
     setAddProfileDialogOpen(false);
-  };
-
-  const handleDiscardButton = () => {
-    setDiscardChangesDialogOpen(true);
-  };
-
-  const handleCloseDiscardDialog = () => {
-    setDiscardChangesDialogOpen(false);
-  };
-
-  const handleConfirmDiscard = () => {
-    setDiscardChangesDialogOpen(false);
-    setEditedAccount(account);
   };
 
   const handleDeleteProfileButton = (profile: Profile) => {
@@ -86,54 +57,71 @@ const ManageAccount = () => {
     setDeleteProfileDialogOpen(false);
   };
 
-  const handleConfirmDeleteProfile = () => {
-    if (editedAccount) {
-      const filteredProfiles = editedAccount.profiles.filter((profile) => profile !== deleteProfile);
-      const updatedAccount: Account = {
-        ...editedAccount,
-        profiles: filteredProfiles,
-      };
-      setEditedAccount(updatedAccount);
+  async function handleConfirmDeleteProfile() {
+    if (account) {
+      try {
+        setDeleteProfileDialogOpen(false);
+        await axios.delete(`/api/account/${account.id}/profiles/${deleteProfile?.id}`);
+        const updatedProfiles = account.profiles.filter((profile) => profile !== deleteProfile);
+        const updatedAccount: Account = {
+          ...account,
+          profiles: updatedProfiles,
+        };
+        setAccount(updatedAccount);
+        setSnackMessage(`Profile ${deleteProfile?.name} deleted successfully`);
+        setSaveSnackOpen(true);
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
-    setDeleteProfileDialogOpen(false);
-  };
+  }
 
-  const handleAdProfile = (profileName: string) => {
-    if (editedAccount) {
-      const updatedProfiles: Profile[] = [...editedAccount.profiles, { name: profileName }];
-      const updatedAccount: Account = {
-        ...editedAccount,
-        profiles: updatedProfiles,
-      };
-      setEditedAccount(updatedAccount);
+  async function handleAdProfile(profileName: string) {
+    if (account) {
+      try {
+        const response = await axios.post(`/api/account/${account.id}/profiles`, { name: profileName });
+        const newProfile: Profile = JSON.parse(response.data);
+        if (newProfile) {
+          const updatedProfiles: Profile[] = [...account.profiles, newProfile];
+          const updatedAccount: Account = {
+            ...account,
+            profiles: updatedProfiles,
+          };
+
+          updatedAccount.profiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+          setAccount(updatedAccount);
+          setSnackMessage(`Profile ${profileName} added successfully`);
+          setSaveSnackOpen(true);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
-  };
+  }
 
   return (
     <>
-      {!editedAccount ? (
+      {!account ? (
         <NotLoggedIn />
       ) : (
         <>
           <Grid container spacing={2} alignItems="center">
             <Box
               component="img"
-              src={editedAccount.image}
-              alt={editedAccount.name}
+              src={account.image}
+              alt={account.name}
               sx={{
                 borderRadius: 2,
               }}
             />
-
             <Typography variant="h2" gutterBottom>
-              {editedAccount.name}
+              {account.name}
             </Typography>
           </Grid>
-
           <Box sx={{ p: 2 }}>
             <Typography variant="h4">Profiles</Typography>
             <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
-              {editedAccount.profiles.map((profile) => (
+              {account.profiles.map((profile) => (
                 <Chip
                   id={profile.id}
                   key={profile.id}
@@ -156,20 +144,6 @@ const ManageAccount = () => {
               />
             </Stack>
           </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              p: 1,
-              m: 1,
-            }}
-          >
-            <Button variant="contained" onClick={handleSaveButton}>
-              Save
-            </Button>
-            <Button onClick={handleDiscardButton}>Discard</Button>
-          </Box>
         </>
       )}
       <Snackbar
@@ -179,7 +153,7 @@ const ManageAccount = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert onClose={handleSaveSnackClose} severity="success" variant="filled" sx={{ width: '100%' }}>
-          Settings saved successfully.
+          {snackMessage}
         </Alert>
       </Snackbar>
       <Dialog
@@ -216,27 +190,6 @@ const ManageAccount = () => {
         </DialogActions>
       </Dialog>
       <Dialog
-        open={discardChangesDialogOpen}
-        onClose={handleCloseDiscardDialog}
-        aria-labelledby="discard-dialog-title"
-        aria-describedby="discard-dialog-description"
-      >
-        <DialogTitle id="discard-dialog-title">Confirm Discard</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="discard-dialog-description">
-            Are you sure you want to discard your changes? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDiscardDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDiscard} color="error" autoFocus>
-            Discard
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
         open={deleteProfileDialogOpen}
         onClose={handleCloseDeleteProfileDialog}
         aria-labelledby="delete-profile-dialog-title"
@@ -245,7 +198,7 @@ const ManageAccount = () => {
         <DialogTitle id="delete-profile-dialog-title">Confirm Profile Deletion - {deleteProfile?.name}</DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-profile-dialog-description">
-            Deleting this profile will also delete all linked shows for this profile.
+            Deleting this profile will also delete all linked shows for this profile. This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
