@@ -24,16 +24,19 @@ import Grid from '@mui/material/Grid2';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/account';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
-import { deleteProfile, selectAllProfiles } from '../../app/slices/profilesSlice';
+import { addProfile, deleteProfile, editProfile, selectAllProfiles } from '../../app/slices/profilesSlice';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
   const profiles = useAppSelector(selectAllProfiles);
+
   const [saveSnackOpen, setSaveSnackOpen] = useState<boolean>(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
-  const [profileToDelete, setProfileToDelete] = useState<Profile | null>();
+  const [editProfileDialogOpen, setEditProfileDialogOpen] = useState<boolean>(false);
+  const [managedProfile, setManagedProfile] = useState<Profile | null>();
+  const [managedProfileName, setManagedProfileName] = useState<string>('');
   const [snackMessage, setSnackMessage] = useState<string>('');
 
   const handleSaveSnackClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
@@ -53,7 +56,7 @@ const ManageAccount = () => {
   };
 
   const handleDeleteProfileButton = (profile: Profile) => {
-    setProfileToDelete(profile);
+    setManagedProfile(profile);
     setDeleteProfileDialogOpen(true);
   };
 
@@ -61,27 +64,51 @@ const ManageAccount = () => {
     setDeleteProfileDialogOpen(false);
   };
 
+  const handleEditProfileButton = (profile: Profile) => {
+    setManagedProfile(profile);
+    setManagedProfileName(profile.name);
+    setEditProfileDialogOpen(true);
+  };
+
+  const handleCloseEditProfileDialog = () => {
+    setEditProfileDialogOpen(false);
+  };
+
+  async function handleAddProfile(profileName: string) {
+    try {
+      await dispatch(addProfile({ accountId: account.id, newProfileName: profileName }));
+      setSnackMessage(`Profile ${profileName} added successfully`);
+      setSaveSnackOpen(true);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   async function handleConfirmDeleteProfile() {
-    if (profileToDelete) {
+    if (managedProfile) {
       try {
         setDeleteProfileDialogOpen(false);
-        await dispatch(deleteProfile({ accountId: account.id, profileId: profileToDelete.id }));
-        setSnackMessage(`Profile ${profileToDelete?.name} deleted successfully`);
+        await dispatch(deleteProfile({ accountId: account.id, profileId: managedProfile.id }));
+        setSnackMessage(`Profile ${managedProfile.name} deleted successfully`);
         setSaveSnackOpen(true);
-        setProfileToDelete(null);
+        setManagedProfile(null);
       } catch (error) {
         console.error('Error:', error);
       }
     }
   }
 
-  async function handleAddProfile(profileName: string) {
-    if (account) {
+  async function handleEditProfile(profileName: string) {
+    if (managedProfile && managedProfileName) {
       try {
-        setSnackMessage(`Profile ${profileName} added successfully`);
+        setEditProfileDialogOpen(false);
+        await dispatch(editProfile({ accountId: account.id, id: managedProfile.id, name: profileName }));
+        setSnackMessage(`Profile ${profileName} edited successfully`);
         setSaveSnackOpen(true);
+        setManagedProfile(null);
+        setManagedProfileName('');
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error', error);
       }
     }
   }
@@ -113,10 +140,10 @@ const ManageAccount = () => {
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} sx={{ pt: '8px' }}>
-          <Button variant="outlined" startIcon={<EditIcon />}>
+          <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEditProfileButton(profile)}>
             Edit
           </Button>
-          <Button variant="contained" endIcon={<DeleteIcon />} onClick={() => handleDeleteProfileButton(profile)}>
+          <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => handleDeleteProfileButton(profile)}>
             Delete
           </Button>
         </Stack>
@@ -140,23 +167,25 @@ const ManageAccount = () => {
         </Typography>
       </Grid>
       <Box sx={{ p: 2 }}>
-        <Typography variant="h4">Profiles</Typography>
-        <Chip
-          id="addProfile"
-          key="addProfile"
-          label="Add"
-          icon={<AddIcon />}
-          variant="outlined"
-          color="primary"
-          onClick={handleAddProfileButton}
-        />
+        <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 1 }}>
+          <Typography variant="h4">Profiles</Typography>
+          <Chip
+            id="addProfile"
+            key="addProfile"
+            label="Add"
+            icon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={handleAddProfileButton}
+          />
+        </Stack>
         <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
           {profiles.map((profile) => (
             <ProfileCard key={profile.id} profile={profile} />
           ))}
         </Stack>
       </Box>
-
+      {/* Notifications Snackbar */}
       <Snackbar
         open={saveSnackOpen}
         autoHideDuration={5000}
@@ -167,6 +196,7 @@ const ManageAccount = () => {
           {snackMessage}
         </Alert>
       </Snackbar>
+      {/* Add Profile Dialog */}
       <Dialog
         open={addProfileDialogOpen}
         onClose={handleCloseAddProfileDialog}
@@ -200,16 +230,53 @@ const ManageAccount = () => {
           <Button type="submit">Add</Button>
         </DialogActions>
       </Dialog>
+      {/* Edit Profile Dialog */}
+      <Dialog
+        open={editProfileDialogOpen}
+        onClose={handleCloseEditProfileDialog}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries((formData as any).entries());
+            const profileName = formJson.profileName;
+            handleEditProfile(profileName);
+            handleCloseEditProfileDialog();
+          },
+        }}
+      >
+        <DialogTitle>Edit Profile</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="profileName"
+            name="profileName"
+            label="Profile"
+            value={managedProfileName}
+            fullWidth
+            variant="standard"
+            onChange={(e) => setManagedProfileName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditProfileDialog}>Cancel</Button>
+          <Button type="submit">Save</Button>
+        </DialogActions>
+      </Dialog>
+      {/* Confirm Profile Delete Dialog */}
       <Dialog
         open={deleteProfileDialogOpen}
         onClose={handleCloseDeleteProfileDialog}
         aria-labelledby="delete-profile-dialog-title"
         aria-describedby="delete-profile-dialog-description"
       >
-        <DialogTitle id="delete-profile-dialog-title">Confirm Profile Deletion - {profileToDelete?.name}</DialogTitle>
+        <DialogTitle id="delete-profile-dialog-title">Confirm Profile Deletion - {managedProfile?.name}</DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-profile-dialog-description">
-            Deleting this profile will also delete all linked shows for this profile. This action cannot be undone.
+            Deleting this profile will also delete all watch data for this profile. This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

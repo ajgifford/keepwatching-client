@@ -18,7 +18,7 @@ const Home = () => {
     if (profilesStatus === 'idle') {
       dispatch(fetchProfiles(account.id));
     }
-  }, [profilesStatus, dispatch]);
+  }, [account.id, profilesStatus, dispatch]);
 
   const handleLogout = async () => {
     try {
@@ -28,8 +28,6 @@ const Home = () => {
       console.error(e);
     }
   };
-
-  let content: React.ReactNode;
 
   if (profilesStatus === 'pending') {
     return (
@@ -48,10 +46,16 @@ const Home = () => {
           px: 2,
         }}
       >
-        <Typography variant="h2" gutterBottom>
+        <Typography variant="h2" color="primary">
           KeepWatching!
         </Typography>
-        <Button onClick={handleLogout}>Log Out</Button>
+        <br />
+        <Typography variant="h4" color="textPrimary" gutterBottom>
+          Welcome {account.name}!
+        </Typography>
+        <Button sx={{ mt: '20px' }} variant="outlined" onClick={handleLogout}>
+          Log Out
+        </Button>
       </Box>
     );
   } else if (profilesStatus === 'failed') {

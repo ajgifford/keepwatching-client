@@ -40,10 +40,10 @@ export const fetchProfiles = createAppAsyncThunk(
 
 export const addProfile = createAsyncThunk(
   'profiles/addProfile',
-  async ({ accountId, newProfile }: { accountId: string; newProfile: Profile }, { rejectWithValue }) => {
+  async ({ accountId, newProfileName }: { accountId: string; newProfileName: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/account/${accountId}/profiles`, newProfile);
-      return response.data;
+      const response = await axios.post(`/api/account/${accountId}/profiles`, { name: newProfileName });
+      return JSON.parse(response.data);
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -67,7 +67,7 @@ export const editProfile = createAsyncThunk(
   async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { rejectWithValue }) => {
     try {
       const response = await axios.put(`/api/account/${accountId}/profiles/${id}`, { name });
-      return response.data;
+      return JSON.parse(response.data);
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
