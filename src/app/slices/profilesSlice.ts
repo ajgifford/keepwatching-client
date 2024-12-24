@@ -42,7 +42,7 @@ export const addProfile = createAsyncThunk(
   'profiles/addProfile',
   async ({ accountId, newProfile }: { accountId: string; newProfile: Profile }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/accounts/${accountId}/profiles`, newProfile);
+      const response = await axios.post(`/api/account/${accountId}/profiles`, newProfile);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -54,7 +54,7 @@ export const deleteProfile = createAsyncThunk(
   'profiles/deleteProfile',
   async ({ accountId, profileId }: { accountId: string; profileId: string }, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/accounts/${accountId}/profiles/${profileId}`);
+      await axios.delete(`/api/account/${accountId}/profiles/${profileId}`);
       return profileId;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -66,7 +66,7 @@ export const editProfile = createAsyncThunk(
   'profiles/editProfile',
   async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/accounts/${accountId}/profiles/${id}`, { name });
+      const response = await axios.put(`/api/account/${accountId}/profiles/${id}`, { name });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);

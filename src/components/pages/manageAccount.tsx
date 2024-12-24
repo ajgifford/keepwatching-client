@@ -24,7 +24,7 @@ import Grid from '@mui/material/Grid2';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/account';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
-import { selectAllProfiles } from '../../app/slices/profilesSlice';
+import { deleteProfile, selectAllProfiles } from '../../app/slices/profilesSlice';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
@@ -33,7 +33,7 @@ const ManageAccount = () => {
   const [saveSnackOpen, setSaveSnackOpen] = useState<boolean>(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
-  const [deleteProfile, setDeleteProfile] = useState<Profile>();
+  const [profileToDelete, setProfileToDelete] = useState<Profile | null>();
   const [snackMessage, setSnackMessage] = useState<string>('');
 
   const handleSaveSnackClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
@@ -53,7 +53,7 @@ const ManageAccount = () => {
   };
 
   const handleDeleteProfileButton = (profile: Profile) => {
-    setDeleteProfile(profile);
+    setProfileToDelete(profile);
     setDeleteProfileDialogOpen(true);
   };
 
@@ -62,11 +62,13 @@ const ManageAccount = () => {
   };
 
   async function handleConfirmDeleteProfile() {
-    if (account) {
+    if (profileToDelete) {
       try {
         setDeleteProfileDialogOpen(false);
-        setSnackMessage(`Profile ${deleteProfile?.name} deleted successfully`);
+        await dispatch(deleteProfile({ accountId: account.id, profileId: profileToDelete.id }));
+        setSnackMessage(`Profile ${profileToDelete?.name} deleted successfully`);
         setSaveSnackOpen(true);
+        setProfileToDelete(null);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -204,7 +206,7 @@ const ManageAccount = () => {
         aria-labelledby="delete-profile-dialog-title"
         aria-describedby="delete-profile-dialog-description"
       >
-        <DialogTitle id="delete-profile-dialog-title">Confirm Profile Deletion - {deleteProfile?.name}</DialogTitle>
+        <DialogTitle id="delete-profile-dialog-title">Confirm Profile Deletion - {profileToDelete?.name}</DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-profile-dialog-description">
             Deleting this profile will also delete all linked shows for this profile. This action cannot be undone.
