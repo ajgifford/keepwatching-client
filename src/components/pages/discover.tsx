@@ -2,16 +2,13 @@ import { useEffect, useState } from 'react';
 
 import { Typography } from '@mui/material';
 
-import { Movie } from '../../model/movies';
-import { DiscoverShow } from '../../model/shows';
-import { useAccount } from '../context/accountContext';
-import NotLoggedIn from '../login/notLoggedIn';
+import { Movie } from '../../app/model/movies';
+import { DiscoverShow } from '../../app/model/shows';
 import MoviesCards from '../watchableContent/moviesCards';
 import ShowsCards from '../watchableContent/showsCards';
 import axios from 'axios';
 
 function Discover() {
-  const { account } = useAccount();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [shows, setShows] = useState<DiscoverShow[]>([]);
 
@@ -34,15 +31,9 @@ function Discover() {
 
   return (
     <>
-      {!account ? (
-        <NotLoggedIn />
-      ) : (
-        <>
-          <Typography variant="h4">Discover</Typography>
-          <ShowsCards shows={shows} />
-          <MoviesCards movies={movies} />
-        </>
-      )}
+      <Typography variant="h4">Discover</Typography>
+      <ShowsCards shows={shows} />
+      <MoviesCards movies={movies} />
     </>
   );
 }

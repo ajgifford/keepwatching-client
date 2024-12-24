@@ -1,6 +1,6 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material';
 
-import { Episode, Season } from '../../model/shows';
+import { Episode, Season } from '../../app/model/shows';
 
 type PropTypes = {
   seasons: Season[];

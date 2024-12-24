@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
   Box,
@@ -19,13 +21,15 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { Account, Profile } from '../../model/account';
-import { useAccount } from '../context/accountContext';
-import NotLoggedIn from '../login/notLoggedIn';
-import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { Profile } from '../../app/model/account';
+import { selectCurrentAccount } from '../../app/slices/authSlice';
+import { selectAllProfiles } from '../../app/slices/profilesSlice';
 
 const ManageAccount = () => {
-  const { account, setAccount } = useAccount();
+  const dispatch = useAppDispatch();
+  const account = useAppSelector(selectCurrentAccount)!;
+  const profiles = useAppSelector(selectAllProfiles);
   const [saveSnackOpen, setSaveSnackOpen] = useState<boolean>(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
@@ -61,13 +65,6 @@ const ManageAccount = () => {
     if (account) {
       try {
         setDeleteProfileDialogOpen(false);
-        await axios.delete(`/api/account/${account.id}/profiles/${deleteProfile?.id}`);
-        const updatedProfiles = account.profiles.filter((profile) => profile !== deleteProfile);
-        const updatedAccount: Account = {
-          ...account,
-          profiles: updatedProfiles,
-        };
-        setAccount(updatedAccount);
         setSnackMessage(`Profile ${deleteProfile?.name} deleted successfully`);
         setSaveSnackOpen(true);
       } catch (error) {
@@ -76,76 +73,88 @@ const ManageAccount = () => {
     }
   }
 
-  async function handleAdProfile(profileName: string) {
+  async function handleAddProfile(profileName: string) {
     if (account) {
       try {
-        const response = await axios.post(`/api/account/${account.id}/profiles`, { name: profileName });
-        const newProfile: Profile = JSON.parse(response.data);
-        if (newProfile) {
-          const updatedProfiles: Profile[] = [...account.profiles, newProfile];
-          const updatedAccount: Account = {
-            ...account,
-            profiles: updatedProfiles,
-          };
-
-          updatedAccount.profiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-          setAccount(updatedAccount);
-          setSnackMessage(`Profile ${profileName} added successfully`);
-          setSaveSnackOpen(true);
-        }
+        setSnackMessage(`Profile ${profileName} added successfully`);
+        setSaveSnackOpen(true);
       } catch (error) {
         console.error('Error:', error);
       }
     }
   }
 
+  interface PropTypes {
+    profile: Profile;
+  }
+  function ProfileCard({ profile }: PropTypes) {
+    return (
+      <Box id={profile.id} key={profile.id} sx={{ p: 2, border: '1px solid black' }}>
+        <Box>
+          <Typography variant="h5" color="primary">
+            {profile.name}
+          </Typography>
+        </Box>
+        <Box sx={{ py: '1px' }}>
+          <Typography variant="body1">
+            <i>Shows To Watch:</i> {profile.showsToWatch}
+          </Typography>
+        </Box>
+        <Box sx={{ py: '1px' }}>
+          <Typography variant="body1">
+            <i>Shows Watching:</i> {profile.showsWatching}
+          </Typography>
+        </Box>
+        <Box sx={{ py: '2px' }}>
+          <Typography variant="body1">
+            <i>Shows Watched:</i> {profile.showsWatched}
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={2} sx={{ pt: '8px' }}>
+          <Button variant="outlined" startIcon={<EditIcon />}>
+            Edit
+          </Button>
+          <Button variant="contained" endIcon={<DeleteIcon />} onClick={() => handleDeleteProfileButton(profile)}>
+            Delete
+          </Button>
+        </Stack>
+      </Box>
+    );
+  }
+
   return (
     <>
-      {!account ? (
-        <NotLoggedIn />
-      ) : (
-        <>
-          <Grid container spacing={2} alignItems="center">
-            <Box
-              component="img"
-              src={account.image}
-              alt={account.name}
-              sx={{
-                borderRadius: 2,
-              }}
-            />
-            <Typography variant="h2" gutterBottom>
-              {account.name}
-            </Typography>
-          </Grid>
-          <Box sx={{ p: 2 }}>
-            <Typography variant="h4">Profiles</Typography>
-            <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
-              {account.profiles.map((profile) => (
-                <Chip
-                  id={profile.id}
-                  key={profile.id}
-                  label={profile.name}
-                  variant="filled"
-                  color="primary"
-                  onDelete={() => {
-                    handleDeleteProfileButton(profile);
-                  }}
-                />
-              ))}
-              <Chip
-                id="addProfile"
-                key="addProfile"
-                label="Add"
-                icon={<AddIcon />}
-                variant="outlined"
-                color="primary"
-                onClick={handleAddProfileButton}
-              />
-            </Stack>
-          </Box>
-        </>
-      )}
+      <Grid container spacing={2} alignItems="center">
+        <Box
+          component="img"
+          src={account.image}
+          alt={account.name}
+          sx={{
+            borderRadius: 2,
+          }}
+        />
+        <Typography variant="h2" gutterBottom>
+          {account.name}
+        </Typography>
+      </Grid>
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h4">Profiles</Typography>
+        <Chip
+          id="addProfile"
+          key="addProfile"
+          label="Add"
+          icon={<AddIcon />}
+          variant="outlined"
+          color="primary"
+          onClick={handleAddProfileButton}
+        />
+        <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
+          {profiles.map((profile) => (
+            <ProfileCard key={profile.id} profile={profile} />
+          ))}
+        </Stack>
+      </Box>
+
       <Snackbar
         open={saveSnackOpen}
         autoHideDuration={5000}
@@ -166,7 +175,7 @@ const ManageAccount = () => {
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries((formData as any).entries());
             const profileName = formJson.profileName;
-            handleAdProfile(profileName);
+            handleAddProfile(profileName);
             handleCloseAddProfileDialog();
           },
         }}

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 
-import { Movie } from '../../model/movies';
+import { Movie } from '../../app/model/movies';
 
 const MoviesCards: React.FC<{ movies: Movie[] }> = ({ movies }) => (
   <Grid container spacing={3}>

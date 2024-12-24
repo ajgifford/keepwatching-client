@@ -17,14 +17,11 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Profile } from '../../model/account';
-import { ShowWithProfile } from '../../model/shows';
-import { useAccount } from '../context/accountContext';
-import NotLoggedIn from '../login/notLoggedIn';
+import { Profile } from '../../app/model/account';
+import { ShowWithProfile } from '../../app/model/shows';
 
 const Shows = () => {
   const navigate = useNavigate();
-  const { account } = useAccount();
   const [shows, setShows] = useState<ShowWithProfile[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeProfile, setActiveProfile] = useState<string>('');
@@ -60,70 +57,64 @@ const Shows = () => {
 
   return (
     <>
-      {!account ? (
-        <NotLoggedIn />
+      <Typography variant="h4">Shows</Typography>
+      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
+        {profiles.map((profile) => (
+          <Chip
+            id={profile.id}
+            key={profile.id}
+            label={profile.name}
+            variant={activeProfile === profile.id ? 'filled' : 'outlined'}
+            color="primary"
+            onClick={() => {
+              handleProfileChipClick(profile.id ?? '1');
+            }}
+          />
+        ))}
+      </Stack>
+      {shows.length > 0 ? (
+        <List>
+          {shows.map((show) => (
+            <Fragment key={show.id}>
+              <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.id}`)}>
+                <ListItemAvatar>
+                  <Avatar alt={show.title} src={show.image} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={show.title}
+                  secondary={
+                    <>
+                      <Typography component="span" variant="body2" color="text.primary">
+                        {show.genres}
+                      </Typography>
+                      {` — ${show.description}`}
+                      <br />
+                      <Typography variant="caption" color="text.secondary">
+                        Release Date: {show.release_date}
+                        <br />
+                        Streaming on: {show.streaming_service}
+                      </Typography>
+                    </>
+                  }
+                />
+                <Tooltip title={watchedShows[show.id] ? 'Mark Not Watched' : 'Mark Watched'}>
+                  <IconButton
+                    color={watchedShows[show.id] ? 'success' : 'default'}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleShowWatched(show.id);
+                    }}
+                  >
+                    {watchedShows[show.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                  </IconButton>
+                </Tooltip>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </Fragment>
+          ))}
+        </List>
       ) : (
-        <>
-          <Typography variant="h4">Shows</Typography>
-          <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
-            {profiles.map((profile) => (
-              <Chip
-                id={profile.id}
-                key={profile.id}
-                label={profile.name}
-                variant={activeProfile === profile.id ? 'filled' : 'outlined'}
-                color="primary"
-                onClick={() => {
-                  handleProfileChipClick(profile.id ?? '1');
-                }}
-              />
-            ))}
-          </Stack>
-          {shows.length > 0 ? (
-            <List>
-              {shows.map((show) => (
-                <Fragment key={show.id}>
-                  <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.id}`)}>
-                    <ListItemAvatar>
-                      <Avatar alt={show.title} src={show.image} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={show.title}
-                      secondary={
-                        <>
-                          <Typography component="span" variant="body2" color="text.primary">
-                            {show.genres}
-                          </Typography>
-                          {` — ${show.description}`}
-                          <br />
-                          <Typography variant="caption" color="text.secondary">
-                            Release Date: {show.release_date}
-                            <br />
-                            Streaming on: {show.streaming_service}
-                          </Typography>
-                        </>
-                      }
-                    />
-                    <Tooltip title={watchedShows[show.id] ? 'Mark Not Watched' : 'Mark Watched'}>
-                      <IconButton
-                        color={watchedShows[show.id] ? 'success' : 'default'}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          toggleShowWatched(show.id);
-                        }}
-                      >
-                        {watchedShows[show.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
-                      </IconButton>
-                    </Tooltip>
-                  </ListItem>
-                  <Divider variant="inset" component="li" />
-                </Fragment>
-              ))}
-            </List>
-          ) : (
-            <Typography variant="h6">Select a profile to view shows.</Typography>
-          )}
-        </>
+        <Typography variant="h6">Select a profile to view shows.</Typography>
       )}
     </>
   );

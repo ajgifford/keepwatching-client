@@ -14,13 +14,13 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Movie } from '../../model/movies';
-import { useAccount } from '../context/accountContext';
-import NotLoggedIn from '../login/notLoggedIn';
+import { useAppSelector } from '../../app/hooks';
+import { Movie } from '../../app/model/movies';
+import { selectCurrentAccount } from '../../app/slices/authSlice';
 import axios from 'axios';
 
 const Movies = () => {
-  const { account } = useAccount();
+  const account = useAppSelector(selectCurrentAccount);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [watchedMovies, setWatchedMovies] = useState<Record<string, boolean>>({});
 
@@ -46,53 +46,47 @@ const Movies = () => {
 
   return (
     <>
-      {!account ? (
-        <NotLoggedIn />
-      ) : (
-        <>
-          <Typography variant="h4">Movies</Typography>
-          <List>
-            {movies.map((movie) => (
-              <Fragment key={movie.id}>
-                <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Avatar alt={movie.title} src={movie.image} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={movie.title}
-                    secondary={
-                      <>
-                        <Typography component="span" variant="body2" color="text.primary">
-                          {movie.genre}
-                        </Typography>
-                        {` — ${movie.description}`}
-                        <br />
-                        <Typography variant="caption" color="text.secondary">
-                          Release Date: {movie.release_date}
-                          <br />
-                          Streaming on: {movie.streaming_service}
-                        </Typography>
-                      </>
-                    }
-                  />
-                  <Tooltip title={watchedMovies[movie.id] ? 'Mark Not Watched' : 'Mark Watched'}>
-                    <IconButton
-                      color={watchedMovies[movie.id] ? 'success' : 'default'}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        toggleMovieWatched(movie.id);
-                      }}
-                    >
-                      {watchedMovies[movie.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
-                    </IconButton>
-                  </Tooltip>
-                </ListItem>
-                <Divider variant="inset" component="li" />
-              </Fragment>
-            ))}
-          </List>
-        </>
-      )}
+      <Typography variant="h4">Movies</Typography>
+      <List>
+        {movies.map((movie) => (
+          <Fragment key={movie.id}>
+            <ListItem alignItems="flex-start">
+              <ListItemAvatar>
+                <Avatar alt={movie.title} src={movie.image} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={movie.title}
+                secondary={
+                  <>
+                    <Typography component="span" variant="body2" color="text.primary">
+                      {movie.genre}
+                    </Typography>
+                    {` — ${movie.description}`}
+                    <br />
+                    <Typography variant="caption" color="text.secondary">
+                      Release Date: {movie.release_date}
+                      <br />
+                      Streaming on: {movie.streaming_service}
+                    </Typography>
+                  </>
+                }
+              />
+              <Tooltip title={watchedMovies[movie.id] ? 'Mark Not Watched' : 'Mark Watched'}>
+                <IconButton
+                  color={watchedMovies[movie.id] ? 'success' : 'default'}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toggleMovieWatched(movie.id);
+                  }}
+                >
+                  {watchedMovies[movie.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                </IconButton>
+              </Tooltip>
+            </ListItem>
+            <Divider variant="inset" component="li" />
+          </Fragment>
+        ))}
+      </List>
     </>
   );
 };

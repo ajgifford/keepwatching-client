@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 
-import { DiscoverShow } from '../../model/shows';
+import { DiscoverShow } from '../../app/model/shows';
 
 const ShowsCards: React.FC<{ shows: DiscoverShow[] }> = ({ shows }) => (
   <Grid container spacing={3}>

@@ -5,12 +5,27 @@ import { LockOutlined } from '@mui/icons-material';
 import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
+import { useAppDispatch } from '../../app/hooks';
+import { register } from '../../app/slices/authSlice';
+
 const Register = () => {
+  const dispatch = useAppDispatch();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = async () => {};
+  const handleRegister = async () => {
+    // This is only a basic validation of inputs. Improve this as needed.
+    if (name && email && password) {
+      try {
+        await dispatch(register({ name, email, password })).unwrap();
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      // Show an error message.
+    }
+  };
 
   return (
     <>

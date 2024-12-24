@@ -1,31 +1,32 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
 import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { Account } from '../../model/account';
-import { useAccount } from '../context/accountContext';
-import axios from 'axios';
+import { useAppDispatch } from '../../app/hooks';
+import { login } from '../../app/slices/authSlice';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-  const { account, setAccount } = useAccount();
 
-  async function handleLogin() {
-    try {
-      const response = await axios.get(`/api/account/1`);
-      const account: Account = JSON.parse(response.data);
-      if (account) {
-        account.profiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+  const handleLogin = async () => {
+    // This is only a basic validation of inputs. Improve this as needed.
+    if (name && password) {
+      try {
+        await dispatch(login({ name, password })).unwrap();
+        navigate('/');
+      } catch (e) {
+        console.error(e);
       }
-      setAccount(account);
-    } catch (error) {
-      console.error('Error:', error);
+    } else {
+      // Show an error message.
     }
-  }
+  };
 
   return (
     <>
@@ -48,12 +49,12 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
+              id="name"
+              label="Account Name"
+              name="name"
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
 
             <TextField

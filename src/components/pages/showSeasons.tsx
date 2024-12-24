@@ -24,14 +24,14 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Season, ShowWithSeasons } from '../../model/shows';
-import { useAccount } from '../context/accountContext';
-import NotLoggedIn from '../login/notLoggedIn';
+import { useAppSelector } from '../../app/hooks';
+import { Season, ShowWithSeasons } from '../../app/model/shows';
+import { selectCurrentAccount } from '../../app/slices/authSlice';
 import axios from 'axios';
 
 const ShowSeasons = () => {
   let { id } = useParams();
-  const { account } = useAccount();
+  const account = useAppSelector(selectCurrentAccount);
   const navigate = useNavigate();
   const [show, setShow] = useState<ShowWithSeasons>();
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);
@@ -76,101 +76,95 @@ const ShowSeasons = () => {
 
   return (
     <>
-      {!account ? (
-        <NotLoggedIn />
-      ) : (
-        <>
-          <AppBar position="sticky" color="inherit" elevation={0}>
-            <Toolbar>
-              <Tooltip title="Back">
-                <IconButton
-                  edge="start"
-                  aria-label="back"
-                  onClick={() => {
-                    navigate('/shows');
-                  }}
-                >
-                  <ArrowBackIosIcon />
-                </IconButton>
-              </Tooltip>
-              <Box sx={{ p: 2 }}>
-                <Typography variant="h4">{show?.title}</Typography>
-                <Typography variant="subtitle1" fontStyle="italic">
-                  {show?.description}
-                </Typography>
-                <Typography variant="body1">{show?.genres}</Typography>
-                <Typography variant="body1">{show?.streaming_service}</Typography>
-              </Box>
-            </Toolbar>
-          </AppBar>
-          <br></br>
-          {seasons ? (
-            <Box>
-              {seasons.map((season) => (
-                <Accordion key={season.id}>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <ListItemAvatar>
-                      <Avatar src={season.image} alt={season.title} variant="square" />
-                    </ListItemAvatar>
-                    <Box ml={2} flexGrow={1}>
-                      <Typography variant="h6">{season.title}</Typography>
-                      <Typography variant="body2">
-                        {season.number_of_episodes} Episodes | First Aired: {season.release_date}
-                      </Typography>
-                    </Box>
-                    <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Not Watched' : 'Mark Watched'}>
-                      <IconButton
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          toggleSeasonWatched(season);
-                        }}
-                      >
-                        {isSeasonFullyWatched(season) ? (
-                          <WatchLaterIcon color="success" />
-                        ) : isSeasonPartiallyWatched(season) ? (
-                          <WatchLaterTwoToneIcon color="success" />
-                        ) : (
-                          <WatchLaterOutlinedIcon />
-                        )}
-                      </IconButton>
-                    </Tooltip>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    {season.episodes ? (
-                      <List>
-                        {season.episodes.map((episode) => (
-                          <React.Fragment key={episode.id}>
-                            <ListItem>
-                              <ListItemAvatar>
-                                <Avatar src={episode.image} alt={episode.title} variant="square" />
-                              </ListItemAvatar>
-                              <ListItemText
-                                primary={episode.title}
-                                secondary={`Summary: ${episode.summary} | Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
-                              />
-                              <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}>
-                                <IconButton
-                                  color={watchedEpisodes[episode.id] ? 'success' : 'default'}
-                                  onClick={() => toggleEpisodeWatched(episode.id)}
-                                >
-                                  {watchedEpisodes[episode.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
-                                </IconButton>
-                              </Tooltip>
-                            </ListItem>
-                            <Divider />
-                          </React.Fragment>
-                        ))}
-                      </List>
+      <AppBar position="sticky" color="inherit" elevation={0}>
+        <Toolbar>
+          <Tooltip title="Back">
+            <IconButton
+              edge="start"
+              aria-label="back"
+              onClick={() => {
+                navigate('/shows');
+              }}
+            >
+              <ArrowBackIosIcon />
+            </IconButton>
+          </Tooltip>
+          <Box sx={{ p: 2 }}>
+            <Typography variant="h4">{show?.title}</Typography>
+            <Typography variant="subtitle1" fontStyle="italic">
+              {show?.description}
+            </Typography>
+            <Typography variant="body1">{show?.genres}</Typography>
+            <Typography variant="body1">{show?.streaming_service}</Typography>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <br></br>
+      {seasons ? (
+        <Box>
+          {seasons.map((season) => (
+            <Accordion key={season.id}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <ListItemAvatar>
+                  <Avatar src={season.image} alt={season.title} variant="square" />
+                </ListItemAvatar>
+                <Box ml={2} flexGrow={1}>
+                  <Typography variant="h6">{season.title}</Typography>
+                  <Typography variant="body2">
+                    {season.number_of_episodes} Episodes | First Aired: {season.release_date}
+                  </Typography>
+                </Box>
+                <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Not Watched' : 'Mark Watched'}>
+                  <IconButton
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleSeasonWatched(season);
+                    }}
+                  >
+                    {isSeasonFullyWatched(season) ? (
+                      <WatchLaterIcon color="success" />
+                    ) : isSeasonPartiallyWatched(season) ? (
+                      <WatchLaterTwoToneIcon color="success" />
                     ) : (
-                      <div>No Episodes Available</div>
+                      <WatchLaterOutlinedIcon />
                     )}
-                  </AccordionDetails>
-                </Accordion>
-              ))}
-            </Box>
-          ) : null}
-        </>
-      )}
+                  </IconButton>
+                </Tooltip>
+              </AccordionSummary>
+              <AccordionDetails>
+                {season.episodes ? (
+                  <List>
+                    {season.episodes.map((episode) => (
+                      <React.Fragment key={episode.id}>
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Avatar src={episode.image} alt={episode.title} variant="square" />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={episode.title}
+                            secondary={`Summary: ${episode.summary} | Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
+                          />
+                          <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}>
+                            <IconButton
+                              color={watchedEpisodes[episode.id] ? 'success' : 'default'}
+                              onClick={() => toggleEpisodeWatched(episode.id)}
+                            >
+                              {watchedEpisodes[episode.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                            </IconButton>
+                          </Tooltip>
+                        </ListItem>
+                        <Divider />
+                      </React.Fragment>
+                    ))}
+                  </List>
+                ) : (
+                  <div>No Episodes Available</div>
+                )}
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </Box>
+      ) : null}
     </>
   );
 };

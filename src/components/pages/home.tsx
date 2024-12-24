@@ -1,29 +1,46 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Typography } from '@mui/material';
 
-import { Account } from '../../model/account';
-import { useAccount } from '../context/accountContext';
-import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { logout, selectCurrentAccount } from '../../app/slices/authSlice';
+import { fetchProfiles, selectProfilesError, selectProfilesStatus } from '../../app/slices/profilesSlice';
 
 const Home = () => {
-  const { account, setAccount } = useAccount();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const account = useAppSelector(selectCurrentAccount)!;
+  const profilesStatus = useAppSelector(selectProfilesStatus);
+  const profileError = useAppSelector(selectProfilesError);
 
-  async function handleLogin() {
-    try {
-      const response = await axios.get(`/api/account/1`);
-      const account: Account = JSON.parse(response.data);
-      if (account) {
-        account.profiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-      }
-      setAccount(account);
-    } catch (error) {
-      console.error('Error:', error);
+  useEffect(() => {
+    if (profilesStatus === 'idle') {
+      dispatch(fetchProfiles(account.id));
     }
-  }
+  }, [profilesStatus, dispatch]);
 
-  return (
-    <>
+  const handleLogout = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+      navigate('/login');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  let content: React.ReactNode;
+
+  if (profilesStatus === 'pending') {
+    return (
+      <div>
+        <Typography variant="h2" gutterBottom>
+          Loading...
+        </Typography>
+      </div>
+    );
+  } else if (profilesStatus === 'succeeded') {
+    return (
       <Box
         sx={{
           textAlign: 'center',
@@ -34,16 +51,20 @@ const Home = () => {
         <Typography variant="h2" gutterBottom>
           KeepWatching!
         </Typography>
-        {!account ? (
-          <Button component={Link} to={'/login'}>
-            Log In
-          </Button>
-        ) : (
-          <Button onClick={() => setAccount(null)}>Log Out</Button>
-        )}
+        <Button onClick={handleLogout}>Log Out</Button>
       </Box>
-    </>
-  );
+    );
+  } else if (profilesStatus === 'failed') {
+    return <div>{profileError}</div>;
+  } else {
+    return (
+      <div>
+        <Typography variant="h2" gutterBottom>
+          Unknown Status
+        </Typography>
+      </div>
+    );
+  }
 };
 
 export default Home;
