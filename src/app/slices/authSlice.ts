@@ -39,7 +39,7 @@ export const register = createAsyncThunk('register', async (data: NewAccount) =>
 
   localStorage.setItem('account', resData);
 
-  return resData;
+  return JSON.parse(resData);
 });
 
 export const logout = createAsyncThunk('logout', async () => {
