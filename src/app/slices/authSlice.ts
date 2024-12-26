@@ -4,12 +4,12 @@ import { RootState } from '../store';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 type LoginAccount = {
-  name: string;
+  email: string;
   password: string;
 };
 
 type NewAccount = LoginAccount & {
-  email: string;
+  name: string;
 };
 
 type AuthApiState = {
@@ -19,7 +19,7 @@ type AuthApiState = {
 };
 
 const initialState: AuthApiState = {
-  account: localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account') as string) : null,
+  account: null, //localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account') as string) : null,
   status: 'idle',
   error: null,
 };
@@ -30,7 +30,7 @@ export const login = createAsyncThunk('login', async (data: LoginAccount) => {
 
   localStorage.setItem('acocunt', resData);
 
-  return JSON.parse(resData);
+  return resData;
 });
 
 export const register = createAsyncThunk('register', async (data: NewAccount) => {
@@ -39,7 +39,7 @@ export const register = createAsyncThunk('register', async (data: NewAccount) =>
 
   localStorage.setItem('account', resData);
 
-  return JSON.parse(resData);
+  return resData;
 });
 
 export const logout = createAsyncThunk('logout', async () => {

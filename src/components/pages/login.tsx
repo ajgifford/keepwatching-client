@@ -18,7 +18,7 @@ const Login = () => {
     // This is only a basic validation of inputs. Improve this as needed.
     if (email && password) {
       try {
-        await dispatch(login({ name: email, password })).unwrap();
+        await dispatch(login({ email, password })).unwrap();
         navigate('/');
       } catch (e) {
         console.error(e);
