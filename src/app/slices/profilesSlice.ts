@@ -1,8 +1,8 @@
-import { Profile } from '../model/account';
+import { Profile } from '../model/profile';
 import { RootState } from '../store';
 import { createAppAsyncThunk } from '../withTypes';
 import { logout } from './authSlice';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface ProfileStatus extends EntityState<Profile, string> {

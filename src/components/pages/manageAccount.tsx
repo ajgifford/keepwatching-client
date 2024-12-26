@@ -22,7 +22,7 @@ import {
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { Profile } from '../../app/model/account';
+import { Profile } from '../../app/model/profile';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
 import { addProfile, deleteProfile, editProfile, selectAllProfiles } from '../../app/slices/profilesSlice';
 

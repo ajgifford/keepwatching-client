@@ -11,14 +11,14 @@ import { login } from '../../app/slices/authSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     // This is only a basic validation of inputs. Improve this as needed.
-    if (name && password) {
+    if (email && password) {
       try {
-        await dispatch(login({ name, password })).unwrap();
+        await dispatch(login({ name: email, password })).unwrap();
         navigate('/');
       } catch (e) {
         console.error(e);
@@ -49,12 +49,13 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
-              id="name"
-              label="Account Name"
-              name="name"
+              id="email"
+              label="Email"
+              name="email"
+              type="email"
               autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <TextField
