@@ -7,6 +7,7 @@ import store from '../app/store';
 import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
+import NotificationBar from './notification/notificationBar';
 import Discover from './pages/discover';
 import FilteredShows from './pages/filteredShows';
 import Home from './pages/home';
@@ -21,6 +22,7 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Navigation />
+        <NotificationBar />
         <div style={{ padding: '4px' }}>
           <Container maxWidth="xl" sx={{ p: 1 }}>
             <Routes>

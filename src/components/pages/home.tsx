@@ -21,12 +21,8 @@ const Home = () => {
   }, [account.id, profilesStatus, dispatch]);
 
   const handleLogout = async () => {
-    try {
-      await dispatch(logout()).unwrap();
-      navigate('/login');
-    } catch (e) {
-      console.error(e);
-    }
+    await dispatch(logout());
+    navigate('/login');
   };
 
   if (profilesStatus === 'pending') {

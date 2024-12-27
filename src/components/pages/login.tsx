@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
 import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
@@ -7,24 +7,18 @@ import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
 import { login } from '../../app/slices/authSlice';
+import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
 
 const Login = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    // This is only a basic validation of inputs. Improve this as needed.
     if (email && password) {
-      try {
-        await dispatch(login({ email, password })).unwrap();
-        navigate('/');
-      } catch (e) {
-        console.error(e);
-      }
+      await dispatch(login({ email, password }));
     } else {
-      // Show an error message.
+      dispatch(showNotification({ message: 'Please provide an email and password', type: NotificationType.Error }));
     }
   };
 

@@ -1,7 +1,8 @@
 import axiosInstance from '../api/axiosInstance';
-import { Account } from '../model/account';
+import { ACCOUNT, Account } from '../model/account';
 import { RootState } from '../store';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 
 type LoginAccount = {
   email: string;
@@ -19,36 +20,64 @@ type AuthApiState = {
 };
 
 const initialState: AuthApiState = {
-  account: null, //localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account') as string) : null,
+  account: localStorage.getItem(ACCOUNT) ? JSON.parse(localStorage.getItem(ACCOUNT) as string) : null,
   status: 'idle',
   error: null,
 };
 
-export const login = createAsyncThunk('login', async (data: LoginAccount) => {
-  const response = await axiosInstance.post('/api/login', data);
-  const resData = response.data;
+type ErrorResponse = {
+  message: string;
+};
 
-  localStorage.setItem('acocunt', resData);
+export const login = createAsyncThunk('login', async (data: LoginAccount, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post('/api/login', data);
+    const resData = response.data;
 
-  return resData;
+    localStorage.setItem(ACCOUNT, JSON.stringify(resData));
+
+    return resData;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      const errorResponse = error.response.data;
+      return rejectWithValue(errorResponse);
+    }
+    throw error;
+  }
 });
 
-export const register = createAsyncThunk('register', async (data: NewAccount) => {
-  const response = await axiosInstance.post('api/account/', data);
-  const resData = response.data;
+export const register = createAsyncThunk('register', async (data: NewAccount, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post('api/account/', data);
+    const resData = response.data;
 
-  localStorage.setItem('account', resData);
+    localStorage.setItem(ACCOUNT, JSON.stringify(resData));
 
-  return resData;
+    return resData;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      const errorResponse = error.response.data;
+      return rejectWithValue(errorResponse);
+    }
+    throw error;
+  }
 });
 
-export const logout = createAsyncThunk('logout', async () => {
-  const response = await axiosInstance.post('/api/logout', {});
-  const resData = response.data;
+export const logout = createAsyncThunk('logout', async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post('/api/logout', {});
+    const resData = response.data;
 
-  localStorage.removeItem('acocunt');
+    localStorage.removeItem(ACCOUNT);
 
-  return resData;
+    return resData;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      const errorResponse = error.response.data;
+      return rejectWithValue(errorResponse);
+    }
+    throw error;
+  }
 });
 
 const authSlice = createSlice({
@@ -67,7 +96,11 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Login failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Login Failed';
+        } else {
+          state.error = action.error.message || 'Login Failed';
+        }
       })
       .addCase(register.pending, (state) => {
         state.status = 'loading';
@@ -79,7 +112,11 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Registration failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Registration Failed';
+        } else {
+          state.error = action.error.message || 'Registration Failed';
+        }
       })
       .addCase(logout.pending, (state) => {
         state.status = 'loading';
@@ -91,7 +128,11 @@ const authSlice = createSlice({
       })
       .addCase(logout.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Logout failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Logout Failed';
+        } else {
+          state.error = action.error.message || 'Logout Failed';
+        }
       });
   },
 });

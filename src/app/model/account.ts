@@ -4,3 +4,5 @@ export interface Account {
   email: string;
   image: string;
 }
+
+export const ACCOUNT = 'account';

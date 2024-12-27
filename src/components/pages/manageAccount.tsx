@@ -4,7 +4,6 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
-  Alert,
   Box,
   Button,
   Chip,
@@ -13,8 +12,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Snackbar,
-  SnackbarCloseReason,
   Stack,
   TextField,
   Typography,
@@ -31,21 +28,11 @@ const ManageAccount = () => {
   const account = useAppSelector(selectCurrentAccount)!;
   const profiles = useAppSelector(selectAllProfiles);
 
-  const [saveSnackOpen, setSaveSnackOpen] = useState<boolean>(false);
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
   const [editProfileDialogOpen, setEditProfileDialogOpen] = useState<boolean>(false);
   const [managedProfile, setManagedProfile] = useState<Profile | null>();
   const [managedProfileName, setManagedProfileName] = useState<string>('');
-  const [snackMessage, setSnackMessage] = useState<string>('');
-
-  const handleSaveSnackClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setSaveSnackOpen(false);
-  };
 
   const handleAddProfileButton = () => {
     setAddProfileDialogOpen(true);
@@ -77,8 +64,7 @@ const ManageAccount = () => {
   async function handleAddProfile(profileName: string) {
     try {
       await dispatch(addProfile({ accountId: account.id, newProfileName: profileName }));
-      setSnackMessage(`Profile ${profileName} added successfully`);
-      setSaveSnackOpen(true);
+      // show notification from the slice
     } catch (error) {
       console.error('Error:', error);
     }
@@ -89,8 +75,7 @@ const ManageAccount = () => {
       try {
         setDeleteProfileDialogOpen(false);
         await dispatch(deleteProfile({ accountId: account.id, profileId: managedProfile.id }));
-        setSnackMessage(`Profile ${managedProfile.name} deleted successfully`);
-        setSaveSnackOpen(true);
+        // show notification from the slice
         setManagedProfile(null);
       } catch (error) {
         console.error('Error:', error);
@@ -103,8 +88,7 @@ const ManageAccount = () => {
       try {
         setEditProfileDialogOpen(false);
         await dispatch(editProfile({ accountId: account.id, id: managedProfile.id, name: profileName }));
-        setSnackMessage(`Profile ${profileName} edited successfully`);
-        setSaveSnackOpen(true);
+        // show notification from the slice
         setManagedProfile(null);
         setManagedProfileName('');
       } catch (error) {
@@ -185,17 +169,6 @@ const ManageAccount = () => {
           ))}
         </Stack>
       </Box>
-      {/* Notifications Snackbar */}
-      <Snackbar
-        open={saveSnackOpen}
-        autoHideDuration={5000}
-        onClose={handleSaveSnackClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleSaveSnackClose} severity="success" variant="filled" sx={{ width: '100%' }}>
-          {snackMessage}
-        </Alert>
-      </Snackbar>
       {/* Add Profile Dialog */}
       <Dialog
         open={addProfileDialogOpen}
