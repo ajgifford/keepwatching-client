@@ -14,10 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 
+import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
-import axios from 'axios';
 
 const Movies = () => {
   const account = useAppSelector(selectCurrentAccount);
@@ -27,7 +27,7 @@ const Movies = () => {
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const response = await axios.get(`/api/movies`);
+        const response = await axiosInstance.get(`/api/movies`);
         const movies: Movie[] = JSON.parse(response.data);
         setMovies(movies);
       } catch (error) {

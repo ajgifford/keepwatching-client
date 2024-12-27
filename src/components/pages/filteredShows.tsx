@@ -26,12 +26,12 @@ import {
   Typography,
 } from '@mui/material';
 
+import axiosInstance from '../../app/api/axiosInstance';
 import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { ShowWithProfile } from '../../app/model/shows';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
-import axios from 'axios';
 
 const FilteredShows = () => {
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ const FilteredShows = () => {
     if (account) {
       async function fetchShows() {
         try {
-          const response = await axios.get(`/api/account/${account?.id}/shows`);
+          const response = await axiosInstance.get(`/api/accounts/${account?.id}/shows`);
           const retrievedShows: ShowWithProfile[] = JSON.parse(response.data);
 
           retrievedShows.sort((a, b) => {

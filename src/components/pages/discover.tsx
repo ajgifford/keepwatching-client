@@ -16,12 +16,15 @@ import {
   Typography,
 } from '@mui/material';
 
+import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
 import { SearchedShow, convertToSearchShow } from '../../app/model/shows';
+import { selectCurrentAccount } from '../../app/slices/authSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 import axios from 'axios';
 
 function Discover() {
+  const account = useAppSelector(selectCurrentAccount)!;
   const profiles = useAppSelector(selectAllProfiles);
   const [shows, setShows] = useState<SearchedShow[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -36,8 +39,13 @@ function Discover() {
     setAnchorEl(null);
   };
 
-  const handleFavoriteProfileClick = () => {
+  const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
     setAnchorEl(null);
+    try {
+      await axiosInstance.post(`/api/accounts/${account.id}/profiles/${profileId}/favorites`, { showId: showId });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSearch = async () => {
@@ -98,7 +106,12 @@ function Discover() {
                 }}
               >
                 {profiles.map((profile) => (
-                  <MenuItem key={profile.id} onClick={handleFavoriteProfileClick}>
+                  <MenuItem
+                    key={profile.id}
+                    onClick={() => {
+                      handleFavoriteProfileClick(profile.id, show.id);
+                    }}
+                  >
                     {profile.name}
                   </MenuItem>
                 ))}

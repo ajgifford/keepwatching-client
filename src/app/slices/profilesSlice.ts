@@ -1,9 +1,9 @@
+import axiosInstance from '../api/axiosInstance';
 import { Profile } from '../model/profile';
 import { RootState } from '../store';
 import { createAppAsyncThunk } from '../withTypes';
 import { logout } from './authSlice';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 interface ProfileStatus extends EntityState<Profile, string> {
   status: 'idle' | 'pending' | 'succeeded' | 'failed';
@@ -25,7 +25,7 @@ const initialState: ProfileStatus = profilesAdapter.getInitialState({
 export const fetchProfiles = createAppAsyncThunk(
   'posts/fetchPosts',
   async (accountId: string, { rejectWithValue }) => {
-    const response = await axios.get(`/api/account/${accountId}/profiles`);
+    const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
     return response.data;
   },
   {
@@ -42,7 +42,7 @@ export const addProfile = createAsyncThunk(
   'profiles/addProfile',
   async ({ accountId, newProfileName }: { accountId: string; newProfileName: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/account/${accountId}/profiles`, { name: newProfileName });
+      const response = await axiosInstance.post(`/api/accounts/${accountId}/profiles`, { name: newProfileName });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -54,7 +54,7 @@ export const deleteProfile = createAsyncThunk(
   'profiles/deleteProfile',
   async ({ accountId, profileId }: { accountId: string; profileId: string }, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/account/${accountId}/profiles/${profileId}`);
+      await axiosInstance.delete(`/api/accounts/${accountId}/profiles/${profileId}`);
       return profileId;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -66,7 +66,7 @@ export const editProfile = createAsyncThunk(
   'profiles/editProfile',
   async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/account/${accountId}/profiles/${id}`, { name });
+      const response = await axiosInstance.put(`/api/accounts/${accountId}/profiles/${id}`, { name });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);

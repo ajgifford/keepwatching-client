@@ -24,10 +24,10 @@ import {
   Typography,
 } from '@mui/material';
 
+import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
 import { Season, ShowWithSeasons } from '../../app/model/shows';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
-import axios from 'axios';
 
 const ShowSeasons = () => {
   let { id } = useParams();
@@ -40,7 +40,7 @@ const ShowSeasons = () => {
   useEffect(() => {
     async function fetchSeasons() {
       try {
-        const response = await axios.get(`/api/shows/${id}`);
+        const response = await axiosInstance.get(`/api/shows/${id}`);
         const showWithSeasons: ShowWithSeasons = JSON.parse(response.data);
         setShow(showWithSeasons);
         setSeasons(showWithSeasons.seasons);
