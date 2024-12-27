@@ -64,7 +64,6 @@ const ManageAccount = () => {
   async function handleAddProfile(profileName: string) {
     try {
       await dispatch(addProfile({ accountId: account.id, newProfileName: profileName }));
-      // show notification from the slice
     } catch (error) {
       console.error('Error:', error);
     }
@@ -75,7 +74,6 @@ const ManageAccount = () => {
       try {
         setDeleteProfileDialogOpen(false);
         await dispatch(deleteProfile({ accountId: account.id, profileId: managedProfile.id }));
-        // show notification from the slice
         setManagedProfile(null);
       } catch (error) {
         console.error('Error:', error);
@@ -88,7 +86,6 @@ const ManageAccount = () => {
       try {
         setEditProfileDialogOpen(false);
         await dispatch(editProfile({ accountId: account.id, id: managedProfile.id, name: profileName }));
-        // show notification from the slice
         setManagedProfile(null);
         setManagedProfileName('');
       } catch (error) {
@@ -196,11 +193,16 @@ const ManageAccount = () => {
             label="Profile"
             fullWidth
             variant="standard"
+            inputRef={(input) => input && input.focus()}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAddProfileDialog}>Cancel</Button>
-          <Button type="submit">Add</Button>
+          <Button onClick={handleCloseAddProfileDialog} variant="outlined" color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained" color="primary">
+            Add
+          </Button>
         </DialogActions>
       </Dialog>
       {/* Edit Profile Dialog */}
@@ -232,11 +234,16 @@ const ManageAccount = () => {
             fullWidth
             variant="standard"
             onChange={(e) => setManagedProfileName(e.target.value)}
+            inputRef={(input) => input && input.focus()}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditProfileDialog}>Cancel</Button>
-          <Button type="submit">Save</Button>
+          <Button onClick={handleCloseEditProfileDialog} variant="outlined" color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained" color="primary">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
       {/* Confirm Profile Delete Dialog */}
@@ -253,10 +260,10 @@ const ManageAccount = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteProfileDialog} color="primary">
+          <Button onClick={handleCloseDeleteProfileDialog} variant="outlined" color="primary">
             Cancel
           </Button>
-          <Button onClick={handleConfirmDeleteProfile} color="error" autoFocus>
+          <Button onClick={handleConfirmDeleteProfile} variant="contained" color="error" autoFocus>
             Delete
           </Button>
         </DialogActions>
