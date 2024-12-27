@@ -27,6 +27,12 @@ const Register = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      handleRegister();
+    }
+  };
+
   return (
     <>
       <Container maxWidth="xs">
@@ -43,7 +49,7 @@ const Register = () => {
             <LockOutlined />
           </Avatar>
           <Typography variant="h5">Register</Typography>
-          <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }} onKeyDown={handleKeyDown}>
             <Grid container spacing={2}>
               <Grid size={12}>
                 <TextField

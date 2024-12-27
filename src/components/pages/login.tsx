@@ -28,6 +28,12 @@ const Login = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   return (
     <>
       <Container maxWidth="xs">
@@ -44,7 +50,7 @@ const Login = () => {
             <LockOutlined />
           </Avatar>
           <Typography variant="h5">Login</Typography>
-          <Box sx={{ mt: 1 }}>
+          <Box sx={{ mt: 1 }} onKeyDown={handleKeyDown}>
             <TextField
               margin="normal"
               required
