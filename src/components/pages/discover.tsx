@@ -17,47 +17,13 @@ import {
 } from '@mui/material';
 
 import { useAppSelector } from '../../app/hooks';
+import { SearchedShow, convertToSearchShow } from '../../app/model/shows';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 import axios from 'axios';
 
-type SearchShow = {
-  id: number;
-  title: string;
-  genres: string[];
-  premiered: string;
-  summary: string;
-  image: {
-    medium: string;
-  };
-  network: {
-    name: string;
-  };
-  rating: number;
-};
-
-function convertToSearchShow(data: any[]): SearchShow[] {
-  return data.map((item) => {
-    const show = item.show;
-    return {
-      id: show.id,
-      title: show.name,
-      genres: show.genres || [],
-      premiered: show.premiered || '',
-      summary: show.summary ? show.summary.replace(/<\/?[^>]+(>|$)/g, '') : '',
-      image: {
-        medium: show.image?.medium || '',
-      },
-      network: {
-        name: show.network?.name || 'Unknown',
-      },
-      rating: show.rating?.average || 0,
-    };
-  });
-}
-
 function Discover() {
   const profiles = useAppSelector(selectAllProfiles);
-  const [shows, setShows] = useState<SearchShow[]>([]);
+  const [shows, setShows] = useState<SearchedShow[]>([]);
   const [searchText, setSearchText] = useState('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -154,7 +120,7 @@ function Discover() {
                 }
               >
                 <ListItemAvatar sx={{ width: 96, height: 96, p: 1 }}>
-                  <Avatar alt={show.title} src={show.image.medium} variant="rounded" sx={{ width: 96, height: 96 }} />
+                  <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 96 }} />
                 </ListItemAvatar>
                 <ListItemText
                   primary={show.title}
@@ -168,7 +134,7 @@ function Discover() {
                       <br />
                       <b>Genres:</b> {show.genres.join(', ')}
                       <br />
-                      <b>Streaming Service:</b> {show.network.name}
+                      <b>Streaming Service:</b> {show.network}
                       <br />
                       <b>Premiered:</b> {show.premiered}
                     </Typography>

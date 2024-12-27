@@ -1,16 +1,29 @@
-export type DiscoverShow = {
-  id: string;
+export type SearchedShow = {
+  id: number;
   title: string;
-  description: string;
-  release_date?: string;
   genres: string[];
-  streaming_service: string;
+  premiered: string;
+  summary: string;
   image: string;
-  user_rating?: number | null;
-  tv_parental_guidelines?: string;
-  number_of_seasons?: number;
-  total_episodes?: number;
+  network: string;
+  rating: number;
 };
+
+export function convertToSearchShow(data: any[]): SearchedShow[] {
+  return data.map((item) => {
+    const show = item.show;
+    return {
+      id: show.id,
+      title: show.name,
+      genres: show.genres || [],
+      premiered: show.premiered || '',
+      summary: show.summary ? show.summary.replace(/<\/?[^>]+(>|$)/g, '') : '',
+      image: show.image?.medium || '',
+      network: show.network?.name || 'Unknown',
+      rating: show.rating?.average || 0,
+    };
+  });
+}
 
 export type ShowWithSeasons = {
   id: string;
