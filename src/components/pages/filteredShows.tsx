@@ -30,11 +30,13 @@ import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../app/
 import { useAppSelector } from '../../app/hooks';
 import { ShowWithProfile } from '../../app/model/shows';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
+import { selectAllProfiles } from '../../app/slices/profilesSlice';
 import axios from 'axios';
 
 const FilteredShows = () => {
   const navigate = useNavigate();
   const account = useAppSelector(selectCurrentAccount);
+  const profiles = useAppSelector(selectAllProfiles);
   const [shows, setShows] = useState<ShowWithProfile[]>([]);
 
   const [genreFilter, setGenreFilter] = useState<string>('');
@@ -174,7 +176,7 @@ const FilteredShows = () => {
                   <MenuItem key="displayAllProfiles" value="">
                     --All--
                   </MenuItem>
-                  {Array.from(new Set(shows.map((show) => show.profile))).map((profile) => (
+                  {profiles.map((profile) => (
                     <MenuItem key={profile.id} value={profile.id}>
                       {profile.name}
                     </MenuItem>
