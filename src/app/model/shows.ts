@@ -5,7 +5,7 @@ export type SearchedShow = {
   premiered: string;
   summary: string;
   image: string;
-  network: string;
+  streamingService: string;
   rating: number;
 };
 
@@ -19,7 +19,7 @@ export function convertToSearchShow(data: any[]): SearchedShow[] {
       premiered: show.premiered || '',
       summary: show.summary ? show.summary.replace(/<\/?[^>]+(>|$)/g, '') : '',
       image: show.image?.medium || '',
-      network: show.network?.name || 'Unknown',
+      streamingService: show.webChannel ? show.webChannel.name : show.network?.name,
       rating: show.rating?.average || 0,
     };
   });

@@ -1,11 +1,14 @@
 import { Fragment, useState } from 'react';
+import React from 'react';
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import {
   Avatar,
   Box,
   Button,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -28,21 +31,10 @@ function Discover() {
   const profiles = useAppSelector(selectAllProfiles);
   const [shows, setShows] = useState<SearchedShow[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
 
-  const handleFavoriteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleFavoriteClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
-    setAnchorEl(null);
+  const handleFavoriteProfileClick = async (profileId: string, show: SearchedShow) => {
     try {
-      await axiosInstance.post(`/api/accounts/${account.id}/profiles/${profileId}/favorites`, { showId: showId });
+      await axiosInstance.post(`/api/accounts/${account.id}/profiles/${profileId}/favorites`, { show });
     } catch (error) {
       console.error(error);
     }
@@ -69,6 +61,50 @@ function Discover() {
     }
   };
 
+  interface IsolatedMenuProps {
+    show: SearchedShow;
+  }
+
+  const ShowFavoriteMenu = (props: IsolatedMenuProps) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open: boolean = Boolean(anchorEl);
+
+    return (
+      <React.Fragment>
+        <Button
+          id="favorite-button"
+          aria-controls="favorite-menu"
+          aria-haspopup="true"
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+          endIcon={<StarBorderIcon />}
+          variant="outlined"
+        >
+          Favorite
+        </Button>
+        <Menu
+          elevation={1}
+          id="favorite-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={open}
+          onClose={() => setAnchorEl(null)}
+        >
+          {profiles.map((profile) => (
+            <MenuItem
+              key={profile.id}
+              onClick={() => {
+                setAnchorEl(null);
+                handleFavoriteProfileClick(profile.id, props.show);
+              }}
+            >
+              {profile.name}
+            </MenuItem>
+          ))}
+        </Menu>
+      </React.Fragment>
+    );
+  };
+
   return (
     <>
       <Typography variant="h4">Discover</Typography>
@@ -89,49 +125,7 @@ function Discover() {
         <List>
           {shows.map((show) => (
             <Fragment key={show.id}>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleFavoriteClose}
-                MenuListProps={{
-                  'aria-labelledby': 'favorite-button',
-                }}
-                slotProps={{
-                  paper: {
-                    sx: {
-                      boxShadow: '1',
-                    },
-                  },
-                }}
-              >
-                {profiles.map((profile) => (
-                  <MenuItem
-                    key={profile.id}
-                    onClick={() => {
-                      handleFavoriteProfileClick(profile.id, show.id);
-                    }}
-                  >
-                    {profile.name}
-                  </MenuItem>
-                ))}
-              </Menu>
-              <ListItem
-                alignItems="flex-start"
-                secondaryAction={
-                  <Button
-                    id="favorite-button"
-                    aria-controls={open ? 'basic-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleFavoriteClick}
-                    endIcon={<KeyboardArrowDownIcon />}
-                    variant="outlined"
-                  >
-                    Favorite
-                  </Button>
-                }
-              >
+              <ListItem alignItems="flex-start" secondaryAction={<ShowFavoriteMenu show={show} />}>
                 <ListItemAvatar sx={{ width: 96, height: 96, p: 1 }}>
                   <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 96 }} />
                 </ListItemAvatar>
@@ -147,7 +141,7 @@ function Discover() {
                       <br />
                       <b>Genres:</b> {show.genres.join(', ')}
                       <br />
-                      <b>Streaming Service:</b> {show.network}
+                      <b>Streaming Service:</b> {show.streamingService}
                       <br />
                       <b>Premiered:</b> {show.premiered}
                     </Typography>
