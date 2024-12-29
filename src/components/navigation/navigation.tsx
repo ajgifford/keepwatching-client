@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaBars, FaCompass, FaFilm, FaHome, FaTv, FaUser } from 'react-icons/fa';
+import { FaBars, FaCompass, FaFilm, FaHome, FaSearch, FaTv, FaUser } from 'react-icons/fa';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import {
@@ -46,6 +46,7 @@ function Navigation() {
     { id: 'shows', label: 'Shows', icon: <FaTv className="icon" />, to: '/shows' },
     { id: 'movies', label: 'Movies', icon: <FaFilm className="icon" />, to: '/movies' },
     { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
+    { id: 'search', label: 'Search', icon: <FaSearch className="icon" />, to: '/search' },
     { id: 'manageAccount', label: 'Manage Account', icon: <FaUser className="icon" />, to: '/manageAccount' },
   ];
 

@@ -15,6 +15,7 @@ import Login from './pages/login';
 import ManageAccount from './pages/manageAccount';
 import Movies from './pages/movies';
 import Register from './pages/register';
+import Search from './pages/search';
 import ShowSeasons from './pages/showSeasons';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/shows/:id" element={<ShowSeasons />} />
                 <Route path="/movies" element={<Movies />} />
                 <Route path="/discover" element={<Discover />} />
+                <Route path="/search" element={<Search />} />
                 <Route path="/manageAccount" element={<ManageAccount />} />
               </Route>
             </Routes>
