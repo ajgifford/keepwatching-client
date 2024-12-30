@@ -19,19 +19,20 @@ import {
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
-import { SearchedShow, convertToSearchShow } from '../../app/model/shows';
-import { selectCurrentAccount } from '../../app/slices/authSlice';
+import { SearchedShow } from '../../app/model/shows';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 
 function Search() {
-  const account = useAppSelector(selectCurrentAccount)!;
   const profiles = useAppSelector(selectAllProfiles);
   const [shows, setShows] = useState<SearchedShow[]>([]);
   const [searchText, setSearchText] = useState('');
 
-  const handleFavoriteProfileClick = async (profileId: string, show: SearchedShow) => {
+  const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
     try {
-      await axiosInstance.post(`/api/accounts/${account.id}/profiles/${profileId}/favorites`, { show });
+      const response = await axiosInstance.post(`/api/profiles/${profileId}/shows/favorites`, {
+        id: showId,
+      });
+      console.log(response);
     } catch (error) {
       console.error(error);
     }
@@ -44,16 +45,8 @@ function Search() {
         searchString: searchString,
       };
       const response = await axiosInstance.get(`/api/search/show`, { params: searchOptions });
-      console.log('Search Results', response.data);
-      // const searchResults = convertToSearchShow(response.data);
+      // console.log('Search Results', response.data);
       setShows(response.data);
-
-      // const topParams = {
-      //   showType: 'series',
-      //   service: 'netflix',
-      // };
-      // const topResponse = await axiosInstance.get('/api/discover/top', { params: topParams });
-      // console.log('Top Netflix Shows', topResponse.data);
     } catch (error) {
       console.error(error);
     }
@@ -70,7 +63,7 @@ function Search() {
   };
 
   interface FavoriteShowMenuProps {
-    show: SearchedShow;
+    showId: number;
   }
 
   const FavoriteShowMenu = (props: FavoriteShowMenuProps) => {
@@ -102,7 +95,7 @@ function Search() {
               key={profile.id}
               onClick={() => {
                 setAnchorEl(null);
-                handleFavoriteProfileClick(profile.id, props.show);
+                handleFavoriteProfileClick(profile.id, props.showId);
               }}
             >
               {profile.name}
@@ -133,7 +126,7 @@ function Search() {
         <List>
           {shows.map((show) => (
             <Fragment key={show.id}>
-              <ListItem alignItems="flex-start" secondaryAction={<FavoriteShowMenu show={show} />}>
+              <ListItem alignItems="flex-start" secondaryAction={<FavoriteShowMenu showId={show.id} />}>
                 <ListItemAvatar sx={{ width: 96, height: 96, p: 1 }}>
                   <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 96 }} />
                 </ListItemAvatar>
@@ -143,7 +136,7 @@ function Search() {
                     <Typography
                       component="span"
                       variant="caption"
-                      sx={{ display: 'block', marginTop: 1, paddingRight: '120px' }} // Add spacing below the secondary text
+                      sx={{ display: 'block', marginTop: 1, paddingRight: '120px' }}
                     >
                       <i>{show.summary}</i>
                       <br />

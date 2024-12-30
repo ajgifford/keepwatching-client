@@ -13,6 +13,13 @@ function Discover() {
   const account = useAppSelector(selectCurrentAccount)!;
   const profiles = useAppSelector(selectAllProfiles);
 
+  // const topParams = {
+  //   showType: 'series',
+  //   service: 'netflix',
+  // };
+  // const topResponse = await axiosInstance.get('/api/discover/top', { params: topParams });
+  // console.log('Top Netflix Shows', topResponse.data);
+
   return (
     <>
       <Typography variant="h4">Discover</Typography>
