@@ -28,7 +28,7 @@ type ErrorResponse = {
 
 // Async thunks
 export const fetchProfiles = createAppAsyncThunk(
-  'posts/fetchPosts',
+  'profiles/fetchProfiles',
   async (accountId: string, { rejectWithValue }) => {
     const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
     return response.data.results;
