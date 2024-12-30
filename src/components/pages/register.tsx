@@ -18,7 +18,11 @@ const Register = () => {
   const handleRegister = async () => {
     // This is only a basic validation of inputs. Improve this as needed.
     if (name && email && password) {
-      await dispatch(register({ name, email, password }));
+      try {
+        await dispatch(register({ name, email, password })).unwrap();
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       dispatch(showNotification({ message: 'Please fill out all required fields', type: NotificationType.Error }));
     }

@@ -62,35 +62,23 @@ const ManageAccount = () => {
   };
 
   async function handleAddProfile(profileName: string) {
-    try {
-      await dispatch(addProfile({ accountId: account.id, newProfileName: profileName }));
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    await dispatch(addProfile({ accountId: account.id, newProfileName: profileName }));
   }
 
   async function handleConfirmDeleteProfile() {
     if (managedProfile) {
-      try {
-        setDeleteProfileDialogOpen(false);
-        await dispatch(deleteProfile({ accountId: account.id, profileId: managedProfile.id }));
-        setManagedProfile(null);
-      } catch (error) {
-        console.error('Error:', error);
-      }
+      setDeleteProfileDialogOpen(false);
+      await dispatch(deleteProfile({ accountId: account.id, profileId: managedProfile.id }));
+      setManagedProfile(null);
     }
   }
 
   async function handleEditProfile(profileName: string) {
     if (managedProfile && managedProfileName) {
-      try {
-        setEditProfileDialogOpen(false);
-        await dispatch(editProfile({ accountId: account.id, id: managedProfile.id, name: profileName }));
-        setManagedProfile(null);
-        setManagedProfileName('');
-      } catch (error) {
-        console.error('Error', error);
-      }
+      setEditProfileDialogOpen(false);
+      await dispatch(editProfile({ accountId: account.id, id: managedProfile.id, name: profileName }));
+      setManagedProfile(null);
+      setManagedProfileName('');
     }
   }
 

@@ -1,6 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { ACCOUNT, Account } from '../model/account';
 import { RootState } from '../store';
+import { NotificationType, showNotification } from './notificationSlice';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
@@ -29,53 +30,109 @@ type ErrorResponse = {
   message: string;
 };
 
-export const login = createAsyncThunk('login', async (data: LoginAccount, { rejectWithValue }) => {
+export const login = createAsyncThunk('login', async (data: LoginAccount, { dispatch, rejectWithValue }) => {
   try {
     const response = await axiosInstance.post('/api/login', data);
-    const resData = response.data;
+    const loginResult = response.data.result;
 
-    localStorage.setItem(ACCOUNT, JSON.stringify(resData));
+    localStorage.setItem(ACCOUNT, JSON.stringify(loginResult));
+    dispatch(
+      showNotification({
+        message: response.data.message || 'Success',
+        type: NotificationType.Success,
+      }),
+    );
 
-    return resData;
+    return loginResult;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
       const errorResponse = error.response.data;
+      dispatch(
+        showNotification({
+          message: errorResponse.message,
+          type: NotificationType.Error,
+        }),
+      );
       return rejectWithValue(errorResponse);
     }
+    dispatch(
+      showNotification({
+        message: 'An error occurred',
+        type: NotificationType.Error,
+      }),
+    );
+
     throw error;
   }
 });
 
-export const register = createAsyncThunk('register', async (data: NewAccount, { rejectWithValue }) => {
+export const register = createAsyncThunk('register', async (data: NewAccount, { dispatch, rejectWithValue }) => {
   try {
     const response = await axiosInstance.post('api/account/', data);
-    const resData = response.data;
+    const resgisterResult = response.data.result;
 
-    localStorage.setItem(ACCOUNT, JSON.stringify(resData));
+    localStorage.setItem(ACCOUNT, JSON.stringify(resgisterResult));
+    dispatch(
+      showNotification({
+        message: response.data.message || 'Success',
+        type: NotificationType.Success,
+      }),
+    );
 
-    return resData;
+    return resgisterResult;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
       const errorResponse = error.response.data;
+      dispatch(
+        showNotification({
+          message: errorResponse.message,
+          type: NotificationType.Error,
+        }),
+      );
       return rejectWithValue(errorResponse);
     }
+    dispatch(
+      showNotification({
+        message: 'An error occurred',
+        type: NotificationType.Error,
+      }),
+    );
+
     throw error;
   }
 });
 
-export const logout = createAsyncThunk('logout', async (_, { rejectWithValue }) => {
+export const logout = createAsyncThunk('logout', async (_, { dispatch, rejectWithValue }) => {
   try {
     const response = await axiosInstance.post('/api/logout', {});
-    const resData = response.data;
 
     localStorage.removeItem(ACCOUNT);
+    dispatch(
+      showNotification({
+        message: response.data.message || 'Success',
+        type: NotificationType.Success,
+      }),
+    );
 
-    return resData;
+    return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
       const errorResponse = error.response.data;
+      dispatch(
+        showNotification({
+          message: errorResponse.message,
+          type: NotificationType.Error,
+        }),
+      );
       return rejectWithValue(errorResponse);
     }
+    dispatch(
+      showNotification({
+        message: 'An error occurred',
+        type: NotificationType.Error,
+      }),
+    );
+
     throw error;
   }
 });
@@ -140,3 +197,6 @@ const authSlice = createSlice({
 export const selectCurrentAccount = (state: RootState) => state.auth.account;
 
 export default authSlice.reducer;
+function dispatch(arg0: any) {
+  throw new Error('Function not implemented.');
+}

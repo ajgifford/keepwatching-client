@@ -3,6 +3,7 @@ import { Profile } from '../model/profile';
 import { RootState } from '../store';
 import { createAppAsyncThunk } from '../withTypes';
 import { logout } from './authSlice';
+import { NotificationType, showNotification } from './notificationSlice';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 
 interface ProfileStatus extends EntityState<Profile, string> {
@@ -21,12 +22,16 @@ const initialState: ProfileStatus = profilesAdapter.getInitialState({
   error: null,
 });
 
+type ErrorResponse = {
+  message: string;
+};
+
 // Async thunks
 export const fetchProfiles = createAppAsyncThunk(
   'posts/fetchPosts',
   async (accountId: string, { rejectWithValue }) => {
     const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
-    return response.data;
+    return response.data.results;
   },
   {
     condition(arg, thunkApi) {
@@ -40,10 +45,19 @@ export const fetchProfiles = createAppAsyncThunk(
 
 export const addProfile = createAsyncThunk(
   'profiles/addProfile',
-  async ({ accountId, newProfileName }: { accountId: string; newProfileName: string }, { rejectWithValue }) => {
+  async (
+    { accountId, newProfileName }: { accountId: string; newProfileName: string },
+    { dispatch, rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.post(`/api/accounts/${accountId}/profiles`, { name: newProfileName });
-      return response.data;
+      dispatch(
+        showNotification({
+          message: `Added profile: ${newProfileName}`,
+          type: NotificationType.Success,
+        }),
+      );
+      return response.data.result;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -52,9 +66,15 @@ export const addProfile = createAsyncThunk(
 
 export const deleteProfile = createAsyncThunk(
   'profiles/deleteProfile',
-  async ({ accountId, profileId }: { accountId: string; profileId: string }, { rejectWithValue }) => {
+  async ({ accountId, profileId }: { accountId: string; profileId: string }, { dispatch, rejectWithValue }) => {
     try {
       await axiosInstance.delete(`/api/accounts/${accountId}/profiles/${profileId}`);
+      dispatch(
+        showNotification({
+          message: `Profile deleted successfully`,
+          type: NotificationType.Success,
+        }),
+      );
       return profileId;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -64,10 +84,16 @@ export const deleteProfile = createAsyncThunk(
 
 export const editProfile = createAsyncThunk(
   'profiles/editProfile',
-  async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { rejectWithValue }) => {
+  async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(`/api/accounts/${accountId}/profiles/${id}`, { name });
-      return response.data;
+      dispatch(
+        showNotification({
+          message: `Profile edited successfully`,
+          type: NotificationType.Success,
+        }),
+      );
+      return response.data.result;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -94,7 +120,11 @@ const profileSlice = createSlice({
       })
       .addCase(addProfile.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string;
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Add Profile Failed';
+        } else {
+          state.error = action.error.message || 'Add Profile Failed';
+        }
       })
       .addCase(deleteProfile.pending, (state) => {
         state.status = 'pending';
@@ -106,7 +136,11 @@ const profileSlice = createSlice({
       })
       .addCase(deleteProfile.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string;
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Delete Profile Failed';
+        } else {
+          state.error = action.error.message || 'Delete Profile Failed';
+        }
       })
       .addCase(editProfile.pending, (state) => {
         state.status = 'pending';
@@ -118,7 +152,11 @@ const profileSlice = createSlice({
       })
       .addCase(editProfile.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string;
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Edit Profile Failed';
+        } else {
+          state.error = action.error.message || 'Edit Profile Failed';
+        }
       })
       .addCase(fetchProfiles.pending, (state, action) => {
         state.status = 'pending';
@@ -129,7 +167,11 @@ const profileSlice = createSlice({
       })
       .addCase(fetchProfiles.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message ?? 'Unknown Error';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Get Profiles Failed';
+        } else {
+          state.error = action.error.message || 'Get Profiles Failed';
+        }
       });
   },
 });

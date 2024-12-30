@@ -1,4 +1,3 @@
-import { axiosMiddleware } from './api/axiosMiddleware';
 import authReducer from './slices/authSlice';
 import notificationReducer from './slices/notificationSlice';
 import profilesReducer from './slices/profilesSlice';
@@ -10,7 +9,6 @@ const store = configureStore({
     profiles: profilesReducer,
     notification: notificationReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(axiosMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
