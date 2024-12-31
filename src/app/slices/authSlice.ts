@@ -197,6 +197,3 @@ const authSlice = createSlice({
 export const selectCurrentAccount = (state: RootState) => state.auth.account;
 
 export default authSlice.reducer;
-function dispatch(arg0: any) {
-  throw new Error('Function not implemented.');
-}

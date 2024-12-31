@@ -1,8 +1,8 @@
 export const watchStatuses = [
   { value: '', display: '--All--' },
-  { value: 'Not Watched', display: 'Not Watched' },
-  { value: 'Watching', display: 'Watching' },
-  { value: 'Watched', display: 'Watched' },
+  { value: 'NOT_WATCHED', display: 'Not Watched' },
+  { value: 'WATCHING', display: 'Watching' },
+  { value: 'WATCHED', display: 'Watched' },
 ];
 
 const genres = [
