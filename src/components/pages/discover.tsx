@@ -5,7 +5,6 @@ import { Typography } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
-import { SearchedShow, convertToSearchShow } from '../../app/model/shows';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 

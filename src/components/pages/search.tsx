@@ -7,29 +7,38 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
+  FormControlLabel,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
-import { SearchedShow } from '../../app/model/shows';
+import { SearchResult } from '../../app/model/search';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
+
+interface FavoritesMenuProps {
+  id: number;
+}
 
 function Search() {
   const profiles = useAppSelector(selectAllProfiles);
-  const [shows, setShows] = useState<SearchedShow[]>([]);
-  const [searchText, setSearchText] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchType, setSearchType] = useState<string>('shows');
 
   const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
     try {
-      const response = await axiosInstance.post(`/api/profiles/${profileId}/shows/favorites`, {
+      const response = await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
         id: showId,
       });
       console.log(response);
@@ -39,14 +48,13 @@ function Search() {
   };
 
   const handleSearch = async () => {
+    const searchString = replaceSpacesWithPlus(searchText);
+    const searchOptions = {
+      searchString: searchString,
+    };
     try {
-      const searchString = replaceSpacesWithPlus(searchText);
-      const searchOptions = {
-        searchString: searchString,
-      };
-      const response = await axiosInstance.get(`/api/search/show`, { params: searchOptions });
-      // console.log('Search Results', response.data);
-      setShows(response.data);
+      const response = await axiosInstance.get(`/api/search/${searchType}`, { params: searchOptions });
+      setResults(response.data.results);
     } catch (error) {
       console.error(error);
     }
@@ -62,11 +70,13 @@ function Search() {
     }
   };
 
-  interface FavoriteShowMenuProps {
-    showId: number;
-  }
+  const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchType((event.target as HTMLInputElement).value);
+    setSearchText('');
+    setResults([]);
+  };
 
-  const FavoriteShowMenu = (props: FavoriteShowMenuProps) => {
+  const FavoritesMenu = (props: FavoritesMenuProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open: boolean = Boolean(anchorEl);
 
@@ -95,7 +105,7 @@ function Search() {
               key={profile.id}
               onClick={() => {
                 setAnchorEl(null);
-                handleFavoriteProfileClick(profile.id, props.showId);
+                handleFavoriteProfileClick(profile.id, props.id);
               }}
             >
               {profile.name}
@@ -107,9 +117,9 @@ function Search() {
   };
 
   return (
-    <>
+    <div>
       <Typography variant="h4">Search</Typography>
-      <Box display="flex" alignItems="center" marginY={2}>
+      <Box display="flex" alignItems="center" marginY="8px">
         <TextField
           label="Search"
           variant="outlined"
@@ -122,13 +132,21 @@ function Search() {
           Search
         </Button>
       </Box>
-      {shows.length > 0 ? (
+      <Box display="flex" alignItems="center">
+        <FormControl>
+          <RadioGroup row name="search-type-radio-buttons-group" value={searchType} onChange={handleSearchTypeChange}>
+            <FormControlLabel value="shows" control={<Radio />} label="TV Shows" />
+            <FormControlLabel value="movies" control={<Radio />} label="Movies" />
+          </RadioGroup>
+        </FormControl>
+      </Box>
+      {results.length > 0 ? (
         <List>
-          {shows.map((show) => (
+          {results.map((show) => (
             <Fragment key={show.id}>
-              <ListItem alignItems="flex-start" secondaryAction={<FavoriteShowMenu showId={show.id} />}>
-                <ListItemAvatar sx={{ width: 96, height: 96, p: 1 }}>
-                  <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 96 }} />
+              <ListItem alignItems="flex-start" secondaryAction={<FavoritesMenu id={show.id} />}>
+                <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
+                  <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 94, height: 140 }} />
                 </ListItemAvatar>
                 <ListItemText
                   primary={show.title}
@@ -159,11 +177,11 @@ function Search() {
       ) : (
         <Box>
           <Typography variant="h6" align="center">
-            No Shows Found
+            No Results Found
           </Typography>
         </Box>
       )}
-    </>
+    </div>
   );
 }
 
