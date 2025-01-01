@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "KeepWatching!",
+  "name": "KeepWatching! Tracking the TV shows & movies you watch.",
   "icons": [
     {
       "src": "favicon.ico",
