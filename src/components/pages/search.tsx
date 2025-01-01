@@ -41,7 +41,6 @@ function Search() {
       const response = await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
         id: showId,
       });
-      console.log(response);
     } catch (error) {
       console.error(error);
     }

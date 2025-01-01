@@ -9,12 +9,13 @@ import { Movie } from '../../app/model/movies';
 
 export type MovieListItemProps = {
   movie: Movie;
+  updateMovies: () => void;
 };
 
 export const MovieListItem = (props: MovieListItemProps) => {
   const movie = props.movie;
 
-  const calculateRuntime = (runtime: number) => {
+  const calculateRuntimeDisplay = (runtime: number) => {
     const hours = Math.floor(runtime / 60);
     if (hours < 1) {
       return `${runtime} minutes`;
@@ -25,6 +26,14 @@ export const MovieListItem = (props: MovieListItemProps) => {
       const minutes = runtime - 60 * hours;
       return `${hours} hours, ${minutes} minutes`;
     }
+  };
+
+  const handleWatchStatusChange = (
+    currentStatus: 'WATCHED' | 'WATCHING' | 'NOT_WATCHED',
+  ): 'WATCHED' | 'WATCHING' | 'NOT_WATCHED' => {
+    if (currentStatus === 'NOT_WATCHED') return 'WATCHED';
+    if (currentStatus === 'WATCHING') return 'WATCHED';
+    return 'NOT_WATCHED';
   };
 
   return (
@@ -45,7 +54,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
             <br />
             Release Date: {movie.release_date}
             <br />
-            Runtime: {calculateRuntime(movie.runtime)}
+            Runtime: {calculateRuntimeDisplay(movie.runtime)}
           </>
         }
       />
@@ -54,8 +63,8 @@ export const MovieListItem = (props: MovieListItemProps) => {
         <IconButton
           key={movie.profile_id}
           onClick={(event) => {
-            //   movie.profile.watched = handleWatchStatusChange(movie.profile.watched);
-            //   setShows([...shows]);
+            movie.watched = handleWatchStatusChange(movie.watched);
+            props.updateMovies();
             event.stopPropagation();
           }}
         >

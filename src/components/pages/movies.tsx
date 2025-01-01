@@ -83,6 +83,10 @@ const Movies = () => {
     setSelectedProfile(profile);
   };
 
+  const updateMovies = () => {
+    setMovies([...movies]);
+  };
+
   return (
     <>
       <Box>
@@ -123,7 +127,7 @@ const Movies = () => {
           <List>
             {filteredMovies.map((movie) => (
               <Fragment key={`listItemFragment_${movie.movie_id}`}>
-                <MovieListItem movie={movie} />
+                <MovieListItem movie={movie} updateMovies={updateMovies} />
                 <Divider key={`listItemDivider_${movie.movie_id}`} variant="inset" component="li" />
               </Fragment>
             ))}
@@ -141,7 +145,7 @@ const Movies = () => {
           <>
             <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap sx={{ flexWrap: 'wrap', p: 2, width: 300 }}>
               <Typography variant="h6" color="primary">
-                Show Filters
+                Movie Filters
               </Typography>
               <FormControl fullWidth>
                 <InputLabel>Genre</InputLabel>
