@@ -25,13 +25,10 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
-import { useAppSelector } from '../../app/hooks';
 import { Season, ShowWithSeasons } from '../../app/model/shows';
-import { selectCurrentAccount } from '../../app/slices/authSlice';
 
 const ShowSeasons = () => {
   let { id } = useParams();
-  const account = useAppSelector(selectCurrentAccount);
   const navigate = useNavigate();
   const [show, setShow] = useState<ShowWithSeasons>();
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);

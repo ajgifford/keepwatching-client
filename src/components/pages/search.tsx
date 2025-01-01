@@ -38,7 +38,7 @@ function Search() {
 
   const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
     try {
-      const response = await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
+      await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
         id: showId,
       });
     } catch (error) {

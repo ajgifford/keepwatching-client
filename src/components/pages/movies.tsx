@@ -20,7 +20,6 @@ import axiosInstance from '../../app/api/axiosInstance';
 import {
   generateGenreFilterValues,
   genereateStreamingServiceFilterValues,
-  sortedStreamingServices,
   watchStatuses,
 } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
