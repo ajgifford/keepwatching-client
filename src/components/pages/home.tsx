@@ -15,10 +15,8 @@ const Home = () => {
   const profileError = useAppSelector(selectProfilesError);
 
   useEffect(() => {
-    if (profilesStatus === 'idle') {
-      dispatch(fetchProfiles(account.id));
-    }
-  }, [account.id, profilesStatus, dispatch]);
+    dispatch(fetchProfiles(account.id));
+  }, [account.id, dispatch]);
 
   const handleLogout = async () => {
     try {
