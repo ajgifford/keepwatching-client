@@ -35,6 +35,7 @@ const genres = [
   { value: 'War & Politics', display: 'War & Politics' },
   { value: 'Western', display: 'Western' },
 ];
+export const sortedGenres = genres.sort((a, b) => (a.display < b.display ? -1 : 1));
 
 const streamingServices = [
   { value: '', display: '--All--' },
@@ -47,6 +48,32 @@ const streamingServices = [
   { value: 'Paramount+', display: 'Paramount+' },
   { value: 'Apple TV', display: 'Apple TV' },
 ];
-
 export const sortedStreamingServices = streamingServices.sort((a, b) => (a.display < b.display ? -1 : 1));
-export const sortedGenres = genres.sort((a, b) => (a.display < b.display ? -1 : 1));
+
+interface ContentItem {
+  genres: string;
+  streaming_service: string;
+}
+
+export function generateGenreFilterValues(items: ContentItem[]): string[] {
+  const genreSet: Set<string> = new Set();
+
+  items.forEach((item) => {
+    const genres = item.genres.split(',').map((genre) => genre.trim());
+    genres.forEach((genre) => {
+      genreSet.add(genre);
+    });
+  });
+
+  return Array.from(genreSet).sort((a, b) => a.localeCompare(b));
+}
+
+export function genereateStreamingServiceFilterValues(items: ContentItem[]): string[] {
+  const servicesSet: Set<string> = new Set();
+
+  items.forEach((item) => {
+    servicesSet.add(item.streaming_service);
+  });
+
+  return Array.from(servicesSet).sort((a, b) => a.localeCompare(b));
+}

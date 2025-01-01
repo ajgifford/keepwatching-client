@@ -17,7 +17,12 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
-import { sortedGenres, sortedStreamingServices, watchStatuses } from '../../app/constants/filters';
+import {
+  generateGenreFilterValues,
+  genereateStreamingServiceFilterValues,
+  sortedStreamingServices,
+  watchStatuses,
+} from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
@@ -26,7 +31,9 @@ import { MovieListItem } from '../common/movieListItem';
 const Movies = () => {
   const profiles = useAppSelector(selectAllProfiles);
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [genreFilterValues, setGenreFilterValues] = useState<string[]>([]);
   const [genreFilter, setGenreFilter] = useState<string>('');
+  const [streamingServiceFilterValues, setStreamingServiceFilterValues] = useState<string[]>([]);
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>('');
   const [watchedFilter, setWatchedFilter] = useState<string>('');
   const [selectedProfile, setSelectedProfile] = useState<number>(0);
@@ -47,6 +54,8 @@ const Movies = () => {
           return a.title.localeCompare(b.title);
         });
         setMovies(responseMovies);
+        setGenreFilterValues(generateGenreFilterValues(responseMovies));
+        setStreamingServiceFilterValues(genereateStreamingServiceFilterValues(responseMovies));
       } catch (error) {
         console.error('Error:', error);
       }
@@ -149,10 +158,19 @@ const Movies = () => {
               </Typography>
               <FormControl fullWidth>
                 <InputLabel>Genre</InputLabel>
-                <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
-                  {sortedGenres.map((genre) => (
-                    <MenuItem key={genre.value} value={genre.value}>
-                      {genre.display}
+                <Select
+                  value={genreFilter}
+                  onChange={(e) => {
+                    console.log(e);
+                    setGenreFilter(e.target.value);
+                  }}
+                >
+                  <MenuItem key="genresFilter_all" value="">
+                    --All--
+                  </MenuItem>
+                  {genreFilterValues.map((genre) => (
+                    <MenuItem key={genre} value={genre}>
+                      {genre}
                     </MenuItem>
                   ))}
                 </Select>
@@ -160,9 +178,12 @@ const Movies = () => {
               <FormControl fullWidth>
                 <InputLabel>Streaming Service</InputLabel>
                 <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
-                  {sortedStreamingServices.map((service) => (
-                    <MenuItem key={service.value} value={service.value}>
-                      {service.display}
+                  <MenuItem key="streamingServicesFilter_all" value="">
+                    --All--
+                  </MenuItem>
+                  {streamingServiceFilterValues.map((service) => (
+                    <MenuItem key={service} value={service}>
+                      {service}
                     </MenuItem>
                   ))}
                 </Select>
@@ -171,7 +192,7 @@ const Movies = () => {
                 <InputLabel>Watched Status</InputLabel>
                 <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
                   {watchStatuses.map((status) => (
-                    <MenuItem key={status.value} value={status.value}>
+                    <MenuItem key={`watchStatusFilter_${status.value}`} value={status.value}>
                       {status.display}
                     </MenuItem>
                   ))}
