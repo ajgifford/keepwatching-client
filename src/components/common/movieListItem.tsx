@@ -5,14 +5,17 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
 
+import { useAppDispatch } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
+import { WatchStatus } from '../../app/model/watchStatus';
+import { updateMovieStatus } from '../../app/slices/moviesSlice';
 
 export type MovieListItemProps = {
   movie: Movie;
-  updateMovies: () => void;
 };
 
 export const MovieListItem = (props: MovieListItemProps) => {
+  const dispatch = useAppDispatch();
   const movie = props.movie;
 
   const calculateRuntimeDisplay = (runtime: number) => {
@@ -28,13 +31,24 @@ export const MovieListItem = (props: MovieListItemProps) => {
     }
   };
 
-  const handleWatchStatusChange = (
-    currentStatus: 'WATCHED' | 'WATCHING' | 'NOT_WATCHED',
-  ): 'WATCHED' | 'WATCHING' | 'NOT_WATCHED' => {
-    if (currentStatus === 'NOT_WATCHED') return 'WATCHED';
-    if (currentStatus === 'WATCHING') return 'WATCHED';
-    return 'NOT_WATCHED';
+  const handleWatchStatusChange = (currentStatus: WatchStatus) => {
+    dispatch(
+      updateMovieStatus({
+        profileId: Number(movie.profile_id),
+        movieId: movie.movie_id,
+        status: determineNewWatchStatus(currentStatus),
+      }),
+    );
   };
+
+  function determineNewWatchStatus(currentStatus: WatchStatus): WatchStatus {
+    if (currentStatus === 'NOT_WATCHED') {
+      return 'WATCHED';
+    } else if (currentStatus === 'WATCHING') {
+      return 'WATCHED';
+    }
+    return 'NOT_WATCHED';
+  }
 
   return (
     <ListItem key={`listItem_${movie.movie_id}`} alignItems="flex-start">
@@ -63,8 +77,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
         <IconButton
           key={movie.profile_id}
           onClick={(event) => {
-            movie.watched = handleWatchStatusChange(movie.watched);
-            props.updateMovies();
+            handleWatchStatusChange(movie.watched);
             event.stopPropagation();
           }}
         >

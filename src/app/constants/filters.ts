@@ -65,15 +65,17 @@ export function generateGenreFilterValues(items: ContentItem[]): string[] {
     });
   });
 
-  return Array.from(genreSet).sort((a, b) => a.localeCompare(b));
+  return Array.from(genreSet).sort();
 }
 
-export function genereateStreamingServiceFilterValues(items: ContentItem[]): string[] {
+export function generateStreamingServiceFilterValues(items: ContentItem[]): string[] {
   const servicesSet: Set<string> = new Set();
 
   items.forEach((item) => {
-    servicesSet.add(item.streaming_service);
+    if (item.streaming_service) {
+      servicesSet.add(item.streaming_service);
+    }
   });
 
-  return Array.from(servicesSet).sort((a, b) => a.localeCompare(b));
+  return Array.from(servicesSet).sort();
 }

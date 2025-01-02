@@ -16,53 +16,39 @@ import {
   Typography,
 } from '@mui/material';
 
-import axiosInstance from '../../app/api/axiosInstance';
+import { watchStatuses } from '../../app/constants/filters';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
-  generateGenreFilterValues,
-  genereateStreamingServiceFilterValues,
-  watchStatuses,
-} from '../../app/constants/filters';
-import { useAppSelector } from '../../app/hooks';
-import { Movie } from '../../app/model/movies';
+  fetchMoviesForProfile,
+  selectGenresByProfile,
+  selectMoviesByProfile,
+  selectStreamingServicesByProfile,
+} from '../../app/slices/moviesSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 import { MovieListItem } from '../common/movieListItem';
 
 const Movies = () => {
+  const dispatch = useAppDispatch();
   const profiles = useAppSelector(selectAllProfiles);
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [genreFilterValues, setGenreFilterValues] = useState<string[]>([]);
+  const moviesByProfile = useAppSelector(selectMoviesByProfile);
+  const genresByProfile = useAppSelector(selectGenresByProfile);
+  const streamingServicesByProfile = useAppSelector(selectStreamingServicesByProfile);
+  const [selectedProfile, setSelectedProfile] = useState<number>(0);
+
   const [genreFilter, setGenreFilter] = useState<string>('');
-  const [streamingServiceFilterValues, setStreamingServiceFilterValues] = useState<string[]>([]);
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>('');
   const [watchedFilter, setWatchedFilter] = useState<string>('');
-  const [selectedProfile, setSelectedProfile] = useState<number>(0);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   useEffect(() => {
-    async function fetchMovies() {
-      try {
-        const response = await axiosInstance.get(`/api/profiles/${selectedProfile}/movies`);
-        const responseMovies: Movie[] = response.data.results;
-        responseMovies.sort((a, b) => {
-          const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
-          const aWatched = watchedOrder[a.watched];
-          const bWatched = watchedOrder[b.watched];
-          if (aWatched !== bWatched) {
-            return aWatched - bWatched;
-          }
-          return a.title.localeCompare(b.title);
-        });
-        setMovies(responseMovies);
-        setGenreFilterValues(generateGenreFilterValues(responseMovies));
-        setStreamingServiceFilterValues(genereateStreamingServiceFilterValues(responseMovies));
-      } catch (error) {
-        console.error('Error:', error);
-      }
+    if (selectedProfile && !moviesByProfile[selectedProfile]) {
+      dispatch(fetchMoviesForProfile(selectedProfile));
     }
-    if (selectedProfile !== 0) {
-      fetchMovies();
-    }
-  }, [selectedProfile]);
+  }, [selectedProfile, moviesByProfile, dispatch]);
+
+  const movies = moviesByProfile[selectedProfile] || [];
+  const genreFilterValues = genresByProfile[selectedProfile] || [];
+  const streamingServiceFilterValues = streamingServicesByProfile[selectedProfile] || [];
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setFilterDrawerOpen(newOpen);
@@ -85,14 +71,8 @@ const Movies = () => {
 
   const selectedProfileChanged = (e: SelectChangeEvent) => {
     const profile = Number(e.target.value);
-    if (profile === 0) {
-      setMovies([]);
-    }
-    setSelectedProfile(profile);
-  };
 
-  const updateMovies = () => {
-    setMovies([...movies]);
+    setSelectedProfile(profile);
   };
 
   return (
@@ -135,7 +115,7 @@ const Movies = () => {
           <List>
             {filteredMovies.map((movie) => (
               <Fragment key={`listItemFragment_${movie.movie_id}`}>
-                <MovieListItem movie={movie} updateMovies={updateMovies} />
+                <MovieListItem movie={movie} />
                 <Divider key={`listItemDivider_${movie.movie_id}`} variant="inset" component="li" />
               </Fragment>
             ))}

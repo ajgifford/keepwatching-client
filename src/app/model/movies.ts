@@ -1,3 +1,5 @@
+import { WatchStatus } from './watchStatus';
+
 export type Movie = {
   movie_id: number;
   tmtb_id: number;
@@ -10,6 +12,11 @@ export type Movie = {
   user_rating: number | null;
   mpa_rating: string;
   streaming_service: string;
-  watched: 'WATCHED' | 'WATCHING' | 'NOT_WATCHED';
+  watched: WatchStatus;
   profile_id: string;
+};
+
+export type ProfileMovies = {
+  profile_id: string;
+  movies: Movie[];
 };
