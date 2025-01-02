@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import FilterListIcon from '@mui/icons-material/FilterList';
 import {
@@ -33,11 +34,14 @@ const Movies = () => {
   const moviesByProfile = useAppSelector(selectMoviesByProfile);
   const genresByProfile = useAppSelector(selectGenresByProfile);
   const streamingServicesByProfile = useAppSelector(selectStreamingServicesByProfile);
-  const [selectedProfile, setSelectedProfile] = useState<number>(0);
+  const [searchParams] = useSearchParams();
+  const profileId = Number(searchParams.get('profileId')) || 0;
+  const watchStatus = searchParams.get('watchStatus') || '';
+  const [selectedProfile, setSelectedProfile] = useState<number>(profileId);
 
   const [genreFilter, setGenreFilter] = useState<string>('');
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>('');
-  const [watchedFilter, setWatchedFilter] = useState<string>('');
+  const [watchedFilter, setWatchedFilter] = useState<string>(watchStatus);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   useEffect(() => {

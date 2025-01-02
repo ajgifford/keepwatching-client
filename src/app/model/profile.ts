@@ -4,4 +4,6 @@ export interface Profile {
   showsToWatch?: number;
   showsWatching?: number;
   showsWatched?: number;
+  moviesToWatch?: number;
+  moviesWatched?: number;
 }

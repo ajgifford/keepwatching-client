@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaBars, FaCompass, FaFilm, FaHome, FaSearch, FaTv, FaUser } from 'react-icons/fa';
+import { LuLogOut } from 'react-icons/lu';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import {
@@ -16,7 +17,11 @@ import {
   useTheme,
 } from '@mui/material';
 
+import { useAppDispatch } from '../../app/hooks';
+import { logout } from '../../app/slices/authSlice';
+
 function Navigation() {
+  const dispatch = useAppDispatch();
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
   const [activePage, setActivePage] = useState<string>('home');
   const theme = useTheme();
@@ -39,6 +44,15 @@ function Navigation() {
 
   const handleToolbarPageChange = (page: string) => {
     setActivePage(page);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+      navigate('/login');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const navigationItems = [
@@ -70,12 +84,14 @@ function Navigation() {
       anchorEl={mobileMenuAnchor}
       open={Boolean(mobileMenuAnchor)}
       onClose={handleMobileMenuClose}
-      PaperProps={{
-        elevation: 0,
-        sx: {
-          overflow: 'visible',
-          filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-          mt: 1.5,
+      slotProps={{
+        paper: {
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+          },
         },
       }}
     >
@@ -89,6 +105,10 @@ function Navigation() {
           <Box sx={{ ml: 2 }}>{item.label}</Box>
         </MenuItem>
       ))}
+      <MenuItem key="navigationLogoutButton" onClick={() => handleLogout()}>
+        {<LuLogOut />}
+        <Box sx={{ ml: 2 }}>Logout</Box>
+      </MenuItem>
     </Menu>
   );
 
@@ -122,6 +142,15 @@ function Navigation() {
                   KeepWatching
                 </Typography>
                 {renderNavigationButtons()}
+                <Button
+                  color={'inherit'}
+                  key="navigationLogoutButton"
+                  startIcon={<LuLogOut />}
+                  onClick={() => handleLogout()}
+                  aria-label="Logout"
+                >
+                  Logout
+                </Button>
               </Box>
             )}
           </Toolbar>

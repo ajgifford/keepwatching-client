@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
@@ -21,12 +19,12 @@ import Grid from '@mui/material/Grid2';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
 import { selectCurrentAccount } from '../../app/slices/authSlice';
-import { addProfile, deleteProfile, editProfile, selectAllProfiles } from '../../app/slices/profilesSlice';
+import { addProfile, deleteProfile, editProfile } from '../../app/slices/profilesSlice';
+import { ProfilesStack } from '../common/profilesStack';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
-  const profiles = useAppSelector(selectAllProfiles);
 
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
@@ -82,44 +80,6 @@ const ManageAccount = () => {
     }
   }
 
-  interface PropTypes {
-    profile: Profile;
-  }
-  function ProfileCard({ profile }: PropTypes) {
-    return (
-      <Box id={profile.id} key={profile.id} sx={{ p: 2, border: '1px solid black' }}>
-        <Box>
-          <Typography variant="h5" color="primary">
-            {profile.name}
-          </Typography>
-        </Box>
-        <Box sx={{ py: '1px' }}>
-          <Typography variant="body1">
-            <i>Shows To Watch:</i> {profile.showsToWatch}
-          </Typography>
-        </Box>
-        <Box sx={{ py: '1px' }}>
-          <Typography variant="body1">
-            <i>Shows Watching:</i> {profile.showsWatching}
-          </Typography>
-        </Box>
-        <Box sx={{ py: '2px' }}>
-          <Typography variant="body1">
-            <i>Shows Watched:</i> {profile.showsWatched}
-          </Typography>
-        </Box>
-        <Stack direction="row" spacing={2} sx={{ pt: '8px' }}>
-          <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEditProfileButton(profile)}>
-            Edit
-          </Button>
-          <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => handleDeleteProfileButton(profile)}>
-            Delete
-          </Button>
-        </Stack>
-      </Box>
-    );
-  }
-
   return (
     <>
       <Grid container spacing={2} alignItems="center">
@@ -148,11 +108,7 @@ const ManageAccount = () => {
             onClick={handleAddProfileButton}
           />
         </Stack>
-        <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
-          {profiles.map((profile) => (
-            <ProfileCard key={profile.id} profile={profile} />
-          ))}
-        </Stack>
+        <ProfilesStack editable={true} handleEdit={handleEditProfileButton} handleDelete={handleDeleteProfileButton} />
       </Box>
       {/* Add Profile Dialog */}
       <Dialog

@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { logout, selectCurrentAccount } from '../../app/slices/authSlice';
+import { selectCurrentAccount } from '../../app/slices/authSlice';
 import { fetchProfiles, selectProfilesError, selectProfilesStatus } from '../../app/slices/profilesSlice';
+import { ProfilesStack } from '../common/profilesStack';
 
 const Home = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const account = useAppSelector(selectCurrentAccount)!;
   const profilesStatus = useAppSelector(selectProfilesStatus);
   const profileError = useAppSelector(selectProfilesError);
@@ -17,15 +16,6 @@ const Home = () => {
   useEffect(() => {
     dispatch(fetchProfiles(account.id));
   }, [account.id, dispatch]);
-
-  const handleLogout = async () => {
-    try {
-      await dispatch(logout()).unwrap();
-      navigate('/login');
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   if (profilesStatus === 'pending') {
     return (
@@ -51,9 +41,9 @@ const Home = () => {
         <Typography variant="h4" color="textPrimary" gutterBottom>
           Welcome {account.name}!
         </Typography>
-        <Button sx={{ mt: '20px' }} variant="outlined" onClick={handleLogout}>
-          Log Out
-        </Button>
+        <Box sx={{ p: 2 }}>
+          <ProfilesStack editable={false} />
+        </Box>
       </Box>
     );
   } else if (profilesStatus === 'failed') {
