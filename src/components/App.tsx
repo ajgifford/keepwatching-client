@@ -21,29 +21,34 @@ import ShowSeasons from './pages/showSeasons';
 function App() {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <Navigation />
-        <NotificationBar />
-        <div style={{ padding: '4px' }}>
-          <Container maxWidth="xl" sx={{ p: 1 }}>
-            <Routes>
-              <Route element={<DefaultLayout />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Route>
-              <Route element={<ProtectedLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/shows" element={<FilteredShows />} />
-                <Route path="/shows/:id" element={<ShowSeasons />} />
-                <Route path="/movies" element={<Movies />} />
-                <Route path="/discover" element={<Discover />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/manageAccount" element={<ManageAccount />} />
-              </Route>
-            </Routes>
-          </Container>
-        </div>
-      </BrowserRouter>
+      <div className="app-container">
+        <BrowserRouter>
+          <Navigation />
+          <NotificationBar />
+          <div className="content">
+            <Container maxWidth="xl" sx={{ p: 1 }}>
+              <Routes>
+                <Route element={<DefaultLayout />}>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                </Route>
+                <Route element={<ProtectedLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/shows" element={<FilteredShows />} />
+                  <Route path="/shows/:id" element={<ShowSeasons />} />
+                  <Route path="/movies" element={<Movies />} />
+                  <Route path="/discover" element={<Discover />} />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/manageAccount" element={<ManageAccount />} />
+                </Route>
+              </Routes>
+            </Container>
+          </div>
+        </BrowserRouter>
+        <footer className="footer">
+          <p>My App Footer</p>
+        </footer>
+      </div>
     </Provider>
   );
 }
