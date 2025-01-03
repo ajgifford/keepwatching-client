@@ -3,6 +3,7 @@ import { Profile } from '../model/profile';
 import { RootState } from '../store';
 import { createAppAsyncThunk } from '../withTypes';
 import { logout } from './authSlice';
+import { fetchMoviesForProfile } from './moviesSlice';
 import { NotificationType, showNotification } from './notificationSlice';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 
@@ -48,10 +49,14 @@ type ErrorResponse = {
 
 export const fetchProfiles = createAppAsyncThunk(
   'profiles/fetchProfiles',
-  async (accountId: string, { rejectWithValue }) => {
+  async (accountId: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
-      return response.data.results;
+      const profiles: Profile[] = response.data.results;
+      profiles.forEach((profile: any) => {
+        dispatch(fetchMoviesForProfile(profile.id));
+      });
+      return profiles;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
