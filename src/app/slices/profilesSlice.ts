@@ -3,7 +3,7 @@ import { Profile } from '../model/profile';
 import { RootState } from '../store';
 import { createAppAsyncThunk } from '../withTypes';
 import { logout } from './authSlice';
-import { fetchMoviesForProfile } from './moviesSlice';
+import { fetchForProfile } from './moviesSlice';
 import { NotificationType, showNotification } from './notificationSlice';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 
@@ -54,7 +54,7 @@ export const fetchProfiles = createAppAsyncThunk(
       const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
       const profiles: Profile[] = response.data.results;
       profiles.forEach((profile: any) => {
-        dispatch(fetchMoviesForProfile(profile.id));
+        dispatch(fetchForProfile(profile.id));
       });
       return profiles;
     } catch (error: any) {

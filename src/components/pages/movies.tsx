@@ -20,7 +20,7 @@ import {
 import { watchStatuses } from '../../app/constants/filters';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
-  fetchMoviesForProfile,
+  fetchForProfile,
   selectGenresByProfile,
   selectMoviesByProfile,
   selectStreamingServicesByProfile,
@@ -46,7 +46,7 @@ const Movies = () => {
 
   useEffect(() => {
     if (selectedProfile && !moviesByProfile[selectedProfile]) {
-      dispatch(fetchMoviesForProfile(selectedProfile));
+      dispatch(fetchForProfile(selectedProfile));
     }
   }, [selectedProfile, moviesByProfile, dispatch]);
 
@@ -65,7 +65,17 @@ const Movies = () => {
     setFilterDrawerOpen(false);
   };
 
-  const filteredMovies = movies.filter((movie) => {
+  const sortedMovies = [...movies].sort((a, b) => {
+    const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
+    const aWatched = watchedOrder[a.watched];
+    const bWatched = watchedOrder[b.watched];
+    if (aWatched !== bWatched) {
+      return aWatched - bWatched;
+    }
+    return a.title.localeCompare(b.title);
+  });
+
+  const filteredMovies = sortedMovies.filter((movie) => {
     return (
       (genreFilter === '' || movie.genres.includes(genreFilter)) &&
       (streamingServiceFilter === '' || movie.streaming_service === streamingServiceFilter) &&
@@ -75,7 +85,6 @@ const Movies = () => {
 
   const selectedProfileChanged = (e: SelectChangeEvent) => {
     const profile = Number(e.target.value);
-
     setSelectedProfile(profile);
   };
 
@@ -144,7 +153,6 @@ const Movies = () => {
                 <Select
                   value={genreFilter}
                   onChange={(e) => {
-                    console.log(e);
                     setGenreFilter(e.target.value);
                   }}
                 >

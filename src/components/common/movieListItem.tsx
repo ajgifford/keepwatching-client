@@ -8,7 +8,7 @@ import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Tooltip } f
 import { useAppDispatch } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
 import { WatchStatus } from '../../app/model/watchStatus';
-import { updateMovieStatus } from '../../app/slices/moviesSlice';
+import { updateStatus } from '../../app/slices/moviesSlice';
 
 export type MovieListItemProps = {
   movie: Movie;
@@ -33,7 +33,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
 
   const handleWatchStatusChange = (currentStatus: WatchStatus) => {
     dispatch(
-      updateMovieStatus({
+      updateStatus({
         profileId: Number(movie.profile_id),
         movieId: movie.movie_id,
         status: determineNewWatchStatus(currentStatus),

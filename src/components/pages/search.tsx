@@ -22,8 +22,9 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
-import { useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
+import { addFavorite } from '../../app/slices/moviesSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 
 interface FavoritesMenuProps {
@@ -31,18 +32,28 @@ interface FavoritesMenuProps {
 }
 
 function Search() {
+  const dispatch = useAppDispatch();
   const profiles = useAppSelector(selectAllProfiles);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [searchType, setSearchType] = useState<string>('shows');
 
   const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
-    try {
-      await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
-        id: showId,
-      });
-    } catch (error) {
-      console.error(error);
+    if (searchType === 'movies') {
+      dispatch(
+        addFavorite({
+          profileId: Number(profileId),
+          movieId: showId,
+        }),
+      );
+    } else {
+      try {
+        await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
+          id: showId,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

@@ -61,6 +61,7 @@ const Register = () => {
                   label="Name"
                   autoFocus
                   value={name}
+                  autoComplete="true"
                   onChange={(e) => setName(e.target.value)}
                 />
               </Grid>
@@ -73,6 +74,7 @@ const Register = () => {
                   label="Email Address"
                   name="email"
                   value={email}
+                  autoComplete="true"
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>

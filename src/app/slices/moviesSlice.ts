@@ -4,7 +4,7 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './authSlice';
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface MoviesState {
   moviesByProfile: { [profileId: number]: Movie[] };
@@ -22,64 +22,104 @@ const initialState: MoviesState = {
   error: null,
 };
 
-export const fetchMoviesForProfile = createAsyncThunk('movies/fetchMoviesForProfile', async (profileId: number) => {
-  const response = await axiosInstance.get(`/api/profiles/${profileId}/movies`);
-  const responseMovies: Movie[] = response.data.results;
-  responseMovies.sort((a, b) => {
-    const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
-    const aWatched = watchedOrder[a.watched];
-    const bWatched = watchedOrder[b.watched];
-    if (aWatched !== bWatched) {
-      return aWatched - bWatched;
+export const fetchForProfile = createAsyncThunk(
+  'movies/fetchForProfile',
+  async (profileId: number, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/api/profiles/${profileId}/movies`);
+      const responseMovies: Movie[] = response.data.results;
+      responseMovies.sort((a, b) => {
+        const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
+        const aWatched = watchedOrder[a.watched];
+        const bWatched = watchedOrder[b.watched];
+        if (aWatched !== bWatched) {
+          return aWatched - bWatched;
+        }
+        return a.title.localeCompare(b.title);
+      });
+      return { profileId, movies: responseMovies };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
     }
-    return a.title.localeCompare(b.title);
-  });
-  return { profileId, movies: responseMovies };
-});
+  },
+);
 
-export const updateMovieStatus = createAsyncThunk(
-  'movies/updateMovieStatus',
-  async ({ profileId, movieId, status }: { profileId: number; movieId: number; status: WatchStatus }) => {
-    await axiosInstance.put(`/api/profiles/${profileId}/movies/watchStatus`, {
-      movie_id: movieId,
-      status: status,
-    });
-    return { profileId, movieId, status };
+export const updateStatus = createAsyncThunk(
+  'movies/updateStatus',
+  async (
+    { profileId, movieId, status }: { profileId: number; movieId: number; status: WatchStatus },
+    { rejectWithValue },
+  ) => {
+    try {
+      await axiosInstance.put(`/api/profiles/${profileId}/movies/watchStatus`, {
+        movie_id: movieId,
+        status: status,
+      });
+      return { profileId, movieId, status };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
+
+export const addFavorite = createAsyncThunk(
+  'movies/addFavorite',
+  async ({ profileId, movieId }: { profileId: number; movieId: number }, { getState, rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/api/profiles/${profileId}/movies/favorites`, {
+        id: movieId,
+      });
+      const movie = response.data.results[0];
+      return { profileId, movie };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
   },
 );
 
 const moviesSlice = createSlice({
   name: 'movies',
   initialState,
-  reducers: {
-    addMovie: (state, action: PayloadAction<{ profileId: number; movie: Movie }>) => {
-      const { profileId, movie } = action.payload;
-      if (state.moviesByProfile[profileId]) {
-        state.moviesByProfile[profileId].push(movie);
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, () => {
         return initialState;
       })
-      .addCase(fetchMoviesForProfile.pending, (state) => {
+      .addCase(fetchForProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchMoviesForProfile.fulfilled, (state, action) => {
+      .addCase(fetchForProfile.fulfilled, (state, action) => {
         const { profileId, movies } = action.payload;
         state.moviesByProfile[profileId] = movies;
         state.genresByProfile[profileId] = generateGenreFilterValues(movies);
         state.streamingServicesByProfile[profileId] = generateStreamingServiceFilterValues(movies);
         state.loading = false;
       })
-      .addCase(fetchMoviesForProfile.rejected, (state, action) => {
+      .addCase(fetchForProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to load movies';
       })
-      .addCase(updateMovieStatus.fulfilled, (state, action) => {
+      .addCase(addFavorite.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addFavorite.fulfilled, (state, action) => {
+        const { profileId, movie } = action.payload;
+        if (state.moviesByProfile[profileId]) {
+          state.moviesByProfile[profileId].push(movie);
+          const movies = state.moviesByProfile[profileId];
+          state.genresByProfile[profileId] = generateGenreFilterValues(movies);
+          state.streamingServicesByProfile[profileId] = generateStreamingServiceFilterValues(movies);
+        }
+        state.loading = false;
+      })
+      .addCase(addFavorite.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to add a favorite';
+      })
+      .addCase(updateStatus.fulfilled, (state, action) => {
         const { profileId, movieId, status } = action.payload;
         const profileMovies = state.moviesByProfile[profileId];
         if (profileMovies) {
@@ -89,13 +129,12 @@ const moviesSlice = createSlice({
           }
         }
       })
-      .addCase(updateMovieStatus.rejected, (state, action) => {
+      .addCase(updateStatus.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to update movie status';
       });
   },
 });
 
-export const { addMovie } = moviesSlice.actions;
 export const selectMoviesByProfile = (state: RootState) => state.movies.moviesByProfile;
 export const selectGenresByProfile = (state: RootState) => state.movies.genresByProfile;
 export const selectStreamingServicesByProfile = (state: RootState) => state.movies.streamingServicesByProfile;
