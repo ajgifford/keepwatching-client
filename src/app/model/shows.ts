@@ -1,3 +1,5 @@
+import { WatchStatus } from './watchStatus';
+
 export type ShowWithSeasons = {
   id: string;
   title: string;
@@ -13,6 +15,23 @@ export type ShowWithSeasons = {
   watched: 'Watched' | 'Watching' | 'Not Watched';
   seasons: Season[];
   profiles: string[];
+};
+
+export type Show = {
+  show_id: number;
+  tmdb_id: number;
+  title: string;
+  description: string;
+  release_date?: string;
+  genres: string;
+  streaming_service: string;
+  image: string;
+  user_rating?: number | null;
+  tv_parental_guidelines?: string;
+  season_count?: number;
+  episode_count?: number;
+  watch_status: WatchStatus;
+  profile_id: string;
 };
 
 export type ShowWithProfile = {

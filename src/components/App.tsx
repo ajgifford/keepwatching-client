@@ -9,7 +9,6 @@ import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import NotificationBar from './notification/notificationBar';
 import Discover from './pages/discover';
-import FilteredShows from './pages/filteredShows';
 import Home from './pages/home';
 import Login from './pages/login';
 import ManageAccount from './pages/manageAccount';
@@ -17,6 +16,7 @@ import Movies from './pages/movies';
 import Register from './pages/register';
 import Search from './pages/search';
 import ShowSeasons from './pages/showSeasons';
+import Shows from './pages/shows';
 
 function App() {
   return (
@@ -34,7 +34,7 @@ function App() {
                 </Route>
                 <Route element={<ProtectedLayout />}>
                   <Route path="/" element={<Home />} />
-                  <Route path="/shows" element={<FilteredShows />} />
+                  <Route path="/shows" element={<Shows />} />
                   <Route path="/shows/:id" element={<ShowSeasons />} />
                   <Route path="/movies" element={<Movies />} />
                   <Route path="/discover" element={<Discover />} />

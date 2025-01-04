@@ -24,7 +24,7 @@ import {
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
-import { addFavorite } from '../../app/slices/moviesSlice';
+import { addMovieFavorite } from '../../app/slices/moviesSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 
 interface FavoritesMenuProps {
@@ -41,7 +41,7 @@ function Search() {
   const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
     if (searchType === 'movies') {
       dispatch(
-        addFavorite({
+        addMovieFavorite({
           profileId: Number(profileId),
           movieId: showId,
         }),

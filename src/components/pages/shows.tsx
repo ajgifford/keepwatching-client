@@ -19,22 +19,22 @@ import {
 
 import { watchStatuses } from '../../app/constants/filters';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import {
-  fetchMoviesForProfile,
-  selectMovieGenresByProfile,
-  selectMovieStreamingServicesByProfile,
-  selectMoviesByProfile,
-} from '../../app/slices/moviesSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
-import { MovieListItem } from '../common/movieListItem';
+import {
+  fetchShowsForProfile,
+  selectShowGenresByProfile,
+  selectShowStreamingServicesByProfile,
+  selectShowsByProfile,
+} from '../../app/slices/showsSlice';
+import { ShowListItem } from '../common/showListItem';
 import { stripArticle } from '../utility/contentUtility';
 
-const Movies = () => {
+const Shows = () => {
   const dispatch = useAppDispatch();
   const profiles = useAppSelector(selectAllProfiles);
-  const moviesByProfile = useAppSelector(selectMoviesByProfile);
-  const genresByProfile = useAppSelector(selectMovieGenresByProfile);
-  const streamingServicesByProfile = useAppSelector(selectMovieStreamingServicesByProfile);
+  const showsByProfile = useAppSelector(selectShowsByProfile);
+  const genresByProfile = useAppSelector(selectShowGenresByProfile);
+  const streamingServicesByProfile = useAppSelector(selectShowStreamingServicesByProfile);
   const [searchParams] = useSearchParams();
   const profileId = Number(searchParams.get('profileId')) || 0;
   const watchStatus = searchParams.get('watchStatus') || '';
@@ -46,12 +46,12 @@ const Movies = () => {
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   useEffect(() => {
-    if (selectedProfile && !moviesByProfile[selectedProfile]) {
-      dispatch(fetchMoviesForProfile(selectedProfile));
+    if (selectedProfile && !showsByProfile[selectedProfile]) {
+      dispatch(fetchShowsForProfile(selectedProfile));
     }
-  }, [selectedProfile, moviesByProfile, dispatch]);
+  }, [selectedProfile, showsByProfile, dispatch]);
 
-  const movies = moviesByProfile[selectedProfile] || [];
+  const shows = showsByProfile[selectedProfile] || [];
   const genreFilterValues = genresByProfile[selectedProfile] || [];
   const streamingServiceFilterValues = streamingServicesByProfile[selectedProfile] || [];
 
@@ -66,7 +66,7 @@ const Movies = () => {
     setFilterDrawerOpen(false);
   };
 
-  const sortedMovies = [...movies].sort((a, b) => {
+  const sortedShows = [...shows].sort((a, b) => {
     const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
     const aWatched = watchedOrder[a.watch_status];
     const bWatched = watchedOrder[b.watch_status];
@@ -76,11 +76,11 @@ const Movies = () => {
     return stripArticle(a.title).localeCompare(stripArticle(b.title));
   });
 
-  const filteredMovies = sortedMovies.filter((movie) => {
+  const filteredShows = sortedShows.filter((show) => {
     return (
-      (genreFilter === '' || movie.genres.includes(genreFilter)) &&
-      (streamingServiceFilter === '' || movie.streaming_service === streamingServiceFilter) &&
-      (watchedFilter === '' || movie.watch_status === watchedFilter)
+      (genreFilter === '' || show.genres.includes(genreFilter)) &&
+      (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
+      (watchedFilter === '' || show.watch_status === watchedFilter)
     );
   });
 
@@ -93,7 +93,7 @@ const Movies = () => {
     <>
       <Box>
         <Typography variant="h4" align="left">
-          Movies
+          Shows
         </Typography>
       </Box>
       <Stack spacing={{ xs: 1, sm: 2 }} direction="row" alignItems="center" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
@@ -121,16 +121,16 @@ const Movies = () => {
           Filter
         </Button>
       </Stack>
-      {filteredMovies.length > 0 ? (
+      {filteredShows.length > 0 ? (
         <Box>
           <Typography variant="subtitle1" align="justify">
-            Count: {filteredMovies.length}
+            Count: {filteredShows.length}
           </Typography>
           <List>
-            {filteredMovies.map((movie) => (
-              <Fragment key={`movieListItemFragment_${movie.movie_id}`}>
-                <MovieListItem movie={movie} />
-                <Divider key={`movieListItemDivider_${movie.movie_id}`} variant="inset" component="li" />
+            {filteredShows.map((show) => (
+              <Fragment key={`showListItemFragment_${show.show_id}`}>
+                <ShowListItem show={show} />
+                <Divider key={`showListItemDivider_${show.show_id}`} variant="inset" component="li" />
               </Fragment>
             ))}
           </List>
@@ -138,7 +138,7 @@ const Movies = () => {
       ) : (
         <Box>
           <Typography variant="h6" align="center">
-            {selectedProfile === 0 ? 'Select a profile to view movies!' : 'No movies match the current filters.'}
+            No Shows Match Current Filters
           </Typography>
         </Box>
       )}
@@ -147,16 +147,11 @@ const Movies = () => {
           <>
             <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap sx={{ flexWrap: 'wrap', p: 2, width: 300 }}>
               <Typography variant="h6" color="primary">
-                Movie Filters
+                Show Filters
               </Typography>
               <FormControl fullWidth>
                 <InputLabel>Genre</InputLabel>
-                <Select
-                  value={genreFilter}
-                  onChange={(e) => {
-                    setGenreFilter(e.target.value);
-                  }}
-                >
+                <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
                   <MenuItem key="genresFilter_all" value="">
                     --All--
                   </MenuItem>
@@ -184,7 +179,7 @@ const Movies = () => {
                 <InputLabel>Watched Status</InputLabel>
                 <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
                   {watchStatuses.map((status) => (
-                    <MenuItem key={`watchStatusFilter_${status.value}`} value={status.value}>
+                    <MenuItem key={status.value} value={status.value}>
                       {status.display}
                     </MenuItem>
                   ))}
@@ -203,4 +198,4 @@ const Movies = () => {
   );
 };
 
-export default Movies;
+export default Shows;

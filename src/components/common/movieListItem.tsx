@@ -8,7 +8,8 @@ import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Tooltip } f
 import { useAppDispatch } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
 import { WatchStatus } from '../../app/model/watchStatus';
-import { updateStatus } from '../../app/slices/moviesSlice';
+import { updateMovieStatus } from '../../app/slices/moviesSlice';
+import { calculateRuntimeDisplay } from '../utility/contentUtility';
 
 export type MovieListItemProps = {
   movie: Movie;
@@ -18,22 +19,9 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const dispatch = useAppDispatch();
   const movie = props.movie;
 
-  const calculateRuntimeDisplay = (runtime: number) => {
-    const hours = Math.floor(runtime / 60);
-    if (hours < 1) {
-      return `${runtime} minutes`;
-    } else if (hours > 1 && hours < 2) {
-      const minutes = runtime - 60;
-      return `${hours} hour, ${minutes} minutes`;
-    } else {
-      const minutes = runtime - 60 * hours;
-      return `${hours} hours, ${minutes} minutes`;
-    }
-  };
-
   const handleWatchStatusChange = (currentStatus: WatchStatus) => {
     dispatch(
-      updateStatus({
+      updateMovieStatus({
         profileId: Number(movie.profile_id),
         movieId: movie.movie_id,
         status: determineNewWatchStatus(currentStatus),
@@ -73,17 +61,17 @@ export const MovieListItem = (props: MovieListItemProps) => {
         }
       />
 
-      <Tooltip key={movie.profile_id} title={movie.watched === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
+      <Tooltip key={movie.profile_id} title={movie.watch_status === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
         <IconButton
           key={movie.profile_id}
           onClick={(event) => {
-            handleWatchStatusChange(movie.watched);
+            handleWatchStatusChange(movie.watch_status);
             event.stopPropagation();
           }}
         >
-          {movie.watched === 'NOT_WATCHED' && <WatchLaterOutlinedIcon />}
-          {movie.watched === 'WATCHING' && <WatchLaterTwoToneIcon color="success" />}
-          {movie.watched === 'WATCHED' && <WatchLaterIcon color="success" />}
+          {movie.watch_status === 'NOT_WATCHED' && <WatchLaterOutlinedIcon />}
+          {movie.watch_status === 'WATCHING' && <WatchLaterTwoToneIcon color="success" />}
+          {movie.watch_status === 'WATCHED' && <WatchLaterIcon color="success" />}
         </IconButton>
       </Tooltip>
     </ListItem>

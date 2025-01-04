@@ -2,7 +2,7 @@ import { WatchStatus } from './watchStatus';
 
 export type Movie = {
   movie_id: number;
-  tmtb_id: number;
+  tmdb_id: number;
   title: string;
   description: string;
   release_date: string;
@@ -12,11 +12,6 @@ export type Movie = {
   user_rating: number | null;
   mpa_rating: string;
   streaming_service: string;
-  watched: WatchStatus;
+  watch_status: WatchStatus;
   profile_id: string;
-};
-
-export type ProfileMovies = {
-  profile_id: string;
-  movies: Movie[];
 };
