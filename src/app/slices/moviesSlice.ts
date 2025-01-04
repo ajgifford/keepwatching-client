@@ -100,10 +100,12 @@ const moviesSlice = createSlice({
         const { profileId, movie } = action.payload;
         if (state.moviesByProfile[profileId]) {
           state.moviesByProfile[profileId].push(movie);
-          const movies = state.moviesByProfile[profileId];
-          state.genresByProfile[profileId] = generateGenreFilterValues(movies);
-          state.streamingServicesByProfile[profileId] = generateStreamingServiceFilterValues(movies);
+        } else {
+          state.moviesByProfile[profileId] = [movie];
         }
+        const movies = state.moviesByProfile[profileId];
+        state.genresByProfile[profileId] = generateGenreFilterValues(movies);
+        state.streamingServicesByProfile[profileId] = generateStreamingServiceFilterValues(movies);
         state.loading = false;
       })
       .addCase(addMovieFavorite.rejected, (state, action) => {

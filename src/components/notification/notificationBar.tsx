@@ -27,7 +27,7 @@ const NotificationBar = () => {
     <Stack spacing={2} sx={{ width: '100%' }}>
       <Snackbar
         open={open}
-        autoHideDuration={5000}
+        autoHideDuration={3500}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

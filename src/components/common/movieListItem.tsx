@@ -40,8 +40,8 @@ export const MovieListItem = (props: MovieListItemProps) => {
 
   return (
     <ListItem key={`listItem_${movie.movie_id}`} alignItems="flex-start">
-      <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
-        <Avatar alt={movie.title} src={movie.image} variant="rounded" sx={{ width: 94, height: 140 }} />
+      <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
+        <Avatar alt={movie.title} src={movie.image} variant="rounded" sx={{ width: 96, height: 140 }} />
       </ListItemAvatar>
       <ListItemText
         primary={movie.title}

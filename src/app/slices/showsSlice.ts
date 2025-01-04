@@ -100,10 +100,12 @@ const showsSlice = createSlice({
         const { profileId, show } = action.payload;
         if (state.showsByProfile[profileId]) {
           state.showsByProfile[profileId].push(show);
-          const shows = state.showsByProfile[profileId];
-          state.genresByProfile[profileId] = generateGenreFilterValues(shows);
-          state.streamingServicesByProfile[profileId] = generateStreamingServiceFilterValues(shows);
+        } else {
+          state.showsByProfile[profileId] = [show];
         }
+        const shows = state.showsByProfile[profileId];
+        state.genresByProfile[profileId] = generateGenreFilterValues(shows);
+        state.streamingServicesByProfile[profileId] = generateStreamingServiceFilterValues(shows);
         state.loading = false;
       })
       .addCase(addShowFavorite.rejected, (state, action) => {

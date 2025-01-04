@@ -41,8 +41,8 @@ export const ShowListItem = (props: ShowListItemProps) => {
   //onClick={() => navigate(`/shows/${show.show_id}`)}
   return (
     <ListItem alignItems="flex-start">
-      <ListItemAvatar sx={{ width: 96, height: 96, p: 1 }}>
-        <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 96 }} />
+      <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
+        <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 140 }} />
       </ListItemAvatar>
       <ListItemText
         primary={show.title}

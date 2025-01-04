@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
 import { addMovieFavorite } from '../../app/slices/moviesSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
+import { addShowFavorite } from '../../app/slices/showsSlice';
 
 interface FavoritesMenuProps {
   id: number;
@@ -47,13 +48,12 @@ function Search() {
         }),
       );
     } else {
-      try {
-        await axiosInstance.post(`/api/profiles/${profileId}/${searchType}/favorites`, {
-          id: showId,
-        });
-      } catch (error) {
-        console.error(error);
-      }
+      dispatch(
+        addShowFavorite({
+          profileId: Number(profileId),
+          showId: showId,
+        }),
+      );
     }
   };
 
