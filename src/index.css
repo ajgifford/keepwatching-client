@@ -8,12 +8,13 @@
   position: fixed;
   top: 0;
   width: 100%;
+  z-index: 100;
 }
 
 .content {
   flex: 1;
-  padding-top: 80px;
-  padding-bottom: 40px;
+  padding-top: 60px;
+  padding-bottom: 35px;
   overflow-y: auto;
 }
 
@@ -22,4 +23,6 @@
   bottom: 0;
   width: 100%;
   padding: 2px;
+  z-index: 101;
+  background-color: white;
 }

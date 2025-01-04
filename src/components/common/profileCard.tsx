@@ -1,10 +1,13 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Chip, Divider, Stack, Typography } from '@mui/material';
 
+import { useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
+import { makeSelectWatchedAndNotWatchedCountByProfile } from '../../app/slices/moviesSlice';
 
 interface PropTypes {
   profile: Profile;
@@ -14,6 +17,8 @@ interface PropTypes {
 }
 
 export function ProfileCard({ profile, editable, handleEdit, handleDelete }: PropTypes) {
+  const watchedAndNotWatchedSelector = useMemo(() => makeSelectWatchedAndNotWatchedCountByProfile(), []);
+  const { watched, notWatched } = useAppSelector((state) => watchedAndNotWatchedSelector(state, Number(profile.id)));
   return (
     <Box id={profile.id} key={profile.id} sx={{ p: 2, border: '1px solid black', minWidth: '200px' }}>
       <Box>
@@ -47,14 +52,12 @@ export function ProfileCard({ profile, editable, handleEdit, handleDelete }: Pro
       </Divider>
       <Box sx={{ py: '2px' }}>
         <Typography variant="body1">
-          <i>To Watch:</i>{' '}
-          <Link to={`/movies?profileId=${profile.id}&watchStatus=NOT_WATCHED`}>{profile.moviesToWatch ?? 0}</Link>
+          <i>To Watch:</i> <Link to={`/movies?profileId=${profile.id}&watchStatus=NOT_WATCHED`}>{notWatched}</Link>
         </Typography>
       </Box>
       <Box sx={{ py: '2px' }}>
         <Typography variant="body1">
-          <i>Watched:</i>{' '}
-          <Link to={`/movies?profileId=${profile.id}&watchStatus=NOT_WATCHED`}>{profile.moviesWatched ?? 0}</Link>
+          <i>Watched:</i> <Link to={`/movies?profileId=${profile.id}&watchStatus=NOT_WATCHED`}>{watched}</Link>
         </Typography>
       </Box>
       {editable ? (

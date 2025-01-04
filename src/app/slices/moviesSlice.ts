@@ -4,7 +4,7 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './authSlice';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
 interface MoviesState {
   moviesByProfile: { [profileId: number]: Movie[] };
@@ -140,5 +140,32 @@ export const selectGenresByProfile = (state: RootState) => state.movies.genresBy
 export const selectStreamingServicesByProfile = (state: RootState) => state.movies.streamingServicesByProfile;
 export const selectMoviesLoading = (state: RootState) => state.movies.loading;
 export const selectMoviesError = (state: RootState) => state.movies.error;
+
+export function selectMoviesByProfileId(state: RootState, profile_id: number): Movie[] {
+  return state.movies.moviesByProfile[profile_id] || [];
+}
+
+export const selectWatchedAndNotWatchedCount = createSelector(
+  [selectMoviesByProfile, (state: RootState, profile_id: number) => profile_id],
+  (moviesByProfile, profile_id): { watched: number; notWatched: number } => {
+    const movies = moviesByProfile[profile_id] || [];
+    const watched = movies.filter((movie) => movie.watched === 'WATCHED').length;
+    const notWatched = movies.filter((movie) => movie.watched === 'NOT_WATCHED').length;
+    return { watched, notWatched };
+  },
+);
+
+export const makeSelectWatchedAndNotWatchedCountByProfile = () => {
+  const selectWatchedAndNotWatchedCount = createSelector(
+    [selectMoviesByProfile, (state: RootState, profile_id: number) => profile_id],
+    (moviesByProfile, profile_id): { watched: number; notWatched: number } => {
+      const movies = moviesByProfile[profile_id] || [];
+      const watched = movies.filter((movie) => movie.watched === 'WATCHED').length;
+      const notWatched = movies.filter((movie) => movie.watched === 'NOT_WATCHED').length;
+      return { watched, notWatched };
+    },
+  );
+  return selectWatchedAndNotWatchedCount;
+};
 
 export default moviesSlice.reducer;

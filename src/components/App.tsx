@@ -46,7 +46,7 @@ function App() {
           </div>
         </BrowserRouter>
         <footer className="footer">
-          <p>My App Footer</p>
+          <p>Gifford Family Dev</p>
         </footer>
       </div>
     </Provider>
