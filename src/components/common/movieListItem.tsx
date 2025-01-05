@@ -52,7 +52,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
             <br />
             Genres: {movie.genres}
             <br />
-            Streaming Service: {movie.streaming_service}
+            Streaming Service: {movie.streaming_services}
             <br />
             Release Date: {movie.release_date}
             <br />

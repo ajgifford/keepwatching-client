@@ -79,7 +79,7 @@ const Shows = () => {
   const filteredShows = sortedShows.filter((show) => {
     return (
       (genreFilter === '' || show.genres.includes(genreFilter)) &&
-      (streamingServiceFilter === '' || show.streaming_service === streamingServiceFilter) &&
+      (streamingServiceFilter === '' || show.streaming_services === streamingServiceFilter) &&
       (watchedFilter === '' || show.watch_status === watchedFilter)
     );
   });

@@ -53,7 +53,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
             <br />
             Genres: {show.genres}
             <br />
-            Streaming Service: {show.streaming_service}
+            Streaming Service: {show.streaming_services}
             <br />
             Release Date: {show.release_date}
             <br />

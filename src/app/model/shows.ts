@@ -24,7 +24,7 @@ export type Show = {
   description: string;
   release_date?: string;
   genres: string;
-  streaming_service: string;
+  streaming_services: string;
   image: string;
   user_rating?: number | null;
   tv_parental_guidelines?: string;

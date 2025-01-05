@@ -79,7 +79,7 @@ const Movies = () => {
   const filteredMovies = sortedMovies.filter((movie) => {
     return (
       (genreFilter === '' || movie.genres.includes(genreFilter)) &&
-      (streamingServiceFilter === '' || movie.streaming_service === streamingServiceFilter) &&
+      (streamingServiceFilter === '' || movie.streaming_services === streamingServiceFilter) &&
       (watchedFilter === '' || movie.watch_status === watchedFilter)
     );
   });

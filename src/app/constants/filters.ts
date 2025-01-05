@@ -7,7 +7,7 @@ export const watchStatuses = [
 
 interface ContentItem {
   genres: string;
-  streaming_service: string;
+  streaming_services: string;
 }
 
 export function generateGenreFilterValues(items: ContentItem[]): string[] {
@@ -28,9 +28,11 @@ export function generateStreamingServiceFilterValues(items: ContentItem[]): stri
   const servicesSet: Set<string> = new Set();
 
   items.forEach((item) => {
-    if (item.streaming_service) {
-      servicesSet.add(item.streaming_service);
-    }
+    const itemStreamingServices = item.streaming_services || '';
+    const streamingServices = itemStreamingServices.split(',').map((streaming_service) => streaming_service.trim());
+    streamingServices.forEach((streamingService) => {
+      servicesSet.add(streamingService);
+    });
   });
 
   return Array.from(servicesSet).sort();

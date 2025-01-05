@@ -11,7 +11,7 @@ export type Movie = {
   image: string;
   user_rating: number | null;
   mpa_rating: string;
-  streaming_service: string;
+  streaming_services: string;
   watch_status: WatchStatus;
   profile_id: string;
 };
