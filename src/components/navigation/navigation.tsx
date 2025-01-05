@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaBars, FaCompass, FaFilm, FaHome, FaSearch, FaTv, FaUser } from 'react-icons/fa';
 import { LuLogOut } from 'react-icons/lu';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   AppBar,
@@ -22,8 +22,8 @@ import { logout } from '../../app/slices/authSlice';
 
 function Navigation() {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
-  const [activePage, setActivePage] = useState<string>('home');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
@@ -38,12 +38,7 @@ function Navigation() {
 
   const handleMenuPageChange = (page: string, to: string) => {
     navigate(to);
-    setActivePage(page);
     handleMobileMenuClose();
-  };
-
-  const handleToolbarPageChange = (page: string) => {
-    setActivePage(page);
   };
 
   const handleLogout = async () => {
@@ -71,7 +66,6 @@ function Navigation() {
         key={item.id}
         component={NavLink}
         to={item.to}
-        onClick={() => handleToolbarPageChange(item.id)}
         aria-label={item.label}
         startIcon={item.icon}
         sx={{
@@ -104,13 +98,19 @@ function Navigation() {
         <MenuItem
           key={item.id}
           onClick={() => handleMenuPageChange(item.id, item.to)}
-          selected={activePage === item.id}
+          selected={location.pathname === item.to}
+          sx={{
+            '&.Mui-selected': {
+              backgroundColor: 'primary.light',
+              color: 'primary.contrastText',
+            },
+          }}
         >
           {item.icon}
           <Box sx={{ ml: 2 }}>{item.label}</Box>
         </MenuItem>
       ))}
-      <MenuItem key="navigationLogoutButton" onClick={() => handleLogout()}>
+      <MenuItem key="navigationLogoutMenuItem" onClick={() => handleLogout()}>
         {<LuLogOut />}
         <Box sx={{ ml: 2 }}>Logout</Box>
       </MenuItem>
