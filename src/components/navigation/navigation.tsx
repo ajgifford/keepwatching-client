@@ -67,13 +67,18 @@ function Navigation() {
   const renderNavigationButtons = () =>
     navigationItems.map((item) => (
       <Button
-        color={activePage === item.id ? 'warning' : 'inherit'}
+        color="inherit"
         key={item.id}
         component={NavLink}
         to={item.to}
         onClick={() => handleToolbarPageChange(item.id)}
         aria-label={item.label}
         startIcon={item.icon}
+        sx={{
+          '&.active': {
+            color: theme.palette.warning.main,
+          },
+        }}
       >
         {item.label}
       </Button>
