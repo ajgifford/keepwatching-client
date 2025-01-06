@@ -4,6 +4,7 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './authSlice';
+import { NotificationType, showNotification } from './notificationSlice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
 interface MoviesState {
@@ -55,12 +56,18 @@ export const updateMovieStatus = createAsyncThunk(
 
 export const addMovieFavorite = createAsyncThunk(
   'movies/addMovieFavorite',
-  async ({ profileId, movieId }: { profileId: number; movieId: number }, { rejectWithValue }) => {
+  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/api/profiles/${profileId}/movies/favorites`, {
         id: movieId,
       });
       const movie = response.data.results[0];
+      dispatch(
+        showNotification({
+          message: `${movie.title} favorited`,
+          type: NotificationType.Success,
+        }),
+      );
       return { profileId, movie };
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);

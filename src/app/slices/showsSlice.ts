@@ -4,6 +4,7 @@ import { Show } from '../model/shows';
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './authSlice';
+import { NotificationType, showNotification } from './notificationSlice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
 interface ShowsState {
@@ -55,12 +56,18 @@ export const updateShowStatus = createAsyncThunk(
 
 export const addShowFavorite = createAsyncThunk(
   'shows/addShowFavorite',
-  async ({ profileId, showId }: { profileId: number; showId: number }, { rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/api/profiles/${profileId}/shows/favorites`, {
         id: showId,
       });
       const show = response.data.results[0];
+      dispatch(
+        showNotification({
+          message: `${show.title} favorited`,
+          type: NotificationType.Success,
+        }),
+      );
       return { profileId, show };
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
