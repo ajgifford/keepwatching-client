@@ -131,6 +131,7 @@ function Search() {
       <Typography variant="h4">Search</Typography>
       <Box display="flex" alignItems="center" marginY="8px">
         <TextField
+          id="searchTextField"
           label="Search"
           variant="outlined"
           value={searchText}
@@ -143,10 +144,26 @@ function Search() {
         </Button>
       </Box>
       <Box display="flex" alignItems="center">
-        <FormControl>
-          <RadioGroup row name="search-type-radio-buttons-group" value={searchType} onChange={handleSearchTypeChange}>
-            <FormControlLabel value="shows" control={<Radio />} label="TV Shows" />
-            <FormControlLabel value="movies" control={<Radio />} label="Movies" />
+        <FormControl id="searchFilterContentTypeControl">
+          <RadioGroup
+            id="searchFilterContentTypeRadioGroup"
+            row
+            name="search-type-radio-buttons-group"
+            value={searchType}
+            onChange={handleSearchTypeChange}
+          >
+            <FormControlLabel
+              id="searchFilterContentTypeShowsRadio"
+              value="shows"
+              control={<Radio />}
+              label="TV Shows"
+            />
+            <FormControlLabel
+              id="searchFilterContentTypeMoviesRadio"
+              value="movies"
+              control={<Radio />}
+              label="Movies"
+            />
           </RadioGroup>
         </FormControl>
       </Box>

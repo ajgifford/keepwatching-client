@@ -100,20 +100,20 @@ const Shows = () => {
         <Typography variant="subtitle1" align="justify">
           Profile:
         </Typography>
-        <FormControl>
-          <Select value={`${selectedProfile}`} onChange={selectedProfileChanged}>
-            <MenuItem key={0} value={0}>
+        <FormControl id="showsProfileControl">
+          <Select id="showsProfileSelect" value={`${selectedProfile}`} onChange={selectedProfileChanged}>
+            <MenuItem id="showsProfileFilter_none" key={0} value={0}>
               ---
             </MenuItem>
             {profiles.map((profile) => (
-              <MenuItem key={profile.id} value={profile.id}>
+              <MenuItem id={`showsProfileFilter_${profile.id}`} key={profile.id} value={profile.id}>
                 {profile.name}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <Button
-          key="filterButton"
+          id="showsFilterButton"
           onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
           startIcon={<FilterListIcon className="icon" />}
           disabled={selectedProfile === 0}
@@ -126,7 +126,7 @@ const Shows = () => {
           <Typography variant="subtitle1" align="justify">
             Count: {filteredShows.length}
           </Typography>
-          <List>
+          <List id="showsList">
             {filteredShows.map((show) => (
               <Fragment key={`showListItemFragment_${show.show_id}`}>
                 <ShowListItem show={show} />
@@ -142,51 +142,69 @@ const Shows = () => {
           </Typography>
         </Box>
       )}
-      <Drawer open={filterDrawerOpen} onClose={toggleDrawer(false)}>
+      <Drawer id="showsFilterDrawer" open={filterDrawerOpen} onClose={toggleDrawer(false)}>
         {
           <>
             <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap sx={{ flexWrap: 'wrap', p: 2, width: 300 }}>
               <Typography variant="h6" color="primary">
                 Show Filters
               </Typography>
-              <FormControl fullWidth>
-                <InputLabel>Genre</InputLabel>
-                <Select value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)}>
-                  <MenuItem key="genresFilter_all" value="">
+              <FormControl id="showsFilterGenreControl" fullWidth>
+                <InputLabel id="showsFilterGenreLabel" htmlFor="showsFilterGenreSelect">
+                  Genre
+                </InputLabel>
+                <Select
+                  id="showsFilterGenreSelect"
+                  value={genreFilter}
+                  onChange={(e) => setGenreFilter(e.target.value)}
+                >
+                  <MenuItem id="showsFilterGenre_all" key="genresFilter_all" value="">
                     --All--
                   </MenuItem>
                   {genreFilterValues.map((genre) => (
-                    <MenuItem key={genre} value={genre}>
+                    <MenuItem id={`showsFilterGenre_${genre}`} key={genre} value={genre}>
                       {genre}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Streaming Service</InputLabel>
-                <Select value={streamingServiceFilter} onChange={(e) => setStreamingServiceFilter(e.target.value)}>
-                  <MenuItem key="streamingServicesFilter_all" value="">
+              <FormControl id="showsFilterStreamingServiceControl" fullWidth>
+                <InputLabel id="showsFilterStreamingServiceLabel" htmlFor="showsFilterStreamingServiceSelect">
+                  Streaming Service
+                </InputLabel>
+                <Select
+                  id="showsFilterStreamingServiceSelect"
+                  value={streamingServiceFilter}
+                  onChange={(e) => setStreamingServiceFilter(e.target.value)}
+                >
+                  <MenuItem id="showsFilterStreamingService_all" key="streamingServicesFilter_all" value="">
                     --All--
                   </MenuItem>
                   {streamingServiceFilterValues.map((service) => (
-                    <MenuItem key={service} value={service}>
+                    <MenuItem id={`showsFilterStreamingService_${service}`} key={service} value={service}>
                       {service}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Watched Status</InputLabel>
-                <Select value={watchedFilter} onChange={(e) => setWatchedFilter(e.target.value)}>
+              <FormControl id="showsFilterWatchStatusControl" fullWidth>
+                <InputLabel id="showsFilterWatchStatusLabel" htmlFor="showsFilterWatchStatusSelect">
+                  Watch Status
+                </InputLabel>
+                <Select
+                  id="showsFilterWatchStatusSelect"
+                  value={watchedFilter}
+                  onChange={(e) => setWatchedFilter(e.target.value)}
+                >
                   {watchStatuses.map((status) => (
-                    <MenuItem key={status.value} value={status.value}>
+                    <MenuItem id={`showsFilterWatchStatus_${status.value}`} key={status.value} value={status.value}>
                       {status.display}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <FormControl>
-                <Button key="clearFilterButton" onClick={() => clearFilters()}>
+              <FormControl id="showsFilterClearFilterControl">
+                <Button id="showsFilterClearFilterButton" key="clearFilterButton" onClick={() => clearFilters()}>
                   Clear Filters
                 </Button>
               </FormControl>

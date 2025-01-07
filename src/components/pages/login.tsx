@@ -53,7 +53,7 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
-              id="email"
+              id="loginEmailText"
               label="Email"
               name="email"
               type="email"
@@ -67,7 +67,7 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
-              id="password"
+              id="logisPasswordText"
               name="password"
               label="Password"
               type="password"
@@ -77,7 +77,7 @@ const Login = () => {
               }}
             />
 
-            <Button fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={handleLogin}>
+            <Button id="loginButton" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={handleLogin}>
               Login
             </Button>
             <Grid container justifyContent={'flex-end'}>
