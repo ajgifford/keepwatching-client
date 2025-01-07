@@ -26,7 +26,7 @@ import {
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { Season, Show } from '../../app/model/shows';
-import { calculateRuntimeDisplay } from '../utility/contentUtility';
+import { calculateRuntimeDisplay, toTitleCase } from '../utility/contentUtility';
 
 const ShowSeasons = () => {
   let { showId, profileId } = useParams();
@@ -41,9 +41,18 @@ const ShowSeasons = () => {
       try {
         const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/seasons`);
         const results = response.data.results;
-        const show = results[0];
+        const show: Show = results[0];
+        const seasons: Season[] = show.seasons!;
         setShow(show);
-        setSeasons(show.seasons);
+        setSeasons(seasons);
+
+        const watchedEpisodesMap: Record<number, boolean> = {};
+        seasons.forEach((season) => {
+          season.episodes.forEach((episode) => {
+            watchedEpisodesMap[episode.episode_id] = episode.watch_status === 'WATCHED';
+          });
+        });
+        setWatchedEpisodes(watchedEpisodesMap);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -95,8 +104,9 @@ const ShowSeasons = () => {
             <Typography variant="subtitle1" fontStyle="italic">
               {show?.description}
             </Typography>
-            <Typography variant="body1">{show?.genres}</Typography>
-            <Typography variant="body1">{show?.streaming_services}</Typography>
+            <Typography variant="body1">Genre: {show?.genres}</Typography>
+            <Typography variant="body1">Streaming Service: {show?.streaming_services}</Typography>
+            <Typography variant="body1">Status: {toTitleCase(show?.watch_status)}</Typography>
           </Box>
         </Toolbar>
       </AppBar>

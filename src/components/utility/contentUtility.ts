@@ -17,3 +17,8 @@ export function calculateRuntimeDisplay(runtime: number): string {
 export function stripArticle(title: string): string {
   return title.replace(/^(a |an |the )/i, '').trim();
 }
+
+export function toTitleCase(str: string | undefined) {
+  if (!str) return '';
+  return str.replace(/\w\S*/g, (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase());
+}

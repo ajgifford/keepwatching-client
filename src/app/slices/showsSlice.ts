@@ -46,6 +46,7 @@ export const updateShowStatus = createAsyncThunk(
       await axiosInstance.put(`/api/profiles/${profileId}/shows/watchStatus`, {
         show_id: showId,
         status: status,
+        recursive: true,
       });
       return { profileId, showId, status };
     } catch (error: any) {
