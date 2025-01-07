@@ -63,10 +63,9 @@ export const ShowListItem = (props: ShowListItemProps) => {
     return 'NOT_WATCHED';
   }
 
-  //onClick={() => navigate(`/shows/${show.show_id}`)}
   return (
     <>
-      <ListItem alignItems="flex-start">
+      <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`)}>
         <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
           <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 140 }} />
         </ListItemAvatar>

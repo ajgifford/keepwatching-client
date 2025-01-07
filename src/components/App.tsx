@@ -35,7 +35,7 @@ function App() {
                 <Route element={<ProtectedLayout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/shows" element={<Shows />} />
-                  <Route path="/shows/:id" element={<ShowSeasons />} />
+                  <Route path="/shows/:showId/:profileId" element={<ShowSeasons />} />
                   <Route path="/movies" element={<Movies />} />
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/search" element={<Search />} />

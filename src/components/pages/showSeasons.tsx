@@ -25,46 +25,50 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
-import { Season, ShowWithSeasons } from '../../app/model/shows';
+import { Season, Show } from '../../app/model/shows';
+import { calculateRuntimeDisplay } from '../utility/contentUtility';
 
 const ShowSeasons = () => {
-  let { id } = useParams();
+  let { showId, profileId } = useParams();
+
   const navigate = useNavigate();
-  const [show, setShow] = useState<ShowWithSeasons>();
+  const [show, setShow] = useState<Show>();
   const [seasons, setSeasons] = useState<Season[] | undefined>([]);
-  const [watchedEpisodes, setWatchedEpisodes] = useState<Record<string, boolean>>({});
+  const [watchedEpisodes, setWatchedEpisodes] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     async function fetchSeasons() {
       try {
-        const response = await axiosInstance.get(`/api/shows/${id}`);
-        const showWithSeasons: ShowWithSeasons = JSON.parse(response.data);
-        setShow(showWithSeasons);
-        setSeasons(showWithSeasons.seasons);
+        const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/seasons`);
+        const results = response.data.results;
+        const show = results[0];
+        setShow(show);
+        setSeasons(show.seasons);
       } catch (error) {
         console.error('Error:', error);
       }
     }
     fetchSeasons();
-  }, [id]);
+  }, [showId, profileId]);
 
-  const isSeasonFullyWatched = (season: Season) => season.episodes.every((episode) => watchedEpisodes[episode.id]);
+  const isSeasonFullyWatched = (season: Season) =>
+    season.episodes.every((episode) => watchedEpisodes[episode.episode_id]);
 
   const isSeasonPartiallyWatched = (season: Season) =>
-    season.episodes.some((episode) => watchedEpisodes[episode.id]) && !isSeasonFullyWatched(season);
+    season.episodes.some((episode) => watchedEpisodes[episode.episode_id]) && !isSeasonFullyWatched(season);
 
   const toggleSeasonWatched = (season: Season) => {
     const fullyWatched = isSeasonFullyWatched(season);
     setWatchedEpisodes((prev) => {
       const updated = { ...prev };
       season.episodes.forEach((episode) => {
-        updated[episode.id] = !fullyWatched;
+        updated[episode.episode_id] = !fullyWatched;
       });
       return updated;
     });
   };
 
-  const toggleEpisodeWatched = (episodeId: string) => {
+  const toggleEpisodeWatched = (episodeId: number) => {
     setWatchedEpisodes((prev) => ({
       ...prev,
       [episodeId]: !prev[episodeId],
@@ -80,7 +84,7 @@ const ShowSeasons = () => {
               edge="start"
               aria-label="back"
               onClick={() => {
-                navigate('/shows');
+                navigate(`/shows?profileId=${profileId}`);
               }}
             >
               <ArrowBackIosIcon />
@@ -92,7 +96,7 @@ const ShowSeasons = () => {
               {show?.description}
             </Typography>
             <Typography variant="body1">{show?.genres}</Typography>
-            <Typography variant="body1">{show?.streaming_service}</Typography>
+            <Typography variant="body1">{show?.streaming_services}</Typography>
           </Box>
         </Toolbar>
       </AppBar>
@@ -100,13 +104,14 @@ const ShowSeasons = () => {
       {seasons ? (
         <Box>
           {seasons.map((season) => (
-            <Accordion key={season.id}>
+            <Accordion key={season.season_id}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <ListItemAvatar>
-                  <Avatar src={season.image} alt={season.title} variant="square" />
+                <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
+                  <Avatar alt={season.name} src={season.image} variant="rounded" sx={{ width: 96, height: 140 }} />
                 </ListItemAvatar>
                 <Box ml={2} flexGrow={1}>
-                  <Typography variant="h6">{season.title}</Typography>
+                  <Typography variant="h6">{season.name}</Typography>
+                  <Typography variant="subtitle1">Season: {season.season_number}</Typography>
                   <Typography variant="body2">
                     {season.number_of_episodes} Episodes | First Aired: {season.release_date}
                   </Typography>
@@ -132,21 +137,32 @@ const ShowSeasons = () => {
                 {season.episodes ? (
                   <List>
                     {season.episodes.map((episode) => (
-                      <React.Fragment key={episode.id}>
+                      <React.Fragment key={episode.episode_id}>
                         <ListItem>
-                          <ListItemAvatar>
-                            <Avatar src={episode.image} alt={episode.title} variant="square" />
+                          <ListItemAvatar sx={{ width: 140, height: 96, p: 1 }}>
+                            <Avatar
+                              alt={episode.title}
+                              src={episode.image}
+                              variant="rounded"
+                              sx={{ width: 140, height: 96 }}
+                            />
                           </ListItemAvatar>
                           <ListItemText
                             primary={episode.title}
-                            secondary={`Summary: ${episode.summary} | Aired: ${episode.release_date} | Runtime: ${episode.duration}`}
+                            secondary={
+                              <>
+                                <i>{episode.overview}</i> <br />
+                                Episode: {episode.episode_number} {' (' + episode.episode_type + ')'} | Aired:{' '}
+                                {episode.air_date ?? 'TBD'} | Runtime: {calculateRuntimeDisplay(episode.runtime)}
+                              </>
+                            }
                           />
-                          <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}>
+                          <Tooltip title={watchedEpisodes[episode.episode_id] ? 'Mark Not Watched' : 'Mark Watched'}>
                             <IconButton
-                              color={watchedEpisodes[episode.id] ? 'success' : 'default'}
-                              onClick={() => toggleEpisodeWatched(episode.id)}
+                              color={watchedEpisodes[episode.episode_id] ? 'success' : 'default'}
+                              onClick={() => toggleEpisodeWatched(episode.episode_id)}
                             >
-                              {watchedEpisodes[episode.id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                              {watchedEpisodes[episode.episode_id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
                             </IconButton>
                           </Tooltip>
                         </ListItem>

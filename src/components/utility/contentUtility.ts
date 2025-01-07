@@ -1,4 +1,7 @@
 export function calculateRuntimeDisplay(runtime: number): string {
+  if (!runtime) {
+    return 'TBD';
+  }
   const hours = Math.floor(runtime / 60);
   if (hours < 1) {
     return `${runtime} minutes`;
