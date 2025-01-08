@@ -1,3 +1,4 @@
+import activeShowReducer from './slices/activeShowSlice';
 import authReducer from './slices/authSlice';
 import moviesReducer from './slices/moviesSlice';
 import notificationReducer from './slices/notificationSlice';
@@ -11,6 +12,7 @@ const store = configureStore({
     profiles: profilesReducer,
     movies: moviesReducer,
     shows: showsReducer,
+    activeShow: activeShowReducer,
     notification: notificationReducer,
   },
 });

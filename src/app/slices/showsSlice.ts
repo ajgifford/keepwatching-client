@@ -3,6 +3,7 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { Show } from '../model/shows';
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
+import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { logout } from './authSlice';
 import { NotificationType, showNotification } from './notificationSlice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -132,6 +133,30 @@ const showsSlice = createSlice({
       })
       .addCase(updateShowStatus.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to update show status';
+      })
+      .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
+        const profileId = Number(action.payload.profileId);
+        const showId = action.payload.showId;
+        const status = action.payload.showStatus;
+        const profileShows = state.showsByProfile[profileId];
+        if (profileShows) {
+          const show = profileShows.find((m) => m.show_id === showId);
+          if (show) {
+            show.watch_status = status;
+          }
+        }
+      })
+      .addCase(updateSeasonWatchStatus.fulfilled, (state, action) => {
+        const profileId = Number(action.payload.profileId);
+        const showId = action.payload.showId;
+        const status = action.payload.showStatus;
+        const profileShows = state.showsByProfile[profileId];
+        if (profileShows) {
+          const show = profileShows.find((m) => m.show_id === showId);
+          if (show) {
+            show.watch_status = status;
+          }
+        }
       });
   },
 });

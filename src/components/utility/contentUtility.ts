@@ -1,3 +1,5 @@
+import { WatchStatus } from '../../app/model/watchStatus';
+
 export function calculateRuntimeDisplay(runtime: number): string {
   if (!runtime) {
     return 'TBD';
@@ -18,7 +20,9 @@ export function stripArticle(title: string): string {
   return title.replace(/^(a |an |the )/i, '').trim();
 }
 
-export function toTitleCase(str: string | undefined) {
-  if (!str) return '';
-  return str.replace(/\w\S*/g, (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase());
+export function getWatchStatusDisplay(status: WatchStatus | undefined) {
+  if (!status) return '';
+  if (status === 'WATCHED') return 'Watched';
+  if (status === 'WATCHING') return 'Watching';
+  if (status === 'NOT_WATCHED') return 'Not Watched';
 }

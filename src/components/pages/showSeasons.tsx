@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -24,65 +24,39 @@ import {
   Typography,
 } from '@mui/material';
 
-import axiosInstance from '../../app/api/axiosInstance';
-import { Season, Show } from '../../app/model/shows';
-import { calculateRuntimeDisplay, toTitleCase } from '../utility/contentUtility';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { Season } from '../../app/model/shows';
+import {
+  clearActiveShow,
+  fetchShowWithDetails,
+  selectSeasons,
+  selectShow,
+  selectWatchedEpisodes,
+  updateEpisodeWatchStatus,
+  updateSeasonWatchStatus,
+} from '../../app/slices/activeShowSlice';
+import { calculateRuntimeDisplay, getWatchStatusDisplay } from '../utility/contentUtility';
 
 const ShowSeasons = () => {
   let { showId, profileId } = useParams();
 
   const navigate = useNavigate();
-  const [show, setShow] = useState<Show>();
-  const [seasons, setSeasons] = useState<Season[] | undefined>([]);
-  const [watchedEpisodes, setWatchedEpisodes] = useState<Record<number, boolean>>({});
+  const dispatch = useAppDispatch();
+  const show = useAppSelector(selectShow);
+  const seasons = useAppSelector(selectSeasons);
+  const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
 
   useEffect(() => {
-    async function fetchSeasons() {
-      try {
-        const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/seasons`);
-        const results = response.data.results;
-        const show: Show = results[0];
-        const seasons: Season[] = show.seasons!;
-        setShow(show);
-        setSeasons(seasons);
-
-        const watchedEpisodesMap: Record<number, boolean> = {};
-        seasons.forEach((season) => {
-          season.episodes.forEach((episode) => {
-            watchedEpisodesMap[episode.episode_id] = episode.watch_status === 'WATCHED';
-          });
-        });
-        setWatchedEpisodes(watchedEpisodesMap);
-      } catch (error) {
-        console.error('Error:', error);
-      }
+    if (showId && profileId) {
+      dispatch(fetchShowWithDetails({ profileId, showId }));
     }
-    fetchSeasons();
-  }, [showId, profileId]);
+  }, [profileId, showId, dispatch]);
 
   const isSeasonFullyWatched = (season: Season) =>
     season.episodes.every((episode) => watchedEpisodes[episode.episode_id]);
 
   const isSeasonPartiallyWatched = (season: Season) =>
     season.episodes.some((episode) => watchedEpisodes[episode.episode_id]) && !isSeasonFullyWatched(season);
-
-  const toggleSeasonWatched = (season: Season) => {
-    const fullyWatched = isSeasonFullyWatched(season);
-    setWatchedEpisodes((prev) => {
-      const updated = { ...prev };
-      season.episodes.forEach((episode) => {
-        updated[episode.episode_id] = !fullyWatched;
-      });
-      return updated;
-    });
-  };
-
-  const toggleEpisodeWatched = (episodeId: number) => {
-    setWatchedEpisodes((prev) => ({
-      ...prev,
-      [episodeId]: !prev[episodeId],
-    }));
-  };
 
   return (
     <>
@@ -93,6 +67,7 @@ const ShowSeasons = () => {
               edge="start"
               aria-label="back"
               onClick={() => {
+                dispatch(clearActiveShow());
                 navigate(`/shows?profileId=${profileId}`);
               }}
             >
@@ -106,7 +81,7 @@ const ShowSeasons = () => {
             </Typography>
             <Typography variant="body1">Genre: {show?.genres}</Typography>
             <Typography variant="body1">Streaming Service: {show?.streaming_services}</Typography>
-            <Typography variant="body1">Status: {toTitleCase(show?.watch_status)}</Typography>
+            <Typography variant="body1">Status: {getWatchStatusDisplay(show?.watch_status)}</Typography>
           </Box>
         </Toolbar>
       </AppBar>
@@ -130,7 +105,13 @@ const ShowSeasons = () => {
                   <IconButton
                     onClick={(event) => {
                       event.stopPropagation();
-                      toggleSeasonWatched(season);
+                      dispatch(
+                        updateSeasonWatchStatus({
+                          profileId,
+                          season,
+                          seasonStatus: season.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED',
+                        }),
+                      );
                     }}
                   >
                     {isSeasonFullyWatched(season) ? (
@@ -170,7 +151,16 @@ const ShowSeasons = () => {
                           <Tooltip title={watchedEpisodes[episode.episode_id] ? 'Mark Not Watched' : 'Mark Watched'}>
                             <IconButton
                               color={watchedEpisodes[episode.episode_id] ? 'success' : 'default'}
-                              onClick={() => toggleEpisodeWatched(episode.episode_id)}
+                              onClick={() =>
+                                dispatch(
+                                  updateEpisodeWatchStatus({
+                                    profileId,
+                                    season,
+                                    episode,
+                                    episodeStatus: episode?.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED',
+                                  }),
+                                )
+                              }
                             >
                               {watchedEpisodes[episode.episode_id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
                             </IconButton>
