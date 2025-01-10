@@ -19,11 +19,17 @@ const Home = () => {
 
   if (profilesStatus === 'pending') {
     return (
-      <div>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mt: 4,
+          px: 2,
+        }}
+      >
         <Typography variant="h2" gutterBottom>
           Loading...
         </Typography>
-      </div>
+      </Box>
     );
   } else if (profilesStatus === 'succeeded') {
     return (
@@ -41,13 +47,35 @@ const Home = () => {
         <Typography variant="h4" color="textPrimary" gutterBottom>
           Welcome {account.name}!
         </Typography>
+        <Box
+          crossOrigin="anonymous"
+          component="img"
+          src={account.image}
+          alt={account.name}
+          sx={{
+            width: 455,
+            height: 256,
+            objectFit: 'cover',
+            borderRadius: 2,
+          }}
+        />
         <Box sx={{ p: 2 }}>
           <ProfilesStack editable={false} />
         </Box>
       </Box>
     );
   } else if (profilesStatus === 'failed') {
-    return <div>{profileError}</div>;
+    return (
+      <Box
+        sx={{
+          textAlign: 'center',
+          mt: 4,
+          px: 2,
+        }}
+      >
+        {profileError}
+      </Box>
+    );
   } else {
     return (
       <div>

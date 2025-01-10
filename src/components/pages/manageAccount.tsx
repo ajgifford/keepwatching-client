@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -13,14 +13,28 @@ import {
   Stack,
   TextField,
   Typography,
+  styled,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
+import { BACKEND_BASE_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
-import { selectCurrentAccount } from '../../app/slices/authSlice';
+import { selectCurrentAccount, updateAccountImage } from '../../app/slices/authSlice';
 import { addProfile, deleteProfile, editProfile } from '../../app/slices/profilesSlice';
 import { ProfilesStack } from '../common/profilesStack';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
@@ -80,21 +94,93 @@ const ManageAccount = () => {
     }
   }
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) {
+      return;
+    }
+    const file = files[0];
+    dispatch(updateAccountImage({ accountId: account.id, file }));
+  };
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <>
       <Grid container spacing={2} alignItems="center">
-        <Box
-          component="img"
-          src={account.image}
-          alt={account.name}
-          sx={{
-            borderRadius: 2,
-          }}
-        />
-        <Typography variant="h2" gutterBottom>
-          {account.name}
-        </Typography>
+        <Grid>
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'inline-block',
+              width: 455,
+              height: 256,
+              borderRadius: 2,
+              cursor: 'pointer',
+              overflow: 'hidden',
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={handleImageClick}
+          >
+            <Box
+              crossOrigin="anonymous"
+              component="img"
+              src={account.image}
+              alt={account.name}
+              sx={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: 2,
+              }}
+            />
+            {isHovered && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  borderRadius: 2,
+                }}
+              >
+                Upload Image
+              </Box>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+            />
+          </Box>
+        </Grid>
+
+        <Grid>
+          <Typography variant="h2" gutterBottom>
+            {account.name}
+          </Typography>
+          {/* <img crossOrigin='anonymous'></img> */}
+        </Grid>
       </Grid>
+
       <Box sx={{ p: 2 }}>
         <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 1 }}>
           <Typography variant="h4">Profiles</Typography>

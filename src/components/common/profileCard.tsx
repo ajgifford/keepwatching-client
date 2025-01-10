@@ -37,7 +37,14 @@ export function ProfileCard({ profile, editable, handleEdit, handleDelete }: Pro
         </Typography>
       </Box>
       <Divider sx={{ p: '2px' }}>
-        <Chip label="Shows" color="info" size="small" component={Link} to={`/shows?profileId=${profile.id}`} />
+        <Chip
+          label="Shows"
+          color="info"
+          size="small"
+          component={Link}
+          to={`/shows?profileId=${profile.id}`}
+          sx={{ cursor: 'pointer' }}
+        />
       </Divider>
       <Box sx={{ py: '1px' }}>
         <Typography variant="body1">
@@ -73,7 +80,14 @@ export function ProfileCard({ profile, editable, handleEdit, handleDelete }: Pro
         </Typography>
       </Box>
       <Divider sx={{ p: '2px' }}>
-        <Chip label="Movies" color="success" size="small" component={Link} to={`/movies?profileId=${profile.id}`} />
+        <Chip
+          label="Movies"
+          color="success"
+          size="small"
+          component={Link}
+          to={`/movies?profileId=${profile.id}`}
+          sx={{ cursor: 'pointer' }}
+        />
       </Divider>
       <Box sx={{ py: '2px' }}>
         <Typography variant="body1">

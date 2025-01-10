@@ -5,4 +5,4 @@ export interface Account {
   image: string;
 }
 
-export const ACCOUNT = 'account';
+export const ACCOUNT_KEY = 'account';
