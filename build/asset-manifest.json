@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/keep-watching/static/css/main.26531a27.css",
+    "main.js": "/keep-watching/static/js/main.ce0c2ffe.js",
+    "index.html": "/keep-watching/index.html",
+    "main.26531a27.css.map": "/keep-watching/static/css/main.26531a27.css.map",
+    "main.ce0c2ffe.js.map": "/keep-watching/static/js/main.ce0c2ffe.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.26531a27.css",
+    "static/js/main.ce0c2ffe.js"
+  ]
+}
