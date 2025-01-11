@@ -12,7 +12,6 @@ import {
   List,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Stack,
   Typography,
 } from '@mui/material';
@@ -123,61 +122,78 @@ const Shows = () => {
 
   return (
     <>
-      <Box>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 999,
+          backgroundColor: 'white',
+          padding: 2,
+          borderBottom: '1px solid #ddd',
+        }}
+      >
         <Typography variant="h4" align="left">
           Shows
         </Typography>
-      </Box>
-      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" alignItems="center" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
-        <Typography variant="subtitle1" align="justify">
-          Profile:
-        </Typography>
-        <FormControl id="showsProfileControl">
-          <Select
-            id="showsProfileSelect"
-            value={`${selectedProfile}`}
-            onChange={(e) => handleProfileChanged(e.target.value)}
-          >
-            <MenuItem id="showsProfileFilter_none" key={0} value={0}>
-              ---
-            </MenuItem>
-            {profiles.map((profile) => (
-              <MenuItem id={`showsProfileFilter_${profile.id}`} key={profile.id} value={profile.id}>
-                {profile.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button
-          id="showsFilterButton"
-          onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
-          startIcon={<FilterListIcon className="icon" />}
-          disabled={selectedProfile === 0}
+        <Stack
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          alignItems="center"
+          useFlexGap
+          sx={{ flexWrap: 'wrap', mt: 2 }}
         >
-          Filter
-        </Button>
-      </Stack>
-      {filteredShows.length > 0 ? (
-        <Box>
           <Typography variant="subtitle1" align="justify">
+            Profile:
+          </Typography>
+          <FormControl id="showsProfileControl">
+            <Select
+              id="showsProfileSelect"
+              value={`${selectedProfile}`}
+              onChange={(e) => handleProfileChanged(e.target.value)}
+            >
+              <MenuItem id="showsProfileFilter_none" key={0} value={0}>
+                ---
+              </MenuItem>
+              {profiles.map((profile) => (
+                <MenuItem id={`showsProfileFilter_${profile.id}`} key={profile.id} value={profile.id}>
+                  {profile.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            id="showsFilterButton"
+            onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
+            startIcon={<FilterListIcon className="icon" />}
+            disabled={selectedProfile === 0}
+          >
+            Filter
+          </Button>
+          <Typography variant="subtitle1" align="justify" sx={{ ml: 'auto' }}>
             Count: {filteredShows.length}
           </Typography>
-          <List id="showsList">
-            {filteredShows.map((show) => (
-              <Fragment key={`showListItemFragment_${show.show_id}`}>
-                <ShowListItem show={show} getFilters={getFilters} />
-                <Divider key={`showListItemDivider_${show.show_id}`} variant="inset" component="li" />
-              </Fragment>
-            ))}
-          </List>
-        </Box>
-      ) : (
-        <Box>
-          <Typography variant="h6" align="center">
-            No Shows Match Current Filters
-          </Typography>
-        </Box>
-      )}
+        </Stack>
+      </Box>
+      <Box sx={{ mt: 2 }}>
+        {filteredShows.length > 0 ? (
+          <Box>
+            <List id="showsList">
+              {filteredShows.map((show) => (
+                <Fragment key={`showListItemFragment_${show.show_id}`}>
+                  <ShowListItem show={show} getFilters={getFilters} />
+                  <Divider key={`showListItemDivider_${show.show_id}`} variant="inset" component="li" />
+                </Fragment>
+              ))}
+            </List>
+          </Box>
+        ) : (
+          <Box>
+            <Typography variant="h6" align="center">
+              No Shows Match Current Filters
+            </Typography>
+          </Box>
+        )}
+      </Box>
       <Drawer id="showsFilterDrawer" open={filterDrawerOpen} onClose={toggleDrawer(false)}>
         {
           <>

@@ -12,7 +12,6 @@ import {
   List,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Stack,
   Typography,
 } from '@mui/material';
@@ -119,61 +118,78 @@ const Movies = () => {
 
   return (
     <>
-      <Box>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 999,
+          backgroundColor: 'white',
+          padding: 2,
+          borderBottom: '1px solid #ddd',
+        }}
+      >
         <Typography variant="h4" align="left">
           Movies
         </Typography>
-      </Box>
-      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" alignItems="center" useFlexGap sx={{ flexWrap: 'wrap', p: 2 }}>
-        <Typography variant="subtitle1" align="justify">
-          Profile:
-        </Typography>
-        <FormControl id="moviesProfileControl">
-          <Select
-            id="moviesProfileSelect"
-            value={`${selectedProfile}`}
-            onChange={(e) => handleProfileChanged(e.target.value)}
-          >
-            <MenuItem id="moviesProfileFilter_none" key={0} value={0}>
-              ---
-            </MenuItem>
-            {profiles.map((profile) => (
-              <MenuItem id={`moviesProfileFilter_${profile.id}`} key={profile.id} value={profile.id}>
-                {profile.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button
-          id="movieFilterButton"
-          onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
-          startIcon={<FilterListIcon className="icon" />}
-          disabled={selectedProfile === 0}
+        <Stack
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          alignItems="center"
+          useFlexGap
+          sx={{ flexWrap: 'wrap', mt: 2 }}
         >
-          Filter
-        </Button>
-      </Stack>
-      {filteredMovies.length > 0 ? (
-        <Box>
           <Typography variant="subtitle1" align="justify">
+            Profile:
+          </Typography>
+          <FormControl id="moviesProfileControl">
+            <Select
+              id="moviesProfileSelect"
+              value={`${selectedProfile}`}
+              onChange={(e) => handleProfileChanged(e.target.value)}
+            >
+              <MenuItem id="moviesProfileFilter_none" key={0} value={0}>
+                ---
+              </MenuItem>
+              {profiles.map((profile) => (
+                <MenuItem id={`moviesProfileFilter_${profile.id}`} key={profile.id} value={profile.id}>
+                  {profile.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            id="moviesFilterButton"
+            onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
+            startIcon={<FilterListIcon className="icon" />}
+            disabled={selectedProfile === 0}
+          >
+            Filter
+          </Button>
+          <Typography variant="subtitle1" align="justify" sx={{ ml: 'auto' }}>
             Count: {filteredMovies.length}
           </Typography>
-          <List id="moviesList">
-            {filteredMovies.map((movie) => (
-              <Fragment key={`movieListItemFragment_${movie.movie_id}`}>
-                <MovieListItem movie={movie} />
-                <Divider key={`movieListItemDivider_${movie.movie_id}`} variant="inset" component="li" />
-              </Fragment>
-            ))}
-          </List>
-        </Box>
-      ) : (
-        <Box>
-          <Typography variant="h6" align="center">
-            {selectedProfile === 0 ? 'Select a profile to view movies!' : 'No movies match the current filters.'}
-          </Typography>
-        </Box>
-      )}
+        </Stack>
+      </Box>
+      <Box sx={{ mt: 2 }}>
+        {filteredMovies.length > 0 ? (
+          <Box>
+            <List id="moviesList">
+              {filteredMovies.map((movie) => (
+                <Fragment key={`movieListItemFragment_${movie.movie_id}`}>
+                  <MovieListItem movie={movie} />
+                  <Divider key={`movieListItemDivider_${movie.movie_id}`} variant="inset" component="li" />
+                </Fragment>
+              ))}
+            </List>
+          </Box>
+        ) : (
+          <Box>
+            <Typography variant="h6" align="center">
+              No Movies Match Current Filters
+            </Typography>
+          </Box>
+        )}
+      </Box>
       <Drawer id="moviesFilterDrawer" open={filterDrawerOpen} onClose={toggleDrawer(false)}>
         {
           <>

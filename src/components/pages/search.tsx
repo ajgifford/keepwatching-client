@@ -1,61 +1,16 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import React from 'react';
 
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
-import { addMovieFavorite } from '../../app/slices/moviesSlice';
-import { selectAllProfiles } from '../../app/slices/profilesSlice';
-import { addShowFavorite } from '../../app/slices/showsSlice';
-
-interface FavoritesMenuProps {
-  id: number;
-}
+import SearchResults from '../common/searchResults';
 
 function Search() {
-  const dispatch = useAppDispatch();
-  const profiles = useAppSelector(selectAllProfiles);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [searchType, setSearchType] = useState<string>('shows');
-
-  const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
-    if (searchType === 'movies') {
-      dispatch(
-        addMovieFavorite({
-          profileId: Number(profileId),
-          movieId: showId,
-        }),
-      );
-    } else {
-      dispatch(
-        addShowFavorite({
-          profileId: Number(profileId),
-          showId: showId,
-        }),
-      );
-    }
-  };
 
   const handleSearch = async () => {
     const searchString = replaceSpacesWithPlus(searchText);
@@ -84,46 +39,6 @@ function Search() {
     setSearchType((event.target as HTMLInputElement).value);
     setSearchText('');
     setResults([]);
-  };
-
-  const FavoritesMenu = (props: FavoritesMenuProps) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open: boolean = Boolean(anchorEl);
-
-    return (
-      <React.Fragment>
-        <Button
-          id="favorite-button"
-          aria-controls="favorite-menu"
-          aria-haspopup="true"
-          onClick={(event) => setAnchorEl(event.currentTarget)}
-          endIcon={<StarBorderIcon />}
-          variant="outlined"
-        >
-          Favorite
-        </Button>
-        <Menu
-          elevation={1}
-          id="favorite-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={() => setAnchorEl(null)}
-        >
-          {profiles.map((profile) => (
-            <MenuItem
-              key={profile.id}
-              onClick={() => {
-                setAnchorEl(null);
-                handleFavoriteProfileClick(profile.id, props.id);
-              }}
-            >
-              {profile.name}
-            </MenuItem>
-          ))}
-        </Menu>
-      </React.Fragment>
-    );
   };
 
   return (
@@ -167,47 +82,7 @@ function Search() {
           </RadioGroup>
         </FormControl>
       </Box>
-      {results.length > 0 ? (
-        <List>
-          {results.map((show) => (
-            <Fragment key={show.id}>
-              <ListItem alignItems="flex-start" secondaryAction={<FavoritesMenu id={show.id} />}>
-                <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
-                  <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 94, height: 140 }} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={show.title}
-                  secondary={
-                    <Typography
-                      component="span"
-                      variant="caption"
-                      sx={{ display: 'block', marginTop: 1, paddingRight: '120px' }}
-                    >
-                      <i>{show.summary}</i>
-                      <br />
-                      <b>Genres:</b> {show.genres.join(', ')}
-                      <br />
-                      <b>Premiered:</b> {show.premiered}
-                      <br />
-                      <b>Rating:</b> {show.rating}
-                    </Typography>
-                  }
-                  slotProps={{
-                    primary: { variant: 'subtitle1' },
-                  }}
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-            </Fragment>
-          ))}
-        </List>
-      ) : (
-        <Box>
-          <Typography variant="h6" align="center">
-            No Results Found
-          </Typography>
-        </Box>
-      )}
+      <SearchResults results={results} searchType={searchType} />
     </div>
   );
 }

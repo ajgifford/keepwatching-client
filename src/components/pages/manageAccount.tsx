@@ -13,28 +13,14 @@ import {
   Stack,
   TextField,
   Typography,
-  styled,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { BACKEND_BASE_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
 import { selectCurrentAccount, updateAccountImage } from '../../app/slices/authSlice';
 import { addProfile, deleteProfile, editProfile } from '../../app/slices/profilesSlice';
 import { ProfilesStack } from '../common/profilesStack';
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
