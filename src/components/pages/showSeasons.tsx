@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -45,6 +45,10 @@ const ShowSeasons = () => {
   const show = useAppSelector(selectShow);
   const seasons = useAppSelector(selectSeasons);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
+  const location = useLocation();
+  const genreFilter = location.state.genre;
+  const streamingServiceFilter = location.state.streamingService;
+  const watchStatusFilter = location.state.watchStatus;
 
   useEffect(() => {
     if (showId && profileId) {
@@ -58,6 +62,20 @@ const ShowSeasons = () => {
   const isSeasonPartiallyWatched = (season: Season) =>
     season.episodes.some((episode) => watchedEpisodes[episode.episode_id]) && !isSeasonFullyWatched(season);
 
+  const buildBackButtonPath = () => {
+    let path = `/shows?profileId=${profileId}`;
+    if (genreFilter) {
+      path += `&genre=${encodeURIComponent(genreFilter)}`;
+    }
+    if (streamingServiceFilter) {
+      path += `&streamingService=${encodeURIComponent(streamingServiceFilter)}`;
+    }
+    if (watchStatusFilter) {
+      path += `&watchStatus=${encodeURIComponent(watchStatusFilter)}`;
+    }
+    return path;
+  };
+
   return (
     <>
       <AppBar position="sticky" color="inherit" elevation={0}>
@@ -68,7 +86,7 @@ const ShowSeasons = () => {
               aria-label="back"
               onClick={() => {
                 dispatch(clearActiveShow());
-                navigate(`/shows?profileId=${profileId}`);
+                navigate(buildBackButtonPath());
               }}
             >
               <ArrowBackIosIcon />

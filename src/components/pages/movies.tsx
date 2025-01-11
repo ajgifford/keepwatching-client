@@ -35,14 +35,16 @@ const Movies = () => {
   const moviesByProfile = useAppSelector(selectMoviesByProfile);
   const genresByProfile = useAppSelector(selectMovieGenresByProfile);
   const streamingServicesByProfile = useAppSelector(selectMovieStreamingServicesByProfile);
-  const [searchParams] = useSearchParams();
-  const profileId = Number(searchParams.get('profileId')) || 0;
-  const watchStatus = searchParams.get('watchStatus') || '';
-  const [selectedProfile, setSelectedProfile] = useState<number>(profileId);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const profileParam = Number(searchParams.get('profileId')) || 0;
+  const genreParam = decodeURIComponent(searchParams.get('genre') || '');
+  const streamingServiveParam = decodeURIComponent(searchParams.get('streamingService') || '');
+  const watchStatusParam = decodeURIComponent(searchParams.get('watchStatus') || '');
+  const [selectedProfile, setSelectedProfile] = useState<number>(profileParam);
 
-  const [genreFilter, setGenreFilter] = useState<string>('');
-  const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>('');
-  const [watchedFilter, setWatchedFilter] = useState<string>(watchStatus);
+  const [genreFilter, setGenreFilter] = useState<string>(genreParam);
+  const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>(streamingServiveParam);
+  const [watchStatusFilter, setWatchStatusFilter] = useState<string>(watchStatusParam);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -62,8 +64,39 @@ const Movies = () => {
   const clearFilters = () => {
     setGenreFilter('');
     setStreamingServiceFilter('');
-    setWatchedFilter('');
+    setWatchStatusFilter('');
+    setSearchParams({});
     setFilterDrawerOpen(false);
+  };
+
+  const updateSearchParams = (key: string, value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set(key, encodeURIComponent(value));
+    } else {
+      newParams.delete(key);
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleGenreChange = (value: string) => {
+    setGenreFilter(value);
+    updateSearchParams('genre', value);
+  };
+
+  const handleStreamingServiceChange = (value: string) => {
+    setStreamingServiceFilter(value);
+    updateSearchParams('streamingService', value);
+  };
+
+  const handleWatchStatusChange = (value: string) => {
+    setWatchStatusFilter(value);
+    updateSearchParams('watchStatus', value);
+  };
+
+  const handleProfileChanged = (value: string) => {
+    setSelectedProfile(Number(value));
+    updateSearchParams('profileId', value);
   };
 
   const sortedMovies = [...movies].sort((a, b) => {
@@ -80,14 +113,9 @@ const Movies = () => {
     return (
       (genreFilter === '' || movie.genres.includes(genreFilter)) &&
       (streamingServiceFilter === '' || movie.streaming_services === streamingServiceFilter) &&
-      (watchedFilter === '' || movie.watch_status === watchedFilter)
+      (watchStatusFilter === '' || movie.watch_status === watchStatusFilter)
     );
   });
-
-  const selectedProfileChanged = (e: SelectChangeEvent) => {
-    const profile = Number(e.target.value);
-    setSelectedProfile(profile);
-  };
 
   return (
     <>
@@ -101,7 +129,11 @@ const Movies = () => {
           Profile:
         </Typography>
         <FormControl id="moviesProfileControl">
-          <Select id="moviesProfileSelect" value={`${selectedProfile}`} onChange={selectedProfileChanged}>
+          <Select
+            id="moviesProfileSelect"
+            value={`${selectedProfile}`}
+            onChange={(e) => handleProfileChanged(e.target.value)}
+          >
             <MenuItem id="moviesProfileFilter_none" key={0} value={0}>
               ---
             </MenuItem>
@@ -157,7 +189,7 @@ const Movies = () => {
                   id="moviesFilterGenreSelect"
                   value={genreFilter}
                   onChange={(e) => {
-                    setGenreFilter(e.target.value);
+                    handleGenreChange(e.target.value);
                   }}
                 >
                   <MenuItem id="moviesFilterGenre_all" key="genresFilter_all" value="">
@@ -177,7 +209,7 @@ const Movies = () => {
                 <Select
                   id="moviesFilterStreamingServiceSelect"
                   value={streamingServiceFilter}
-                  onChange={(e) => setStreamingServiceFilter(e.target.value)}
+                  onChange={(e) => handleStreamingServiceChange(e.target.value)}
                 >
                   <MenuItem id="moviesFilterStreamingService_all" key="streamingServicesFilter_all" value="">
                     --All--
@@ -195,8 +227,8 @@ const Movies = () => {
                 </InputLabel>
                 <Select
                   id="moviesFilterWatchStatusSelect"
-                  value={watchedFilter}
-                  onChange={(e) => setWatchedFilter(e.target.value)}
+                  value={watchStatusFilter}
+                  onChange={(e) => handleWatchStatusChange(e.target.value)}
                 >
                   {watchStatuses.map((status) => (
                     <MenuItem

@@ -24,8 +24,15 @@ import { Show } from '../../app/model/shows';
 import { WatchStatus } from '../../app/model/watchStatus';
 import { updateShowStatus } from '../../app/slices/showsSlice';
 
+export type FilterProps = {
+  genre: string;
+  streamingService: string;
+  watchStatus: string;
+};
+
 export type ShowListItemProps = {
   show: Show;
+  getFilters: () => FilterProps;
 };
 
 export const ShowListItem = (props: ShowListItemProps) => {
@@ -65,7 +72,11 @@ export const ShowListItem = (props: ShowListItemProps) => {
 
   return (
     <>
-      <ListItem alignItems="flex-start" onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`)}>
+      <ListItem
+        alignItems="flex-start"
+        sx={{ cursor: 'pointer' }}
+        onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: props.getFilters() })}
+      >
         <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
           <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 140 }} />
         </ListItemAvatar>
