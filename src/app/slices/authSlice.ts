@@ -68,7 +68,7 @@ export const login = createAsyncThunk('login', async (data: LoginAccount, { disp
 
 export const register = createAsyncThunk('register', async (data: NewAccount, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('api/account/', data);
+    const response = await axiosInstance.post('api/accounts/', data);
     const resgisterResult = response.data.result;
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
