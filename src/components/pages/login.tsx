@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
@@ -8,11 +8,24 @@ import Grid from '@mui/material/Grid2';
 import { useAppDispatch } from '../../app/hooks';
 import { login } from '../../app/slices/authSlice';
 import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
+import { validate } from 'email-validator';
 
 const Login = () => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const emailHasError = useMemo(() => {
+    if (email === '') return false;
+    const emailValid = validate(email);
+    return !emailValid;
+  }, [email]);
+  const passwordHasError = useMemo(() => {
+    if (password === '') return false;
+    return password.length < 8;
+  }, [password]);
+
+  const emailHelperText = useMemo(() => (emailHasError ? 'Invalid email format' : ''), [emailHasError]);
 
   const handleLogin = async () => {
     if (email && password) {
@@ -61,6 +74,8 @@ const Login = () => {
               value={email}
               autoComplete="true"
               onChange={(e) => setEmail(e.target.value)}
+              helperText={emailHelperText}
+              error={emailHasError}
             />
 
             <TextField
@@ -75,6 +90,8 @@ const Login = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
+              helperText="Password must be at least 8 characters"
+              error={passwordHasError}
             />
 
             <Button id="loginButton" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={handleLogin}>

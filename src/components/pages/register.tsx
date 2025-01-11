@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
@@ -8,12 +8,29 @@ import Grid from '@mui/material/Grid2';
 import { useAppDispatch } from '../../app/hooks';
 import { register } from '../../app/slices/authSlice';
 import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
+import { validate } from 'email-validator';
 
 const Register = () => {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const nameHasError = useMemo(() => {
+    if (name === '') return false;
+    return name.length < 3;
+  }, [name]);
+  const emailHasError = useMemo(() => {
+    if (email === '') return false;
+    const emailValid = validate(email);
+    return !emailValid;
+  }, [email]);
+  const passwordHasError = useMemo(() => {
+    if (password === '') return false;
+    return password.length < 8;
+  }, [password]);
+
+  const emailHelperText = useMemo(() => (emailHasError ? 'Invalid email format' : ''), [emailHasError]);
 
   const handleRegister = async () => {
     // This is only a basic validation of inputs. Improve this as needed.
@@ -62,7 +79,9 @@ const Register = () => {
                   autoFocus
                   value={name}
                   autoComplete="true"
+                  helperText="Name must be 3 or more characters"
                   onChange={(e) => setName(e.target.value)}
+                  error={nameHasError}
                 />
               </Grid>
 
@@ -74,8 +93,10 @@ const Register = () => {
                   label="Email Address"
                   name="email"
                   value={email}
+                  helperText={emailHelperText}
                   autoComplete="true"
                   onChange={(e) => setEmail(e.target.value)}
+                  error={emailHasError}
                 />
               </Grid>
               <Grid size={12}>
@@ -86,8 +107,10 @@ const Register = () => {
                   label="Password"
                   type="password"
                   id="password"
+                  helperText="Password must be 8 or more characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  error={passwordHasError}
                 />
               </Grid>
             </Grid>
