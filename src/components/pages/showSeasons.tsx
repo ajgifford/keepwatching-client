@@ -76,9 +76,40 @@ const ShowSeasons = () => {
     return path;
   };
 
+  const buildEpisodeAirDate = (airDate: string) => {
+    if (airDate) {
+      const airDateDate = new Date(airDate);
+      const now = new Date();
+      if (airDateDate < now) {
+        return `Aired: ${airDate}`;
+      }
+      return `Airing: ${airDate}`;
+    }
+    return `Airing: TBD`;
+  };
+
+  const buildSeasonAirDate = (airDate: string) => {
+    if (airDate) {
+      const airDateDate = new Date(airDate);
+      const now = new Date();
+      if (airDateDate < now) {
+        return `First Aired: ${airDate}`;
+      }
+      return `Premiering On: ${airDate}`;
+    }
+    return `Premiering On: TBD`;
+  };
+
   return (
     <>
-      <AppBar position="sticky" color="inherit" elevation={0}>
+      <AppBar
+        position="sticky"
+        color="inherit"
+        elevation={0}
+        sx={{
+          zIndex: 999,
+        }}
+      >
         <Toolbar>
           <Tooltip title="Back">
             <IconButton
@@ -116,7 +147,7 @@ const ShowSeasons = () => {
                   <Typography variant="h6">{season.name}</Typography>
                   <Typography variant="subtitle1">Season: {season.season_number}</Typography>
                   <Typography variant="body2">
-                    {season.number_of_episodes} Episodes | First Aired: {season.release_date}
+                    {season.number_of_episodes} Episodes | {buildSeasonAirDate(season.release_date)}
                   </Typography>
                 </Box>
                 <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Not Watched' : 'Mark Watched'}>
@@ -161,8 +192,9 @@ const ShowSeasons = () => {
                             secondary={
                               <>
                                 <i>{episode.overview}</i> <br />
-                                Episode: {episode.episode_number} {' (' + episode.episode_type + ')'} | Aired:{' '}
-                                {episode.air_date ?? 'TBD'} | Runtime: {calculateRuntimeDisplay(episode.runtime)}
+                                Episode: {episode.episode_number} {' (' + episode.episode_type + ')'} |{' '}
+                                {buildEpisodeAirDate(episode.air_date)} | Runtime:{' '}
+                                {calculateRuntimeDisplay(episode.runtime)}
                               </>
                             }
                           />
