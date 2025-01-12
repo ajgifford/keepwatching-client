@@ -35,7 +35,14 @@ import {
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
-import { calculateRuntimeDisplay, getWatchStatusDisplay } from '../utility/contentUtility';
+import {
+  buildEpisodeAirDate,
+  buildEpisodeLine,
+  buildSeasonAirDate,
+  buildServicesLine,
+  calculateRuntimeDisplay,
+  getWatchStatusDisplay,
+} from '../utility/contentUtility';
 
 const ShowSeasons = () => {
   let { showId, profileId } = useParams();
@@ -76,30 +83,6 @@ const ShowSeasons = () => {
     return path;
   };
 
-  const buildEpisodeAirDate = (airDate: string) => {
-    if (airDate) {
-      const airDateDate = new Date(airDate);
-      const now = new Date();
-      if (airDateDate < now) {
-        return `Aired: ${airDate}`;
-      }
-      return `Airing: ${airDate}`;
-    }
-    return `Airing: TBD`;
-  };
-
-  const buildSeasonAirDate = (airDate: string) => {
-    if (airDate) {
-      const airDateDate = new Date(airDate);
-      const now = new Date();
-      if (airDateDate < now) {
-        return `First Aired: ${airDate}`;
-      }
-      return `Premiering On: ${airDate}`;
-    }
-    return `Premiering On: TBD`;
-  };
-
   return (
     <>
       <AppBar
@@ -128,9 +111,20 @@ const ShowSeasons = () => {
             <Typography variant="subtitle1" fontStyle="italic">
               {show?.description}
             </Typography>
-            <Typography variant="body1">Genre: {show?.genres}</Typography>
-            <Typography variant="body1">Streaming Service: {show?.streaming_services}</Typography>
-            <Typography variant="body1">Status: {getWatchStatusDisplay(show?.watch_status)}</Typography>
+            <Typography variant="body1">
+              {show?.type} | {show?.status}
+            </Typography>
+            <Typography variant="body1">
+              <b>Genres:</b> {show?.genres}
+            </Typography>
+            <Typography variant="body1">{buildServicesLine(show)}</Typography>
+            <Typography variant="body1">
+              <b>Status:</b> {getWatchStatusDisplay(show?.watch_status)}
+            </Typography>
+            <Typography variant="body1">
+              <b>Seasons:</b> {show?.season_count} | <b>Episodes:</b> {show?.episode_count}
+            </Typography>
+            <Typography variant="body1">{buildEpisodeLine(show)}</Typography>
           </Box>
         </Toolbar>
       </AppBar>

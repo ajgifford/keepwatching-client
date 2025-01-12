@@ -23,7 +23,7 @@ export const fetchShowWithDetails = createAsyncThunk(
   'activeShow/fetchShowWithDetails',
   async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/seasons`);
+      const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/details`);
       const results = response.data.results;
       const show: Show = results[0];
 

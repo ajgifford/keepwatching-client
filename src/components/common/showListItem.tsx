@@ -23,6 +23,7 @@ import { useAppDispatch } from '../../app/hooks';
 import { Show } from '../../app/model/shows';
 import { WatchStatus } from '../../app/model/watchStatus';
 import { updateShowStatus } from '../../app/slices/showsSlice';
+import { buildEpisodeLine, buildServicesLine } from '../utility/contentUtility';
 
 export type FilterProps = {
   genre: string;
@@ -87,13 +88,17 @@ export const ShowListItem = (props: ShowListItemProps) => {
             <>
               <i>{show.description}</i>
               <br />
-              Genres: {show.genres}
+              {show.type} | {show.status}
               <br />
-              Streaming Service: {show.streaming_services}
+              <b>Genres:</b> {show.genres}
               <br />
-              Release Date: {show.release_date}
+              {buildServicesLine(show)}
               <br />
-              Seasons: {show.season_count} | Episodes: {show.episode_count}
+              <b>Release Date:</b> {show.release_date}
+              <br />
+              <b>Seasons:</b> {show.season_count} | <b>Episodes:</b> {show.episode_count}
+              <br />
+              {buildEpisodeLine(show)}
             </>
           }
         />

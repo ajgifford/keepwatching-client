@@ -8,6 +8,9 @@ export type Show = {
   release_date?: string;
   genres: string;
   streaming_services: string;
+  network: string | null;
+  status: string;
+  type: string;
   image: string;
   user_rating?: number | null;
   tv_parental_guidelines?: string;
@@ -16,6 +19,15 @@ export type Show = {
   watch_status: WatchStatus;
   profile_id: string;
   seasons?: Season[];
+  last_episode: EpisodeToAir | null;
+  next_episode: EpisodeToAir | null;
+};
+
+export type EpisodeToAir = {
+  title: string;
+  air_date: string;
+  episode_number: number;
+  season_number: number;
 };
 
 export type Season = {
