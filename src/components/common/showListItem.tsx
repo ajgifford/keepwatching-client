@@ -29,6 +29,7 @@ export type FilterProps = {
   genre: string;
   streamingService: string;
   watchStatus: string;
+  returnPath?: string;
 };
 
 export type ShowListItemProps = {
@@ -71,12 +72,18 @@ export const ShowListItem = (props: ShowListItemProps) => {
     return 'NOT_WATCHED';
   }
 
+  const buildLinkState = () => {
+    const filterProps = props.getFilters();
+    filterProps.returnPath = `/shows?profileId=${show.profile_id}`;
+    return filterProps;
+  };
+
   return (
     <>
       <ListItem
         alignItems="flex-start"
         sx={{ cursor: 'pointer' }}
-        onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: props.getFilters() })}
+        onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: buildLinkState() })}
       >
         <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
           <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 140 }} />

@@ -30,6 +30,19 @@ export type EpisodeToAir = {
   season_number: number;
 };
 
+export type NextWatchEpisode = {
+  profile_id: number;
+  show_id: number;
+  show_name: string;
+  network: string;
+  streaming_services: string;
+  episode_title: string;
+  air_date: string;
+  episode_number: number;
+  season_number: number;
+  episode_image: string;
+};
+
 export type Season = {
   season_id: number;
   show_id: number;

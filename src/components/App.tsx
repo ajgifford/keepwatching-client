@@ -13,6 +13,7 @@ import Home from './pages/home';
 import Login from './pages/login';
 import ManageAccount from './pages/manageAccount';
 import Movies from './pages/movies';
+import Profile from './pages/profile';
 import Register from './pages/register';
 import Search from './pages/search';
 import ShowSeasons from './pages/showSeasons';
@@ -40,6 +41,7 @@ function App() {
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/manageAccount" element={<ManageAccount />} />
+                  <Route path="/profile/:profileId" element={<Profile />} />
                 </Route>
               </Routes>
             </Container>

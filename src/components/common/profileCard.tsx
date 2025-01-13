@@ -30,14 +30,25 @@ export function ProfileCard({ profile, editable, handleEdit, handleDelete }: Pro
   } = useAppSelector((state) => showWatchStatusSelector(state, Number(profile.id)));
 
   return (
-    <Box id={profile.id} key={profile.id} sx={{ p: 2, border: '1px solid black', minWidth: '200px' }}>
-      <Box>
-        <Typography variant="h5" color="primary">
-          {profile.name}
+    <Box
+      id={`profileCard_${profile.id}`}
+      key={profile.id}
+      sx={{ p: 2, border: '1px solid black', minWidth: '200px', textAlign: 'center' }}
+    >
+      <Box sx={{ pb: '10px' }}>
+        <Typography variant="h5">
+          <Link
+            id={`profileCardLink_${profile.id}`}
+            style={{ textDecoration: 'none', color: '#42a5f5' }}
+            to={`/profile/${profile.id}`}
+          >
+            {profile.name}
+          </Link>
         </Typography>
       </Box>
       <Divider sx={{ p: '2px' }}>
         <Chip
+          id={`profileCardShowChip_${profile.id}`}
           label="Shows"
           color="info"
           size="small"
@@ -81,6 +92,7 @@ export function ProfileCard({ profile, editable, handleEdit, handleDelete }: Pro
       </Box>
       <Divider sx={{ p: '2px' }}>
         <Chip
+          id={`profileCardMovieChip_${profile.id}`}
           label="Movies"
           color="success"
           size="small"

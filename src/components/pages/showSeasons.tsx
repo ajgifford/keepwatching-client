@@ -45,7 +45,7 @@ import {
 } from '../utility/contentUtility';
 
 const ShowSeasons = () => {
-  let { showId, profileId } = useParams();
+  const { showId, profileId } = useParams();
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -53,6 +53,7 @@ const ShowSeasons = () => {
   const seasons = useAppSelector(selectSeasons);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
   const location = useLocation();
+  const returnPath = location.state.returnPath;
   const genreFilter = location.state.genre;
   const streamingServiceFilter = location.state.streamingService;
   const watchStatusFilter = location.state.watchStatus;
@@ -70,7 +71,7 @@ const ShowSeasons = () => {
     season.episodes.some((episode) => watchedEpisodes[episode.episode_id]) && !isSeasonFullyWatched(season);
 
   const buildBackButtonPath = () => {
-    let path = `/shows?profileId=${profileId}`;
+    let path = returnPath;
     if (genreFilter) {
       path += `&genre=${encodeURIComponent(genreFilter)}`;
     }
