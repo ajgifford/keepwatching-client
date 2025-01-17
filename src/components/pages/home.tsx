@@ -98,7 +98,7 @@ const Home = () => {
                 color="info"
                 size="medium"
                 component={Link}
-                to={`/shows`}
+                to={`/shows?watchStatus=WATCHING%252CNOT_WATCHED`}
                 sx={{ cursor: 'pointer' }}
               />
             </Divider>
@@ -157,7 +157,7 @@ const Home = () => {
                 color="success"
                 size="medium"
                 component={Link}
-                to={`/movies`}
+                to={`/movies?watchStatus=WATCHING%252CNOT_WATCHED`}
                 sx={{ cursor: 'pointer' }}
               />
             </Divider>

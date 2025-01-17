@@ -5,11 +5,14 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import {
   Box,
   Button,
+  Checkbox,
+  Chip,
   Divider,
   Drawer,
   FormControl,
   InputLabel,
   List,
+  ListItemText,
   MenuItem,
   Select,
   Stack,
@@ -26,11 +29,11 @@ const Shows = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const genreParam = decodeURIComponent(searchParams.get('genre') || '');
   const streamingServiveParam = decodeURIComponent(searchParams.get('streamingService') || '');
-  const watchStatusParam = decodeURIComponent(searchParams.get('watchStatus') || '');
+  const watchStatusParam = decodeURIComponent(searchParams.get('watchStatus') || '').split(',');
 
   const [genreFilter, setGenreFilter] = useState<string>(genreParam);
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>(streamingServiveParam);
-  const [watchStatusFilter, setWatchStatusFilter] = useState<string>(watchStatusParam);
+  const [watchStatusFilter, setWatchStatusFilter] = useState<string[]>(watchStatusParam.filter(Boolean));
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   const shows = useAppSelector(selectShows);
@@ -44,14 +47,16 @@ const Shows = () => {
   const clearFilters = () => {
     setGenreFilter('');
     setStreamingServiceFilter('');
-    setWatchStatusFilter('');
+    setWatchStatusFilter([]);
     setSearchParams({});
     setFilterDrawerOpen(false);
   };
 
-  const updateSearchParams = (key: string, value: string) => {
+  const updateSearchParams = (key: string, value: string | string[]) => {
     const newParams = new URLSearchParams(searchParams);
-    if (value) {
+    if (Array.isArray(value)) {
+      newParams.set(key, encodeURIComponent(value.join(',')));
+    } else if (value) {
       newParams.set(key, encodeURIComponent(value));
     } else {
       newParams.delete(key);
@@ -69,7 +74,7 @@ const Shows = () => {
     updateSearchParams('streamingService', value);
   };
 
-  const handleWatchStatusChange = (value: string) => {
+  const handleWatchStatusChange = (value: string[]) => {
     setWatchStatusFilter(value);
     updateSearchParams('watchStatus', value);
   };
@@ -88,9 +93,11 @@ const Shows = () => {
     return (
       (genreFilter === '' || show.genres.includes(genreFilter)) &&
       (streamingServiceFilter === '' || show.streaming_services.includes(streamingServiceFilter)) &&
-      (watchStatusFilter === '' || show.watch_status === watchStatusFilter)
+      (watchStatusFilter.length === 0 || watchStatusFilter.includes(show.watch_status))
     );
   });
+
+  const filtered = sortedShows.length !== filteredShows.length;
 
   const getFilters = (): FilterProps => {
     return { genre: genreFilter, streamingService: streamingServiceFilter, watchStatus: watchStatusFilter };
@@ -122,9 +129,24 @@ const Shows = () => {
             id="showsFilterButton"
             onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
             startIcon={<FilterListIcon className="icon" />}
+            variant={filtered ? 'contained' : 'text'}
           >
-            Filter
+            Filters
           </Button>
+          <Stack direction="row" spacing={1} sx={{ ml: 'auto', flexWrap: 'wrap' }}>
+            {genreFilter && <Chip label={`Genre: ${genreFilter}`} color="primary" />}
+            {streamingServiceFilter && (
+              <Chip label={`Streaming Service: ${streamingServiceFilter}`} color="secondary" />
+            )}
+            {watchStatusFilter.length > 0 && (
+              <Chip
+                label={`Watch Status: ${watchStatusFilter
+                  .map((s) => watchStatuses.find((w) => w.value === s)?.display)
+                  .join(', ')}`}
+                color="success"
+              />
+            )}
+          </Stack>
           <Typography variant="subtitle1" align="justify" sx={{ ml: 'auto' }}>
             Count: {filteredShows.length}
           </Typography>
@@ -201,14 +223,21 @@ const Shows = () => {
                 </InputLabel>
                 <Select
                   id="showsFilterWatchStatusSelect"
+                  multiple
                   value={watchStatusFilter}
-                  onChange={(e) => handleWatchStatusChange(e.target.value)}
+                  onChange={(e) => handleWatchStatusChange(e.target.value as string[])}
+                  renderValue={(selected) =>
+                    selected.map((s) => watchStatuses.find((w) => w.value === s)?.display).join(', ')
+                  }
                 >
-                  {watchStatuses.map((status) => (
-                    <MenuItem id={`showsFilterWatchStatus_${status.value}`} key={status.value} value={status.value}>
-                      {status.display}
-                    </MenuItem>
-                  ))}
+                  {watchStatuses
+                    .filter((status) => status.value !== '')
+                    .map((status) => (
+                      <MenuItem id={`showsFilterWatchStatus_${status.value}`} key={status.value} value={status.value}>
+                        <Checkbox checked={watchStatusFilter.includes(status.value)} />
+                        <ListItemText primary={status.display} />
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
               <FormControl id="showsFilterClearFilterControl">

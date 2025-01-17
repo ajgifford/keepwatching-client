@@ -105,8 +105,13 @@ function Navigation() {
 
   const navigationItems = [
     { id: 'home', label: 'Home', icon: <FaHome className="icon" />, to: '/home' },
-    { id: 'shows', label: 'Shows', icon: <FaTv className="icon" />, to: '/shows' },
-    { id: 'movies', label: 'Movies', icon: <FaFilm className="icon" />, to: '/movies' },
+    { id: 'shows', label: 'Shows', icon: <FaTv className="icon" />, to: '/shows?watchStatus=NOT_WATCHED%252CWATCHING' },
+    {
+      id: 'movies',
+      label: 'Movies',
+      icon: <FaFilm className="icon" />,
+      to: '/movies?watchStatus=WATCHING%252CNOT_WATCHED',
+    },
     { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
     { id: 'search', label: 'Search', icon: <FaSearch className="icon" />, to: '/search' },
     { id: 'manageAccount', label: 'Manage Account', icon: <FaUser className="icon" />, to: '/manageAccount' },

@@ -29,7 +29,7 @@ import { buildEpisodeLine, buildServicesLine } from '../utility/contentUtility';
 export type FilterProps = {
   genre: string;
   streamingService: string;
-  watchStatus: string;
+  watchStatus: string[];
   returnPath?: string;
 };
 

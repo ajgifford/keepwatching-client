@@ -28,7 +28,7 @@ export function NextEpisodeCard({ nextEpisode }: PropTypes) {
           id={`nextWatchShowLink_${nextEpisode.show_id}_${nextEpisode.episode_title}`}
           style={{ textDecoration: 'none', color: 'black' }}
           to={`/shows/${nextEpisode.show_id}/${nextEpisode.profile_id}`}
-          state={{ returnPath: `/profile/${nextEpisode.profile_id}`, genre: '', streamingService: '', watchStatus: '' }}
+          state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
         >
           {nextEpisode.show_name}
         </Link>
