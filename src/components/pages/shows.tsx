@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -17,44 +17,25 @@ import {
 } from '@mui/material';
 
 import { watchStatuses } from '../../app/constants/filters';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAllProfiles } from '../../app/slices/profilesSlice';
-import {
-  fetchShowsForProfile,
-  selectShowGenresByProfile,
-  selectShowStreamingServicesByProfile,
-  selectShowsByProfile,
-} from '../../app/slices/showsSlice';
+import { useAppSelector } from '../../app/hooks';
+import { selectShowGenres, selectShowStreamingServices, selectShows } from '../../app/slices/activeProfileSlice';
 import { FilterProps, ShowListItem } from '../common/showListItem';
 import { stripArticle } from '../utility/contentUtility';
 
 const Shows = () => {
-  const dispatch = useAppDispatch();
-  const profiles = useAppSelector(selectAllProfiles);
-  const showsByProfile = useAppSelector(selectShowsByProfile);
-  const genresByProfile = useAppSelector(selectShowGenresByProfile);
-  const streamingServicesByProfile = useAppSelector(selectShowStreamingServicesByProfile);
   const [searchParams, setSearchParams] = useSearchParams();
-  const profileParam = Number(searchParams.get('profileId')) || 0;
   const genreParam = decodeURIComponent(searchParams.get('genre') || '');
   const streamingServiveParam = decodeURIComponent(searchParams.get('streamingService') || '');
   const watchStatusParam = decodeURIComponent(searchParams.get('watchStatus') || '');
-  const [selectedProfile, setSelectedProfile] = useState<number>(profileParam);
 
   const [genreFilter, setGenreFilter] = useState<string>(genreParam);
   const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>(streamingServiveParam);
   const [watchStatusFilter, setWatchStatusFilter] = useState<string>(watchStatusParam);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    if (selectedProfile && !showsByProfile[selectedProfile]) {
-      dispatch(fetchShowsForProfile(selectedProfile));
-    }
-  }, [selectedProfile, showsByProfile, dispatch]);
-
-  const shows = showsByProfile[selectedProfile] || [];
-  const genreFilterValues = genresByProfile[selectedProfile] || [];
-  const streamingServiceFilterValues = streamingServicesByProfile[selectedProfile] || [];
+  const shows = useAppSelector(selectShows);
+  const genreFilterValues = useAppSelector(selectShowGenres);
+  const streamingServiceFilterValues = useAppSelector(selectShowStreamingServices);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setFilterDrawerOpen(newOpen);
@@ -91,11 +72,6 @@ const Shows = () => {
   const handleWatchStatusChange = (value: string) => {
     setWatchStatusFilter(value);
     updateSearchParams('watchStatus', value);
-  };
-
-  const handleProfileChanged = (value: string) => {
-    setSelectedProfile(Number(value));
-    updateSearchParams('profileId', value);
   };
 
   const sortedShows = [...shows].sort((a, b) => {
@@ -142,30 +118,10 @@ const Shows = () => {
           useFlexGap
           sx={{ flexWrap: 'wrap', mt: 2 }}
         >
-          <Typography variant="subtitle1" align="justify">
-            Profile:
-          </Typography>
-          <FormControl id="showsProfileControl">
-            <Select
-              id="showsProfileSelect"
-              value={`${selectedProfile}`}
-              onChange={(e) => handleProfileChanged(e.target.value)}
-            >
-              <MenuItem id="showsProfileFilter_none" key={0} value={0}>
-                ---
-              </MenuItem>
-              {profiles.map((profile) => (
-                <MenuItem id={`showsProfileFilter_${profile.id}`} key={profile.id} value={profile.id}>
-                  {profile.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
           <Button
             id="showsFilterButton"
             onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
             startIcon={<FilterListIcon className="icon" />}
-            disabled={selectedProfile === 0}
           >
             Filter
           </Button>

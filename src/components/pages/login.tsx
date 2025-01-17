@@ -6,7 +6,7 @@ import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } fr
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
-import { login } from '../../app/slices/authSlice';
+import { login } from '../../app/slices/accountSlice';
 import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
 import { validate } from 'email-validator';
 

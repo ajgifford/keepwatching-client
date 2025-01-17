@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Avatar, Box, Divider, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { NextWatchEpisode } from '../../app/model/shows';
@@ -26,7 +26,7 @@ export function NextEpisodeCard({ nextEpisode }: PropTypes) {
       <Typography variant="h5">
         <Link
           id={`nextWatchShowLink_${nextEpisode.show_id}_${nextEpisode.episode_title}`}
-          style={{ textDecoration: 'none', color: '#42a5f5' }}
+          style={{ textDecoration: 'none', color: 'black' }}
           to={`/shows/${nextEpisode.show_id}/${nextEpisode.profile_id}`}
           state={{ returnPath: `/profile/${nextEpisode.profile_id}`, genre: '', streamingService: '', watchStatus: '' }}
         >
@@ -44,6 +44,9 @@ export function NextEpisodeCard({ nextEpisode }: PropTypes) {
         </Grid>
         <Grid>
           <Typography variant="body1">{nextEpisode.episode_title}</Typography>
+          <Typography variant="body1">
+            S{nextEpisode.season_number} E{nextEpisode.episode_number}
+          </Typography>
           <Typography variant="body1">{nextEpisode.air_date}</Typography>
           <Typography variant="body1">{buildServiceDisplay()}</Typography>
         </Grid>

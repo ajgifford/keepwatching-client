@@ -3,7 +3,7 @@ export interface Account {
   name: string;
   email: string;
   image: string;
-  default_proifle_id: number;
+  default_profile_id: string;
 }
 
 export const ACCOUNT_KEY = 'account';

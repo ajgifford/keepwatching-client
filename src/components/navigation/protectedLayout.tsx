@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 
 import { useAppSelector } from '../../app/hooks';
-import { selectCurrentAccount } from '../../app/slices/authSlice';
+import { selectCurrentAccount } from '../../app/slices/accountSlice';
 
 const ProtectedLayout = () => {
   const account = useAppSelector(selectCurrentAccount);

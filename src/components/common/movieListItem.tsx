@@ -1,5 +1,4 @@
-import { Fragment } from 'react/jsx-runtime';
-
+import StarIcon from '@mui/icons-material/Star';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
@@ -8,7 +7,7 @@ import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Tooltip } f
 import { useAppDispatch } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
 import { WatchStatus } from '../../app/model/watchStatus';
-import { updateMovieStatus } from '../../app/slices/moviesSlice';
+import { removeMovieFavorite, updateMovieStatus } from '../../app/slices/activeProfileSlice';
 import { calculateRuntimeDisplay } from '../utility/contentUtility';
 
 export type MovieListItemProps = {
@@ -38,6 +37,15 @@ export const MovieListItem = (props: MovieListItemProps) => {
     return 'NOT_WATCHED';
   }
 
+  const handleRemoveFavorite = () => {
+    dispatch(
+      removeMovieFavorite({
+        profileId: Number(movie.profile_id),
+        movieId: movie.movie_id,
+      }),
+    );
+  };
+
   return (
     <ListItem key={`listItem_${movie.movie_id}`} alignItems="flex-start">
       <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
@@ -61,6 +69,17 @@ export const MovieListItem = (props: MovieListItemProps) => {
         }
       />
 
+      <Tooltip key={`removeFavoriteTooltip_${movie.movie_id}`} title="Remove Favorite">
+        <IconButton
+          key={`removeFavoriteIconButton_${movie.movie_id}`}
+          onClick={(event) => {
+            handleRemoveFavorite();
+            event.stopPropagation();
+          }}
+        >
+          <StarIcon color="primary" />
+        </IconButton>
+      </Tooltip>
       <Tooltip key={movie.profile_id} title={movie.watch_status === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
         <IconButton
           key={movie.profile_id}

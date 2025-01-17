@@ -1,7 +1,9 @@
 import axiosInstance from '../api/axiosInstance';
 import { ACCOUNT_KEY, Account } from '../model/account';
 import { RootState } from '../store';
+import { setActiveProfile } from './activeProfileSlice';
 import { NotificationType, showNotification } from './notificationSlice';
+import { fetchProfiles } from './profilesSlice';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
@@ -14,13 +16,13 @@ type NewAccount = LoginAccount & {
   name: string;
 };
 
-type AuthApiState = {
+type AccountState = {
   account?: Account | null;
   status: 'idle' | 'loading' | 'failed';
   error: string | null;
 };
 
-const initialState: AuthApiState = {
+const initialState: AccountState = {
   account: localStorage.getItem(ACCOUNT_KEY) ? JSON.parse(localStorage.getItem(ACCOUNT_KEY) as string) : null,
   status: 'idle',
   error: null,
@@ -30,10 +32,10 @@ type ErrorResponse = {
   message: string;
 };
 
-export const login = createAsyncThunk('login', async (data: LoginAccount, { dispatch, rejectWithValue }) => {
+export const login = createAsyncThunk('account/login', async (data: LoginAccount, { dispatch, rejectWithValue }) => {
   try {
     const response = await axiosInstance.post('/api/login', data);
-    const loginResult = response.data.result;
+    const loginResult: Account = response.data.result;
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
     dispatch(
@@ -42,6 +44,8 @@ export const login = createAsyncThunk('login', async (data: LoginAccount, { disp
         type: NotificationType.Success,
       }),
     );
+    await dispatch(fetchProfiles(loginResult.id));
+    await dispatch(setActiveProfile({ accountId: loginResult.id, profileId: loginResult.default_profile_id }));
 
     return loginResult;
   } catch (error) {
@@ -66,43 +70,50 @@ export const login = createAsyncThunk('login', async (data: LoginAccount, { disp
   }
 });
 
-export const register = createAsyncThunk('register', async (data: NewAccount, { dispatch, rejectWithValue }) => {
-  try {
-    const response = await axiosInstance.post('api/accounts/', data);
-    const resgisterResult = response.data.result;
+export const register = createAsyncThunk(
+  'acocunt/register',
+  async (data: NewAccount, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('api/accounts/', data);
+      const resgisterResult: Account = response.data.result;
 
-    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
-    dispatch(
-      showNotification({
-        message: response.data.message || 'Success',
-        type: NotificationType.Success,
-      }),
-    );
-
-    return resgisterResult;
-  } catch (error) {
-    if (error instanceof AxiosError && error.response) {
-      const errorResponse = error.response.data;
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
       dispatch(
         showNotification({
-          message: errorResponse.message,
+          message: response.data.message || 'Success',
+          type: NotificationType.Success,
+        }),
+      );
+      await dispatch(fetchProfiles(resgisterResult.id));
+      await dispatch(
+        setActiveProfile({ accountId: resgisterResult.id, profileId: resgisterResult.default_profile_id }),
+      );
+
+      return resgisterResult;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showNotification({
+            message: errorResponse.message,
+            type: NotificationType.Error,
+          }),
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showNotification({
+          message: 'An error occurred',
           type: NotificationType.Error,
         }),
       );
-      return rejectWithValue(errorResponse);
+
+      throw error;
     }
-    dispatch(
-      showNotification({
-        message: 'An error occurred',
-        type: NotificationType.Error,
-      }),
-    );
+  },
+);
 
-    throw error;
-  }
-});
-
-export const logout = createAsyncThunk('logout', async (_, { dispatch, rejectWithValue }) => {
+export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
     const response = await axiosInstance.post('/api/logout', {});
 
@@ -138,26 +149,69 @@ export const logout = createAsyncThunk('logout', async (_, { dispatch, rejectWit
 });
 
 export const updateAccountImage = createAsyncThunk(
-  'updateAccountImage',
+  'account/updateImage',
   async ({ accountId, file }: { accountId: string; file: File }, { dispatch, rejectWithValue }) => {
     try {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      const response = await axiosInstance.post(`/api/upload/account/${accountId}`, formData, {
+      const response = await axiosInstance.post(`/api/upload/accounts/${accountId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      const loginResult = response.data.result;
+      const result = response.data.result;
 
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(result));
       dispatch(
         showNotification({
           message: `Account image updated successfully`,
           type: NotificationType.Success,
         }),
       );
-      return loginResult;
+      return result;
+    } catch (error: any) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showNotification({
+            message: errorResponse.message,
+            type: NotificationType.Error,
+          }),
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showNotification({
+          message: 'An error occurred',
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
+export const updateAccount = createAsyncThunk(
+  'account/update',
+  async (
+    {
+      account_id,
+      account_name,
+      default_profile_id,
+    }: { account_id: string; account_name: string; default_profile_id: string },
+    { dispatch, rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.put(`/api/accounts/${account_id}/`, { account_name, default_profile_id });
+      const updateResult = response.data.result;
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
+      dispatch(
+        showNotification({
+          message: `Account edited successfully`,
+          type: NotificationType.Success,
+        }),
+      );
+      return updateResult;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -232,6 +286,22 @@ const authSlice = createSlice({
           state.error = (action.payload as ErrorResponse).message || 'Account Image Update Failed';
         } else {
           state.error = action.error.message || 'Account Image Update Failed';
+        }
+      })
+      .addCase(updateAccount.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(updateAccount.fulfilled, (state, action: PayloadAction<Account>) => {
+        state.status = 'idle';
+        state.account = action.payload;
+      })
+      .addCase(updateAccount.rejected, (state, action) => {
+        state.status = 'failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Account Update Failed';
+        } else {
+          state.error = action.error.message || 'Account Update Failed';
         }
       });
   },

@@ -56,18 +56,37 @@ export const buildServicesLine = (show: Show | null) => {
   if (!show) {
     return <></>;
   }
-  if (show.network && !show.streaming_services.includes(show.network)) {
+  if (show.network) {
+    if (show.streaming_services) {
+      if (!show.streaming_services.includes(show.network)) {
+        return (
+          <>
+            <b>Network: </b> {show.network} | <b>Streaming Service(s): </b> {show.streaming_services}
+          </>
+        );
+      } else {
+        return (
+          <>
+            <b>Streaming Service(s): </b> {show.streaming_services}
+          </>
+        );
+      }
+    } else {
+      return (
+        <>
+          <b>Network: </b> {show.network}
+        </>
+      );
+    }
+  }
+  if (show.streaming_services) {
     return (
       <>
-        <b>Network: </b> {show.network} | <b>Streaming Service(s): </b> {show.streaming_services}
+        <b>Streaming Service(s): </b> {show.streaming_services}
       </>
     );
   }
-  return (
-    <>
-      <b>Streaming Service(s): </b> {show.streaming_services}
-    </>
-  );
+  return <>No Streaming Service Information</>;
 };
 
 export const buildEpisodeLine = (show: Show | null) => {

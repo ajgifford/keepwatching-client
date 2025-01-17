@@ -2,7 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { Episode, Season, Show } from '../model/shows';
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
-import { logout } from './authSlice';
+import { logout } from './accountSlice';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface ActiveShowState {
@@ -24,8 +24,7 @@ export const fetchShowWithDetails = createAsyncThunk(
   async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/details`);
-      const results = response.data.results;
-      const show: Show = results[0];
+      const show: Show = response.data.results;
 
       const watchedEpisodes: Record<number, boolean> = {};
       show.seasons!.forEach((season) => {

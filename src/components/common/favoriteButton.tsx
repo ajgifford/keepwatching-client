@@ -1,13 +1,8 @@
-import { useState } from 'react';
-import React from 'react';
-
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Button } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { addMovieFavorite } from '../../app/slices/moviesSlice';
-import { selectAllProfiles } from '../../app/slices/profilesSlice';
-import { addShowFavorite } from '../../app/slices/showsSlice';
+import { addMovieFavorite, addShowFavorite, selectActiveProfile } from '../../app/slices/activeProfileSlice';
 
 interface FavoritesMenuProps {
   id: number;
@@ -16,23 +11,22 @@ interface FavoritesMenuProps {
 
 function FavoritesMenu(props: FavoritesMenuProps) {
   const dispatch = useAppDispatch();
-  const profiles = useAppSelector(selectAllProfiles);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open: boolean = Boolean(anchorEl);
+  const profile = useAppSelector(selectActiveProfile);
   const searchType = props.searchType;
+  const showId = props.id;
 
-  const handleFavoriteProfileClick = async (profileId: string, showId: number) => {
+  const handleFavoriteProfileClick = async (showId: number) => {
     if (searchType === 'movies') {
       dispatch(
         addMovieFavorite({
-          profileId: Number(profileId),
+          profileId: Number(profile?.id),
           movieId: showId,
         }),
       );
     } else {
       dispatch(
         addShowFavorite({
-          profileId: Number(profileId),
+          profileId: Number(profile?.id),
           showId: showId,
         }),
       );
@@ -45,32 +39,12 @@ function FavoritesMenu(props: FavoritesMenuProps) {
         id="favorite-button"
         aria-controls="favorite-menu"
         aria-haspopup="true"
-        onClick={(event) => setAnchorEl(event.currentTarget)}
+        onClick={() => handleFavoriteProfileClick(showId)}
         endIcon={<StarBorderIcon />}
         variant="outlined"
       >
         Favorite
       </Button>
-      <Menu
-        elevation={1}
-        id="favorite-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={() => setAnchorEl(null)}
-      >
-        {profiles.map((profile) => (
-          <MenuItem
-            key={profile.id}
-            onClick={() => {
-              setAnchorEl(null);
-              handleFavoriteProfileClick(profile.id, props.id);
-            }}
-          >
-            {profile.name}
-          </MenuItem>
-        ))}
-      </Menu>
     </>
   );
 }

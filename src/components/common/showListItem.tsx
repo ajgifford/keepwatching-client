@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import StarIcon from '@mui/icons-material/Star';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
@@ -22,7 +23,7 @@ import {
 import { useAppDispatch } from '../../app/hooks';
 import { Show } from '../../app/model/shows';
 import { WatchStatus } from '../../app/model/watchStatus';
-import { updateShowStatus } from '../../app/slices/showsSlice';
+import { removeShowFavorite, updateShowStatus } from '../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine } from '../utility/contentUtility';
 
 export type FilterProps = {
@@ -52,7 +53,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
     setConfirmChangeWatchStatusDialogOpen(false);
     dispatch(
       updateShowStatus({
-        profileId: Number(show.profile_id),
+        profileId: show.profile_id,
         showId: show.show_id,
         status: determineNewWatchStatus(show.watch_status),
       }),
@@ -78,9 +79,19 @@ export const ShowListItem = (props: ShowListItemProps) => {
     return filterProps;
   };
 
+  const handleRemoveFavorite = () => {
+    dispatch(
+      removeShowFavorite({
+        profileId: Number(show.profile_id),
+        showId: show.show_id,
+      }),
+    );
+  };
+
   return (
     <>
       <ListItem
+        id={`showListItem_${show.show_id}`}
         alignItems="flex-start"
         sx={{ cursor: 'pointer' }}
         onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: buildLinkState() })}
@@ -97,7 +108,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
               <br />
               {show.type} | {show.status}
               <br />
-              <b>Genres:</b> {show.genres}
+              <b>Genres:</b> {show.genres ?? 'unknown'}
               <br />
               {buildServicesLine(show)}
               <br />
@@ -110,9 +121,23 @@ export const ShowListItem = (props: ShowListItemProps) => {
           }
         />
 
-        <Tooltip key={show.profile_id} title={show.watch_status === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
+        <Tooltip key={`removeFavoriteTooltip_${show.show_id}`} title="Remove Favorite">
           <IconButton
-            key={show.profile_id}
+            key={`removeFavoriteIconButton_${show.show_id}`}
+            onClick={(event) => {
+              handleRemoveFavorite();
+              event.stopPropagation();
+            }}
+          >
+            <StarIcon color="primary" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          key={`watchStatusTooltip_${show.show_id}`}
+          title={show.watch_status === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}
+        >
+          <IconButton
+            key={`watchStatusIconButton_${show.show_id}`}
             onClick={(event) => {
               handleWatchStatusChange();
               event.stopPropagation();

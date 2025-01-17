@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaBars, FaCompass, FaFilm, FaHome, FaSearch, FaTv, FaUser } from 'react-icons/fa';
-import { LuLogOut } from 'react-icons/lu';
+import { LuLogIn, LuLogOut } from 'react-icons/lu';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -17,16 +17,17 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { useAppDispatch } from '../../app/hooks';
-import { logout } from '../../app/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { logout, selectCurrentAccount } from '../../app/slices/accountSlice';
 
 function Navigation() {
   const dispatch = useAppDispatch();
-  const location = useLocation();
-  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
+  const account = useAppSelector(selectCurrentAccount);
+  const location = useLocation();
+  const theme = useTheme();
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setMobileMenuAnchor(event.currentTarget);
@@ -42,16 +43,68 @@ function Navigation() {
   };
 
   const handleLogout = async () => {
-    try {
-      await dispatch(logout()).unwrap();
-      navigate('/login');
-    } catch (error) {
-      console.error(error);
+    if (account) {
+      try {
+        await dispatch(logout()).unwrap();
+        navigate('/login');
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
+  const handleLogin = async () => {
+    if (!account) {
+      navigate('/login');
+    }
+  };
+
+  const buildLoginLogoutMenu = () => {
+    if (account) {
+      return (
+        <MenuItem key="navigationLogoutMenuItem" onClick={() => handleLogout()}>
+          {<LuLogOut />}
+          <Box sx={{ ml: 2 }}>Logout</Box>
+        </MenuItem>
+      );
+    }
+    return (
+      <MenuItem key="navigationLogoutMenuItem" onClick={() => handleLogin()}>
+        {<LuLogIn />}
+        <Box sx={{ ml: 2 }}>Login</Box>
+      </MenuItem>
+    );
+  };
+
+  const buildLoginLogoutButton = () => {
+    if (account) {
+      return (
+        <Button
+          color={'inherit'}
+          key="navigationLogoutButton"
+          startIcon={<LuLogOut />}
+          onClick={() => handleLogout()}
+          aria-label="Logout"
+        >
+          Logout
+        </Button>
+      );
+    }
+    return (
+      <Button
+        color={'inherit'}
+        key="navigationLoginButton"
+        startIcon={<LuLogIn />}
+        onClick={() => handleLogin()}
+        aria-label="Login"
+      >
+        Login
+      </Button>
+    );
+  };
+
   const navigationItems = [
-    { id: 'home', label: 'Home', icon: <FaHome className="icon" />, to: '/' },
+    { id: 'home', label: 'Home', icon: <FaHome className="icon" />, to: '/home' },
     { id: 'shows', label: 'Shows', icon: <FaTv className="icon" />, to: '/shows' },
     { id: 'movies', label: 'Movies', icon: <FaFilm className="icon" />, to: '/movies' },
     { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
@@ -110,10 +163,7 @@ function Navigation() {
           <Box sx={{ ml: 2 }}>{item.label}</Box>
         </MenuItem>
       ))}
-      <MenuItem key="navigationLogoutMenuItem" onClick={() => handleLogout()}>
-        {<LuLogOut />}
-        <Box sx={{ ml: 2 }}>Logout</Box>
-      </MenuItem>
+      {buildLoginLogoutMenu()}
     </Menu>
   );
 
@@ -147,15 +197,7 @@ function Navigation() {
                   KeepWatching
                 </Typography>
                 {renderNavigationButtons()}
-                <Button
-                  color={'inherit'}
-                  key="navigationLogoutButton"
-                  startIcon={<LuLogOut />}
-                  onClick={() => handleLogout()}
-                  aria-label="Logout"
-                >
-                  Logout
-                </Button>
+                {buildLoginLogoutButton()}
               </Box>
             )}
           </Toolbar>

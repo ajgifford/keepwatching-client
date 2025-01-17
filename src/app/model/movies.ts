@@ -15,3 +15,7 @@ export type Movie = {
   watch_status: WatchStatus;
   profile_id: string;
 };
+
+export type MovieIds = {
+  movie_id: string;
+};

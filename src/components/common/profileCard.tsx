@@ -1,152 +1,157 @@
-import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState } from 'react';
 
+import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Box, Button, Chip, Divider, Stack, Typography } from '@mui/material';
+import StarsIcon from '@mui/icons-material/Stars';
+import { Avatar, Box, Button, Stack, Typography } from '@mui/material';
 
-import { useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
-import { makeSelectMovieWatchStatusCountsByProfile } from '../../app/slices/moviesSlice';
-import { makeSelectShowWatchStatusCountsByProfile } from '../../app/slices/showsSlice';
+import { selectCurrentAccount } from '../../app/slices/accountSlice';
+import { selectActiveProfile } from '../../app/slices/activeProfileSlice';
+import { selectProfileById, updateProfileImage } from '../../app/slices/profilesSlice';
 
 interface PropTypes {
   profile: Profile;
-  editable: boolean;
-  handleEdit?: (profile: Profile) => void;
-  handleDelete?: (profile: Profile) => void;
+  handleEdit: (profile: Profile) => void;
+  handleDelete: (profile: Profile) => void;
+  handleSetDefault: (profile: Profile) => void;
+  handleSetActive: (profile: Profile) => void;
 }
 
-export function ProfileCard({ profile, editable, handleEdit, handleDelete }: PropTypes) {
-  const movieWatchStatusSelector = useMemo(() => makeSelectMovieWatchStatusCountsByProfile(), []);
-  const { watched: movieWatched, notWatched: movieNotWatched } = useAppSelector((state) =>
-    movieWatchStatusSelector(state, Number(profile.id)),
-  );
-  const showWatchStatusSelector = useMemo(() => makeSelectShowWatchStatusCountsByProfile(), []);
-  const {
-    watched: showWatched,
-    watching: showWatching,
-    notWatched: showNotWatched,
-  } = useAppSelector((state) => showWatchStatusSelector(state, Number(profile.id)));
+export function ProfileCard({ profile, handleEdit, handleDelete, handleSetDefault, handleSetActive }: PropTypes) {
+  const dispatch = useAppDispatch();
+  const account = useAppSelector(selectCurrentAccount)!;
+  const activeProfile = useAppSelector(selectActiveProfile)!;
+  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.default_profile_id));
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) {
+      return;
+    }
+    const file = files[0];
+    dispatch(updateProfileImage({ profileId: profile.id, file }));
+  };
+
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   return (
     <Box
       id={`profileCard_${profile.id}`}
       key={profile.id}
-      sx={{ p: 2, border: '1px solid black', minWidth: '200px', textAlign: 'center' }}
+      sx={{ p: 2, border: '1px solid #4caf50', minWidth: '200px', textAlign: 'center' }}
     >
-      <Box sx={{ pb: '10px' }}>
-        <Typography variant="h5">
-          <Link
-            id={`profileCardLink_${profile.id}`}
-            style={{ textDecoration: 'none', color: '#42a5f5' }}
-            to={`/profile/${profile.id}`}
-          >
-            {profile.name}
-          </Link>
-        </Typography>
-      </Box>
-      <Divider sx={{ p: '2px' }}>
-        <Chip
-          id={`profileCardShowChip_${profile.id}`}
-          label="Shows"
-          color="info"
-          size="small"
-          component={Link}
-          to={`/shows?profileId=${profile.id}`}
-          sx={{ cursor: 'pointer' }}
-        />
-      </Divider>
-      <Box sx={{ py: '1px' }}>
-        <Typography variant="body1">
-          <i>To Watch:</i>{' '}
-          <Link
-            style={{ textDecoration: 'none', color: 'black' }}
-            to={`/shows?profileId=${profile.id}&watchStatus=NOT_WATCHED`}
-          >
-            {showNotWatched}
-          </Link>
-        </Typography>
-      </Box>
-      <Box sx={{ py: '1px' }}>
-        <Typography variant="body1">
-          <i>Watching:</i>{' '}
-          <Link
-            style={{ textDecoration: 'none', color: 'black' }}
-            to={`/shows?profileId=${profile.id}&watchStatus=WATCHING`}
-          >
-            {showWatching}
-          </Link>
-        </Typography>
-      </Box>
-      <Box sx={{ py: '2px' }}>
-        <Typography variant="body1">
-          <i>Watched:</i>{' '}
-          <Link
-            style={{ textDecoration: 'none', color: 'black' }}
-            to={`/shows?profileId=${profile.id}&watchStatus=WATCHED`}
-          >
-            {showWatched}
-          </Link>
-        </Typography>
-      </Box>
-      <Divider sx={{ p: '2px' }}>
-        <Chip
-          id={`profileCardMovieChip_${profile.id}`}
-          label="Movies"
-          color="success"
-          size="small"
-          component={Link}
-          to={`/movies?profileId=${profile.id}`}
-          sx={{ cursor: 'pointer' }}
-        />
-      </Divider>
-      <Box sx={{ py: '2px' }}>
-        <Typography variant="body1">
-          <i>To Watch:</i>{' '}
-          <Link
-            style={{ textDecoration: 'none', color: 'black' }}
-            to={`/movies?profileId=${profile.id}&watchStatus=NOT_WATCHED`}
-          >
-            {movieNotWatched}
-          </Link>
-        </Typography>
-      </Box>
-      <Box sx={{ py: '2px' }}>
-        <Typography variant="body1">
-          <i>Watched:</i>{' '}
-          <Link
-            style={{ textDecoration: 'none', color: 'black' }}
-            to={`/movies?profileId=${profile.id}&watchStatus=WATCHED`}
-          >
-            {movieWatched}
-          </Link>
-        </Typography>
-      </Box>
-      {editable ? (
-        <Stack direction="row" spacing={2} sx={{ pt: '8px' }}>
-          <Button
-            variant="outlined"
-            startIcon={<EditIcon />}
-            onClick={() => {
-              if (handleEdit) handleEdit(profile);
+      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" sx={{ pb: '10px' }}>
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'inline-block',
+            width: 96,
+            height: 96,
+            borderRadius: 2,
+            cursor: 'pointer',
+            overflow: 'hidden',
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={handleImageClick}
+        >
+          <Box
+            crossOrigin="anonymous"
+            component="img"
+            src={profile.image}
+            alt={profile.name}
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: 2,
             }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<DeleteIcon />}
-            onClick={() => {
-              if (handleDelete) handleDelete(profile);
-            }}
-          >
-            Delete
-          </Button>
-        </Stack>
-      ) : (
-        <></>
-      )}
+          />
+          {isHovered && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: 16,
+                borderRadius: 2,
+              }}
+            >
+              Upload Image
+            </Box>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+          />
+        </Box>
+        <Typography variant="h5" color="primary">
+          {profile.name}
+        </Typography>
+      </Box>
+
+      <Stack direction="column" spacing={2} sx={{ pt: '8px' }}>
+        <Button
+          variant="outlined"
+          startIcon={<CheckIcon />}
+          onClick={() => {
+            handleSetActive(profile);
+          }}
+          disabled={profile.id === activeProfile.id}
+        >
+          Set Active
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<StarsIcon />}
+          onClick={() => {
+            handleSetDefault(profile);
+          }}
+          disabled={profile.id === defaultProfile.id}
+        >
+          Set Default
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<EditIcon />}
+          onClick={() => {
+            handleEdit(profile);
+          }}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<DeleteIcon />}
+          onClick={() => {
+            handleDelete(profile);
+          }}
+          disabled={profile.id === defaultProfile.id}
+        >
+          Delete
+        </Button>
+      </Stack>
     </Box>
   );
 }

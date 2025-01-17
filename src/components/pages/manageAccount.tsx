@@ -18,19 +18,32 @@ import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
-import { selectCurrentAccount, updateAccountImage } from '../../app/slices/authSlice';
-import { addProfile, deleteProfile, editProfile } from '../../app/slices/profilesSlice';
-import { ProfilesStack } from '../common/profilesStack';
+import { selectCurrentAccount, updateAccount, updateAccountImage } from '../../app/slices/accountSlice';
+import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
+import {
+  addProfile,
+  deleteProfile,
+  editProfile,
+  selectAllProfiles,
+  selectProfileById,
+} from '../../app/slices/profilesSlice';
+import { ProfileCard } from '../common/profileCard';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
+  const profiles = useAppSelector(selectAllProfiles);
+  const activeProfile = useAppSelector(selectActiveProfile)!;
+  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.default_profile_id));
 
   const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
   const [editProfileDialogOpen, setEditProfileDialogOpen] = useState<boolean>(false);
   const [managedProfile, setManagedProfile] = useState<Profile | null>();
   const [managedProfileName, setManagedProfileName] = useState<string>('');
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleAddProfileButton = () => {
     setAddProfileDialogOpen(true);
@@ -80,6 +93,16 @@ const ManageAccount = () => {
     }
   }
 
+  async function handleSetDefaultProfile(profile: Profile) {
+    await dispatch(
+      updateAccount({ account_id: account.id, account_name: account.name, default_profile_id: profile.id }),
+    );
+  }
+
+  async function handlSetActiveProfile(profile: Profile) {
+    await dispatch(setActiveProfile({ accountId: account.id, profileId: profile.id }));
+  }
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) {
@@ -88,9 +111,6 @@ const ManageAccount = () => {
     const file = files[0];
     dispatch(updateAccountImage({ accountId: account.id, file }));
   };
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleImageClick = () => {
     if (fileInputRef.current) {
@@ -163,7 +183,12 @@ const ManageAccount = () => {
           <Typography variant="h2" gutterBottom>
             {account.name}
           </Typography>
-          {/* <img crossOrigin='anonymous'></img> */}
+          <Typography variant="h6" color="primary" gutterBottom>
+            Default Profile: {defaultProfile.name}
+          </Typography>
+          <Typography variant="h6" color="primary" gutterBottom>
+            Active Profile: {activeProfile.name}
+          </Typography>
         </Grid>
       </Grid>
 
@@ -180,7 +205,23 @@ const ManageAccount = () => {
             onClick={handleAddProfileButton}
           />
         </Stack>
-        <ProfilesStack editable={true} handleEdit={handleEditProfileButton} handleDelete={handleDeleteProfileButton} />
+        <Stack
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          useFlexGap
+          sx={{ flexWrap: 'wrap', p: 2, justifyContent: 'left' }}
+        >
+          {profiles.map((profile) => (
+            <ProfileCard
+              key={profile.id}
+              profile={profile}
+              handleEdit={handleEditProfileButton}
+              handleDelete={handleDeleteProfileButton}
+              handleSetDefault={handleSetDefaultProfile}
+              handleSetActive={handlSetActiveProfile}
+            />
+          ))}
+        </Stack>
       </Box>
       {/* Add Profile Dialog */}
       <Dialog

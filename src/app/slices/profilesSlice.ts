@@ -1,14 +1,10 @@
 import axiosInstance from '../api/axiosInstance';
-import { Profile } from '../model/profile';
+import { PROFILE_KEY, Profile } from '../model/profile';
 import { RootState } from '../store';
-import { createAppAsyncThunk } from '../withTypes';
-import { logout } from './authSlice';
-import { fetchMoviesForProfile } from './moviesSlice';
+import { logout } from './accountSlice';
 import { NotificationType, showNotification } from './notificationSlice';
-import { fetchShowsForProfile } from './showsSlice';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-
-const PROFILE_KEY = 'profiles';
+import { AxiosError } from 'axios';
 
 const saveToLocalStorage = (profiles: Profile[]) => {
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
@@ -48,16 +44,12 @@ type ErrorResponse = {
   message: string;
 };
 
-export const fetchProfiles = createAppAsyncThunk(
+export const fetchProfiles = createAsyncThunk(
   'profiles/fetchProfiles',
   async (accountId: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
       const profiles: Profile[] = response.data.results;
-      profiles.forEach(async (profile: any) => {
-        await dispatch(fetchMoviesForProfile(profile.id));
-        await dispatch(fetchShowsForProfile(profile.id));
-      });
       return profiles;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -128,6 +120,48 @@ export const editProfile = createAsyncThunk(
       return response.data.result;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
+
+export const updateProfileImage = createAsyncThunk(
+  'profiles/updateImage',
+  async ({ profileId, file }: { profileId: string; file: File }, { dispatch, rejectWithValue }) => {
+    try {
+      const formData: FormData = new FormData();
+      formData.append('file', file);
+      const response = await axiosInstance.post(`/api/upload/profiles/${profileId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const result = response.data.result;
+
+      dispatch(
+        showNotification({
+          message: `Profile image updated successfully`,
+          type: NotificationType.Success,
+        }),
+      );
+      return result;
+    } catch (error: any) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showNotification({
+            message: errorResponse.message,
+            type: NotificationType.Error,
+          }),
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showNotification({
+          message: 'An error occurred',
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue(error.message);
     }
   },
 );
@@ -207,6 +241,23 @@ const profileSlice = createSlice({
           state.error = (action.payload as ErrorResponse).message || 'Get Profiles Failed';
         } else {
           state.error = action.error.message || 'Get Profiles Failed';
+        }
+      })
+      .addCase(updateProfileImage.pending, (state) => {
+        state.status = 'pending';
+        state.error = null;
+      })
+      .addCase(updateProfileImage.fulfilled, (state, action) => {
+        profilesAdapter.upsertOne(state, action.payload);
+        saveToLocalStorage(Object.values(state.entities));
+        state.status = 'succeeded';
+      })
+      .addCase(updateProfileImage.rejected, (state, action) => {
+        state.status = 'failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Profile Image Update Failed';
+        } else {
+          state.error = action.error.message || 'Profile Image Update Failed';
         }
       });
   },
