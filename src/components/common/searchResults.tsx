@@ -15,30 +15,30 @@ function SearchResults(props: SearchResultProps) {
     <>
       {results.length > 0 ? (
         <List>
-          {results.map((show) => (
-            <Fragment key={show.id}>
+          {results.map((content) => (
+            <Fragment key={content.id}>
               <ListItem
                 alignItems="flex-start"
-                secondaryAction={<FavoritesMenu id={show.id} searchType={props.searchType} />}
+                secondaryAction={<FavoritesMenu id={content.id} searchType={props.searchType} />}
               >
                 <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
-                  <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 94, height: 140 }} />
+                  <Avatar alt={content.title} src={content.image} variant="rounded" sx={{ width: 94, height: 140 }} />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={show.title}
+                  primary={content.title}
                   secondary={
                     <Typography
                       component="span"
                       variant="caption"
                       sx={{ display: 'block', marginTop: 1, paddingRight: '120px' }}
                     >
-                      <i>{show.summary}</i>
+                      <i>{content.summary}</i>
                       <br />
-                      <b>Genres:</b> {show.genres.join(', ')}
+                      <b>Genres:</b> {content.genres.join(', ')}
                       <br />
-                      <b>Premiered:</b> {show.premiered}
+                      <b>Premiered:</b> {content.premiered}
                       <br />
-                      <b>Rating:</b> {show.rating}
+                      <b>Rating:</b> {content.rating}
                     </Typography>
                   }
                   slotProps={{

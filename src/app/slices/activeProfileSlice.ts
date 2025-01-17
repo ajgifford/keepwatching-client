@@ -372,9 +372,23 @@ export const selectUpcomingMovies = (state: RootState) => state.activeProfile.up
 export const selectActiveProfileLoading = (state: RootState) => state.activeProfile.loading;
 export const selectActiveProfileError = (state: RootState) => state.activeProfile.error;
 
+export const selectShowByTMDBId = createSelector(
+  [selectShows, (state: RootState, tmdbId: number) => tmdbId],
+  (shows = [], tmdbId) => {
+    return shows.find((show) => show.tmdb_id === tmdbId);
+  },
+);
+
+export const selectMovieByTMDBId = createSelector(
+  [selectMovies, (state: RootState, tmdbId: number) => tmdbId],
+  (movies = [], tmdbId) => {
+    return movies.find((movie) => movie.tmdb_id === tmdbId);
+  },
+);
+
 export const selectMoviesByIds = createSelector(
   [selectMovies, (state: RootState, movieIds: MovieIds[]) => movieIds],
-  (movies = [], movieIds) => {
+  (movies = [], movieIds = []) => {
     const selectedMovies: Movie[] = [];
     movieIds.forEach((movieId) => {
       const movie = movies.find((movie) => movie.movie_id === Number(movieId.movie_id));

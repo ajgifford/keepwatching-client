@@ -1,8 +1,15 @@
+import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { addMovieFavorite, addShowFavorite, selectActiveProfile } from '../../app/slices/activeProfileSlice';
+import {
+  addMovieFavorite,
+  addShowFavorite,
+  selectActiveProfile,
+  selectMovieByTMDBId,
+  selectShowByTMDBId,
+} from '../../app/slices/activeProfileSlice';
 
 interface FavoritesMenuProps {
   id: number;
@@ -13,21 +20,27 @@ function FavoritesMenu(props: FavoritesMenuProps) {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectActiveProfile);
   const searchType = props.searchType;
-  const showId = props.id;
+  const tmdbId = props.id;
+  const show = useAppSelector((state) => selectShowByTMDBId(state, tmdbId));
+  const movie = useAppSelector((state) => selectMovieByTMDBId(state, tmdbId));
+  const alreadyFavorited = show || movie;
 
-  const handleFavoriteProfileClick = async (showId: number) => {
+  const handleFavoriteProfileClick = async (tmdbId: number) => {
+    if (alreadyFavorited) {
+      return;
+    }
     if (searchType === 'movies') {
       dispatch(
         addMovieFavorite({
           profileId: Number(profile?.id),
-          movieId: showId,
+          movieId: tmdbId,
         }),
       );
     } else {
       dispatch(
         addShowFavorite({
           profileId: Number(profile?.id),
-          showId: showId,
+          showId: tmdbId,
         }),
       );
     }
@@ -35,16 +48,18 @@ function FavoritesMenu(props: FavoritesMenuProps) {
 
   return (
     <>
-      <Button
-        id="favorite-button"
-        aria-controls="favorite-menu"
-        aria-haspopup="true"
-        onClick={() => handleFavoriteProfileClick(showId)}
-        endIcon={<StarBorderIcon />}
-        variant="outlined"
-      >
-        Favorite
-      </Button>
+      <Tooltip key={`favoriteButtonTooltip_${tmdbId}`} title={alreadyFavorited ? 'Already a Favorite' : ''}>
+        <Button
+          id={`favoriteButton_${tmdbId}`}
+          aria-controls="favorite-menu"
+          aria-haspopup="true"
+          onClick={() => handleFavoriteProfileClick(tmdbId)}
+          endIcon={alreadyFavorited ? <StarIcon /> : <StarBorderIcon />}
+          variant={alreadyFavorited ? 'contained' : 'outlined'}
+        >
+          Favorite
+        </Button>
+      </Tooltip>
     </>
   );
 }
