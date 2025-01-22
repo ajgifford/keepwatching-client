@@ -4,7 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import StarsIcon from '@mui/icons-material/Stars';
-import { Avatar, Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';

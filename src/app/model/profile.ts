@@ -1,6 +1,3 @@
-import { Movie } from './movies';
-import { NextWatchEpisode, Show } from './shows';
-
 export interface Profile {
   id: string;
   name: string;
