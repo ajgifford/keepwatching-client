@@ -1,4 +1,5 @@
 import axiosInstance from '../api/axiosInstance';
+import { auth } from '../firebaseConfig';
 import { ACCOUNT_KEY, Account } from '../model/account';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
@@ -6,6 +7,7 @@ import { NotificationType, showNotification } from './notificationSlice';
 import { fetchProfiles } from './profilesSlice';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 
 type LoginAccount = {
   email: string;
@@ -36,6 +38,7 @@ export const login = createAsyncThunk('account/login', async (data: LoginAccount
   try {
     const response = await axiosInstance.post('/api/login', data);
     const loginResult: Account = response.data.result;
+    await signInWithEmailAndPassword(auth, data.email, data.password);
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
     dispatch(
@@ -77,6 +80,10 @@ export const register = createAsyncThunk(
       const response = await axiosInstance.post('api/accounts/', data);
       const resgisterResult: Account = response.data.result;
 
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await updateProfile(userCredential.user, { displayName: data.name });
+      console.log(userCredential);
+
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
       dispatch(
         showNotification({
@@ -116,6 +123,7 @@ export const register = createAsyncThunk(
 export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
     const response = await axiosInstance.post('/api/logout', {});
+    await signOut(auth);
 
     localStorage.removeItem(ACCOUNT_KEY);
     dispatch(
@@ -169,7 +177,7 @@ export const updateAccountImage = createAsyncThunk(
         }),
       );
       return result;
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
@@ -186,7 +194,7 @@ export const updateAccountImage = createAsyncThunk(
           type: NotificationType.Error,
         }),
       );
-      return rejectWithValue(error.message);
+      return rejectWithValue(error);
     }
   },
 );
@@ -212,8 +220,24 @@ export const updateAccount = createAsyncThunk(
         }),
       );
       return updateResult;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showNotification({
+            message: errorResponse.message,
+            type: NotificationType.Error,
+          }),
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showNotification({
+          message: 'An error occurred',
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue(error);
     }
   },
 );
@@ -260,7 +284,7 @@ const authSlice = createSlice({
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(logout.fulfilled, (state, action) => {
+      .addCase(logout.fulfilled, (state) => {
         state.status = 'idle';
         state.account = null;
       })
