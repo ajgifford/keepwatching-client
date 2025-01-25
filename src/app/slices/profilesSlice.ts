@@ -46,9 +46,9 @@ type ErrorResponse = {
 
 export const fetchProfiles = createAsyncThunk(
   'profiles/fetchProfiles',
-  async (accountId: string, { dispatch, rejectWithValue }) => {
+  async (accountId: string, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles`);
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles`);
       const profiles: Profile[] = response.data.results;
       return profiles;
     } catch (error: any) {
@@ -74,7 +74,7 @@ export const addProfile = createAsyncThunk(
     { dispatch, rejectWithValue },
   ) => {
     try {
-      const response = await axiosInstance.post(`/api/accounts/${accountId}/profiles`, { name: newProfileName });
+      const response = await axiosInstance.post(`/accounts/${accountId}/profiles`, { name: newProfileName });
       dispatch(
         showNotification({
           message: `Added profile: ${newProfileName}`,
@@ -92,7 +92,7 @@ export const deleteProfile = createAsyncThunk(
   'profiles/deleteProfile',
   async ({ accountId, profileId }: { accountId: string; profileId: string }, { dispatch, rejectWithValue }) => {
     try {
-      await axiosInstance.delete(`/api/accounts/${accountId}/profiles/${profileId}`);
+      await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}`);
       dispatch(
         showNotification({
           message: `Profile deleted successfully`,
@@ -110,7 +110,7 @@ export const editProfile = createAsyncThunk(
   'profiles/editProfile',
   async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/accounts/${accountId}/profiles/${id}`, { name });
+      const response = await axiosInstance.put(`/accounts/${accountId}/profiles/${id}`, { name });
       dispatch(
         showNotification({
           message: `Profile edited successfully`,
@@ -130,7 +130,7 @@ export const updateProfileImage = createAsyncThunk(
     try {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      const response = await axiosInstance.post(`/api/upload/profiles/${profileId}`, formData, {
+      const response = await axiosInstance.post(`/upload/profiles/${profileId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -172,7 +172,7 @@ const profileSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, () => {
         localStorage.removeItem(PROFILE_KEY);
         return profilesAdapter.getInitialState(calculateInitialState());
       })
@@ -227,7 +227,7 @@ const profileSlice = createSlice({
           state.error = action.error.message || 'Edit Profile Failed';
         }
       })
-      .addCase(fetchProfiles.pending, (state, action) => {
+      .addCase(fetchProfiles.pending, (state) => {
         state.status = 'pending';
       })
       .addCase(fetchProfiles.fulfilled, (state, action) => {

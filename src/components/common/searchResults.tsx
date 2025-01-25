@@ -3,7 +3,7 @@ import { Fragment } from 'react/jsx-runtime';
 import { Avatar, Box, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 import { SearchResult } from '../../app/model/search';
-import FavoritesMenu from './favoriteButton';
+import FavoritesButton from './favoriteButton';
 
 interface SearchResultProps {
   results: SearchResult[];
@@ -19,7 +19,7 @@ function SearchResults(props: SearchResultProps) {
             <Fragment key={content.id}>
               <ListItem
                 alignItems="flex-start"
-                secondaryAction={<FavoritesMenu id={content.id} searchType={props.searchType} />}
+                secondaryAction={<FavoritesButton id={content.id} searchType={props.searchType} />}
               >
                 <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
                   <Avatar alt={content.title} src={content.image} variant="rounded" sx={{ width: 94, height: 140 }} />

@@ -34,7 +34,7 @@ type ErrorResponse = {
 
 export const login = createAsyncThunk('account/login', async (data: LoginAccount, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/api/login', data);
+    const response = await axiosInstance.post('/login', data);
     const loginResult: Account = response.data.result;
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
@@ -74,7 +74,7 @@ export const register = createAsyncThunk(
   'acocunt/register',
   async (data: NewAccount, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('api/accounts/', data);
+      const response = await axiosInstance.post('/accounts/', data);
       const resgisterResult: Account = response.data.result;
 
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
@@ -115,7 +115,7 @@ export const register = createAsyncThunk(
 
 export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/api/logout', {});
+    const response = await axiosInstance.post('/logout', {});
 
     localStorage.removeItem(ACCOUNT_KEY);
     dispatch(
@@ -154,7 +154,7 @@ export const updateAccountImage = createAsyncThunk(
     try {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      const response = await axiosInstance.post(`/api/upload/accounts/${accountId}`, formData, {
+      const response = await axiosInstance.post(`/upload/accounts/${accountId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -202,7 +202,7 @@ export const updateAccount = createAsyncThunk(
     { dispatch, rejectWithValue },
   ) => {
     try {
-      const response = await axiosInstance.put(`/api/accounts/${account_id}/`, { account_name, default_profile_id });
+      const response = await axiosInstance.put(`/accounts/${account_id}/`, { account_name, default_profile_id });
       const updateResult = response.data.result;
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
       dispatch(
