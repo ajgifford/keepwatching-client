@@ -23,7 +23,7 @@ export const fetchShowWithDetails = createAsyncThunk(
   'activeShow/fetchShowWithDetails',
   async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`api/profiles/${profileId}/shows/${showId}/details`);
+      const response = await axiosInstance.get(`/profiles/${profileId}/shows/${showId}/details`);
       const show: Show = response.data.results;
 
       const watchedEpisodes: Record<number, boolean> = {};
@@ -95,16 +95,16 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
       updateSeason.watch_status = seasonStatus;
       const showStatus: WatchStatus = determineShowWatchStatus(seasons);
 
-      await axiosInstance.put(`/api/profiles/${profileId}/episodes/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/episodes/watchStatus`, {
         episode_id: episode_id,
         status: episodeStatus,
       });
-      await axiosInstance.put(`/api/profiles/${profileId}/seasons/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/seasons/watchStatus`, {
         season_id: season_id,
         status: seasonStatus,
         recursive: false,
       });
-      await axiosInstance.put(`/api/profiles/${profileId}/shows/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
         show_id: showId,
         status: showStatus,
         recursive: false,
@@ -132,14 +132,14 @@ export const updateSeasonWatchStatus = createAsyncThunk(
       const showStatus: WatchStatus = determineShowWatchStatus(seasons);
 
       const season_id = season.season_id;
-      await axiosInstance.put(`/api/profiles/${profileId}/seasons/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/seasons/watchStatus`, {
         season_id: season_id,
         status: seasonStatus,
         recursive: true,
       });
 
       const showId = show.show_id;
-      await axiosInstance.put(`/api/profiles/${profileId}/shows/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
         show_id: showId,
         status: showStatus,
         recursive: false,

@@ -11,16 +11,16 @@ import {
   selectShowByTMDBId,
 } from '../../app/slices/activeProfileSlice';
 
-interface FavoritesMenuProps {
+interface FavoritesButtonProps {
   id: number;
   searchType: string;
 }
 
-function FavoritesMenu(props: FavoritesMenuProps) {
+function FavoritesButton(props: FavoritesButtonProps) {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectActiveProfile);
   const searchType = props.searchType;
-  const tmdbId = props.id;
+  const tmdbId = Number(props.id);
   const show = useAppSelector((state) => selectShowByTMDBId(state, tmdbId));
   const movie = useAppSelector((state) => selectMovieByTMDBId(state, tmdbId));
   const alreadyFavorited = show || movie;
@@ -64,4 +64,4 @@ function FavoritesMenu(props: FavoritesMenuProps) {
   );
 }
 
-export default FavoritesMenu;
+export default FavoritesButton;

@@ -53,7 +53,7 @@ export const setActiveProfile = createAsyncThunk(
   'activeProfile/set',
   async ({ accountId, profileId }: { accountId: string; profileId: string }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/accounts/${accountId}/profiles/${profileId}`);
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}`);
       const results = response.data.results;
       const profile: Profile = results.profile;
       const shows: Show[] = results.shows;
@@ -72,7 +72,7 @@ export const addShowFavorite = createAsyncThunk(
   'activeProfile/addShowFavorite',
   async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/api/profiles/${profileId}/shows/favorites`, {
+      const response = await axiosInstance.post(`/profiles/${profileId}/shows/favorites`, {
         id: showId,
       });
       const show = response.data.result;
@@ -94,7 +94,7 @@ export const removeShowFavorite = createAsyncThunk(
   'activeProfile/removeShowFavorite',
   async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/api/profiles/${profileId}/shows/favorites/${showId}`);
+      const response = await axiosInstance.delete(`/profiles/${profileId}/shows/favorites/${showId}`);
       const show = response.data.result;
       const showTitle = show.title;
       dispatch(
@@ -105,7 +105,6 @@ export const removeShowFavorite = createAsyncThunk(
       );
       return show;
     } catch (error: any) {
-      console.log('Error on Remove', error);
       return rejectWithValue(error.response?.data || error.message);
     }
   },
@@ -118,7 +117,7 @@ export const updateShowStatus = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      await axiosInstance.put(`/api/profiles/${profileId}/shows/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
         show_id: showId,
         status: status,
         recursive: true,
@@ -134,7 +133,7 @@ export const addMovieFavorite = createAsyncThunk(
   'activeProfile/addMovieFavorite',
   async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/api/profiles/${profileId}/movies/favorites`, {
+      const response = await axiosInstance.post(`/profiles/${profileId}/movies/favorites`, {
         id: movieId,
       });
       const movie = response.data.result;
@@ -156,7 +155,7 @@ export const removeMovieFavorite = createAsyncThunk(
   'activeProfile/removeMovieFavorite',
   async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/api/profiles/${profileId}/movies/favorites/${movieId}`);
+      const response = await axiosInstance.delete(`/profiles/${profileId}/movies/favorites/${movieId}`);
       const movie = response.data.result;
       const movieTitle = movie.title;
       dispatch(
@@ -179,7 +178,7 @@ export const updateMovieStatus = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      await axiosInstance.put(`/api/profiles/${profileId}/movies/watchStatus`, {
+      await axiosInstance.put(`/profiles/${profileId}/movies/watchStatus`, {
         movie_id: movieId,
         status: status,
       });
@@ -263,7 +262,7 @@ const activeProfileSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to remove a show favorite';
       })
-      .addCase(updateShowStatus.pending, (state, action) => {
+      .addCase(updateShowStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -338,7 +337,7 @@ const activeProfileSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to remove a movie favorite';
       })
-      .addCase(updateMovieStatus.pending, (state, action) => {
+      .addCase(updateMovieStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })

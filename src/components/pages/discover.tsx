@@ -43,7 +43,7 @@ function Discover() {
       service: selectedService,
     };
     try {
-      const topResponse = await axiosInstance.get('/api/discover/top', { params: topParams });
+      const topResponse = await axiosInstance.get('/discover/top', { params: topParams });
       setResults(topResponse.data.results);
     } catch (error) {
       console.error(error);

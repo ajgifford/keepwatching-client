@@ -18,7 +18,7 @@ function Search() {
       searchString: searchString,
     };
     try {
-      const response = await axiosInstance.get(`/api/search/${searchType}`, { params: searchOptions });
+      const response = await axiosInstance.get(`/search/${searchType}`, { params: searchOptions });
       setResults(response.data.results);
     } catch (error) {
       console.error(error);
