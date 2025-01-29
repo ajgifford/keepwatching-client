@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Container } from '@mui/material';
 
 import store from '../app/store';
+import { Footer } from './common/footer';
 import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
@@ -48,7 +49,7 @@ function App() {
           </div>
         </BrowserRouter>
         <footer className="footer">
-          <p>Gifford Family Dev</p>
+          <Footer />
         </footer>
       </div>
     </Provider>
