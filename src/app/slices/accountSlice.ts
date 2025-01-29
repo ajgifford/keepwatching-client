@@ -1,4 +1,5 @@
 import axiosInstance from '../api/axiosInstance';
+import { auth } from '../firebaseConfig';
 import { ACCOUNT_KEY, Account } from '../model/account';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
@@ -6,13 +7,15 @@ import { NotificationType, showNotification } from './notificationSlice';
 import { fetchProfiles } from './profilesSlice';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { FirebaseError } from 'firebase/app';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 
-type LoginAccount = {
+type LoginData = {
   email: string;
   password: string;
 };
 
-type NewAccount = LoginAccount & {
+type NewAccountData = LoginData & {
   name: string;
 };
 
@@ -32,9 +35,26 @@ type ErrorResponse = {
   message: string;
 };
 
-export const login = createAsyncThunk('account/login', async (data: LoginAccount, { dispatch, rejectWithValue }) => {
+export const login = createAsyncThunk('account/login', async (data: LoginData, { dispatch, rejectWithValue }) => {
+  let userCredential = null;
   try {
-    const response = await axiosInstance.post('/login', data);
+    userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+  } catch (error) {
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error as FirebaseError,
+      'An unknown error occurred during login. Please try again.',
+    );
+    dispatch(
+      showNotification({
+        message: errorMessage,
+        type: NotificationType.Error,
+      }),
+    );
+    return rejectWithValue({ message: errorMessage });
+  }
+
+  try {
+    const response = await axiosInstance.post('/login', { uid: userCredential.user.uid });
     const loginResult: Account = response.data.result;
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
@@ -66,15 +86,37 @@ export const login = createAsyncThunk('account/login', async (data: LoginAccount
       }),
     );
 
-    throw error;
+    console.error(error);
+    return rejectWithValue({ message: 'Login: Unexpected Error' });
   }
 });
 
 export const register = createAsyncThunk(
   'acocunt/register',
-  async (data: NewAccount, { dispatch, rejectWithValue }) => {
+  async (data: NewAccountData, { dispatch, rejectWithValue }) => {
+    let userCredential = null;
     try {
-      const response = await axiosInstance.post('/accounts/', data);
+      userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await updateProfile(userCredential.user, { displayName: data.name });
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred during registration. Please try again.',
+      );
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue({ message: errorMessage });
+    }
+    try {
+      const response = await axiosInstance.post('/accounts/', {
+        email: data.email,
+        uid: userCredential.user.uid,
+        name: data.name,
+      });
       const resgisterResult: Account = response.data.result;
 
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
@@ -108,43 +150,37 @@ export const register = createAsyncThunk(
         }),
       );
 
-      throw error;
+      console.error(error);
+      return rejectWithValue({ message: 'Register: Unexpected Error' });
     }
   },
 );
 
 export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/logout', {});
+    await signOut(auth);
 
     localStorage.removeItem(ACCOUNT_KEY);
     dispatch(
       showNotification({
-        message: response.data.message || 'Success',
+        message: 'Successfully logged out',
         type: NotificationType.Success,
       }),
     );
 
-    return response.data;
+    return;
   } catch (error) {
-    if (error instanceof AxiosError && error.response) {
-      const errorResponse = error.response.data;
-      dispatch(
-        showNotification({
-          message: errorResponse.message,
-          type: NotificationType.Error,
-        }),
-      );
-      return rejectWithValue(errorResponse);
-    }
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error as FirebaseError,
+      'An unknown error occurred during logout. Please try again.',
+    );
     dispatch(
       showNotification({
-        message: 'An error occurred',
+        message: errorMessage,
         type: NotificationType.Error,
       }),
     );
-
-    throw error;
+    return rejectWithValue({ message: errorMessage });
   }
 });
 
@@ -169,7 +205,7 @@ export const updateAccountImage = createAsyncThunk(
         }),
       );
       return result;
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
@@ -186,7 +222,8 @@ export const updateAccountImage = createAsyncThunk(
           type: NotificationType.Error,
         }),
       );
-      return rejectWithValue(error.message);
+      console.error(error);
+      return rejectWithValue({ message: 'UpdateImage: Unexpected Error' });
     }
   },
 );
@@ -212,11 +249,54 @@ export const updateAccount = createAsyncThunk(
         }),
       );
       return updateResult;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showNotification({
+            message: errorResponse.message,
+            type: NotificationType.Error,
+          }),
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showNotification({
+          message: 'An error occurred',
+          type: NotificationType.Error,
+        }),
+      );
+      console.error(error);
+      return rejectWithValue({ message: 'UpdateAccount: Unexpected Error' });
     }
   },
 );
+
+function getFirebaseAuthErrorMessage(error: FirebaseError, defaultMessage: string) {
+  switch (error.code) {
+    case 'auth/invalid-credential':
+      return 'Invalid credentials were entered. Check your email & password.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/user-not-found':
+      return 'No account found with this email. Please sign up.';
+    case 'auth/wrong-password':
+      return 'The password you entered is incorrect.';
+    case 'auth/user-disabled':
+      return 'Your account has been disabled. Contact support.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Try again later.';
+    case 'auth/network-request-failed':
+      return 'Network error. Please check your connection.';
+    case 'auth/operation-not-allowed':
+      return 'Sign-in is currently disabled. Contact support.';
+    case 'auth/email-already-in-use':
+      return 'An account with this email already exists, sign in or use another email.';
+    default:
+      console.error('An unknown error occurred:', error.message);
+      return defaultMessage;
+  }
+}
 
 const authSlice = createSlice({
   name: 'auth',
@@ -260,7 +340,7 @@ const authSlice = createSlice({
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(logout.fulfilled, (state, action) => {
+      .addCase(logout.fulfilled, (state) => {
         state.status = 'idle';
         state.account = null;
       })
