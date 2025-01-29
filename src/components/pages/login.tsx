@@ -30,7 +30,7 @@ const Login = () => {
   const handleLogin = async () => {
     if (email && password) {
       try {
-        await dispatch(login({ email, password })).unwrap();
+        await dispatch(login({ email, password }));
       } catch (error) {
         console.error(error);
       }

@@ -36,7 +36,7 @@ const Register = () => {
     // This is only a basic validation of inputs. Improve this as needed.
     if (name && email && password) {
       try {
-        await dispatch(register({ name, email, password })).unwrap();
+        await dispatch(register({ name, email, password }));
       } catch (error) {
         console.error(error);
       }
