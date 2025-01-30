@@ -183,6 +183,22 @@ function Navigation() {
                   <FaBars />
                 </IconButton>
                 {renderMobileMenu()}
+                <Typography
+                  variant="h6"
+                  noWrap
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: '100%',
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    letterSpacing: '.3rem',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                  }}
+                >
+                  KeepWatching
+                </Typography>
               </>
             ) : (
               <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
