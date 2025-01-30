@@ -1,8 +1,22 @@
+import { useState } from 'react';
+
 import StarIcon from '@mui/icons-material/Star';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
-import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 
 import { useAppDispatch } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
@@ -17,6 +31,9 @@ export type MovieListItemProps = {
 export const MovieListItem = (props: MovieListItemProps) => {
   const dispatch = useAppDispatch();
   const movie = props.movie;
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleWatchStatusChange = (currentStatus: WatchStatus) => {
     dispatch(
@@ -51,24 +68,46 @@ export const MovieListItem = (props: MovieListItemProps) => {
       <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
         <Avatar alt={movie.title} src={movie.image} variant="rounded" sx={{ width: 96, height: 140 }} />
       </ListItemAvatar>
-      <ListItemText
-        primary={movie.title}
-        slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}
-        secondary={
-          <>
-            <i>{movie.description}</i>
-            <br />
-            Genres: {movie.genres}
-            <br />
-            Streaming Service: {movie.streaming_services}
-            <br />
-            Release Date: {movie.release_date}
-            <br />
-            Runtime: {calculateRuntimeDisplay(movie.runtime)}
-          </>
-        }
-      />
-
+      <Box sx={{ flexGrow: 1 }}>
+        <ListItemText
+          primary={movie.title}
+          slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}
+          secondary={
+            <>
+              <Typography
+                variant="body2"
+                sx={{
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: isSmallScreen && !expanded ? 3 : 'unset',
+                  overflow: 'hidden',
+                }}
+              >
+                <i>{movie.description}</i>
+                <br />
+                Genres: {movie.genres}
+                <br />
+                Streaming Service: {movie.streaming_services}
+                <br />
+                Release Date: {movie.release_date}
+                <br />
+                Runtime: {calculateRuntimeDisplay(movie.runtime)}
+              </Typography>
+              {isSmallScreen && (
+                <Button
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpanded(!expanded);
+                  }}
+                >
+                  {expanded ? 'Show Less' : 'Show More'}
+                </Button>
+              )}
+            </>
+          }
+        />
+      </Box>
       <Tooltip key={`removeFavoriteTooltip_${movie.movie_id}`} title="Remove Favorite">
         <IconButton
           key={`removeFavoriteIconButton_${movie.movie_id}`}
