@@ -27,7 +27,7 @@ function Navigation() {
   const location = useLocation();
   const theme = useTheme();
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setMobileMenuAnchor(event.currentTarget);
