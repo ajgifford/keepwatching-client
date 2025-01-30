@@ -97,7 +97,7 @@ const Movies = () => {
     );
   });
 
-  const filtered = sortedMovies.length !== filteredMovies.length;
+  const filtered = genreFilter !== '' || streamingServiceFilter !== '' || watchStatusFilter.length > 0;
 
   return (
     <>
@@ -116,8 +116,8 @@ const Movies = () => {
         </Typography>
         <Stack
           spacing={{ xs: 1, sm: 2 }}
-          direction="row"
-          alignItems="center"
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
           useFlexGap
           sx={{ flexWrap: 'wrap', mt: 2 }}
         >
@@ -129,7 +129,11 @@ const Movies = () => {
           >
             Filters
           </Button>
-          <Stack direction="row" spacing={1} sx={{ ml: 'auto', flexWrap: 'wrap' }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            sx={{ ml: { sm: 'unset', md: 'auto' }, flexWrap: 'wrap' }}
+          >
             {genreFilter && <Chip label={`Genre: ${genreFilter}`} color="primary" />}
             {streamingServiceFilter && (
               <Chip label={`Streaming Service: ${streamingServiceFilter}`} color="secondary" />
@@ -143,7 +147,7 @@ const Movies = () => {
               />
             )}
           </Stack>
-          <Typography variant="subtitle1" align="justify" sx={{ ml: 'auto' }}>
+          <Typography variant="subtitle1" align="justify" sx={{ ml: { sm: 'unset', md: 'auto' } }}>
             Count: {filteredMovies.length}
           </Typography>
         </Stack>

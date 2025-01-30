@@ -97,7 +97,7 @@ const Shows = () => {
     );
   });
 
-  const filtered = sortedShows.length !== filteredShows.length;
+  const filtered = genreFilter !== '' || streamingServiceFilter !== '' || watchStatusFilter.length > 0;
 
   const getFilters = (): FilterProps => {
     return { genre: genreFilter, streamingService: streamingServiceFilter, watchStatus: watchStatusFilter };
