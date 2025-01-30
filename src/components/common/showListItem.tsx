@@ -7,6 +7,7 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Avatar,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -18,6 +19,9 @@ import {
   ListItemAvatar,
   ListItemText,
   Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 
 import { useAppDispatch } from '../../app/hooks';
@@ -42,7 +46,9 @@ export const ShowListItem = (props: ShowListItemProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const show = props.show;
-
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [expanded, setExpanded] = useState<boolean>(false);
   const [confirmChangeWatchStatusDialogOpen, setConfirmChangeWatchStatusDialogOpen] = useState<boolean>(false);
 
   const handleCloseConfirmChangeWatchStatusDialog = () => {
@@ -93,34 +99,56 @@ export const ShowListItem = (props: ShowListItemProps) => {
       <ListItem
         id={`showListItem_${show.show_id}`}
         alignItems="flex-start"
-        sx={{ cursor: 'pointer' }}
+        sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center' }}
         onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: buildLinkState() })}
       >
         <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
           <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 140 }} />
         </ListItemAvatar>
-        <ListItemText
-          primary={show.title}
-          slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}
-          secondary={
-            <>
-              <i>{show.description}</i>
-              <br />
-              {show.type} | {show.status}
-              <br />
-              <b>Genres:</b> {show.genres ?? 'unknown'}
-              <br />
-              {buildServicesLine(show)}
-              <br />
-              <b>Release Date:</b> {show.release_date}
-              <br />
-              <b>Seasons:</b> {show.season_count} | <b>Episodes:</b> {show.episode_count}
-              <br />
-              {buildEpisodeLine(show)}
-            </>
-          }
-        />
-
+        <Box sx={{ flexGrow: 1 }}>
+          <ListItemText
+            primary={show.title}
+            slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}
+            secondary={
+              <>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: isSmallScreen && !expanded ? 3 : 'unset',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <i>{show.description}</i>
+                  <br />
+                  {show.type} | {show.status}
+                  <br />
+                  <b>Genres:</b> {show.genres ?? 'unknown'}
+                  <br />
+                  {buildServicesLine(show)}
+                  <br />
+                  <b>Release Date:</b> {show.release_date}
+                  <br />
+                  <b>Seasons:</b> {show.season_count} | <b>Episodes:</b> {show.episode_count}
+                  <br />
+                  {buildEpisodeLine(show)}
+                </Typography>
+                {isSmallScreen && (
+                  <Button
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpanded(!expanded);
+                    }}
+                  >
+                    {expanded ? 'Show Less' : 'Show More'}
+                  </Button>
+                )}
+              </>
+            }
+          />
+        </Box>
         <Tooltip key={`removeFavoriteTooltip_${show.show_id}`} title="Remove Favorite">
           <IconButton
             key={`removeFavoriteIconButton_${show.show_id}`}

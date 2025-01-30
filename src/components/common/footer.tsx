@@ -11,7 +11,7 @@ export function Footer() {
         px: '8px', // Adds padding for small screens
       }}
     >
-      <Typography variant="caption" color="textPrimary" gutterBottom>
+      <Typography variant="caption" color="common.white" gutterBottom>
         Gifford Family Dev
       </Typography>
       <br />
@@ -28,16 +28,21 @@ export function Footer() {
         <TMDBIcon />
         <Typography
           variant="caption"
-          color="textPrimary"
+          color="common.white"
           sx={{
             textAlign: 'center',
             maxWidth: '90%', // Prevents text from stretching too wide
             wordBreak: 'break-word', // Ensures long words wrap properly
           }}
         >
-          This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB |
-          Additional information is provided by Streaming Availability API by{' '}
-          <a href="https://www.movieofthenight.com/about/api">Movie of the Night</a>
+          This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by{' '}
+          <a style={{ color: 'white' }} href="https://www.themoviedb.org/">
+            TMDB
+          </a>{' '}
+          | Additional information is provided by Streaming Availability API by{' '}
+          <a style={{ color: 'white' }} href="https://www.movieofthenight.com/about/api">
+            Movie of the Night
+          </a>
         </Typography>
       </Box>
     </Box>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -21,6 +22,20 @@ import ShowSeasons from './pages/showSeasons';
 import Shows from './pages/shows';
 
 function App() {
+  useEffect(() => {
+    const updateFooterHeight = () => {
+      const footer = document.querySelector('.footer') as HTMLElement | null;
+      if (footer) {
+        document.documentElement.style.setProperty('--footer-height', `${footer.offsetHeight}px`);
+      }
+    };
+
+    updateFooterHeight();
+    window.addEventListener('resize', updateFooterHeight);
+
+    return () => window.removeEventListener('resize', updateFooterHeight);
+  }, []);
+
   return (
     <Provider store={store}>
       <div className="app-container">
