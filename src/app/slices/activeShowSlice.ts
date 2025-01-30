@@ -8,14 +8,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 interface ActiveShowState {
   show: Show | null;
   watchedEpisodes: Record<number, boolean>;
-  status: 'none' | 'idle' | 'loading' | 'processing' | 'failed';
+  loading: boolean;
   error: string | null;
 }
 
 const initialState: ActiveShowState = {
   show: null,
   watchedEpisodes: {},
-  status: 'none',
+  loading: false,
   error: null,
 };
 
@@ -174,20 +174,19 @@ const activeShowSlice = createSlice({
         return initialState;
       })
       .addCase(fetchShowWithDetails.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
       .addCase(fetchShowWithDetails.fulfilled, (state, action) => {
         state.show = action.payload.show;
         state.watchedEpisodes = action.payload.watchedEpisodesMap;
-        state.status = 'idle';
+        state.loading = false;
       })
       .addCase(fetchShowWithDetails.rejected, (state, action) => {
-        state.status = 'failed';
+        state.loading = false;
         state.error = action.error.message || 'Failed to load show details';
       })
       .addCase(updateEpisodeWatchStatus.pending, (state) => {
-        state.status = 'processing';
         state.error = null;
       })
       .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
@@ -199,19 +198,18 @@ const activeShowSlice = createSlice({
 
         const show = state.show!;
         show.watch_status = showStatus;
-        const season = state.show?.seasons?.find((season) => season.season_id === seasonId)!;
-        season.watch_status = seasonStatus;
-        const episode = season.episodes.find((episode) => episode.episode_id === episodeId)!;
-        episode.watch_status = episodeStatus;
-        state.watchedEpisodes[action.payload.episode_id] = episodeStatus === 'WATCHED';
-        state.status = 'idle';
+        const season = state.show?.seasons?.find((season) => season.season_id === seasonId);
+        if (season) {
+          season.watch_status = seasonStatus;
+          const episode = season.episodes.find((episode) => episode.episode_id === episodeId)!;
+          episode.watch_status = episodeStatus;
+          state.watchedEpisodes[action.payload.episode_id] = episodeStatus === 'WATCHED';
+        }
       })
       .addCase(updateEpisodeWatchStatus.rejected, (state, action) => {
-        state.status = 'failed';
         state.error = action.error.message || 'Failed to update episode watch status';
       })
       .addCase(updateSeasonWatchStatus.pending, (state) => {
-        state.status = 'processing';
         state.error = null;
       })
       .addCase(updateSeasonWatchStatus.fulfilled, (state, action) => {
@@ -221,15 +219,15 @@ const activeShowSlice = createSlice({
 
         const show = state.show!;
         show.watch_status = showStatus;
-        const season = state.show?.seasons?.find((season) => season.season_id === seasonId)!;
-        season.watch_status = seasonStatus;
-        season.episodes.forEach((episode) => {
-          state.watchedEpisodes[episode.episode_id] = seasonStatus === 'WATCHED';
-        });
-        state.status = 'idle';
+        const season = state.show?.seasons?.find((season) => season.season_id === seasonId);
+        if (season) {
+          season.watch_status = seasonStatus;
+          season.episodes.forEach((episode) => {
+            state.watchedEpisodes[episode.episode_id] = seasonStatus === 'WATCHED';
+          });
+        }
       })
       .addCase(updateSeasonWatchStatus.rejected, (state, action) => {
-        state.status = 'failed';
         state.error = action.error.message || 'Failed to update season watch status';
       });
   },
@@ -240,7 +238,7 @@ export const { clearActiveShow, toggleSeasonWatched } = activeShowSlice.actions;
 export const selectShow = (state: RootState) => state.activeShow.show;
 export const selectSeasons = (state: RootState) => state.activeShow.show?.seasons;
 export const selectWatchedEpisodes = (state: RootState) => state.activeShow.watchedEpisodes;
-export const selectShowStatus = (state: RootState) => state.activeShow.status;
+export const selectShowLoading = (state: RootState) => state.activeShow.loading;
 export const selectShowError = (state: RootState) => state.activeShow.error;
 
 export default activeShowSlice.reducer;

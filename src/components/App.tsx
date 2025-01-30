@@ -18,7 +18,7 @@ import ManageAccount from './pages/manageAccount';
 import Movies from './pages/movies';
 import Register from './pages/register';
 import Search from './pages/search';
-import ShowSeasons from './pages/showSeasons';
+import ShowDetails from './pages/showDetails';
 import Shows from './pages/shows';
 
 function App() {
@@ -53,7 +53,7 @@ function App() {
                 <Route element={<ProtectedLayout />}>
                   <Route path="/home" element={<Home />} />
                   <Route path="/shows" element={<Shows />} />
-                  <Route path="/shows/:showId/:profileId" element={<ShowSeasons />} />
+                  <Route path="/shows/:showId/:profileId" element={<ShowDetails />} />
                   <Route path="/movies" element={<Movies />} />
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/search" element={<Search />} />

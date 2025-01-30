@@ -31,10 +31,14 @@ import {
   fetchShowWithDetails,
   selectSeasons,
   selectShow,
+  selectShowError,
+  selectShowLoading,
   selectWatchedEpisodes,
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
+import { ErrorComponent } from '../common/errorComponent';
+import { LoadingComponent } from '../common/loadingComponent';
 import {
   buildEpisodeAirDate,
   buildEpisodeLine,
@@ -44,13 +48,15 @@ import {
   getWatchStatusDisplay,
 } from '../utility/contentUtility';
 
-const ShowSeasons = () => {
+function ShowDetails() {
   const { showId, profileId } = useParams();
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const show = useAppSelector(selectShow);
   const seasons = useAppSelector(selectSeasons);
+  const showDetailsLoading = useAppSelector(selectShowLoading);
+  const showDetailsError = useAppSelector(selectShowError);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
   const location = useLocation();
   const returnPath = location.state.returnPath;
@@ -63,6 +69,13 @@ const ShowSeasons = () => {
       dispatch(fetchShowWithDetails({ profileId, showId }));
     }
   }, [profileId, showId, dispatch]);
+
+  if (showDetailsLoading) {
+    return <LoadingComponent />;
+  }
+  if (showDetailsError) {
+    return <ErrorComponent error={showDetailsError} />;
+  }
 
   const isSeasonFullyWatched = (season: Season) =>
     season.episodes.every((episode) => watchedEpisodes[episode.episode_id]);
@@ -225,6 +238,6 @@ const ShowSeasons = () => {
       ) : null}
     </>
   );
-};
+}
 
-export default ShowSeasons;
+export default ShowDetails;

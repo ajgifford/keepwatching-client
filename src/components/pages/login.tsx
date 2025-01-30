@@ -14,6 +14,7 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const registerMessage = `Don't have an account? Register`;
 
   const emailHasError = useMemo(() => {
     if (email === '') return false;
@@ -99,7 +100,7 @@ const Login = () => {
             </Button>
             <Grid container justifyContent={'flex-end'}>
               <Grid>
-                <Link to="/register">Don't have an account? Register</Link>
+                <Link to="/register">{registerMessage}</Link>
               </Grid>
             </Grid>
           </Box>
