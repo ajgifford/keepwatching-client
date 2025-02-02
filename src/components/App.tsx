@@ -21,7 +21,7 @@ import Search from './pages/search';
 import ShowDetails from './pages/showDetails';
 import Shows from './pages/shows';
 
-function App() {
+function useFooterHeight() {
   useEffect(() => {
     const updateFooterHeight = () => {
       const footer = document.querySelector('.footer') as HTMLElement | null;
@@ -35,6 +35,10 @@ function App() {
 
     return () => window.removeEventListener('resize', updateFooterHeight);
   }, []);
+}
+
+function App() {
+  useFooterHeight();
 
   return (
     <Provider store={store}>
