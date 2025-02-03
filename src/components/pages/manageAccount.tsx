@@ -239,8 +239,8 @@ const ManageAccount = () => {
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries((formData as any).entries());
-            const profileName = formJson.profileName;
+            const formJson = Object.fromEntries(formData.entries() as Iterable<[string, FormDataEntryValue]>);
+            const profileName = formJson.profileName as string;
             handleAddProfile(profileName);
             handleCloseAddProfileDialog();
           },
@@ -278,8 +278,8 @@ const ManageAccount = () => {
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries((formData as any).entries());
-            const profileName = formJson.profileName;
+            const formJson = Object.fromEntries(formData.entries() as Iterable<[string, FormDataEntryValue]>);
+            const profileName = formJson.profileName as string;
             handleEditProfile(profileName);
             handleCloseEditProfileDialog();
           },
