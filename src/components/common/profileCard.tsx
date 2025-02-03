@@ -48,7 +48,7 @@ export function ProfileCard({ profile, handleEdit, handleDelete, handleSetDefaul
     <Box
       id={`profileCard_${profile.id}`}
       key={profile.id}
-      sx={{ p: 2, border: '1px solid #4caf50', minWidth: '200px', textAlign: 'center' }}
+      sx={{ p: 2, border: '1px solid #4caf50', minWidth: '250px', maxWidth: '300px', textAlign: 'center' }}
     >
       <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" sx={{ pb: '10px' }}>
         <Box

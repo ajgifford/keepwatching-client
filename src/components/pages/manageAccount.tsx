@@ -120,14 +120,16 @@ const ManageAccount = () => {
 
   return (
     <>
-      <Grid container spacing={2} alignItems="center">
+      <Grid container spacing={2} alignItems="center" justifyContent={{ xs: 'center', md: 'left' }}>
         <Grid>
           <Box
             sx={{
               position: 'relative',
               display: 'inline-block',
-              width: 455,
-              height: 256,
+              width: { sm: '95%', md: '100%' },
+              maxWidth: 455,
+              height: 'auto',
+              mx: 'auto',
               borderRadius: 2,
               cursor: 'pointer',
               overflow: 'hidden',
@@ -179,7 +181,12 @@ const ManageAccount = () => {
           </Box>
         </Grid>
 
-        <Grid>
+        <Grid
+          direction="column"
+          sx={{
+            textAlign: { xs: 'center', sm: 'left' }, // Center on small screens, left-align on larger screens
+          }}
+        >
           <Typography variant="h2" gutterBottom>
             {account.name}
           </Typography>
@@ -207,9 +214,9 @@ const ManageAccount = () => {
         </Stack>
         <Stack
           spacing={{ xs: 1, sm: 2 }}
-          direction="row"
+          direction={{ xs: 'column', sm: 'row' }}
           useFlexGap
-          sx={{ flexWrap: 'wrap', p: 2, justifyContent: 'left' }}
+          sx={{ flexWrap: 'wrap', p: 2, justifyContent: { xs: 'center', md: 'left' } }}
         >
           {profiles.map((profile) => (
             <ProfileCard
