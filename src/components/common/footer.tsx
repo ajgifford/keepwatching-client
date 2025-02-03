@@ -16,8 +16,8 @@ export function Footer() {
     <Box
       sx={{
         textAlign: 'center',
-        my: '4px',
-        px: '8px',
+        my: '2px',
+        px: '4px',
       }}
     >
       <Typography variant="caption" color="common.white" gutterBottom>
@@ -33,7 +33,6 @@ export function Footer() {
             fontSize: '0.75rem',
             textTransform: 'none',
             color: 'common.white',
-            mb: 1,
           }}
         >
           {expanded ? 'Show Less' : 'Show More'}

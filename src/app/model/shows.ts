@@ -11,7 +11,8 @@ export type Show = {
   network: string | null;
   status: string;
   type: string;
-  image: string;
+  poster_image: string;
+  backdrop_image: string;
   user_rating?: number | null;
   tv_parental_guidelines?: string;
   season_count?: number;
@@ -40,7 +41,7 @@ export type NextWatchEpisode = {
   air_date: string;
   episode_number: number;
   season_number: number;
-  episode_image: string;
+  episode_still_image: string;
 };
 
 export type Season = {
@@ -51,7 +52,7 @@ export type Season = {
   overview: string;
   season_number: number;
   release_date: string;
-  image: string;
+  poster_image: string;
   number_of_episodes: number;
   watch_status: WatchStatus;
   episodes: Episode[];
@@ -68,6 +69,6 @@ export type Episode = {
   overview: string;
   runtime: number;
   air_date: string;
-  image: string;
+  still_image: string;
   watch_status: WatchStatus;
 };

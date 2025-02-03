@@ -1,6 +1,12 @@
 import { EpisodeToAir, Show } from '../../app/model/shows';
 import { WatchStatus } from '../../app/model/watchStatus';
 
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
+
+export function buildTMDBImagePath(path: string, size: string = 'w185'): string {
+  return `${IMAGE_BASE_URL}${size}${path}`;
+}
+
 export function calculateRuntimeDisplay(runtime: number): string {
   if (!runtime) {
     return 'TBD';

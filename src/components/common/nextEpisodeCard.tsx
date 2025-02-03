@@ -4,6 +4,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { NextWatchEpisode } from '../../app/model/shows';
+import { buildTMDBImagePath } from '../utility/contentUtility';
 
 interface PropTypes {
   nextEpisode: NextWatchEpisode;
@@ -37,7 +38,7 @@ export function NextEpisodeCard({ nextEpisode }: PropTypes) {
         <Grid>
           <Avatar
             alt={nextEpisode.episode_title}
-            src={nextEpisode.episode_image}
+            src={buildTMDBImagePath(nextEpisode.episode_still_image)}
             variant="rounded"
             sx={{ width: 140, height: 96 }}
           />

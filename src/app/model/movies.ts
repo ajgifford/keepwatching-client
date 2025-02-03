@@ -8,7 +8,8 @@ export type Movie = {
   release_date: string;
   genres: string;
   runtime: number;
-  image: string;
+  poster_image: string;
+  backdrop_image: string;
   user_rating: number | null;
   mpa_rating: string;
   streaming_services: string;

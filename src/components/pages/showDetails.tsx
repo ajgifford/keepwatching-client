@@ -44,6 +44,7 @@ import {
   buildEpisodeLine,
   buildSeasonAirDate,
   buildServicesLine,
+  buildTMDBImagePath,
   calculateRuntimeDisplay,
   getWatchStatusDisplay,
 } from '../utility/contentUtility';
@@ -149,7 +150,12 @@ function ShowDetails() {
             <Accordion key={season.season_id}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
-                  <Avatar alt={season.name} src={season.image} variant="rounded" sx={{ width: 96, height: 140 }} />
+                  <Avatar
+                    alt={season.name}
+                    src={buildTMDBImagePath(season.poster_image)}
+                    variant="rounded"
+                    sx={{ width: 96, height: 140 }}
+                  />
                 </ListItemAvatar>
                 <Box ml={2} flexGrow={1}>
                   <Typography variant="h6">{season.name}</Typography>
@@ -190,7 +196,7 @@ function ShowDetails() {
                           <ListItemAvatar sx={{ width: 140, height: 96, p: 1 }}>
                             <Avatar
                               alt={episode.title}
-                              src={episode.image}
+                              src={buildTMDBImagePath(episode.still_image)}
                               variant="rounded"
                               sx={{ width: 140, height: 96 }}
                             />

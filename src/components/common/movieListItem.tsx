@@ -22,7 +22,7 @@ import { useAppDispatch } from '../../app/hooks';
 import { Movie } from '../../app/model/movies';
 import { WatchStatus } from '../../app/model/watchStatus';
 import { removeMovieFavorite, updateMovieStatus } from '../../app/slices/activeProfileSlice';
-import { calculateRuntimeDisplay } from '../utility/contentUtility';
+import { buildTMDBImagePath, calculateRuntimeDisplay } from '../utility/contentUtility';
 
 export type MovieListItemProps = {
   movie: Movie;
@@ -66,7 +66,12 @@ export const MovieListItem = (props: MovieListItemProps) => {
   return (
     <ListItem key={`listItem_${movie.movie_id}`} alignItems="flex-start">
       <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
-        <Avatar alt={movie.title} src={movie.image} variant="rounded" sx={{ width: 96, height: 140 }} />
+        <Avatar
+          alt={movie.title}
+          src={buildTMDBImagePath(movie.poster_image)}
+          variant="rounded"
+          sx={{ width: 96, height: 140 }}
+        />
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <ListItemText

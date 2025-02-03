@@ -28,7 +28,7 @@ import { useAppDispatch } from '../../app/hooks';
 import { Show } from '../../app/model/shows';
 import { WatchStatus } from '../../app/model/watchStatus';
 import { removeShowFavorite, updateShowStatus } from '../../app/slices/activeProfileSlice';
-import { buildEpisodeLine, buildServicesLine } from '../utility/contentUtility';
+import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../utility/contentUtility';
 
 export type FilterProps = {
   genre: string;
@@ -103,7 +103,12 @@ export const ShowListItem = (props: ShowListItemProps) => {
         onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: buildLinkState() })}
       >
         <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
-          <Avatar alt={show.title} src={show.image} variant="rounded" sx={{ width: 96, height: 140 }} />
+          <Avatar
+            alt={show.title}
+            src={buildTMDBImagePath(show.poster_image)}
+            variant="rounded"
+            sx={{ width: 96, height: 140 }}
+          />
         </ListItemAvatar>
         <Box sx={{ flexGrow: 1 }}>
           <ListItemText
