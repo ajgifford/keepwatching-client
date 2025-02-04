@@ -192,7 +192,14 @@ function ShowDetails() {
                   <List>
                     {season.episodes.map((episode) => (
                       <React.Fragment key={episode.episode_id}>
-                        <ListItem>
+                        <ListItem
+                          sx={{
+                            display: 'flex',
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            alignItems: { xs: 'center', sm: 'flex-start' },
+                            textAlign: { xs: 'center', sm: 'left' },
+                          }}
+                        >
                           <ListItemAvatar sx={{ width: 140, height: 96, p: 1 }}>
                             <Avatar
                               alt={episode.title}
