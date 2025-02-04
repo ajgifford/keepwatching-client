@@ -10,6 +10,7 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import NotificationBar from './notification/notificationBar';
+import ChangePassword from './pages/changePassword';
 import Default from './pages/default';
 import Discover from './pages/discover';
 import Home from './pages/home';
@@ -62,6 +63,7 @@ function App() {
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/manageAccount" element={<ManageAccount />} />
+                  <Route path="/changePassword" element={<ChangePassword />} />
                 </Route>
               </Routes>
             </Container>

@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import AddIcon from '@mui/icons-material/Add';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EditIcon from '@mui/icons-material/Edit';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
 import {
   Box,
   Button,
@@ -10,15 +15,21 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
-import { selectCurrentAccount, updateAccount, updateAccountImage } from '../../app/slices/accountSlice';
+import {
+  changeEmail,
+  selectCurrentAccount,
+  updateAccount,
+  updateAccountImage,
+  verifyEmail,
+} from '../../app/slices/accountSlice';
 import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import {
   addProfile,
@@ -27,7 +38,9 @@ import {
   selectAllProfiles,
   selectProfileById,
 } from '../../app/slices/profilesSlice';
+import NameEditDialog from '../common/nameEditDialog';
 import { ProfileCard } from '../common/profileCard';
+import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
@@ -36,21 +49,23 @@ const ManageAccount = () => {
   const activeProfile = useAppSelector(selectActiveProfile)!;
   const defaultProfile = useAppSelector((state) => selectProfileById(state, account.default_profile_id));
 
-  const [addProfileDialogOpen, setAddProfileDialogOpen] = useState<boolean>(false);
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
-  const [editProfileDialogOpen, setEditProfileDialogOpen] = useState<boolean>(false);
   const [managedProfile, setManagedProfile] = useState<Profile | null>();
-  const [managedProfileName, setManagedProfileName] = useState<string>('');
+  const [nameDialogOpen, setNameDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('');
+  const [currentName, setCurrentName] = useState('');
+  const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
+
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleAddProfileButton = () => {
-    setAddProfileDialogOpen(true);
-  };
-
-  const handleCloseAddProfileDialog = () => {
-    setAddProfileDialogOpen(false);
+    openNameDialog('Add Profile', '', async (newName) => {
+      await dispatch(addProfile({ accountId: account.id, newProfileName: newName }));
+    });
   };
 
   const handleDeleteProfileButton = (profile: Profile) => {
@@ -63,18 +78,30 @@ const ManageAccount = () => {
   };
 
   const handleEditProfileButton = (profile: Profile) => {
-    setManagedProfile(profile);
-    setManagedProfileName(profile.name);
-    setEditProfileDialogOpen(true);
+    openNameDialog('Edit Profile', profile.name, (newName) => {
+      dispatch(editProfile({ accountId: account.id, id: profile.id, name: newName }));
+    });
   };
 
-  const handleCloseEditProfileDialog = () => {
-    setEditProfileDialogOpen(false);
+  const handleEditAccountName = () => {
+    openNameDialog('Edit Account Name', account.name, (newName) => {
+      dispatch(
+        updateAccount({
+          account_id: account.id,
+          email: account.email,
+          account_name: newName,
+          default_profile_id: account.default_profile_id,
+        }),
+      );
+    });
   };
 
-  async function handleAddProfile(profileName: string) {
-    await dispatch(addProfile({ accountId: account.id, newProfileName: profileName }));
-  }
+  const openNameDialog = (title: string, initialName: string, onSave: (name: string) => void) => {
+    setDialogTitle(title);
+    setCurrentName(initialName);
+    setOnSaveCallback(() => onSave);
+    setNameDialogOpen(true);
+  };
 
   async function handleConfirmDeleteProfile() {
     if (managedProfile) {
@@ -84,18 +111,14 @@ const ManageAccount = () => {
     }
   }
 
-  async function handleEditProfile(profileName: string) {
-    if (managedProfile && managedProfileName) {
-      setEditProfileDialogOpen(false);
-      await dispatch(editProfile({ accountId: account.id, id: managedProfile.id, name: profileName }));
-      setManagedProfile(null);
-      setManagedProfileName('');
-    }
-  }
-
   async function handleSetDefaultProfile(profile: Profile) {
     await dispatch(
-      updateAccount({ account_id: account.id, account_name: account.name, default_profile_id: profile.id }),
+      updateAccount({
+        account_id: account.id,
+        email: account.email,
+        account_name: account.name,
+        default_profile_id: profile.id,
+      }),
     );
   }
 
@@ -115,6 +138,26 @@ const ManageAccount = () => {
   const handleImageClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  const handleVerifyEmail = async () => {
+    if (user) {
+      dispatch(verifyEmail(user));
+    }
+  };
+
+  const handleChangeEmail = () => {
+    if (user) {
+      openNameDialog('Change Email', account.email, (newEmail) => {
+        dispatch(
+          changeEmail({
+            user,
+            new_email: newEmail,
+            account_id: account.id,
+          }),
+        );
+      });
     }
   };
 
@@ -187,13 +230,52 @@ const ManageAccount = () => {
             textAlign: { xs: 'center', sm: 'left' }, // Center on small screens, left-align on larger screens
           }}
         >
-          <Typography variant="h2" gutterBottom>
+          <Typography variant="h3" gutterBottom sx={{ mb: '5px', display: 'flex', alignItems: 'center', gap: 1 }}>
             {account.name}
+            <IconButton size="small" onClick={handleEditAccountName} color="primary">
+              <EditIcon fontSize="inherit" />
+            </IconButton>
           </Typography>
-          <Typography variant="h6" color="primary" gutterBottom>
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', my: '10px' }}
+          >
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={user?.emailVerified ? <CheckCircleIcon /> : <EmailIcon />}
+              disabled={user?.emailVerified}
+              onClick={handleVerifyEmail}
+            >
+              {user?.emailVerified ? 'Email Verified' : 'Verify Email'}
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EmailIcon />}
+              disabled={!user?.emailVerified}
+              onClick={handleChangeEmail}
+            >
+              Change Email
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<LockIcon />}
+              component={Link}
+              to={`/changePassword`}
+              sx={{ cursor: 'pointer' }}
+            >
+              Change Password
+            </Button>
+          </Stack>
+          <Typography variant="subtitle1" color="primary" gutterBottom>
+            Email: {account.email}
+          </Typography>
+          <Typography variant="subtitle1" color="primary" gutterBottom>
             Default Profile: {defaultProfile.name}
           </Typography>
-          <Typography variant="h6" color="primary" gutterBottom>
+          <Typography variant="subtitle1" color="primary" gutterBottom>
             Active Profile: {activeProfile.name}
           </Typography>
         </Grid>
@@ -230,86 +312,13 @@ const ManageAccount = () => {
           ))}
         </Stack>
       </Box>
-      {/* Add Profile Dialog */}
-      <Dialog
-        open={addProfileDialogOpen}
-        onClose={handleCloseAddProfileDialog}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries() as Iterable<[string, FormDataEntryValue]>);
-            const profileName = formJson.profileName as string;
-            handleAddProfile(profileName);
-            handleCloseAddProfileDialog();
-          },
-        }}
-      >
-        <DialogTitle>Add Profile</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="profileName"
-            name="profileName"
-            label="Profile"
-            fullWidth
-            variant="standard"
-            inputRef={(input) => input && input.focus()}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddProfileDialog} variant="outlined" color="primary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Edit Profile Dialog */}
-      <Dialog
-        open={editProfileDialogOpen}
-        onClose={handleCloseEditProfileDialog}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries() as Iterable<[string, FormDataEntryValue]>);
-            const profileName = formJson.profileName as string;
-            handleEditProfile(profileName);
-            handleCloseEditProfileDialog();
-          },
-        }}
-      >
-        <DialogTitle>Edit Profile</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="profileName"
-            name="profileName"
-            label="Profile"
-            value={managedProfileName}
-            fullWidth
-            variant="standard"
-            onChange={(e) => setManagedProfileName(e.target.value)}
-            inputRef={(input) => input && input.focus()}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditProfileDialog} variant="outlined" color="primary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <NameEditDialog
+        open={nameDialogOpen}
+        title={dialogTitle}
+        initialName={currentName}
+        onClose={() => setNameDialogOpen(false)}
+        onSave={onSaveCallback}
+      />
       {/* Confirm Profile Delete Dialog */}
       <Dialog
         open={deleteProfileDialogOpen}

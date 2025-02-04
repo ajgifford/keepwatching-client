@@ -8,7 +8,16 @@ import { fetchProfiles } from './profilesSlice';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { FirebaseError } from 'firebase/app';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import {
+  User,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signOut,
+  updateEmail,
+  updatePassword,
+  updateProfile,
+} from 'firebase/auth';
 
 type LoginData = {
   email: string;
@@ -98,6 +107,7 @@ export const register = createAsyncThunk(
     try {
       userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.name });
+      await sendEmailVerification(userCredential.user);
     } catch (error) {
       const errorMessage = getFirebaseAuthErrorMessage(
         error as FirebaseError,
@@ -111,6 +121,7 @@ export const register = createAsyncThunk(
       );
       return rejectWithValue({ message: errorMessage });
     }
+
     try {
       const response = await axiosInstance.post('/accounts/', {
         email: data.email,
@@ -228,17 +239,131 @@ export const updateAccountImage = createAsyncThunk(
   },
 );
 
+export const verifyEmail = createAsyncThunk(
+  'account/verifyEmail',
+  async (user: User, { dispatch, rejectWithValue }) => {
+    try {
+      await sendEmailVerification(user);
+      dispatch(
+        showNotification({
+          message: `Verification email sent`,
+          type: NotificationType.Success,
+        }),
+      );
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred changing the password. Please try again.',
+      );
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue({ message: errorMessage });
+    }
+  },
+);
+
+export const changePassword = createAsyncThunk(
+  'account/changePassword',
+  async ({ user, password }: { user: User; password: string }, { dispatch, rejectWithValue }) => {
+    try {
+      await updatePassword(user, password);
+      dispatch(
+        showNotification({
+          message: 'Successfully changed password',
+          type: NotificationType.Success,
+        }),
+      );
+      return { success: true };
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred changing the password. Please try again.',
+      );
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue({ message: errorMessage });
+    }
+  },
+);
+
+export const changeEmail = createAsyncThunk(
+  'account/changeEmail',
+  async (
+    { user, new_email, account_id }: { user: User; new_email: string; account_id: string },
+    { dispatch, rejectWithValue },
+  ) => {
+    try {
+      await updateEmail(user, new_email);
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred changing the email. Please try again.',
+      );
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    try {
+      const response = await axiosInstance.put(`/accounts/${account_id}/email`, { new_email });
+      const updateResult = response.data.result;
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
+      dispatch(
+        showNotification({
+          message: 'Successfully changed email',
+          type: NotificationType.Success,
+        }),
+      );
+      return updateResult;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showNotification({
+            message: errorResponse.message,
+            type: NotificationType.Error,
+          }),
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showNotification({
+          message: 'An error occurred',
+          type: NotificationType.Error,
+        }),
+      );
+      console.error(error);
+      return rejectWithValue({ message: 'Change Email: Unexpected Error' });
+    }
+  },
+);
+
 export const updateAccount = createAsyncThunk(
   'account/update',
   async (
     {
       account_id,
+      email,
       account_name,
       default_profile_id,
-    }: { account_id: string; account_name: string; default_profile_id: string },
+    }: { account_id: string; email: string; account_name: string; default_profile_id: string },
     { dispatch, rejectWithValue },
   ) => {
     try {
+      console.log('New Email', email);
+      // update in firebase and then update in db
       const response = await axiosInstance.put(`/accounts/${account_id}/`, { account_name, default_profile_id });
       const updateResult = response.data.result;
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
@@ -267,7 +392,7 @@ export const updateAccount = createAsyncThunk(
         }),
       );
       console.error(error);
-      return rejectWithValue({ message: 'UpdateAccount: Unexpected Error' });
+      return rejectWithValue({ message: 'Update Account: Unexpected Error' });
     }
   },
 );
@@ -292,6 +417,8 @@ function getFirebaseAuthErrorMessage(error: FirebaseError, defaultMessage: strin
       return 'Sign-in is currently disabled. Contact support.';
     case 'auth/email-already-in-use':
       return 'An account with this email already exists, sign in or use another email.';
+    case 'auth/requires-recent-login':
+      return 'The user needs to reauthenticate before updating their account.';
     default:
       console.error('An unknown error occurred:', error.message);
       return defaultMessage;
@@ -366,6 +493,37 @@ const authSlice = createSlice({
           state.error = (action.payload as ErrorResponse).message || 'Account Image Update Failed';
         } else {
           state.error = action.error.message || 'Account Image Update Failed';
+        }
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.status = 'idle';
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.status = 'failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Account Password Update Failed';
+        } else {
+          state.error = action.error.message || 'Account Password Update Failed';
+        }
+      })
+      .addCase(changeEmail.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(changeEmail.fulfilled, (state, action: PayloadAction<Account>) => {
+        state.status = 'idle';
+        state.account = action.payload;
+      })
+      .addCase(changeEmail.rejected, (state, action) => {
+        state.status = 'failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Email Update Failed';
+        } else {
+          state.error = action.error.message || 'Email Update Failed';
         }
       })
       .addCase(updateAccount.pending, (state) => {
