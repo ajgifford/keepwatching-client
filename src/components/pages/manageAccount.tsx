@@ -1,11 +1,7 @@
 import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import AddIcon from '@mui/icons-material/Add';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
-import EmailIcon from '@mui/icons-material/Email';
-import LockIcon from '@mui/icons-material/Lock';
 import {
   Box,
   Button,
@@ -23,13 +19,7 @@ import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
-import {
-  changeEmail,
-  selectCurrentAccount,
-  updateAccount,
-  updateAccountImage,
-  verifyEmail,
-} from '../../app/slices/accountSlice';
+import { selectCurrentAccount, updateAccount, updateAccountImage, verifyEmail } from '../../app/slices/accountSlice';
 import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import {
   addProfile,
@@ -88,7 +78,6 @@ const ManageAccount = () => {
       dispatch(
         updateAccount({
           account_id: account.id,
-          email: account.email,
           account_name: newName,
           default_profile_id: account.default_profile_id,
         }),
@@ -115,7 +104,6 @@ const ManageAccount = () => {
     await dispatch(
       updateAccount({
         account_id: account.id,
-        email: account.email,
         account_name: account.name,
         default_profile_id: profile.id,
       }),
@@ -147,20 +135,6 @@ const ManageAccount = () => {
     }
   };
 
-  const handleChangeEmail = () => {
-    if (user) {
-      openNameDialog('Change Email', account.email, (newEmail) => {
-        dispatch(
-          changeEmail({
-            user,
-            new_email: newEmail,
-            account_id: account.id,
-          }),
-        );
-      });
-    }
-  };
-
   return (
     <>
       <Grid container spacing={2} alignItems="center" justifyContent={{ xs: 'center', md: 'left' }}>
@@ -186,6 +160,7 @@ const ManageAccount = () => {
               component="img"
               src={account.image}
               alt={account.name}
+              referrerPolicy="no-referrer"
               sx={{
                 width: '100%',
                 height: '100%',
@@ -205,10 +180,12 @@ const ManageAccount = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  textAlign: 'center',
                   color: 'white',
                   fontWeight: 'bold',
-                  fontSize: 16,
+                  fontSize: '1rem',
                   borderRadius: 2,
+                  pointerEvents: 'none',
                 }}
               >
                 Upload Image
@@ -227,7 +204,7 @@ const ManageAccount = () => {
         <Grid
           direction="column"
           sx={{
-            textAlign: { xs: 'center', sm: 'left' }, // Center on small screens, left-align on larger screens
+            textAlign: { xs: 'center', sm: 'left' },
           }}
         >
           <Typography variant="h3" gutterBottom sx={{ mb: '5px', display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -236,41 +213,17 @@ const ManageAccount = () => {
               <EditIcon fontSize="inherit" />
             </IconButton>
           </Typography>
-          <Stack
-            direction={{ xs: 'column', md: 'row' }}
-            sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', my: '10px' }}
-          >
+          <Typography variant="subtitle1" color="primary" gutterBottom>
+            Email: {account.email}{' '}
             <Button
-              variant="outlined"
               color="primary"
-              startIcon={user?.emailVerified ? <CheckCircleIcon /> : <EmailIcon />}
+              size="small"
+              variant="text"
               disabled={user?.emailVerified}
               onClick={handleVerifyEmail}
             >
-              {user?.emailVerified ? 'Email Verified' : 'Verify Email'}
+              {user?.emailVerified ? '(Email Verified)' : '(Verify Email)'}
             </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<EmailIcon />}
-              disabled={!user?.emailVerified}
-              onClick={handleChangeEmail}
-            >
-              Change Email
-            </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<LockIcon />}
-              component={Link}
-              to={`/changePassword`}
-              sx={{ cursor: 'pointer' }}
-            >
-              Change Password
-            </Button>
-          </Stack>
-          <Typography variant="subtitle1" color="primary" gutterBottom>
-            Email: {account.email}
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Default Profile: {defaultProfile.name}

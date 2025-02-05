@@ -1,5 +1,5 @@
 import axiosInstance from '../api/axiosInstance';
-import { auth } from '../firebaseConfig';
+import { auth, getFirebaseAuthErrorMessage } from '../firebaseConfig';
 import { ACCOUNT_KEY, Account } from '../model/account';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
@@ -9,13 +9,13 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { FirebaseError } from 'firebase/app';
 import {
+  GoogleAuthProvider,
   User,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
-  updateEmail,
-  updatePassword,
   updateProfile,
 } from 'firebase/auth';
 
@@ -123,7 +123,7 @@ export const register = createAsyncThunk(
     }
 
     try {
-      const response = await axiosInstance.post('/accounts/', {
+      const response = await axiosInstance.post('/accounts', {
         email: data.email,
         uid: userCredential.user.uid,
         name: data.name,
@@ -137,10 +137,11 @@ export const register = createAsyncThunk(
           type: NotificationType.Success,
         }),
       );
-      await dispatch(fetchProfiles(resgisterResult.id));
+
       await dispatch(
         setActiveProfile({ accountId: resgisterResult.id, profileId: resgisterResult.default_profile_id }),
       );
+      await dispatch(fetchProfiles(resgisterResult.id));
 
       return resgisterResult;
     } catch (error) {
@@ -166,6 +167,70 @@ export const register = createAsyncThunk(
     }
   },
 );
+
+export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { dispatch, rejectWithValue }) => {
+  let user = null;
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    user = result.user;
+  } catch (error) {
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error as FirebaseError,
+      'An unknown error occurred during Google login. Please try again.',
+    );
+    dispatch(
+      showNotification({
+        message: errorMessage,
+        type: NotificationType.Error,
+      }),
+    );
+    return rejectWithValue({ message: errorMessage });
+  }
+
+  try {
+    const response = await axiosInstance.post('/googleLogin', {
+      email: user.email,
+      uid: user.uid,
+      name: user.displayName,
+      photoURL: user.photoURL,
+    });
+    const googleResult: Account = response.data.result;
+
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(googleResult));
+    dispatch(
+      showNotification({
+        message: response.data.message || 'Success',
+        type: NotificationType.Success,
+      }),
+    );
+
+    await dispatch(setActiveProfile({ accountId: googleResult.id, profileId: googleResult.default_profile_id }));
+    await dispatch(fetchProfiles(googleResult.id));
+
+    return googleResult;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      const errorResponse = error.response.data;
+      dispatch(
+        showNotification({
+          message: errorResponse.message,
+          type: NotificationType.Error,
+        }),
+      );
+      return rejectWithValue(errorResponse);
+    }
+    dispatch(
+      showNotification({
+        message: 'An error occurred',
+        type: NotificationType.Error,
+      }),
+    );
+
+    console.error(error);
+    return rejectWithValue({ message: 'Register: Unexpected Error' });
+  }
+});
 
 export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
@@ -266,104 +331,17 @@ export const verifyEmail = createAsyncThunk(
   },
 );
 
-export const changePassword = createAsyncThunk(
-  'account/changePassword',
-  async ({ user, password }: { user: User; password: string }, { dispatch, rejectWithValue }) => {
-    try {
-      await updatePassword(user, password);
-      dispatch(
-        showNotification({
-          message: 'Successfully changed password',
-          type: NotificationType.Success,
-        }),
-      );
-      return { success: true };
-    } catch (error) {
-      const errorMessage = getFirebaseAuthErrorMessage(
-        error as FirebaseError,
-        'An unknown error occurred changing the password. Please try again.',
-      );
-      dispatch(
-        showNotification({
-          message: errorMessage,
-          type: NotificationType.Error,
-        }),
-      );
-      return rejectWithValue({ message: errorMessage });
-    }
-  },
-);
-
-export const changeEmail = createAsyncThunk(
-  'account/changeEmail',
-  async (
-    { user, new_email, account_id }: { user: User; new_email: string; account_id: string },
-    { dispatch, rejectWithValue },
-  ) => {
-    try {
-      await updateEmail(user, new_email);
-    } catch (error) {
-      const errorMessage = getFirebaseAuthErrorMessage(
-        error as FirebaseError,
-        'An unknown error occurred changing the email. Please try again.',
-      );
-      dispatch(
-        showNotification({
-          message: errorMessage,
-          type: NotificationType.Error,
-        }),
-      );
-      return rejectWithValue({ message: errorMessage });
-    }
-
-    try {
-      const response = await axiosInstance.put(`/accounts/${account_id}/email`, { new_email });
-      const updateResult = response.data.result;
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
-      dispatch(
-        showNotification({
-          message: 'Successfully changed email',
-          type: NotificationType.Success,
-        }),
-      );
-      return updateResult;
-    } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        const errorResponse = error.response.data;
-        dispatch(
-          showNotification({
-            message: errorResponse.message,
-            type: NotificationType.Error,
-          }),
-        );
-        return rejectWithValue(errorResponse);
-      }
-      dispatch(
-        showNotification({
-          message: 'An error occurred',
-          type: NotificationType.Error,
-        }),
-      );
-      console.error(error);
-      return rejectWithValue({ message: 'Change Email: Unexpected Error' });
-    }
-  },
-);
-
 export const updateAccount = createAsyncThunk(
   'account/update',
   async (
     {
       account_id,
-      email,
       account_name,
       default_profile_id,
-    }: { account_id: string; email: string; account_name: string; default_profile_id: string },
+    }: { account_id: string; account_name: string; default_profile_id: string },
     { dispatch, rejectWithValue },
   ) => {
     try {
-      console.log('New Email', email);
-      // update in firebase and then update in db
       const response = await axiosInstance.put(`/accounts/${account_id}/`, { account_name, default_profile_id });
       const updateResult = response.data.result;
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
@@ -396,34 +374,6 @@ export const updateAccount = createAsyncThunk(
     }
   },
 );
-
-function getFirebaseAuthErrorMessage(error: FirebaseError, defaultMessage: string) {
-  switch (error.code) {
-    case 'auth/invalid-credential':
-      return 'Invalid credentials were entered. Check your email & password.';
-    case 'auth/invalid-email':
-      return 'Please enter a valid email address.';
-    case 'auth/user-not-found':
-      return 'No account found with this email. Please sign up.';
-    case 'auth/wrong-password':
-      return 'The password you entered is incorrect.';
-    case 'auth/user-disabled':
-      return 'Your account has been disabled. Contact support.';
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Try again later.';
-    case 'auth/network-request-failed':
-      return 'Network error. Please check your connection.';
-    case 'auth/operation-not-allowed':
-      return 'Sign-in is currently disabled. Contact support.';
-    case 'auth/email-already-in-use':
-      return 'An account with this email already exists, sign in or use another email.';
-    case 'auth/requires-recent-login':
-      return 'The user needs to reauthenticate before updating their account.';
-    default:
-      console.error('An unknown error occurred:', error.message);
-      return defaultMessage;
-  }
-}
 
 const authSlice = createSlice({
   name: 'auth',
@@ -463,6 +413,22 @@ const authSlice = createSlice({
           state.error = action.error.message || 'Registration Failed';
         }
       })
+      .addCase(googleLogin.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action: PayloadAction<Account>) => {
+        state.status = 'idle';
+        state.account = action.payload;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.status = 'failed';
+        if (action.payload) {
+          state.error = (action.payload as ErrorResponse).message || 'Google Login Failed';
+        } else {
+          state.error = action.error.message || 'Google Login Failed';
+        }
+      })
       .addCase(logout.pending, (state) => {
         state.status = 'loading';
         state.error = null;
@@ -493,37 +459,6 @@ const authSlice = createSlice({
           state.error = (action.payload as ErrorResponse).message || 'Account Image Update Failed';
         } else {
           state.error = action.error.message || 'Account Image Update Failed';
-        }
-      })
-      .addCase(changePassword.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(changePassword.fulfilled, (state) => {
-        state.status = 'idle';
-      })
-      .addCase(changePassword.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Account Password Update Failed';
-        } else {
-          state.error = action.error.message || 'Account Password Update Failed';
-        }
-      })
-      .addCase(changeEmail.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(changeEmail.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.status = 'idle';
-        state.account = action.payload;
-      })
-      .addCase(changeEmail.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Email Update Failed';
-        } else {
-          state.error = action.error.message || 'Email Update Failed';
         }
       })
       .addCase(updateAccount.pending, (state) => {

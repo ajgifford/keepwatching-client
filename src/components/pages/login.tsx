@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react';
+import { FaGoogle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
-import { login } from '../../app/slices/accountSlice';
+import { googleLogin, login } from '../../app/slices/accountSlice';
 import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
 import { validate } from 'email-validator';
 
@@ -14,13 +16,13 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const registerMessage = `Don't have an account? Register`;
 
   const emailHasError = useMemo(() => {
     if (email === '') return false;
     const emailValid = validate(email);
     return !emailValid;
   }, [email]);
+
   const passwordHasError = useMemo(() => {
     if (password === '') return false;
     return password.length < 8;
@@ -43,6 +45,14 @@ const Login = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       handleLogin();
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await dispatch(googleLogin());
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -98,10 +108,13 @@ const Login = () => {
             <Button id="loginButton" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={handleLogin}>
               Login
             </Button>
-            <Grid container justifyContent={'flex-end'}>
-              <Grid>
-                <Link to="/register">{registerMessage}</Link>
-              </Grid>
+            <Grid container justifyContent="center" sx={{ gap: 2 }}>
+              <Button variant="outlined" startIcon={<HowToRegIcon />} component={Link} to={`/register`}>
+                No Account? Register
+              </Button>
+              <Button variant="outlined" startIcon={<FaGoogle />} onClick={handleGoogleSignIn}>
+                Sign In/Register with Google
+              </Button>
             </Grid>
           </Box>
         </Box>
