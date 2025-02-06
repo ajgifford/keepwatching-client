@@ -1,9 +1,9 @@
-import { BACKEND_BASE_URL } from '../constants/constants';
+import { BACKEND_API_URL } from '../constants/constants';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
 
 const axiosInstance = axios.create({
-  baseURL: BACKEND_BASE_URL,
+  baseURL: BACKEND_API_URL,
   withCredentials: false,
 });
 

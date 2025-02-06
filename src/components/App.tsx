@@ -6,6 +6,7 @@ import { Container } from '@mui/material';
 
 import store from '../app/store';
 import { Footer } from './common/footer';
+import { WebSocketProvider } from './common/webSocketProvider';
 import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
@@ -42,6 +43,7 @@ function App() {
 
   return (
     <Provider store={store}>
+      <WebSocketProvider />
       <div className="app-container">
         <BrowserRouter>
           <Navigation />

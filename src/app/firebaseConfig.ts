@@ -1,7 +1,5 @@
-import { getAnalytics } from 'firebase/analytics';
 import { FirebaseError, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -15,8 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const storage = getStorage(app);
-export const analytics = getAnalytics(app);
 
 export function getFirebaseAuthErrorMessage(error: FirebaseError, defaultMessage: string) {
   switch (error.code) {
