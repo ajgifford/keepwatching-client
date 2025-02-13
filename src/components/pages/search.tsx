@@ -1,7 +1,19 @@
 import { useState } from 'react';
 import React from 'react';
 
-import { Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField, Typography } from '@mui/material';
+import { Clear } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  Radio,
+  RadioGroup,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { SearchResult } from '../../app/model/search';
@@ -53,6 +65,15 @@ function Search() {
           onChange={(e) => setSearchText(e.target.value)}
           onKeyDown={handleKeyPress}
           fullWidth
+          InputProps={{
+            endAdornment: searchText && (
+              <InputAdornment position="end">
+                <IconButton aria-label="clear search" onClick={() => setSearchText('')} edge="end">
+                  <Clear />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginLeft: '8px' }}>
           Search
