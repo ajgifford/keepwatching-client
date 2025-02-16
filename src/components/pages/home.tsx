@@ -63,8 +63,8 @@ const Home = () => {
           src={profile.image}
           alt={profile.name}
           sx={{
-            width: 96,
-            height: 96,
+            width: { xs: '50%', sm: '50%', md: '25%' },
+            height: 'auto',
             borderRadius: 2,
           }}
         />

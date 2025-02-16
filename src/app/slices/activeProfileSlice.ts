@@ -23,6 +23,7 @@ interface ActiveProfileState {
   movieStreamingServices: string[];
   recentMovies: MovieIds[];
   upcomingMovies: MovieIds[];
+  lastUpdated: string | null;
   loading: boolean;
   error: string | null;
 }
@@ -38,6 +39,7 @@ const blankState: ActiveProfileState = {
   movieStreamingServices: [],
   recentMovies: [],
   upcomingMovies: [],
+  lastUpdated: null,
   loading: false,
   error: null,
 };
@@ -274,12 +276,14 @@ const activeProfileSlice = createSlice({
         state.movieStreamingServices = generateStreamingServiceFilterValues(movies);
         state.recentMovies = recentMovies;
         state.upcomingMovies = upcomingMovies;
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(setActiveProfile.rejected, (state, action) => {
         state.loading = false;
+        state.lastUpdated = null;
         state.error = action.error.message || 'Failed to load active profile';
       })
       .addCase(reloadActiveProfile.pending, (state) => {
@@ -298,12 +302,14 @@ const activeProfileSlice = createSlice({
         state.movieStreamingServices = generateStreamingServiceFilterValues(movies);
         state.recentMovies = recentMovies;
         state.upcomingMovies = upcomingMovies;
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(reloadActiveProfile.rejected, (state, action) => {
         state.loading = false;
+        state.lastUpdated = null;
         state.error = action.error.message || 'Failed to reload active profile';
       })
       .addCase(addShowFavorite.pending, (state) => {
@@ -436,6 +442,7 @@ const activeProfileSlice = createSlice({
 });
 
 export const selectActiveProfile = (state: RootState) => state.activeProfile.profile;
+export const selectLastUpdated = (state: RootState) => state.activeProfile.lastUpdated;
 export const selectShows = (state: RootState) => state.activeProfile.shows;
 export const selectShowGenres = (state: RootState) => state.activeProfile.showGenres;
 export const selectShowStreamingServices = (state: RootState) => state.activeProfile.showStreamingServices;

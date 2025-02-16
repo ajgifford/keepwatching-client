@@ -20,7 +20,7 @@ import Grid from '@mui/material/Grid2';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Profile } from '../../app/model/profile';
 import { selectCurrentAccount, updateAccount, updateAccountImage, verifyEmail } from '../../app/slices/accountSlice';
-import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
+import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import {
   addProfile,
   deleteProfile,
@@ -37,6 +37,7 @@ const ManageAccount = () => {
   const account = useAppSelector(selectCurrentAccount)!;
   const profiles = useAppSelector(selectAllProfiles);
   const activeProfile = useAppSelector(selectActiveProfile)!;
+  const lastUpdated = useAppSelector(selectLastUpdated);
   const defaultProfile = useAppSelector((state) => selectProfileById(state, account.default_profile_id));
 
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
@@ -231,6 +232,11 @@ const ManageAccount = () => {
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Active Profile: {activeProfile.name}
           </Typography>
+          {lastUpdated && (
+            <Typography variant="subtitle1" color="primary" gutterBottom>
+              Last Updated: {lastUpdated}
+            </Typography>
+          )}
         </Grid>
       </Grid>
 
