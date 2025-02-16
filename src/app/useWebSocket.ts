@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { BACKEND_WEBSOCKET_URL } from './constants/constants';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { selectCurrentAccount } from './slices/accountSlice';
-import { setActiveProfile } from './slices/activeProfileSlice';
+import { reloadActiveProfile } from './slices/activeProfileSlice';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Socket, io } from 'socket.io-client';
 
@@ -23,10 +23,16 @@ export const useWebSocket = () => {
 
         socket = io(BACKEND_WEBSOCKET_URL, {
           auth: { token },
+          reconnectionAttempts: 5, // Limits to 5 reconnection attempts
+          reconnectionDelay: 2000, // Wait 2 seconds before retrying
         });
 
-        socket.on('globalUpdate', () => {
-          dispatch(setActiveProfile({ accountId: account.id, profileId: account.default_profile_id }));
+        socket.on('showsUpdate', () => {
+          dispatch(reloadActiveProfile);
+        });
+
+        socket.on('moviesUpdate', () => {
+          dispatch(reloadActiveProfile);
         });
       }
     });
