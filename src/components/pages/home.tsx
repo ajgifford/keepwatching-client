@@ -162,8 +162,11 @@ const Home = () => {
           </Typography>
         </Stack>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" color="success">
-            Recent Releases
+          <Typography variant="h6" color="success" component="span">
+            Recent Releases{' '}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary" component="span">
+            (last 60 days)
           </Typography>
           <Stack
             spacing={{ xs: 1, sm: 2 }}
@@ -183,8 +186,11 @@ const Home = () => {
           </Stack>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" color="success">
-            Upcoming Releases
+          <Typography variant="h6" color="success" component="span">
+            Upcoming Releases{' '}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary" component="span">
+            (last 60 days)
           </Typography>
           <Stack
             spacing={{ xs: 1, sm: 2 }}
