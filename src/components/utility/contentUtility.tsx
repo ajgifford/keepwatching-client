@@ -108,7 +108,7 @@ export const buildEpisodeLine = (show: Show | null) => {
     }
     return (
       <>
-        <b>Last Episode:</b> {buildEpisodeLineDetails(show.last_episode)}
+        <b>Last Episode: </b> {buildEpisodeLineDetails(show.last_episode)}
       </>
     );
   }
