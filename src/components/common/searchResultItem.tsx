@@ -28,6 +28,35 @@ export function SearchResultItem(props: SearchResultProps) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const imageSrc = props.source === 'search' ? buildTMDBImagePath(searchResult.image) : searchResult.image;
 
+  function buildPremieredString() {
+    if (!searchResult.premiered) {
+      return (
+        <>
+          <b>{'Premieres: '}</b>
+          {'TBD'}
+        </>
+      );
+    }
+    const premieredDate = new Date(searchResult.premiered);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (premieredDate > today) {
+      return (
+        <>
+          <b>Premieres: </b>
+          {searchResult.premiered}
+        </>
+      );
+    }
+    return (
+      <>
+        <b>{'Premiered: '}</b>
+        {searchResult.premiered}
+      </>
+    );
+  }
+
   return (
     <ListItem
       key={searchResult.id}
@@ -53,11 +82,11 @@ export function SearchResultItem(props: SearchResultProps) {
             >
               <i>{searchResult.summary}</i>
               <br />
-              <b>Genres:</b> {searchResult.genres.join(', ')}
+              <b>Genres: </b> {searchResult.genres.join(', ')}
               <br />
-              <b>Premiered:</b> {searchResult.premiered}
+              {buildPremieredString()}
               <br />
-              <b>Rating:</b> {searchResult.rating}
+              <b>Rating: </b> {searchResult.rating}
             </Typography>
             {isSmallScreen && (
               <Button
