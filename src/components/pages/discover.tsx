@@ -1,16 +1,24 @@
 import { useState } from 'react';
 
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { Button, FormControl, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Button, CircularProgress, FormControl, MenuItem, Select, Stack, Typography } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
+import { useAppDispatch } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
+import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
 import SearchResults from '../common/searchResults';
+import { AxiosError } from 'axios';
+
+type ServiceType = 'none' | 'netflix' | 'disney' | 'hbo' | 'apple' | 'prime';
+type ContentType = 'none' | 'movies' | 'series';
 
 function Discover() {
+  const dispatch = useAppDispatch();
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [selectedService, setSelectedService] = useState<string>('none');
-  const [selectedType, setSelectedType] = useState<string>('none');
+  const [selectedService, setSelectedService] = useState<ServiceType>('none');
+  const [selectedType, setSelectedType] = useState<ContentType>('none');
+  const [isLoading, setIsLoading] = useState(false);
 
   const services = [
     { id: 'none', display: '---' },
@@ -29,15 +37,16 @@ function Discover() {
 
   const sortedServices = services.sort((a, b) => a.display.localeCompare(b.display, 'en', { sensitivity: 'base' }));
 
-  const handleServiceChanged = (value: string) => {
+  const handleServiceChanged = (value: ServiceType) => {
     setSelectedService(value);
   };
 
-  const handleTypeChanged = (value: string) => {
+  const handleTypeChanged = (value: ContentType) => {
     setSelectedType(value);
   };
 
   const findTopContent = async () => {
+    setIsLoading(true);
     const topParams = {
       showType: selectedType === 'movies' ? 'movie' : selectedType,
       service: selectedService,
@@ -45,8 +54,19 @@ function Discover() {
     try {
       const topResponse = await axiosInstance.get('/discover/top', { params: topParams });
       setResults(topResponse.data.results);
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      let errorMessage = 'Failed to load content';
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message;
+      }
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          type: NotificationType.Error,
+        }),
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,7 +81,7 @@ function Discover() {
           <Select
             id="discoverServiceSelect"
             value={selectedService}
-            onChange={(e) => handleServiceChanged(e.target.value)}
+            onChange={(e) => handleServiceChanged(e.target.value as ServiceType)}
           >
             {sortedServices.map((service) => (
               <MenuItem id={`discoverServiceFilter_${service.id}`} key={service.id} value={service.id}>
@@ -71,7 +91,11 @@ function Discover() {
           </Select>
         </FormControl>
         <FormControl id="discoverTypeControl">
-          <Select id="discoverTypeSelect" value={selectedType} onChange={(e) => handleTypeChanged(e.target.value)}>
+          <Select
+            id="discoverTypeSelect"
+            value={selectedType}
+            onChange={(e) => handleTypeChanged(e.target.value as ContentType)}
+          >
             {type.map((type) => (
               <MenuItem id={`discoverTypeFilter_${type.id}`} key={type.id} value={type.id}>
                 {type.display}
@@ -83,13 +107,13 @@ function Discover() {
           id="discoverGoButton"
           variant="outlined"
           onClick={findTopContent}
-          startIcon={<PlayArrowIcon className="icon" />}
-          disabled={selectedService === 'none' || selectedType === 'none'}
+          startIcon={isLoading ? <CircularProgress size={20} /> : <PlayArrowIcon />}
+          disabled={selectedService === 'none' || selectedType === 'none' || isLoading}
         >
-          Go
+          {isLoading ? 'Loading...' : 'Go'}
         </Button>
       </Stack>
-      <SearchResults results={results} searchType={selectedType} source="discover" />
+      <SearchResults results={results} searchType={selectedType} source="discover" isLoading={isLoading} />
     </>
   );
 }

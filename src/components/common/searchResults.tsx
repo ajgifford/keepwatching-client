@@ -1,6 +1,6 @@
 import { Fragment } from 'react/jsx-runtime';
 
-import { Box, Divider, List, Typography } from '@mui/material';
+import { Box, CircularProgress, Divider, List, Typography } from '@mui/material';
 
 import { SearchResult } from '../../app/model/search';
 import { SearchResultItem } from './searchResultItem';
@@ -9,6 +9,7 @@ interface SearchResultProps {
   results: SearchResult[];
   searchType: string;
   source: 'search' | 'discover';
+  isLoading: boolean;
 }
 
 function SearchResults(props: SearchResultProps) {
@@ -16,7 +17,11 @@ function SearchResults(props: SearchResultProps) {
 
   return (
     <>
-      {results.length > 0 ? (
+      {props.isLoading ? (
+        <Box display="flex" justifyContent="center" p={4}>
+          <CircularProgress />
+        </Box>
+      ) : results.length > 0 ? (
         <List>
           {results.map((result) => (
             <Fragment key={result.id}>
