@@ -12,11 +12,13 @@ import {
 } from '@mui/material';
 
 import { SearchResult } from '../../app/model/search';
+import { buildTMDBImagePath } from '../utility/contentUtility';
 import FavoritesButton from './favoriteButton';
 
 interface SearchResultProps {
   result: SearchResult;
   searchType: string;
+  source: 'search' | 'discover';
 }
 
 export function SearchResultItem(props: SearchResultProps) {
@@ -24,6 +26,7 @@ export function SearchResultItem(props: SearchResultProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
+  const imageSrc = props.source === 'search' ? buildTMDBImagePath(searchResult.image) : searchResult.image;
 
   return (
     <ListItem
@@ -32,7 +35,7 @@ export function SearchResultItem(props: SearchResultProps) {
       secondaryAction={<FavoritesButton id={searchResult.id} searchType={props.searchType} />}
     >
       <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
-        <Avatar alt={searchResult.title} src={searchResult.image} variant="rounded" sx={{ width: 94, height: 140 }} />
+        <Avatar alt={searchResult.title} src={imageSrc} variant="rounded" sx={{ width: 94, height: 140 }} />
       </ListItemAvatar>
       <ListItemText
         primary={searchResult.title}

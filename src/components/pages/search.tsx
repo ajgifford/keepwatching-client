@@ -103,7 +103,7 @@ function Search() {
           </RadioGroup>
         </FormControl>
       </Box>
-      <SearchResults results={results} searchType={searchType} />
+      <SearchResults results={results} searchType={searchType} source="search" />
     </div>
   );
 }

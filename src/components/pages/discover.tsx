@@ -89,7 +89,7 @@ function Discover() {
           Go
         </Button>
       </Stack>
-      <SearchResults results={results} searchType={selectedType} />
+      <SearchResults results={results} searchType={selectedType} source="discover" />
     </>
   );
 }

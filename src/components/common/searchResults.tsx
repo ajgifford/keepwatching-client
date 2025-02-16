@@ -8,6 +8,7 @@ import { SearchResultItem } from './searchResultItem';
 interface SearchResultProps {
   results: SearchResult[];
   searchType: string;
+  source: 'search' | 'discover';
 }
 
 function SearchResults(props: SearchResultProps) {
@@ -19,7 +20,7 @@ function SearchResults(props: SearchResultProps) {
         <List>
           {results.map((result) => (
             <Fragment key={result.id}>
-              <SearchResultItem result={result} searchType={props.searchType} />
+              <SearchResultItem result={result} searchType={props.searchType} source={props.source} />
               <Divider variant="inset" component="li" />
             </Fragment>
           ))}
