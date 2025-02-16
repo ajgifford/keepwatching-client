@@ -11,6 +11,7 @@ export type Show = {
   network: string | null;
   status: string;
   type: string;
+  content_rating: string;
   poster_image: string;
   backdrop_image: string;
   user_rating?: number | null;

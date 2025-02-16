@@ -134,12 +134,15 @@ function ShowDetails() {
             </Typography>
             <Typography variant="body1">{buildServicesLine(show)}</Typography>
             <Typography variant="body1">
-              <b>Status:</b> {getWatchStatusDisplay(show?.watch_status)}
+              <b>Premiered: </b> {show?.release_date} | <b>Rated: </b> {show?.content_rating}
             </Typography>
             <Typography variant="body1">
               <b>Seasons:</b> {show?.season_count} | <b>Episodes:</b> {show?.episode_count}
             </Typography>
             <Typography variant="body1">{buildEpisodeLine(show)}</Typography>
+            <Typography variant="body1">
+              <b>Status:</b> {getWatchStatusDisplay(show?.watch_status)}
+            </Typography>
           </Box>
         </Toolbar>
       </AppBar>

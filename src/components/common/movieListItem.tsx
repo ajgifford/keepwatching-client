@@ -90,13 +90,15 @@ export const MovieListItem = (props: MovieListItemProps) => {
               >
                 <i>{movie.description}</i>
                 <br />
-                Genres: {movie.genres}
+                <b>Genres: </b> {movie.genres}
                 <br />
-                Streaming Service: {movie.streaming_services}
+                <b>Streaming Service: </b> {movie.streaming_services}
                 <br />
-                Release Date: {movie.release_date}
+                <b>Release Date: </b>
+                {movie.release_date} | <b>Rated: </b> {movie.mpa_rating}
                 <br />
-                Runtime: {calculateRuntimeDisplay(movie.runtime)}
+                <b>Runtime: </b>
+                {calculateRuntimeDisplay(movie.runtime)}
               </Typography>
               {isSmallScreen && (
                 <Button
