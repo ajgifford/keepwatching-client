@@ -10,6 +10,7 @@ import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowS
 import { NotificationType, showNotification } from './notificationSlice';
 import { updateProfileImage } from './profilesSlice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 
 interface ActiveProfileState {
   profile: Profile | null;
@@ -62,8 +63,11 @@ export const setActiveProfile = createAsyncThunk(
       const recentMovies = results.recentMovies;
       const upcomingMovies = results.upcomingMovies;
       return { profile, shows, nextWatchEpisodes, movies, recentMovies, upcomingMovies };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -84,8 +88,11 @@ export const addShowFavorite = createAsyncThunk(
         }),
       );
       return show;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -104,8 +111,11 @@ export const removeShowFavorite = createAsyncThunk(
         }),
       );
       return show;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -123,8 +133,11 @@ export const updateShowStatus = createAsyncThunk(
         recursive: true,
       });
       return { showId, status };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -145,8 +158,11 @@ export const addMovieFavorite = createAsyncThunk(
         }),
       );
       return movie;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -165,8 +181,11 @@ export const removeMovieFavorite = createAsyncThunk(
         }),
       );
       return movie;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -183,8 +202,11 @@ export const updateMovieStatus = createAsyncThunk(
         status: status,
       });
       return { movieId, status };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );

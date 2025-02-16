@@ -4,6 +4,7 @@ import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 
 interface ActiveShowState {
   show: Show | null;
@@ -34,8 +35,11 @@ export const fetchShowWithDetails = createAsyncThunk(
       });
 
       return { show, watchedEpisodesMap: watchedEpisodes };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -111,8 +115,11 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
       });
 
       return { profileId, episode_id, episodeStatus, season_id, seasonStatus, showId, showStatus };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -146,8 +153,11 @@ export const updateSeasonWatchStatus = createAsyncThunk(
       });
 
       return { profileId, season_id, seasonStatus, showId, showStatus };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );

@@ -51,8 +51,11 @@ export const fetchProfiles = createAsyncThunk(
       const response = await axiosInstance.get(`/accounts/${accountId}/profiles`);
       const profiles: Profile[] = response.data.results;
       return profiles;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
   {
@@ -82,8 +85,11 @@ export const addProfile = createAsyncThunk(
         }),
       );
       return response.data.result;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -100,8 +106,11 @@ export const deleteProfile = createAsyncThunk(
         }),
       );
       return profileId;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -118,8 +127,11 @@ export const editProfile = createAsyncThunk(
         }),
       );
       return response.data.result;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -144,7 +156,7 @@ export const updateProfileImage = createAsyncThunk(
         }),
       );
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
@@ -161,7 +173,7 @@ export const updateProfileImage = createAsyncThunk(
           type: NotificationType.Error,
         }),
       );
-      return rejectWithValue(error.message);
+      return rejectWithValue('An unknown error occurred');
     }
   },
 );
@@ -267,7 +279,7 @@ export const {
   selectAll: selectAllProfiles,
   selectById: selectProfileById,
   selectIds: selectProfileIds,
-} = profilesAdapter.getSelectors((state: any) => state.profiles);
+} = profilesAdapter.getSelectors((state: RootState) => state.profiles);
 export const selectProfilesStatus = (state: RootState) => state.profiles.status;
 export const selectProfilesError = (state: RootState) => state.profiles.error;
 
