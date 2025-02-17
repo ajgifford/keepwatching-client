@@ -190,7 +190,7 @@ const Home = () => {
             Upcoming Releases{' '}
           </Typography>
           <Typography variant="subtitle1" color="textSecondary" component="span">
-            (last 60 days)
+            (next 60 days)
           </Typography>
           <Stack
             spacing={{ xs: 1, sm: 2 }}
