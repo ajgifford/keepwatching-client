@@ -6,4 +6,5 @@ export type SearchResult = {
   summary: string;
   image: string;
   rating: number;
+  popularity: number;
 };

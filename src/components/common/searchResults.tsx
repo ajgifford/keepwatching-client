@@ -10,32 +10,43 @@ interface SearchResultProps {
   searchType: string;
   source: 'search' | 'discover';
   isLoading: boolean;
+  searchPerformed: boolean;
+  lastResultElementRef?: (node: HTMLElement | null) => void;
 }
 
 function SearchResults(props: SearchResultProps) {
-  const results = props.results;
+  const { results, isLoading, lastResultElementRef } = props;
 
   return (
     <>
-      {props.isLoading ? (
+      {isLoading && results.length === 0 ? (
         <Box display="flex" justifyContent="center" p={4}>
           <CircularProgress />
         </Box>
       ) : results.length > 0 ? (
         <List>
-          {results.map((result) => (
+          {results.map((result, index) => (
             <Fragment key={result.id}>
-              <SearchResultItem result={result} searchType={props.searchType} source={props.source} />
-              <Divider variant="inset" component="li" />
+              <div ref={index === results.length - 1 ? lastResultElementRef : null}>
+                <SearchResultItem result={result} searchType={props.searchType} source={props.source} />
+                <Divider variant="inset" component="li" />
+              </div>
             </Fragment>
           ))}
+          {isLoading && (
+            <Box display="flex" justifyContent="center" p={2}>
+              <CircularProgress />
+            </Box>
+          )}
         </List>
-      ) : (
+      ) : props.searchPerformed ? (
         <Box>
           <Typography variant="h6" align="center">
             No Results Found
           </Typography>
         </Box>
+      ) : (
+        <></>
       )}
     </>
   );

@@ -19,6 +19,7 @@ function Discover() {
   const [selectedService, setSelectedService] = useState<ServiceType>('none');
   const [selectedType, setSelectedType] = useState<ContentType>('none');
   const [isLoading, setIsLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
 
   const services = [
     { id: 'none', display: '---' },
@@ -53,6 +54,7 @@ function Discover() {
     };
     try {
       const topResponse = await axiosInstance.get('/discover/top', { params: topParams });
+      setSearchPerformed(true);
       setResults(topResponse.data.results);
     } catch (error: unknown) {
       let errorMessage = 'Failed to load content';
@@ -113,7 +115,18 @@ function Discover() {
           {isLoading ? 'Loading...' : 'Go'}
         </Button>
       </Stack>
-      <SearchResults results={results} searchType={selectedType} source="discover" isLoading={isLoading} />
+      {results.length > 0 && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Showing {results.length} results
+        </Typography>
+      )}
+      <SearchResults
+        results={results}
+        searchType={selectedType}
+        source="discover"
+        isLoading={isLoading}
+        searchPerformed={searchPerformed}
+      />
     </>
   );
 }

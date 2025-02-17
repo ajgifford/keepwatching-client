@@ -87,6 +87,12 @@ export function SearchResultItem(props: SearchResultProps) {
               {buildPremieredString()}
               <br />
               <b>Rating: </b> {searchResult.rating}
+              {searchResult.popularity && (
+                <>
+                  <br />
+                  <b>Popularity: </b> {searchResult.popularity}
+                </>
+              )}
             </Typography>
             {isSmallScreen && (
               <Button
