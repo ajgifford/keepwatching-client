@@ -165,15 +165,17 @@ export const removeShowFavorite = createAsyncThunk(
   async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(`/profiles/${profileId}/shows/favorites/${showId}`);
-      const show = response.data.result;
+      const result = response.data.result;
+      const show = result.removedShow;
       const showTitle = show.title;
+      const nextWatchEpisodes = response.data.result.nextWatchEpisodes;
       dispatch(
         showNotification({
           message: `${showTitle} removed`,
           type: NotificationType.Success,
         }),
       );
-      return show;
+      return { show, nextWatchEpisodes };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -409,10 +411,11 @@ const activeProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(removeShowFavorite.fulfilled, (state, action) => {
-        const show = action.payload;
+        const { show, nextWatchEpisodes } = action.payload;
         state.shows = state.shows.filter((filterShow) => filterShow.show_id !== show.id);
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
+        state.nextWatchEpisodes = nextWatchEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
