@@ -4,7 +4,17 @@ import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
-import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
@@ -16,6 +26,9 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const emailHasError = useMemo(() => {
     if (email === '') return false;
@@ -62,7 +75,7 @@ const Login = () => {
         <CssBaseline />
         <Box
           sx={{
-            mt: 20,
+            mt: isMobile ? 4 : 20,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
