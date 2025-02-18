@@ -212,15 +212,18 @@ export const addMovieFavorite = createAsyncThunk(
       const response = await axiosInstance.post(`/profiles/${profileId}/movies/favorites`, {
         id: movieId,
       });
-      const movie = response.data.result;
+      const result = response.data.result;
+      const movie = result.favoritedMovie;
       const movieTitle = movie.title;
+      const recentMovies = result.recentMovies;
+      const upcomingMovies = result.upcomingMovies;
       dispatch(
         showNotification({
           message: `${movieTitle} favorited`,
           type: NotificationType.Success,
         }),
       );
-      return movie;
+      return { movie, recentMovies, upcomingMovies };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -235,15 +238,18 @@ export const removeMovieFavorite = createAsyncThunk(
   async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(`/profiles/${profileId}/movies/favorites/${movieId}`);
-      const movie = response.data.result;
+      const result = response.data.result;
+      const movie = result.removedMovie;
       const movieTitle = movie.title;
+      const recentMovies = result.recentMovies;
+      const upcomingMovies = result.upcomingMovies;
       dispatch(
         showNotification({
           message: `${movieTitle} removed`,
           type: NotificationType.Success,
         }),
       );
-      return movie;
+      return { movie, recentMovies, upcomingMovies };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -374,6 +380,7 @@ const activeProfileSlice = createSlice({
         state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(addShowFavorite.rejected, (state, action) => {
         state.loading = false;
@@ -391,6 +398,7 @@ const activeProfileSlice = createSlice({
         state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateAfterAddShowFavorite.rejected, (state, action) => {
         state.loading = false;
@@ -405,6 +413,7 @@ const activeProfileSlice = createSlice({
         state.shows = state.shows.filter((filterShow) => filterShow.show_id !== show.id);
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -426,8 +435,10 @@ const activeProfileSlice = createSlice({
             show.watch_status = status;
           }
         }
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateShowStatus.rejected, (state, action) => {
         state.loading = false;
@@ -443,6 +454,8 @@ const activeProfileSlice = createSlice({
             show.watch_status = status;
           }
         }
+        state.lastUpdated = new Date().toLocaleString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateSeasonWatchStatus.fulfilled, (state, action) => {
         const showId = action.payload.showId;
@@ -454,18 +467,24 @@ const activeProfileSlice = createSlice({
             show.watch_status = status;
           }
         }
+        state.lastUpdated = new Date().toLocaleString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(addMovieFavorite.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(addMovieFavorite.fulfilled, (state, action) => {
-        const movie = action.payload;
+        const { movie, recentMovies, upcomingMovies } = action.payload;
         state.movies.push(movie);
         state.movieGenres = generateGenreFilterValues(state.movies);
         state.movieStreamingServices = generateStreamingServiceFilterValues(state.movies);
+        state.recentMovies = recentMovies;
+        state.upcomingMovies = upcomingMovies;
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(addMovieFavorite.rejected, (state, action) => {
         state.loading = false;
@@ -476,10 +495,13 @@ const activeProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(removeMovieFavorite.fulfilled, (state, action) => {
-        const movie = action.payload;
+        const { movie, recentMovies, upcomingMovies } = action.payload;
         state.movies = state.movies.filter((filterMovie) => filterMovie.movie_id !== movie.id);
         state.movieGenres = generateGenreFilterValues(state.movies);
         state.movieStreamingServices = generateStreamingServiceFilterValues(state.movies);
+        state.recentMovies = recentMovies;
+        state.upcomingMovies = upcomingMovies;
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -501,6 +523,8 @@ const activeProfileSlice = createSlice({
             movie.watch_status = status;
           }
         }
+        state.lastUpdated = new Date().toLocaleString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateMovieStatus.rejected, (state, action) => {
         state.loading = false;
