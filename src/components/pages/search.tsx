@@ -292,16 +292,21 @@ function Search() {
                 <MenuItem value="popularity">Popularity</MenuItem>
               </Select>
             </FormControl>
-            <Tooltip title={sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending'}>
-              <IconButton
-                color="primary"
-                onClick={() => handleSortChange(undefined, sortOrder === 'asc' ? 'desc' : 'asc')}
-                disabled={sortBy === 'none'}
-                sx={{ alignSelf: 'center' }}
-              >
+            {sortBy === 'none' ? (
+              <IconButton color="primary" disabled sx={{ alignSelf: 'center' }}>
                 {sortOrder === 'asc' ? <FaSortAmountUp /> : <FaSortAmountDown />}
               </IconButton>
-            </Tooltip>
+            ) : (
+              <Tooltip title={sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending'}>
+                <IconButton
+                  color="primary"
+                  onClick={() => handleSortChange(undefined, sortOrder === 'asc' ? 'desc' : 'asc')}
+                  sx={{ alignSelf: 'center' }}
+                >
+                  {sortOrder === 'asc' ? <FaSortAmountUp /> : <FaSortAmountDown />}
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
