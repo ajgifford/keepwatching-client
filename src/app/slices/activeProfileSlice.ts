@@ -130,6 +130,16 @@ export const addShowFavorite = createAsyncThunk(
   },
 );
 
+export const updateAfterAddShowFavorite = createAsyncThunk(
+  'activeProfile/updateAfterAddShowFavorite',
+  async (show: Show, { rejectWithValue }) => {
+    if (show) {
+      return show;
+    }
+    return rejectWithValue('Error while updating show after making it a favorite');
+  },
+);
+
 export const removeShowFavorite = createAsyncThunk(
   'activeProfile/removeShowFavorite',
   async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
@@ -327,6 +337,22 @@ const activeProfileSlice = createSlice({
       .addCase(addShowFavorite.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to add a show favorite';
+      })
+      .addCase(updateAfterAddShowFavorite.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAfterAddShowFavorite.fulfilled, (state, action) => {
+        const show = action.payload;
+        state.shows = state.shows.map((s) => (s.show_id === show.show_id ? show : s));
+        state.showGenres = generateGenreFilterValues(state.shows);
+        state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateAfterAddShowFavorite.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update a show favorite';
       })
       .addCase(removeShowFavorite.pending, (state) => {
         state.loading = true;

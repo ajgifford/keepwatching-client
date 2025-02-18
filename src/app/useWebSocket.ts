@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { BACKEND_WEBSOCKET_URL } from './constants/constants';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { selectCurrentAccount } from './slices/accountSlice';
-import { reloadActiveProfile } from './slices/activeProfileSlice';
+import { reloadActiveProfile, updateAfterAddShowFavorite } from './slices/activeProfileSlice';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Socket, io } from 'socket.io-client';
 
@@ -22,7 +22,7 @@ export const useWebSocket = () => {
         const token = await user.getIdToken();
 
         socket = io(BACKEND_WEBSOCKET_URL, {
-          auth: { token },
+          auth: { token: token, account_id: account.id },
           reconnectionAttempts: 5, // Limits to 5 reconnection attempts
           reconnectionDelay: 2000, // Wait 2 seconds before retrying
         });
@@ -33,6 +33,10 @@ export const useWebSocket = () => {
 
         socket.on('moviesUpdate', () => {
           dispatch(reloadActiveProfile());
+        });
+
+        socket.on('updateShowFavorite', (data) => {
+          dispatch(updateAfterAddShowFavorite(data.show));
         });
       }
     });
