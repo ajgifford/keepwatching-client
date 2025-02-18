@@ -28,11 +28,11 @@ export const useWebSocket = () => {
         });
 
         socket.on('showsUpdate', () => {
-          dispatch(reloadActiveProfile);
+          dispatch(reloadActiveProfile());
         });
 
         socket.on('moviesUpdate', () => {
-          dispatch(reloadActiveProfile);
+          dispatch(reloadActiveProfile());
         });
       }
     });
