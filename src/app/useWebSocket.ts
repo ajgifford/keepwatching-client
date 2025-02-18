@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { BACKEND_WEBSOCKET_URL } from './constants/constants';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { selectCurrentAccount } from './slices/accountSlice';
-import { reloadActiveProfile, updateAfterAddShowFavorite } from './slices/activeProfileSlice';
+import { reloadActiveProfile, reloadNextWatchEpisodes, updateAfterAddShowFavorite } from './slices/activeProfileSlice';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Socket, io } from 'socket.io-client';
 
@@ -35,8 +35,9 @@ export const useWebSocket = () => {
           dispatch(reloadActiveProfile());
         });
 
-        socket.on('updateShowFavorite', (data) => {
-          dispatch(updateAfterAddShowFavorite(data.show));
+        socket.on('updateShowFavorite', async (data) => {
+          await dispatch(updateAfterAddShowFavorite(data.show));
+          await dispatch(reloadNextWatchEpisodes());
         });
       }
     });

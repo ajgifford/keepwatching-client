@@ -105,6 +105,25 @@ export const reloadActiveProfile = createAsyncThunk(
   },
 );
 
+export const reloadNextWatchEpisodes = createAsyncThunk(
+  'activeProfile/reloadNextWatchEpisodes',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const profileId = state.activeProfile.profile?.id;
+      const response = await axiosInstance.get(`/profiles/${profileId}/shows/nextWatch`);
+      const nextWatchEpisodes: NextWatchEpisode[] = response.data.results;
+      console.log('reload next watches', nextWatchEpisodes);
+      return nextWatchEpisodes;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
+  },
+);
+
 export const addShowFavorite = createAsyncThunk(
   'activeProfile/addShowFavorite',
   async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
@@ -112,7 +131,8 @@ export const addShowFavorite = createAsyncThunk(
       const response = await axiosInstance.post(`/profiles/${profileId}/shows/favorites`, {
         id: showId,
       });
-      const show = response.data.result;
+      const show = response.data.result.favoritedShow;
+      const nextWatchEpisodes = response.data.result.nextWatchEpisodes;
       const showTitle = show.title;
       dispatch(
         showNotification({
@@ -120,7 +140,7 @@ export const addShowFavorite = createAsyncThunk(
           type: NotificationType.Success,
         }),
       );
-      return show;
+      return { show, nextWatchEpisodes };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -322,15 +342,36 @@ const activeProfileSlice = createSlice({
         state.lastUpdated = null;
         state.error = action.error.message || 'Failed to reload active profile';
       })
+      .addCase(reloadNextWatchEpisodes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(reloadNextWatchEpisodes.fulfilled, (state, action) => {
+        const nextWatchEpisodes = action.payload;
+        state.nextWatchEpisodes = nextWatchEpisodes;
+        state.lastUpdated = new Date().toLocaleString();
+        state.loading = false;
+        state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(reloadNextWatchEpisodes.rejected, (state, action) => {
+        state.loading = false;
+        state.lastUpdated = null;
+        state.error = action.error.message || 'Failed to reload active profile';
+      })
       .addCase(addShowFavorite.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(addShowFavorite.fulfilled, (state, action) => {
-        const show = action.payload;
+        const { show, nextWatchEpisodes } = action.payload;
         state.shows.push(show);
+        if (nextWatchEpisodes) {
+          state.nextWatchEpisodes = nextWatchEpisodes;
+        }
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
       })
@@ -347,6 +388,7 @@ const activeProfileSlice = createSlice({
         state.shows = state.shows.map((s) => (s.show_id === show.show_id ? show : s));
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
+        state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
       })
