@@ -3,6 +3,7 @@ import activeProfileReducer from './slices/activeProfileSlice';
 import activeShowReducer from './slices/activeShowSlice';
 import notificationReducer from './slices/notificationSlice';
 import profilesReducer from './slices/profilesSlice';
+import systemNotificationsReducer from './slices/systemNotificationsSlice';
 import { configureStore } from '@reduxjs/toolkit';
 
 const store = configureStore({
@@ -12,6 +13,7 @@ const store = configureStore({
     activeProfile: activeProfileReducer,
     activeShow: activeShowReducer,
     notification: notificationReducer,
+    systemNotification: systemNotificationsReducer,
   },
 });
 

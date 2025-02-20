@@ -11,6 +11,7 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import NotificationBar from './notification/notificationBar';
+import NotificationSnackBar from './notification/notificationSnackBar';
 import Default from './pages/default';
 import Discover from './pages/discover';
 import Home from './pages/home';
@@ -47,8 +48,9 @@ function App() {
       <div className="app-container">
         <BrowserRouter>
           <Navigation />
-          <NotificationBar />
+          <NotificationSnackBar />
           <div className="content">
+            <NotificationBar />
             <Container maxWidth="xl" sx={{ p: 1 }}>
               <Routes>
                 <Route element={<DefaultLayout />}>

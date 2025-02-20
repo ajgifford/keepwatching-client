@@ -5,7 +5,8 @@ import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
 import { NotificationType, showNotification } from './notificationSlice';
 import { fetchProfiles } from './profilesSlice';
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { fetchNotifications } from './systemNotificationsSlice';
+import { PayloadAction, ThunkDispatch, UnknownAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { FirebaseError } from 'firebase/app';
 import {
@@ -44,6 +45,17 @@ type ErrorResponse = {
   message: string;
 };
 
+function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownAction>, account: Account) {
+  dispatch(fetchProfiles(account.id));
+  dispatch(
+    setActiveProfile({
+      accountId: account.id,
+      profileId: account.default_profile_id,
+    }),
+  );
+  dispatch(fetchNotifications(account.id));
+}
+
 export const login = createAsyncThunk('account/login', async (data: LoginData, { dispatch, rejectWithValue }) => {
   let userCredential = null;
   try {
@@ -73,8 +85,8 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
         type: NotificationType.Success,
       }),
     );
-    await dispatch(fetchProfiles(loginResult.id));
-    await dispatch(setActiveProfile({ accountId: loginResult.id, profileId: loginResult.default_profile_id }));
+
+    initializeAccount(dispatch, loginResult);
 
     return loginResult;
   } catch (error) {
@@ -138,10 +150,7 @@ export const register = createAsyncThunk(
         }),
       );
 
-      await dispatch(
-        setActiveProfile({ accountId: resgisterResult.id, profileId: resgisterResult.default_profile_id }),
-      );
-      await dispatch(fetchProfiles(resgisterResult.id));
+      initializeAccount(dispatch, resgisterResult);
 
       return resgisterResult;
     } catch (error) {
@@ -205,8 +214,7 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
       }),
     );
 
-    await dispatch(setActiveProfile({ accountId: googleResult.id, profileId: googleResult.default_profile_id }));
-    await dispatch(fetchProfiles(googleResult.id));
+    initializeAccount(dispatch, googleResult);
 
     return googleResult;
   } catch (error) {

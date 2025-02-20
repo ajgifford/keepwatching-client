@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 export function LoadingComponent() {
   return (
@@ -12,6 +12,9 @@ export function LoadingComponent() {
       <Typography variant="h2" gutterBottom>
         Loading...
       </Typography>
+      <Box display="flex" justifyContent="center" p={2}>
+        <CircularProgress />
+      </Box>
     </Box>
   );
 }
