@@ -6,7 +6,7 @@ import { Button, CircularProgress, FormControl, MenuItem, Select, Stack, Typogra
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
-import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
+import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
 import SearchResults from '../common/searchResults';
 import { AxiosError } from 'axios';
 
@@ -62,9 +62,9 @@ function Discover() {
         errorMessage = error.response?.data?.message;
       }
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: errorMessage,
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
     } finally {

@@ -5,22 +5,22 @@ import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { hideNotification } from '../../app/slices/notificationSlice';
+import { hideActivityNotification } from '../../app/slices/activityNotificationSlice';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const NotificationSnackBar = () => {
+const ActivityNotificationBar = () => {
   const dispatch = useAppDispatch();
-  const { open, message, type } = useAppSelector((state) => state.notification);
+  const { open, message, type } = useAppSelector((state) => state.activityNotification);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    dispatch(hideNotification());
+    dispatch(hideActivityNotification());
   };
 
   return (
@@ -39,4 +39,4 @@ const NotificationSnackBar = () => {
   );
 };
 
-export default NotificationSnackBar;
+export default ActivityNotificationBar;

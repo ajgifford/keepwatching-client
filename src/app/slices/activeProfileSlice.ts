@@ -7,7 +7,7 @@ import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
-import { NotificationType, showNotification } from './notificationSlice';
+import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { updateProfileImage } from './profilesSlice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -135,9 +135,9 @@ export const addShowFavorite = createAsyncThunk(
       const nextWatchEpisodes = response.data.result.nextWatchEpisodes;
       const showTitle = show.title;
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `${showTitle} favorited`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return { show, nextWatchEpisodes };
@@ -170,9 +170,9 @@ export const removeShowFavorite = createAsyncThunk(
       const showTitle = show.title;
       const nextWatchEpisodes = response.data.result.nextWatchEpisodes;
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `${showTitle} removed`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return { show, nextWatchEpisodes };
@@ -220,9 +220,9 @@ export const addMovieFavorite = createAsyncThunk(
       const recentMovies = result.recentMovies;
       const upcomingMovies = result.upcomingMovies;
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `${movieTitle} favorited`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return { movie, recentMovies, upcomingMovies };
@@ -246,9 +246,9 @@ export const removeMovieFavorite = createAsyncThunk(
       const recentMovies = result.recentMovies;
       const upcomingMovies = result.upcomingMovies;
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `${movieTitle} removed`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return { movie, recentMovies, upcomingMovies };

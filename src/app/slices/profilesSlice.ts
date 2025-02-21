@@ -2,7 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { PROFILE_KEY, Profile } from '../model/profile';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
-import { NotificationType, showNotification } from './notificationSlice';
+import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
@@ -79,9 +79,9 @@ export const addProfile = createAsyncThunk(
     try {
       const response = await axiosInstance.post(`/accounts/${accountId}/profiles`, { name: newProfileName });
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Added profile: ${newProfileName}`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return response.data.result;
@@ -100,9 +100,9 @@ export const deleteProfile = createAsyncThunk(
     try {
       await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}`);
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Profile deleted successfully`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return profileId;
@@ -121,9 +121,9 @@ export const editProfile = createAsyncThunk(
     try {
       const response = await axiosInstance.put(`/accounts/${accountId}/profiles/${id}`, { name });
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Profile edited successfully`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return response.data.result;
@@ -150,9 +150,9 @@ export const updateProfileImage = createAsyncThunk(
       const result = response.data.result;
 
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Profile image updated successfully`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return result;
@@ -160,17 +160,17 @@ export const updateProfileImage = createAsyncThunk(
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
-          showNotification({
+          showActivityNotification({
             message: errorResponse.message,
-            type: NotificationType.Error,
+            type: ActivityNotificationType.Error,
           }),
         );
         return rejectWithValue(errorResponse);
       }
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: 'An error occurred',
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       return rejectWithValue('An unknown error occurred');

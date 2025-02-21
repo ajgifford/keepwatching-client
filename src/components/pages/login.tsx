@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
 import { googleLogin, login } from '../../app/slices/accountSlice';
-import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
+import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
 import { validate } from 'email-validator';
 
 const Login = () => {
@@ -51,7 +51,12 @@ const Login = () => {
         console.error(error);
       }
     } else {
-      dispatch(showNotification({ message: 'Please provide an email and password', type: NotificationType.Error }));
+      dispatch(
+        showActivityNotification({
+          message: 'Please provide an email and password',
+          type: ActivityNotificationType.Error,
+        }),
+      );
     }
   };
 

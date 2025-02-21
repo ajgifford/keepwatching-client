@@ -17,7 +17,7 @@ import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
 import { register } from '../../app/slices/accountSlice';
-import { NotificationType, showNotification } from '../../app/slices/notificationSlice';
+import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
 import { validate } from 'email-validator';
 
 const Register = () => {
@@ -54,7 +54,12 @@ const Register = () => {
         console.error(error);
       }
     } else {
-      dispatch(showNotification({ message: 'Please fill out all required fields', type: NotificationType.Error }));
+      dispatch(
+        showActivityNotification({
+          message: 'Please fill out all required fields',
+          type: ActivityNotificationType.Error,
+        }),
+      );
     }
   };
 

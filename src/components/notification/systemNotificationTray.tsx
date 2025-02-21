@@ -9,9 +9,9 @@ import { Box, Card, CardContent, Collapse, IconButton, Tooltip, Typography } fro
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectCurrentAccount } from '../../app/slices/accountSlice';
-import { dismissNotification, selectSystemNotifications } from '../../app/slices/systemNotificationsSlice';
+import { dismissSystemNotification, selectSystemNotifications } from '../../app/slices/systemNotificationsSlice';
 
-function NotificationBar() {
+function SystemNotificationTray() {
   const dispatch = useAppDispatch();
   const notifications = useAppSelector(selectSystemNotifications);
   const account = useAppSelector(selectCurrentAccount);
@@ -38,7 +38,7 @@ function NotificationBar() {
 
   const onDismiss = (id: number) => {
     if (account) {
-      dispatch(dismissNotification({ accountId: account.id, notificationId: id }));
+      dispatch(dismissSystemNotification({ accountId: account.id, notificationId: id }));
     }
   };
 
@@ -103,4 +103,4 @@ function NotificationBar() {
   );
 }
 
-export default NotificationBar;
+export default SystemNotificationTray;

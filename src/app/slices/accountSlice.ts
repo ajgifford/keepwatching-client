@@ -3,9 +3,9 @@ import { auth, getFirebaseAuthErrorMessage } from '../firebaseConfig';
 import { ACCOUNT_KEY, Account } from '../model/account';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
-import { NotificationType, showNotification } from './notificationSlice';
+import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { fetchProfiles } from './profilesSlice';
-import { fetchNotifications } from './systemNotificationsSlice';
+import { fetchSystemNotifications } from './systemNotificationsSlice';
 import { PayloadAction, ThunkDispatch, UnknownAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { FirebaseError } from 'firebase/app';
@@ -53,7 +53,7 @@ function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownActi
       profileId: account.default_profile_id,
     }),
   );
-  dispatch(fetchNotifications(account.id));
+  dispatch(fetchSystemNotifications(account.id));
 }
 
 export const login = createAsyncThunk('account/login', async (data: LoginData, { dispatch, rejectWithValue }) => {
@@ -66,9 +66,9 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
       'An unknown error occurred during login. Please try again.',
     );
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: errorMessage,
-        type: NotificationType.Error,
+        type: ActivityNotificationType.Error,
       }),
     );
     return rejectWithValue({ message: errorMessage });
@@ -80,9 +80,9 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: response.data.message || 'Success',
-        type: NotificationType.Success,
+        type: ActivityNotificationType.Success,
       }),
     );
 
@@ -93,17 +93,17 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
     if (error instanceof AxiosError && error.response) {
       const errorResponse = error.response.data;
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: errorResponse.message,
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       return rejectWithValue(errorResponse);
     }
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: 'An error occurred',
-        type: NotificationType.Error,
+        type: ActivityNotificationType.Error,
       }),
     );
 
@@ -126,9 +126,9 @@ export const register = createAsyncThunk(
         'An unknown error occurred during registration. Please try again.',
       );
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: errorMessage,
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       return rejectWithValue({ message: errorMessage });
@@ -144,9 +144,9 @@ export const register = createAsyncThunk(
 
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: response.data.message || 'Success',
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
 
@@ -157,17 +157,17 @@ export const register = createAsyncThunk(
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
-          showNotification({
+          showActivityNotification({
             message: errorResponse.message,
-            type: NotificationType.Error,
+            type: ActivityNotificationType.Error,
           }),
         );
         return rejectWithValue(errorResponse);
       }
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: 'An error occurred',
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
 
@@ -189,9 +189,9 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
       'An unknown error occurred during Google login. Please try again.',
     );
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: errorMessage,
-        type: NotificationType.Error,
+        type: ActivityNotificationType.Error,
       }),
     );
     return rejectWithValue({ message: errorMessage });
@@ -208,9 +208,9 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(googleResult));
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: response.data.message || 'Success',
-        type: NotificationType.Success,
+        type: ActivityNotificationType.Success,
       }),
     );
 
@@ -221,17 +221,17 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
     if (error instanceof AxiosError && error.response) {
       const errorResponse = error.response.data;
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: errorResponse.message,
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       return rejectWithValue(errorResponse);
     }
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: 'An error occurred',
-        type: NotificationType.Error,
+        type: ActivityNotificationType.Error,
       }),
     );
 
@@ -246,9 +246,9 @@ export const logout = createAsyncThunk('account/logout', async (_, { dispatch, r
 
     localStorage.removeItem(ACCOUNT_KEY);
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: 'Successfully logged out',
-        type: NotificationType.Success,
+        type: ActivityNotificationType.Success,
       }),
     );
 
@@ -259,9 +259,9 @@ export const logout = createAsyncThunk('account/logout', async (_, { dispatch, r
       'An unknown error occurred during logout. Please try again.',
     );
     dispatch(
-      showNotification({
+      showActivityNotification({
         message: errorMessage,
-        type: NotificationType.Error,
+        type: ActivityNotificationType.Error,
       }),
     );
     return rejectWithValue({ message: errorMessage });
@@ -283,9 +283,9 @@ export const updateAccountImage = createAsyncThunk(
 
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(result));
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Account image updated successfully`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return result;
@@ -293,17 +293,17 @@ export const updateAccountImage = createAsyncThunk(
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
-          showNotification({
+          showActivityNotification({
             message: errorResponse.message,
-            type: NotificationType.Error,
+            type: ActivityNotificationType.Error,
           }),
         );
         return rejectWithValue(errorResponse);
       }
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: 'An error occurred',
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       console.error(error);
@@ -318,9 +318,9 @@ export const verifyEmail = createAsyncThunk(
     try {
       await sendEmailVerification(user);
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Verification email sent`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
     } catch (error) {
@@ -329,9 +329,9 @@ export const verifyEmail = createAsyncThunk(
         'An unknown error occurred changing the password. Please try again.',
       );
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: errorMessage,
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       return rejectWithValue({ message: errorMessage });
@@ -354,9 +354,9 @@ export const updateAccount = createAsyncThunk(
       const updateResult = response.data.result;
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: `Account edited successfully`,
-          type: NotificationType.Success,
+          type: ActivityNotificationType.Success,
         }),
       );
       return updateResult;
@@ -364,17 +364,17 @@ export const updateAccount = createAsyncThunk(
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
         dispatch(
-          showNotification({
+          showActivityNotification({
             message: errorResponse.message,
-            type: NotificationType.Error,
+            type: ActivityNotificationType.Error,
           }),
         );
         return rejectWithValue(errorResponse);
       }
       dispatch(
-        showNotification({
+        showActivityNotification({
           message: 'An error occurred',
-          type: NotificationType.Error,
+          type: ActivityNotificationType.Error,
         }),
       );
       console.error(error);

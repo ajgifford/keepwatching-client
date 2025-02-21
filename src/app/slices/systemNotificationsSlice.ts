@@ -17,7 +17,7 @@ const initialState: SystemNotificationsState = {
   error: null,
 };
 
-export const fetchNotifications = createAsyncThunk(
+export const fetchSystemNotifications = createAsyncThunk(
   'systemNotifications/fetchNotifications',
   async (accountId: string, { rejectWithValue }) => {
     try {
@@ -32,7 +32,7 @@ export const fetchNotifications = createAsyncThunk(
   },
 );
 
-export const dismissNotification = createAsyncThunk(
+export const dismissSystemNotification = createAsyncThunk(
   'systemNotifications/dismissNotification',
   async ({ accountId, notificationId }: { accountId: string; notificationId: number }, { rejectWithValue }) => {
     try {
@@ -47,7 +47,7 @@ export const dismissNotification = createAsyncThunk(
   },
 );
 
-const notificationSlice = createSlice({
+const systemNotificationSlice = createSlice({
   name: 'systemNotifications',
   initialState,
   reducers: {},
@@ -56,29 +56,29 @@ const notificationSlice = createSlice({
       .addCase(logout.fulfilled, () => {
         return initialState;
       })
-      .addCase(fetchNotifications.pending, (state) => {
+      .addCase(fetchSystemNotifications.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchNotifications.fulfilled, (state, action) => {
+      .addCase(fetchSystemNotifications.fulfilled, (state, action) => {
         state.loading = false;
         state.systemNotifications = action.payload;
         state.error = null;
       })
-      .addCase(fetchNotifications.rejected, (state, action) => {
+      .addCase(fetchSystemNotifications.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch system notifications';
       })
-      .addCase(dismissNotification.pending, (state) => {
+      .addCase(dismissSystemNotification.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(dismissNotification.fulfilled, (state, action) => {
+      .addCase(dismissSystemNotification.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         state.systemNotifications = state.systemNotifications.filter((n) => n.notification_id !== action.payload);
       })
-      .addCase(dismissNotification.rejected, (state, action) => {
+      .addCase(dismissSystemNotification.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to dismiss a system notification';
       });
@@ -87,4 +87,4 @@ const notificationSlice = createSlice({
 
 export const selectSystemNotifications = (state: RootState) => state.systemNotification.systemNotifications;
 
-export default notificationSlice.reducer;
+export default systemNotificationSlice.reducer;
