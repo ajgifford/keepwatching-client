@@ -43,7 +43,7 @@ function Search() {
   const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
 
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 31 }, (_, i) => currentYear - i);
+  const yearOptions = Array.from({ length: 46 }, (_, i) => currentYear - i);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const lastResultElementRef = useCallback(
