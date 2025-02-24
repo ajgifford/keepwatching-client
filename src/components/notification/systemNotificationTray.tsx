@@ -42,11 +42,16 @@ function SystemNotificationTray() {
     }
   };
 
+  const parseMessage = (message: string) => {
+    return message.replace(/{{account_name}}/g, account?.name || '');
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '98%', margin: '0 auto' }}>
       {notifications.slice(startIndex, startIndex + 2).map(({ notification_id, message }) => {
-        const firstLine = message.split('\n')[0];
-        const hasMoreText = message.includes('\n');
+        const parsedMessage = parseMessage(message);
+        const firstLine = parsedMessage.split('\n')[0];
+        const hasMoreText = parsedMessage.includes('\n');
 
         return (
           <Card key={notification_id} sx={{ width: '100%', boxShadow: 1 }}>
@@ -65,7 +70,7 @@ function SystemNotificationTray() {
                 </Typography>
                 <Collapse in={!!expanded[notification_id]}>
                   <Typography variant="body2" sx={{ mt: 1 }}>
-                    {message}
+                    {parsedMessage}
                   </Typography>
                 </Collapse>
               </Box>
