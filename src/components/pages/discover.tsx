@@ -55,7 +55,7 @@ function Discover() {
     try {
       const topResponse = await axiosInstance.get('/discover/top', { params: topParams });
       setSearchPerformed(true);
-      setResults(topResponse.data.discoverResponse.results);
+      setResults(topResponse.data.results);
     } catch (error: unknown) {
       let errorMessage = 'Failed to load content';
       if (error instanceof AxiosError) {
