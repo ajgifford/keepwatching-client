@@ -171,6 +171,7 @@ function Search() {
   const handleFilterChange = () => {
     setPage(1);
     setTotalResults(0);
+    setSearchPerformed(false);
     setResults([]);
   };
 
