@@ -2,7 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { generateGenreFilterValues, generateStreamingServiceFilterValues } from '../constants/filters';
 import { Movie, MovieIds } from '../model/movies';
 import { ACTIVE_PROFILE_KEY, Profile } from '../model/profile';
-import { NextWatchEpisode, Show } from '../model/shows';
+import { ContinueWatchingShow, ProfileEpisode, Show } from '../model/shows';
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
@@ -17,7 +17,9 @@ interface ActiveProfileState {
   shows: Show[];
   showGenres: string[];
   showStreamingServices: string[];
-  nextWatchEpisodes: NextWatchEpisode[];
+  upcomingEpisodes: ProfileEpisode[];
+  recentEpisodes: ProfileEpisode[];
+  nextUnwatchedEpisodes: ContinueWatchingShow[];
   movies: Movie[];
   movieGenres: string[];
   movieStreamingServices: string[];
@@ -33,7 +35,9 @@ const blankState: ActiveProfileState = {
   shows: [],
   showGenres: [],
   showStreamingServices: [],
-  nextWatchEpisodes: [],
+  upcomingEpisodes: [],
+  recentEpisodes: [],
+  nextUnwatchedEpisodes: [],
   movies: [],
   movieGenres: [],
   movieStreamingServices: [],
@@ -60,11 +64,23 @@ export const setActiveProfile = createAsyncThunk(
       const results = response.data.results;
       const profile: Profile = results.profile;
       const shows: Show[] = results.shows;
-      const nextWatchEpisodes: NextWatchEpisode[] = results.nextWatch;
+      const upcomingEpisodes: ProfileEpisode[] = results.upcomingEpisodes;
+      const recentEpisodes: ProfileEpisode[] = results.recentEpisodes;
+      const nextUnwatchedEpisodes: ContinueWatchingShow[] = results.nextUnwatchedEpisodes;
       const movies: Movie[] = results.movies;
       const recentMovies = results.recentMovies;
       const upcomingMovies = results.upcomingMovies;
-      return { profile, shows, nextWatchEpisodes, movies, recentMovies, upcomingMovies };
+
+      return {
+        profile,
+        shows,
+        upcomingEpisodes,
+        recentEpisodes,
+        nextUnwatchedEpisodes,
+        movies,
+        recentMovies,
+        upcomingMovies,
+      };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -90,12 +106,23 @@ export const reloadActiveProfile = createAsyncThunk(
       const results = response.data.results;
       const profile: Profile = results.profile;
       const shows: Show[] = results.shows;
-      const nextWatchEpisodes: NextWatchEpisode[] = results.nextWatch;
+      const upcomingEpisodes: ProfileEpisode[] = results.upcomingEpisodes;
+      const recentEpisodes: ProfileEpisode[] = results.recentEpisodes;
+      const nextUnwatchedEpisodes: ContinueWatchingShow[] = results.nextUnwatchedEpisodes;
       const movies: Movie[] = results.movies;
       const recentMovies = results.recentMovies;
       const upcomingMovies = results.upcomingMovies;
 
-      return { profile, shows, nextWatchEpisodes, movies, recentMovies, upcomingMovies };
+      return {
+        profile,
+        shows,
+        upcomingEpisodes,
+        recentEpisodes,
+        nextUnwatchedEpisodes,
+        movies,
+        recentMovies,
+        upcomingMovies,
+      };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -105,16 +132,19 @@ export const reloadActiveProfile = createAsyncThunk(
   },
 );
 
-export const reloadNextWatchEpisodes = createAsyncThunk(
-  'activeProfile/reloadNextWatchEpisodes',
+export const reloadProfileEpisodes = createAsyncThunk(
+  'activeProfile/reloadProfileEpisodes',
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState;
       const profileId = state.activeProfile.profile?.id;
-      const response = await axiosInstance.get(`/profiles/${profileId}/shows/nextWatch`);
-      const nextWatchEpisodes: NextWatchEpisode[] = response.data.results;
-      console.log('reload next watches', nextWatchEpisodes);
-      return nextWatchEpisodes;
+      const response = await axiosInstance.get(`/profiles/${profileId}/episodes`);
+      const results = response.data.results;
+      const upcomingEpisodes: ProfileEpisode[] = results.upcomingEpisodes;
+      const recentEpisodes: ProfileEpisode[] = results.recentEpisodes;
+      const nextUnwatchedEpisodes: ContinueWatchingShow[] = results.nextUnwatchedEpisodes;
+      console.log('Reload profile episodes', upcomingEpisodes);
+      return { upcomingEpisodes, recentEpisodes, nextUnwatchedEpisodes };
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -131,16 +161,18 @@ export const addShowFavorite = createAsyncThunk(
       const response = await axiosInstance.post(`/profiles/${profileId}/shows/favorites`, {
         id: showId,
       });
-      const show = response.data.result.favoritedShow;
-      const nextWatchEpisodes = response.data.result.nextWatchEpisodes;
+      const result = response.data.result;
+      const show = result.favoritedShow;
       const showTitle = show.title;
+      const upcomingEpisodes = result.upcomingEpisodes;
+      const recentEpisodes = result.recentEpisodes;
       dispatch(
         showActivityNotification({
           message: `${showTitle} favorited`,
           type: ActivityNotificationType.Success,
         }),
       );
-      return { show, nextWatchEpisodes };
+      return { show, upcomingEpisodes, recentEpisodes };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -168,14 +200,16 @@ export const removeShowFavorite = createAsyncThunk(
       const result = response.data.result;
       const show = result.removedShow;
       const showTitle = show.title;
-      const nextWatchEpisodes = response.data.result.nextWatchEpisodes;
+      const upcomingEpisodes = result.upcomingEpisodes;
+      const recentEpisodes = result.recentEpisodes;
+      const nextUnwatchedEpisodes = result.nextUnwatchedEpisodes;
       dispatch(
         showActivityNotification({
           message: `${showTitle} removed`,
           type: ActivityNotificationType.Success,
         }),
       );
-      return { show, nextWatchEpisodes };
+      return { show, upcomingEpisodes, recentEpisodes, nextUnwatchedEpisodes };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -303,12 +337,23 @@ const activeProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(setActiveProfile.fulfilled, (state, action) => {
-        const { profile, shows, nextWatchEpisodes, movies, recentMovies, upcomingMovies } = action.payload;
+        const {
+          profile,
+          shows,
+          upcomingEpisodes,
+          recentEpisodes,
+          nextUnwatchedEpisodes,
+          movies,
+          recentMovies,
+          upcomingMovies,
+        } = action.payload;
         state.profile = profile;
         state.shows = shows;
         state.showGenres = generateGenreFilterValues(shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(shows);
-        state.nextWatchEpisodes = nextWatchEpisodes;
+        state.upcomingEpisodes = upcomingEpisodes;
+        state.recentEpisodes = recentEpisodes;
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.movies = movies;
         state.movieGenres = generateGenreFilterValues(movies);
         state.movieStreamingServices = generateStreamingServiceFilterValues(movies);
@@ -329,12 +374,23 @@ const activeProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(reloadActiveProfile.fulfilled, (state, action) => {
-        const { profile, shows, nextWatchEpisodes, movies, recentMovies, upcomingMovies } = action.payload;
+        const {
+          profile,
+          shows,
+          upcomingEpisodes,
+          recentEpisodes,
+          nextUnwatchedEpisodes,
+          movies,
+          recentMovies,
+          upcomingMovies,
+        } = action.payload;
         state.profile = profile;
         state.shows = shows;
         state.showGenres = generateGenreFilterValues(shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(shows);
-        state.nextWatchEpisodes = nextWatchEpisodes;
+        state.upcomingEpisodes = upcomingEpisodes;
+        state.recentEpisodes = recentEpisodes;
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.movies = movies;
         state.movieGenres = generateGenreFilterValues(movies);
         state.movieStreamingServices = generateStreamingServiceFilterValues(movies);
@@ -350,19 +406,21 @@ const activeProfileSlice = createSlice({
         state.lastUpdated = null;
         state.error = action.error.message || 'Failed to reload active profile';
       })
-      .addCase(reloadNextWatchEpisodes.pending, (state) => {
+      .addCase(reloadProfileEpisodes.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(reloadNextWatchEpisodes.fulfilled, (state, action) => {
-        const nextWatchEpisodes = action.payload;
-        state.nextWatchEpisodes = nextWatchEpisodes;
+      .addCase(reloadProfileEpisodes.fulfilled, (state, action) => {
+        const { upcomingEpisodes, recentEpisodes, nextUnwatchedEpisodes } = action.payload;
+        state.upcomingEpisodes = upcomingEpisodes;
+        state.recentEpisodes = recentEpisodes;
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
-      .addCase(reloadNextWatchEpisodes.rejected, (state, action) => {
+      .addCase(reloadProfileEpisodes.rejected, (state, action) => {
         state.loading = false;
         state.lastUpdated = null;
         state.error = action.error.message || 'Failed to reload active profile';
@@ -372,10 +430,13 @@ const activeProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(addShowFavorite.fulfilled, (state, action) => {
-        const { show, nextWatchEpisodes } = action.payload;
+        const { show, upcomingEpisodes, recentEpisodes } = action.payload;
         state.shows.push(show);
-        if (nextWatchEpisodes) {
-          state.nextWatchEpisodes = nextWatchEpisodes;
+        if (upcomingEpisodes) {
+          state.upcomingEpisodes = upcomingEpisodes;
+        }
+        if (recentEpisodes) {
+          state.recentEpisodes = recentEpisodes;
         }
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
@@ -411,11 +472,13 @@ const activeProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(removeShowFavorite.fulfilled, (state, action) => {
-        const { show, nextWatchEpisodes } = action.payload;
+        const { show, upcomingEpisodes, recentEpisodes, nextUnwatchedEpisodes } = action.payload;
         state.shows = state.shows.filter((filterShow) => filterShow.show_id !== show.id);
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
-        state.nextWatchEpisodes = nextWatchEpisodes;
+        state.upcomingEpisodes = upcomingEpisodes;
+        state.recentEpisodes = recentEpisodes;
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         state.loading = false;
         state.error = null;
@@ -544,7 +607,9 @@ export const selectShowStreamingServices = (state: RootState) => state.activePro
 export const selectMovies = (state: RootState) => state.activeProfile.movies;
 export const selectMovieGenres = (state: RootState) => state.activeProfile.movieGenres;
 export const selectMovieStreamingServices = (state: RootState) => state.activeProfile.movieStreamingServices;
-export const selectNextEpsiodes = (state: RootState) => state.activeProfile.nextWatchEpisodes;
+export const selectUpcomingEpisodes = (state: RootState) => state.activeProfile.upcomingEpisodes;
+export const selectRecentEpisodes = (state: RootState) => state.activeProfile.recentEpisodes;
+export const selectNextUnwatchedEpisodes = (state: RootState) => state.activeProfile.nextUnwatchedEpisodes;
 export const selectRecentMovies = (state: RootState) => state.activeProfile.recentMovies;
 export const selectUpcomingMovies = (state: RootState) => state.activeProfile.upcomingMovies;
 export const selectActiveProfileLoading = (state: RootState) => state.activeProfile.loading;

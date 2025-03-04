@@ -32,19 +32,6 @@ export type EpisodeToAir = {
   season_number: number;
 };
 
-export type NextWatchEpisode = {
-  profile_id: number;
-  show_id: number;
-  show_name: string;
-  network: string;
-  streaming_services: string;
-  episode_title: string;
-  air_date: string;
-  episode_number: number;
-  season_number: number;
-  episode_still_image: string;
-};
-
 export type Season = {
   season_id: number;
   show_id: number;
@@ -72,4 +59,24 @@ export type Episode = {
   air_date: string;
   still_image: string;
   watch_status: WatchStatus;
+};
+
+export type ContinueWatchingShow = {
+  show_id: number;
+  show_title: string;
+  poster_image: string;
+  episodes: ProfileEpisode[];
+};
+
+export type ProfileEpisode = {
+  profile_id: number;
+  show_id: number;
+  show_name: string;
+  network: string;
+  streaming_services: string;
+  episode_title: string;
+  air_date: string;
+  episode_number: number;
+  season_number: number;
+  episode_still_image: string;
 };

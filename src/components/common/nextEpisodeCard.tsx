@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { Avatar, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { NextWatchEpisode } from '../../app/model/shows';
+import { ProfileEpisode } from '../../app/model/shows';
 import { buildTMDBImagePath } from '../utility/contentUtility';
 
 interface PropTypes {
-  nextEpisode: NextWatchEpisode;
+  nextEpisode: ProfileEpisode;
 }
 
 export function NextEpisodeCard({ nextEpisode }: PropTypes) {
@@ -26,7 +26,7 @@ export function NextEpisodeCard({ nextEpisode }: PropTypes) {
     >
       <Typography variant="h5">
         <Link
-          id={`nextWatchShowLink_${nextEpisode.show_id}_${nextEpisode.episode_title}`}
+          id={`nextEpisodeShowLink_${nextEpisode.show_id}_${nextEpisode.episode_title}`}
           style={{ textDecoration: 'none', color: 'black' }}
           to={`/shows/${nextEpisode.show_id}/${nextEpisode.profile_id}`}
           state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
