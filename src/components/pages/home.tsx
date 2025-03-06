@@ -1,19 +1,18 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Avatar, Box, Card, CardContent, Chip, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 
 // import Grid from '@mui/material/Grid2';
 
 import { useAppSelector } from '../../app/hooks';
-import { ContinueWatchingShow, ProfileEpisode } from '../../app/model/shows';
+import { ProfileEpisode } from '../../app/model/shows';
 import {
   selectActiveProfile,
   selectActiveProfileError,
   selectActiveProfileLoading,
   selectMovieWatchCounts,
   selectMoviesByIds,
-  selectNextUnwatchedEpisodes,
   selectRecentEpisodes,
   selectRecentMovies,
   selectShowWatchCounts,
@@ -21,10 +20,10 @@ import {
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
 import { ErrorComponent } from '../common/errorComponent';
+import { KeepWatchingContent } from '../common/keepWatchingComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { MovieCard } from '../common/movieCard';
 import { NextEpisodeCard } from '../common/nextEpisodeCard';
-import { buildTMDBImagePath } from '../utility/contentUtility';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -60,7 +59,6 @@ const Home = () => {
   const activeProfileLoading = useAppSelector(selectActiveProfileLoading);
   const activeProfileError = useAppSelector(selectActiveProfileError);
   const profile = useAppSelector(selectActiveProfile)!;
-  const nextUnwatchedEpisodes = useAppSelector(selectNextUnwatchedEpisodes);
   const upcomingEpisodes = useAppSelector(selectUpcomingEpisodes);
   const recentEpisodes = useAppSelector(selectRecentEpisodes);
   const recentMovieIds = useAppSelector(selectRecentMovies);
@@ -163,104 +161,15 @@ const Home = () => {
           allowScrollButtonsMobile
           aria-label="home content tabs"
         >
-          <Tab label="Continue Watching" {...a11yProps(0)} />
+          <Tab label="Keep Watching" {...a11yProps(0)} />
           <Tab label="TV Shows" {...a11yProps(1)} />
           <Tab label="Movies" {...a11yProps(2)} />
         </Tabs>
       </Box>
 
-      {/* Continue Watching Tab */}
+      {/* Keep Watching Tab */}
       <TabPanel value={tabValue} index={0}>
-        <Box>
-          {nextUnwatchedEpisodes && nextUnwatchedEpisodes.length > 0 ? (
-            <>
-              {nextUnwatchedEpisodes.map((show: ContinueWatchingShow) => (
-                <Box key={`show-${show.show_id}`} sx={{ mb: 4 }}>
-                  <Card style={{ border: 'none', boxShadow: 'none' }} sx={{ mb: 2, width: '100%' }}>
-                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Avatar
-                          variant="rounded"
-                          src={buildTMDBImagePath(show.poster_image)}
-                          alt={show.show_title}
-                          sx={{ width: 56, height: 56 }}
-                        />
-                        <Typography
-                          variant="h6"
-                          component={Link}
-                          to={`/shows/${show.show_id}/${profile.id}`}
-                          state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
-                          sx={{ textDecoration: 'none', color: 'inherit' }}
-                        >
-                          {show.show_title}
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-
-                  <Grid container spacing={2}>
-                    {show.episodes.map((episode) => (
-                      <Grid
-                        xs={12}
-                        md={6}
-                        lg={4}
-                        key={`episode-${show.show_id}-${episode.season_number}-${episode.episode_number}`}
-                      >
-                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                          <Box sx={{ position: 'relative' }}>
-                            <Box
-                              component="img"
-                              src={buildTMDBImagePath(episode.episode_still_image, 'original', episode.episode_title)}
-                              alt={episode.episode_title}
-                              sx={{ width: '100%', height: 'auto', aspectRatio: '16/9', objectFit: 'cover' }}
-                            />
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                bgcolor: 'rgba(0,0,0,0.7)',
-                                color: 'white',
-                                px: 2,
-                                py: 0.5,
-                              }}
-                            >
-                              <Typography variant="body2" component="span">
-                                S{episode.season_number} E{episode.episode_number}
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <CardContent sx={{ flexGrow: 1, p: 2, '&:last-child': { pb: 2 } }}>
-                            <Typography variant="subtitle1" gutterBottom>
-                              {episode.episode_title}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {episode.air_date}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                              {episode.network || episode.streaming_services}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              ))}
-            </>
-          ) : (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <Typography variant="body1" color="text.secondary">
-                No shows to continue watching
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Add shows to your watchlist from the <Link to="/discover">Discover</Link> or{' '}
-                <Link to="/search">Search</Link> pages
-              </Typography>
-            </Box>
-          )}
-        </Box>
+        <KeepWatchingContent profileId={profile.id} />
       </TabPanel>
 
       {/* TV Shows Tab */}

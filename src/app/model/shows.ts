@@ -72,6 +72,8 @@ export type ProfileEpisode = {
   profile_id: number;
   show_id: number;
   show_name: string;
+  season_id: number;
+  episode_id: number;
   network: string;
   streaming_services: string;
   episode_title: string;

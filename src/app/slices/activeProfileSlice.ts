@@ -316,6 +316,38 @@ export const updateMovieStatus = createAsyncThunk(
   },
 );
 
+export const updateNextEpisodeWatchStatus = createAsyncThunk(
+  'activeProfile/updateNextEpisodeWatchState',
+  async (
+    {
+      profileId,
+      showId,
+      seasonId,
+      episodeId,
+      episodeStatus,
+    }: { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: WatchStatus },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await axiosInstance.put(`/profiles/${profileId}/episodes/nextwatchStatus`, {
+        show_id: showId,
+        season_id: seasonId,
+        episode_id: episodeId,
+        status: episodeStatus,
+      });
+      const result = response.data.result;
+      const nextUnwatchedEpisodes = result.nextUnwatchedEpisodes;
+
+      return { nextUnwatchedEpisodes };
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
+  },
+);
+
 const activeProfileSlice = createSlice({
   name: 'activeProfile',
   initialState,
@@ -595,6 +627,12 @@ const activeProfileSlice = createSlice({
       .addCase(updateMovieStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update movie status';
+      })
+      .addCase(updateNextEpisodeWatchStatus.fulfilled, (state, action) => {
+        const { nextUnwatchedEpisodes } = action.payload;
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
+        state.lastUpdated = new Date().toLocaleString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       });
   },
 });
