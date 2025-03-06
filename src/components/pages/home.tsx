@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { Box, Card, CardContent, Chip, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 
-// import Grid from '@mui/material/Grid2';
-
 import { useAppSelector } from '../../app/hooks';
 import { ProfileEpisode } from '../../app/model/shows';
 import {
@@ -93,60 +91,68 @@ const Home = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
-            <Grid xs={12} sm={4} md={3} sx={{ textAlign: 'center' }}>
+            <Grid item xs={12} textAlign="center">
               <Box
                 crossOrigin="anonymous"
                 component="img"
                 src={profile.image}
                 alt={profile.name}
                 sx={{
-                  width: { xs: '50%', sm: '80%', md: '70%' },
+                  width: { xs: '40%', sm: '25%', md: '20%' },
                   maxWidth: 150,
                   height: 'auto',
                   borderRadius: 2,
-                  mb: 1,
+                  mb: 2,
                 }}
               />
-            </Grid>
-            <Grid xs={12} sm={8} md={9}>
-              <Typography variant="h4" color="textPrimary" gutterBottom>
+              <Typography variant="h4" color="textPrimary" gutterBottom align="center">
                 {buildTitle(profile.name)}
               </Typography>
+            </Grid>
 
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-                <Card variant="outlined" sx={{ minWidth: 110, flex: '1 1 auto', textAlign: 'center' }}>
-                  <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
-                    <Typography variant="h6" color="primary">
-                      {showNotWatched + showWatching}
-                    </Typography>
-                    <Typography variant="body2">Shows to Watch</Typography>
-                  </CardContent>
-                </Card>
-                <Card variant="outlined" sx={{ minWidth: 110, flex: '1 1 auto', textAlign: 'center' }}>
-                  <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
-                    <Typography variant="h6" color="primary">
-                      {showWatched}
-                    </Typography>
-                    <Typography variant="body2">Shows Watched</Typography>
-                  </CardContent>
-                </Card>
-                <Card variant="outlined" sx={{ minWidth: 110, flex: '1 1 auto', textAlign: 'center' }}>
-                  <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
-                    <Typography variant="h6" color="secondary">
-                      {movieNotWatched}
-                    </Typography>
-                    <Typography variant="body2">Movies to Watch</Typography>
-                  </CardContent>
-                </Card>
-                <Card variant="outlined" sx={{ minWidth: 110, flex: '1 1 auto', textAlign: 'center' }}>
-                  <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
-                    <Typography variant="h6" color="secondary">
-                      {movieWatched}
-                    </Typography>
-                    <Typography variant="body2">Movies Watched</Typography>
-                  </CardContent>
-                </Card>
-              </Box>
+            <Grid item xs={12} px={2}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Card variant="outlined" sx={{ textAlign: 'center' }}>
+                    <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                      <Typography variant="h6" color="primary">
+                        {showNotWatched + showWatching}
+                      </Typography>
+                      <Typography variant="body2">Shows to Watch</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={6}>
+                  <Card variant="outlined" sx={{ textAlign: 'center' }}>
+                    <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                      <Typography variant="h6" color="primary">
+                        {showWatched}
+                      </Typography>
+                      <Typography variant="body2">Shows Watched</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={6}>
+                  <Card variant="outlined" sx={{ textAlign: 'center' }}>
+                    <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                      <Typography variant="h6" color="secondary">
+                        {movieNotWatched}
+                      </Typography>
+                      <Typography variant="body2">Movies to Watch</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={6}>
+                  <Card variant="outlined" sx={{ textAlign: 'center' }}>
+                    <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                      <Typography variant="h6" color="secondary">
+                        {movieWatched}
+                      </Typography>
+                      <Typography variant="body2">Movies Watched</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </CardContent>
@@ -174,42 +180,49 @@ const Home = () => {
 
       {/* TV Shows Tab */}
       <TabPanel value={tabValue} index={1}>
-        <Box>
+        <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
           <Card sx={{ mb: 3 }}>
-            <CardContent>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
               <Grid container spacing={2}>
-                <Grid xs={12} sm={4}>
+                {/* Force all cards to stay on one row regardless of screen size */}
+                <Grid item xs={4}>
                   <Link style={{ textDecoration: 'none' }} to={`/shows?watchStatus=NOT_WATCHED`}>
                     <Card variant="outlined" sx={{ textAlign: 'center', height: '100%', bgcolor: 'info.lighter' }}>
-                      <CardContent>
+                      <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
                         <Typography variant="h4" color="info.main">
                           {showNotWatched}
                         </Typography>
-                        <Typography variant="body1">To Watch</Typography>
+                        <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          To Watch
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Link>
                 </Grid>
-                <Grid xs={12} sm={4}>
+                <Grid item xs={4}>
                   <Link style={{ textDecoration: 'none' }} to={`/shows?watchStatus=WATCHING`}>
                     <Card variant="outlined" sx={{ textAlign: 'center', height: '100%', bgcolor: 'warning.lighter' }}>
-                      <CardContent>
+                      <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
                         <Typography variant="h4" color="warning.main">
                           {showWatching}
                         </Typography>
-                        <Typography variant="body1">Watching</Typography>
+                        <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          Watching
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Link>
                 </Grid>
-                <Grid xs={12} sm={4}>
+                <Grid item xs={4}>
                   <Link style={{ textDecoration: 'none' }} to={`/shows?watchStatus=WATCHED`}>
                     <Card variant="outlined" sx={{ textAlign: 'center', height: '100%', bgcolor: 'success.lighter' }}>
-                      <CardContent>
+                      <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
                         <Typography variant="h4" color="success.main">
                           {showWatched}
                         </Typography>
-                        <Typography variant="body1">Watched</Typography>
+                        <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          Watched
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Link>
@@ -228,11 +241,16 @@ const Home = () => {
             />
           </Divider>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
             {upcomingEpisodes.length > 0 ? (
               <Grid container spacing={2}>
                 {upcomingEpisodes.map((episode: ProfileEpisode) => (
-                  <Grid xs={12} md={4} key={`upcomingEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}>
+                  <Grid
+                    item
+                    xs={12}
+                    md={4}
+                    key={`upcomingEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}
+                  >
                     <NextEpisodeCard nextEpisode={episode} />
                   </Grid>
                 ))}
@@ -248,11 +266,11 @@ const Home = () => {
             <Chip label="Recent Episodes" component={Link} to="/shows?watchStatus=WATCHING" clickable color="primary" />
           </Divider>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
             {recentEpisodes.length > 0 ? (
               <Grid container spacing={2}>
                 {recentEpisodes.map((episode: ProfileEpisode) => (
-                  <Grid xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}>
+                  <Grid item xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}>
                     <NextEpisodeCard nextEpisode={episode} />
                   </Grid>
                 ))}
@@ -268,30 +286,34 @@ const Home = () => {
 
       {/* Movies Tab */}
       <TabPanel value={tabValue} index={2}>
-        <Box>
+        <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
           <Card sx={{ mb: 3 }}>
-            <CardContent>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
               <Grid container spacing={2}>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={6}>
                   <Link style={{ textDecoration: 'none' }} to={`/movies?watchStatus=NOT_WATCHED`}>
                     <Card variant="outlined" sx={{ textAlign: 'center', height: '100%', bgcolor: 'info.lighter' }}>
-                      <CardContent>
+                      <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
                         <Typography variant="h4" color="info.main">
                           {movieNotWatched}
                         </Typography>
-                        <Typography variant="body1">To Watch</Typography>
+                        <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          To Watch
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Link>
                 </Grid>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={6}>
                   <Link style={{ textDecoration: 'none' }} to={`/movies?watchStatus=WATCHED`}>
                     <Card variant="outlined" sx={{ textAlign: 'center', height: '100%', bgcolor: 'success.lighter' }}>
-                      <CardContent>
+                      <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
                         <Typography variant="h4" color="success.main">
                           {movieWatched}
                         </Typography>
-                        <Typography variant="body1">Watched</Typography>
+                        <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          Watched
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Link>
@@ -304,11 +326,11 @@ const Home = () => {
             <Chip label="Recent Releases" component={Link} to="/movies" clickable color="secondary" />
           </Divider>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
             {recentMovies.length > 0 ? (
               <Grid container spacing={2}>
                 {recentMovies.map((movie) => (
-                  <Grid xs={12} md={4} key={`recentMovie_${movie.movie_id}`}>
+                  <Grid item xs={12} md={4} key={`recentMovie_${movie.movie_id}`}>
                     <MovieCard movie={movie} />
                   </Grid>
                 ))}
@@ -324,11 +346,11 @@ const Home = () => {
             <Chip label="Upcoming Releases" component={Link} to="/movies" clickable color="secondary" />
           </Divider>
 
-          <Box>
+          <Box sx={{ px: { xs: 1, sm: 0 } }}>
             {upcomingMovies.length > 0 ? (
               <Grid container spacing={2}>
                 {upcomingMovies.map((movie) => (
-                  <Grid xs={12} md={4} key={`upcomingMovie_${movie.movie_id}`}>
+                  <Grid item xs={12} md={4} key={`upcomingMovie_${movie.movie_id}`}>
                     <MovieCard movie={movie} />
                   </Grid>
                 ))}
