@@ -27,11 +27,13 @@ import { AxiosError } from 'axios';
 
 type ServiceType = 'none' | 'netflix' | 'disney' | 'hbo' | 'apple' | 'prime';
 type ContentType = 'none' | 'movies' | 'series';
-type DiscoverMode = 'top' | 'trending';
+type DiscoverMode = 'byService' | 'trending';
+type ContentFilterType = 'top' | 'new' | 'upcoming' | 'expiring';
 
 interface DiscoverParams {
   showType: 'none' | 'movie' | 'series';
   service?: ServiceType;
+  changeType?: ContentFilterType;
   page: number;
 }
 
@@ -69,6 +71,7 @@ function Discover() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedService, setSelectedService] = useState<ServiceType>('none');
   const [selectedType, setSelectedType] = useState<ContentType>('none');
+  const [selectedFilter, setSelectedFilter] = useState<ContentFilterType>('top');
   const [discoverMode, setDiscoverMode] = useState<DiscoverMode>('trending');
   const [tabValue, setTabValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,11 +97,18 @@ function Discover() {
     { id: 'series', display: 'Shows' },
   ];
 
+  const filters = [
+    { id: 'top', display: 'Top Rated' },
+    { id: 'new', display: 'New Releases' },
+    { id: 'upcoming', display: 'Upcoming' },
+    { id: 'expiring', display: 'Expiring Soon' },
+  ];
+
   const sortedServices = services.sort((a, b) => a.display.localeCompare(b.display, 'en', { sensitivity: 'base' }));
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
-    setDiscoverMode(newValue === 0 ? 'trending' : 'top');
+    setDiscoverMode(newValue === 0 ? 'trending' : 'byService');
     resetSearch();
   };
 
@@ -108,6 +118,9 @@ function Discover() {
     setSearchPerformed(false);
     setSelectedService('none');
     setSelectedType('none');
+    if (discoverMode !== 'trending') {
+      setSelectedFilter('top');
+    }
   };
 
   const handleServiceChanged = (value: ServiceType) => {
@@ -119,6 +132,13 @@ function Discover() {
 
   const handleTypeChanged = (value: ContentType) => {
     setSelectedType(value);
+    setResults([]);
+    setPage(1);
+    setSearchPerformed(false);
+  };
+
+  const handleFilterChanged = (value: ContentFilterType) => {
+    setSelectedFilter(value);
     setResults([]);
     setPage(1);
     setSearchPerformed(false);
@@ -148,14 +168,29 @@ function Discover() {
   const findContent = async (isNewSearch = false) => {
     setIsLoading(true);
     const currentPage = isNewSearch ? 1 : page;
-    const endpoint = discoverMode === 'trending' ? '/discover/trending' : '/discover/top';
+    let endpoint = '';
+    if (discoverMode === 'trending') {
+      endpoint = '/discover/trending';
+    } else {
+      switch (selectedFilter) {
+        case 'top':
+          endpoint = '/discover/top';
+          break;
+        default:
+          endpoint = '/discover/changes';
+          break;
+      }
+    }
 
     const params: DiscoverParams = {
       showType: selectedType === 'movies' ? 'movie' : selectedType,
       page: currentPage,
     };
-    if (discoverMode === 'top') {
+    if (discoverMode === 'byService') {
       params.service = selectedService;
+      if (selectedFilter !== 'top') {
+        params.changeType = selectedFilter;
+      }
     }
 
     try {
@@ -218,7 +253,7 @@ function Discover() {
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="discover content tabs" variant="fullWidth">
               <Tab label="Trending Content" icon={<TrendingUpIcon />} iconPosition="start" {...a11yProps(0)} />
-              <Tab label="Top by Service" icon={<ExploreIcon />} iconPosition="start" {...a11yProps(1)} />
+              <Tab label="By Service" icon={<ExploreIcon />} iconPosition="start" {...a11yProps(1)} />
             </Tabs>
           </Box>
 
@@ -322,6 +357,28 @@ function Discover() {
                     ))}
                   </Select>
                 </FormControl>
+
+                <FormControl
+                  sx={{
+                    width: { xs: '100%', md: 'auto' },
+                    minWidth: { md: '200px' },
+                  }}
+                  id="discoverFilterControl"
+                >
+                  <InputLabel>Filter</InputLabel>
+                  <Select
+                    id="discoverFilterSelect"
+                    value={selectedFilter}
+                    label="Filter"
+                    onChange={(e) => handleFilterChanged(e.target.value as ContentFilterType)}
+                  >
+                    {filters.map((filter) => (
+                      <MenuItem id={`discoverFilterOption_${filter.id}`} key={filter.id} value={filter.id}>
+                        {filter.display}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Stack>
               <Button
                 id="discoverTopGoButton"
@@ -335,7 +392,9 @@ function Discover() {
                   alignSelf: { xs: 'flex-start', md: 'center' },
                 }}
               >
-                {isLoading && page === 1 ? 'Loading...' : 'Find Top Content'}
+                {isLoading && page === 1
+                  ? 'Loading...'
+                  : `Find ${selectedFilter === 'top' ? 'Top' : selectedFilter === 'new' ? 'New' : selectedFilter === 'upcoming' ? 'Upcoming' : 'Expiring'} Content`}
               </Button>
             </Stack>
           </TabPanel>
