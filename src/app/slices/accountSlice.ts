@@ -113,7 +113,7 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
 });
 
 export const register = createAsyncThunk(
-  'acocunt/register',
+  'account/register',
   async (data: NewAccountData, { dispatch, rejectWithValue }) => {
     let userCredential = null;
     try {
@@ -140,9 +140,9 @@ export const register = createAsyncThunk(
         uid: userCredential.user.uid,
         name: data.name,
       });
-      const resgisterResult: Account = response.data.result;
+      const registerResult: Account = response.data.result;
 
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(resgisterResult));
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(registerResult));
       dispatch(
         showActivityNotification({
           message: response.data.message || 'Success',
@@ -150,9 +150,9 @@ export const register = createAsyncThunk(
         }),
       );
 
-      initializeAccount(dispatch, resgisterResult);
+      initializeAccount(dispatch, registerResult);
 
-      return resgisterResult;
+      return registerResult;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
