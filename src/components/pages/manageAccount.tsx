@@ -111,7 +111,7 @@ const ManageAccount = () => {
     );
   }
 
-  async function handlSetActiveProfile(profile: Profile) {
+  async function handleSetActiveProfile(profile: Profile) {
     await dispatch(setActiveProfile({ accountId: account.id, profileId: profile.id }));
   }
 
@@ -230,7 +230,8 @@ const ManageAccount = () => {
             Default Profile: {defaultProfile.name}
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Active Profile: {activeProfile.name}
+            Active Profile: {activeProfile.name}{' '}
+            {/*TODO Update the active profile name when it's changed by the user, might need an update in the activeProfileSlice*/}
           </Typography>
           {lastUpdated && (
             <Typography variant="subtitle1" color="primary" gutterBottom>
@@ -266,7 +267,7 @@ const ManageAccount = () => {
               handleEdit={handleEditProfileButton}
               handleDelete={handleDeleteProfileButton}
               handleSetDefault={handleSetDefaultProfile}
-              handleSetActive={handlSetActiveProfile}
+              handleSetActive={handleSetActiveProfile}
             />
           ))}
         </Stack>
