@@ -89,32 +89,57 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
       const state = getState() as RootState;
       const localWatchedEpisodes = { ...state.activeShow.watchedEpisodes };
       localWatchedEpisodes[episode_id] = episodeStatus === 'WATCHED';
-      const season_id = season.season_id;
-      const seasonStatus: WatchStatus = determineSeasonWatchStatus(season, localWatchedEpisodes);
 
-      const show = state.activeShow.show!;
-      const showId = show.show_id;
-      const seasons: Season[] = JSON.parse(JSON.stringify(show.seasons));
-      const updateSeason = seasons.find((findSeason) => findSeason.season_id === season.season_id)!;
-      updateSeason.watch_status = seasonStatus;
-      const showStatus: WatchStatus = determineShowWatchStatus(seasons);
-
-      await axiosInstance.put(`/profiles/${profileId}/episodes/watchStatus`, {
+      const response = await axiosInstance.put(`/profiles/${profileId}/episodes/watchStatus`, {
         episode_id: episode_id,
         status: episodeStatus,
       });
-      await axiosInstance.put(`/profiles/${profileId}/seasons/watchStatus`, {
-        season_id: season_id,
-        status: seasonStatus,
-        recursive: false,
-      });
-      await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
-        show_id: showId,
-        status: showStatus,
-        recursive: false,
-      });
+      const result = response.data.result;
+      const nextUnwatchedEpisodes = result.nextUnwatchedEpisodes;
 
-      return { profileId, episode_id, episodeStatus, season_id, seasonStatus, showId, showStatus };
+      const season_id = season.season_id;
+      let seasonStatus = season.watch_status;
+      const newSeasonStatus: WatchStatus = determineSeasonWatchStatus(season, localWatchedEpisodes);
+      const seasonStatusChanged = seasonStatus !== newSeasonStatus;
+
+      const show = state.activeShow.show!;
+      const showId = show.show_id;
+      let showStatus = show.watch_status;
+
+      if (seasonStatusChanged) {
+        seasonStatus = newSeasonStatus;
+        await axiosInstance.put(`/profiles/${profileId}/seasons/watchStatus`, {
+          season_id: season_id,
+          status: seasonStatus,
+          recursive: false,
+        });
+
+        const seasons: Season[] = JSON.parse(JSON.stringify(show.seasons));
+        const updateSeason = seasons.find((findSeason) => findSeason.season_id === season.season_id)!;
+        updateSeason.watch_status = newSeasonStatus;
+        const newShowStatus: WatchStatus = determineShowWatchStatus(seasons);
+        const showStatusChanged = showStatus !== newShowStatus;
+
+        if (showStatusChanged) {
+          showStatus = newShowStatus;
+          await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
+            show_id: showId,
+            status: showStatus,
+            recursive: false,
+          });
+        }
+      }
+
+      return {
+        profileId,
+        episode_id,
+        episodeStatus,
+        season_id,
+        seasonStatus,
+        showId,
+        showStatus,
+        nextUnwatchedEpisodes,
+      };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);

@@ -543,15 +543,16 @@ const activeProfileSlice = createSlice({
         state.error = action.error.message || 'Failed to update show status';
       })
       .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
-        const showId = action.payload.showId;
-        const status = action.payload.showStatus;
+        const { showId, showStatus, nextUnwatchedEpisodes } = action.payload;
+
         const shows = state.shows;
         if (shows) {
           const show = shows.find((m) => m.show_id === showId);
           if (show) {
-            show.watch_status = status;
+            show.watch_status = showStatus;
           }
         }
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
