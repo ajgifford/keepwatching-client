@@ -71,7 +71,7 @@ export const KeepWatchingContent = ({ profileId }: { profileId: string }) => {
   return (
     <Grid container spacing={2}>
       {sortedShows.map((show) => (
-        <Grid item xs={12} md={6} key={`show-grid-${show.show_id}`}>
+        <Grid item xs={12} sm={6} lg={4} key={`show-grid-${show.show_id}`}>
           <ShowWithEpisodes show={show} profileId={profileId} />
         </Grid>
       ))}
