@@ -10,7 +10,7 @@ interface PropTypes {
   nextEpisode: ProfileEpisode;
 }
 
-export function NextEpisodeCard({ nextEpisode }: PropTypes) {
+export function EpisodeCard({ nextEpisode }: PropTypes) {
   const buildServiceDisplay = () => {
     if (nextEpisode.network) {
       return nextEpisode.network;

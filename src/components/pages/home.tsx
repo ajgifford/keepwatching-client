@@ -17,11 +17,11 @@ import {
   selectUpcomingEpisodes,
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
+import { EpisodeCard } from '../common/episodeCard';
 import { ErrorComponent } from '../common/errorComponent';
 import { KeepWatchingContent } from '../common/keepWatchingComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { MovieCard } from '../common/movieCard';
-import { NextEpisodeCard } from '../common/nextEpisodeCard';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -251,7 +251,7 @@ const Home = () => {
                     md={4}
                     key={`upcomingEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}
                   >
-                    <NextEpisodeCard nextEpisode={episode} />
+                    <EpisodeCard nextEpisode={episode} />
                   </Grid>
                 ))}
               </Grid>
@@ -271,7 +271,7 @@ const Home = () => {
               <Grid container spacing={2}>
                 {recentEpisodes.map((episode: ProfileEpisode) => (
                   <Grid item xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}>
-                    <NextEpisodeCard nextEpisode={episode} />
+                    <EpisodeCard nextEpisode={episode} />
                   </Grid>
                 ))}
               </Grid>
