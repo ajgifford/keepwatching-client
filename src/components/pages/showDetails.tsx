@@ -119,7 +119,7 @@ function ShowDetails() {
           zIndex: 999,
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ display: 'flex', alignItems: 'flex-start' }}>
           <Tooltip title="Back">
             <IconButton
               edge="start"
@@ -128,12 +128,38 @@ function ShowDetails() {
                 dispatch(clearActiveShow());
                 navigate(buildBackButtonPath());
               }}
+              sx={{ mt: 2 }}
             >
               <ArrowBackIosIcon />
             </IconButton>
           </Tooltip>
-          <Box sx={{ p: 2 }}>
-            <Typography variant="h4">{show?.title}</Typography>
+
+          <Box
+            sx={{
+              width: { xs: 120, sm: 150, md: 200 },
+              height: 'auto',
+              mr: { xs: 2, sm: 3, md: 4 },
+              borderRadius: 1,
+              overflow: 'hidden',
+              flexShrink: 0,
+            }}
+          >
+            <Box
+              component="img"
+              src={buildTMDBImagePath(show?.poster_image, 'w342')}
+              alt={show?.title}
+              sx={{
+                width: '100%',
+                height: 'auto',
+                display: 'block',
+              }}
+            />
+          </Box>
+
+          <Box sx={{ p: 2, flexGrow: 1, overflow: 'hidden' }}>
+            <Typography variant="h4" noWrap>
+              {show?.title}
+            </Typography>
             <Typography variant="subtitle1" fontStyle="italic">
               {show?.description}
             </Typography>
