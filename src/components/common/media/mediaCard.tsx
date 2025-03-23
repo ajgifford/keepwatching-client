@@ -31,6 +31,15 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
     };
   }, [item.title]);
 
+  const tooltipStyles = {
+    tooltip: {
+      fontSize: '1rem',
+      padding: '8px 12px',
+      maxWidth: '300px',
+      lineHeight: 1.4,
+    },
+  };
+
   return (
     <Card
       sx={{
@@ -51,13 +60,17 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
         alt={item.title}
       />
       <CardContent sx={{ flexGrow: 1, p: 2 }}>
-        <Tooltip title={isTitleTruncated ? item.title : ''} placement="top">
+        <Tooltip
+          title={isTitleTruncated ? item.title : ''}
+          placement="top"
+          slotProps={{ tooltip: { sx: tooltipStyles.tooltip } }}
+        >
           <Typography ref={titleRef} variant="h6" noWrap>
             {item.title}
           </Typography>
         </Tooltip>
 
-        <Tooltip title={item.genres.join(', ')} placement="top">
+        <Tooltip title={item.genres.join(', ')} placement="top" slotProps={{ tooltip: { sx: tooltipStyles.tooltip } }}>
           <Typography variant="body2" color="text.secondary" noWrap>
             {item.genres.join(', ')}
           </Typography>
@@ -68,7 +81,7 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
         </Typography>
 
         {item.summary && (
-          <Tooltip title={item.summary} placement="top">
+          <Tooltip title={item.summary} placement="top" slotProps={{ tooltip: { sx: tooltipStyles.tooltip } }}>
             <Typography
               variant="body2"
               color="text.secondary"
