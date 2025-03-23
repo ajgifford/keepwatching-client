@@ -1,4 +1,5 @@
 import axiosInstance from '../api/axiosInstance';
+import { SearchResult } from '../model/search';
 import { Episode, Season, Show } from '../model/shows';
 import { WatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
@@ -9,15 +10,27 @@ import { AxiosError } from 'axios';
 interface ActiveShowState {
   show: Show | null;
   watchedEpisodes: Record<number, boolean>;
+  similarShows: SearchResult[];
+  recommendedShows: SearchResult[];
   loading: boolean;
+  similarShowsLoading: boolean;
+  recommendedShowsLoading: boolean;
   error: string | null;
+  similarShowsError: string | null;
+  recommendedShowsError: string | null;
 }
 
 const initialState: ActiveShowState = {
   show: null,
   watchedEpisodes: {},
+  similarShows: [],
+  recommendedShows: [],
   loading: false,
+  similarShowsLoading: false,
+  recommendedShowsLoading: false,
   error: null,
+  similarShowsError: null,
+  recommendedShowsError: null,
 };
 
 export const fetchShowWithDetails = createAsyncThunk(
@@ -187,6 +200,36 @@ export const updateSeasonWatchStatus = createAsyncThunk(
   },
 );
 
+export const fetchRecommendedShows = createAsyncThunk(
+  'activeShow/fetchRecommendedShows',
+  async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/profiles/${profileId}/shows/${showId}/recommendations`);
+      return response.data.results;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
+  },
+);
+
+export const fetchSimilarShows = createAsyncThunk(
+  'activeShow/fetchSimilarShows',
+  async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/profiles/${profileId}/shows/${showId}/similar`);
+      return response.data.results;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
+  },
+);
+
 const activeShowSlice = createSlice({
   name: 'activeShow',
   initialState,
@@ -264,6 +307,32 @@ const activeShowSlice = createSlice({
       })
       .addCase(updateSeasonWatchStatus.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to update season watch status';
+      })
+      .addCase(fetchSimilarShows.pending, (state) => {
+        state.similarShowsError = null;
+        state.similarShowsLoading = true;
+      })
+      .addCase(fetchSimilarShows.fulfilled, (state, action) => {
+        state.similarShowsError = null;
+        state.similarShows = action.payload;
+        state.similarShowsLoading = false;
+      })
+      .addCase(fetchSimilarShows.rejected, (state, action) => {
+        state.similarShowsError = action.error.message || 'Failed to fetch similar shows';
+        state.similarShowsLoading = false;
+      })
+      .addCase(fetchRecommendedShows.pending, (state) => {
+        state.recommendedShowsError = null;
+        state.recommendedShowsLoading = true;
+      })
+      .addCase(fetchRecommendedShows.fulfilled, (state, action) => {
+        state.recommendedShowsError = null;
+        state.recommendedShows = action.payload;
+        state.recommendedShowsLoading = false;
+      })
+      .addCase(fetchRecommendedShows.rejected, (state, action) => {
+        state.recommendedShowsError = action.error.message || 'Failed to fetch recommended shows';
+        state.recommendedShowsLoading = false;
       });
   },
 });
@@ -275,5 +344,11 @@ export const selectSeasons = (state: RootState) => state.activeShow.show?.season
 export const selectWatchedEpisodes = (state: RootState) => state.activeShow.watchedEpisodes;
 export const selectShowLoading = (state: RootState) => state.activeShow.loading;
 export const selectShowError = (state: RootState) => state.activeShow.error;
+export const selectSimilarShows = (state: RootState) => state.activeShow.similarShows;
+export const selectSimilarShowsLoading = (state: RootState) => state.activeShow.similarShowsLoading;
+export const selectSimilarShowsError = (state: RootState) => state.activeShow.similarShowsError;
+export const selectRecommendedShows = (state: RootState) => state.activeShow.recommendedShows;
+export const selectRecommendedShowsLoading = (state: RootState) => state.activeShow.recommendedShowsLoading;
+export const selectRecommendedShowsError = (state: RootState) => state.activeShow.recommendedShowsError;
 
 export default activeShowSlice.reducer;

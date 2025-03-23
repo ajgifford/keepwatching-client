@@ -6,11 +6,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import StarsIcon from '@mui/icons-material/Stars';
 import { Box, Button, Stack, Typography } from '@mui/material';
 
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { Profile } from '../../app/model/profile';
-import { selectCurrentAccount } from '../../app/slices/accountSlice';
-import { selectActiveProfile } from '../../app/slices/activeProfileSlice';
-import { selectProfileById, updateProfileImage } from '../../app/slices/profilesSlice';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { Profile } from '../../../app/model/profile';
+import { selectCurrentAccount } from '../../../app/slices/accountSlice';
+import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
+import { selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
 
 interface PropTypes {
   profile: Profile;

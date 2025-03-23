@@ -39,6 +39,8 @@ import {
 } from '../../app/slices/activeShowSlice';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
+import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
+import { SimilarShowsComponent } from '../common/shows/similarShowsComponent';
 import {
   buildEpisodeAirDate,
   buildEpisodeLine,
@@ -59,6 +61,7 @@ function ShowDetails() {
   const showDetailsLoading = useAppSelector(selectShowLoading);
   const showDetailsError = useAppSelector(selectShowError);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
+
   const location = useLocation();
   const returnPath = location.state.returnPath;
   const genreFilter = location.state.genre;
@@ -252,6 +255,8 @@ function ShowDetails() {
           ))}
         </Box>
       ) : null}
+      {show && <SimilarShowsComponent showId={String(show.show_id)} profileId={profileId || ''} />}
+      {show && <RecommendedShowsComponent showId={String(show.show_id)} profileId={profileId || ''} />}
     </>
   );
 }

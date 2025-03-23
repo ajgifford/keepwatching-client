@@ -24,11 +24,11 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { useAppDispatch } from '../../app/hooks';
-import { Show } from '../../app/model/shows';
-import { WatchStatus } from '../../app/model/watchStatus';
-import { removeShowFavorite, updateShowStatus } from '../../app/slices/activeProfileSlice';
-import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../utility/contentUtility';
+import { useAppDispatch } from '../../../app/hooks';
+import { Show } from '../../../app/model/shows';
+import { WatchStatus } from '../../../app/model/watchStatus';
+import { removeShowFavorite, updateShowStatus } from '../../../app/slices/activeProfileSlice';
+import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../../utility/contentUtility';
 
 export type FilterProps = {
   genre: string;

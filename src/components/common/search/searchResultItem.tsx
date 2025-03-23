@@ -11,9 +11,9 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { SearchResult } from '../../app/model/search';
-import { buildTMDBImagePath } from '../utility/contentUtility';
-import FavoritesButton from './favoriteButton';
+import { SearchResult } from '../../../app/model/search';
+import { buildTMDBImagePath } from '../../utility/contentUtility';
+import FavoritesButton from '../media/favoriteButton';
 
 interface SearchResultProps {
   result: SearchResult;

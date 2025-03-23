@@ -2,7 +2,7 @@ import { Fragment } from 'react/jsx-runtime';
 
 import { Box, CircularProgress, Divider, List, Typography } from '@mui/material';
 
-import { SearchResult } from '../../app/model/search';
+import { SearchResult } from '../../../app/model/search';
 import { SearchResultItem } from './searchResultItem';
 
 interface SearchResultProps {

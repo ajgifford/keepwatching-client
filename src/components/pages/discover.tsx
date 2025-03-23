@@ -22,7 +22,7 @@ import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
 import { SearchResult } from '../../app/model/search';
 import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
-import SearchResults from '../common/searchResults';
+import SearchResults from '../common/search/searchResults';
 import { AxiosError } from 'axios';
 
 type ServiceType = 'none' | 'netflix' | 'disney' | 'hbo' | 'apple' | 'prime';

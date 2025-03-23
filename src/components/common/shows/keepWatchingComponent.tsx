@@ -16,10 +16,10 @@ import {
   Typography,
 } from '@mui/material';
 
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { ContinueWatchingShow, ProfileEpisode } from '../../app/model/shows';
-import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../app/slices/activeProfileSlice';
-import { buildTMDBImagePath } from '../utility/contentUtility';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { ContinueWatchingShow, ProfileEpisode } from '../../../app/model/shows';
+import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
+import { buildTMDBImagePath } from '../../utility/contentUtility';
 
 const balanceShowsAcrossRows = (shows: ContinueWatchingShow[]): ContinueWatchingShow[] => {
   if (!shows || shows.length <= 2) return shows;

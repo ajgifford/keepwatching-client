@@ -26,7 +26,7 @@ import Grid from '@mui/material/Grid2';
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { SearchResult } from '../../app/model/search';
-import SearchResults from '../common/searchResults';
+import SearchResults from '../common/search/searchResults';
 
 function Search() {
   const [results, setResults] = useState<SearchResult[]>([]);

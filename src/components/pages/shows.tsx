@@ -22,7 +22,7 @@ import {
 import { watchStatuses } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { selectShowGenres, selectShowStreamingServices, selectShows } from '../../app/slices/activeProfileSlice';
-import { FilterProps, ShowListItem } from '../common/showListItem';
+import { FilterProps, ShowListItem } from '../common/shows/showListItem';
 import { stripArticle } from '../utility/contentUtility';
 
 const Shows = () => {

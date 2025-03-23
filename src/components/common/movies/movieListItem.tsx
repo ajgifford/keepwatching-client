@@ -18,11 +18,11 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { useAppDispatch } from '../../app/hooks';
-import { Movie } from '../../app/model/movies';
-import { WatchStatus } from '../../app/model/watchStatus';
-import { removeMovieFavorite, updateMovieStatus } from '../../app/slices/activeProfileSlice';
-import { buildTMDBImagePath, calculateRuntimeDisplay } from '../utility/contentUtility';
+import { useAppDispatch } from '../../../app/hooks';
+import { Movie } from '../../../app/model/movies';
+import { WatchStatus } from '../../../app/model/watchStatus';
+import { removeMovieFavorite, updateMovieStatus } from '../../../app/slices/activeProfileSlice';
+import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
 
 export type MovieListItemProps = {
   movie: Movie;

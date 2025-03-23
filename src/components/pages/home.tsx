@@ -17,11 +17,11 @@ import {
   selectUpcomingEpisodes,
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
-import { EpisodeCard } from '../common/episodeCard';
 import { ErrorComponent } from '../common/errorComponent';
-import { KeepWatchingContent } from '../common/keepWatchingComponent';
 import { LoadingComponent } from '../common/loadingComponent';
-import { MovieCard } from '../common/movieCard';
+import { MovieCard } from '../common/movies/movieCard';
+import { EpisodeCard } from '../common/shows/episodeCard';
+import { KeepWatchingContent } from '../common/shows/keepWatchingComponent';
 
 interface TabPanelProps {
   children?: React.ReactNode;

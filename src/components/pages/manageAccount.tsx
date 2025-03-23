@@ -28,8 +28,8 @@ import {
   selectAllProfiles,
   selectProfileById,
 } from '../../app/slices/profilesSlice';
-import NameEditDialog from '../common/nameEditDialog';
-import { ProfileCard } from '../common/profileCard';
+import NameEditDialog from '../common/account/nameEditDialog';
+import { ProfileCard } from '../common/account/profileCard';
 import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {

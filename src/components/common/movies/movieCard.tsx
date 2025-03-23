@@ -1,8 +1,8 @@
 import { Avatar, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { Movie } from '../../app/model/movies';
-import { buildTMDBImagePath } from '../utility/contentUtility';
+import { Movie } from '../../../app/model/movies';
+import { buildTMDBImagePath } from '../../utility/contentUtility';
 
 interface PropTypes {
   movie: Movie;

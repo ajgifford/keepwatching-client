@@ -22,7 +22,7 @@ import {
 import { watchStatuses } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { selectMovieGenres, selectMovieStreamingServices, selectMovies } from '../../app/slices/activeProfileSlice';
-import { MovieListItem } from '../common/movieListItem';
+import { MovieListItem } from '../common/movies/movieListItem';
 import { stripArticle } from '../utility/contentUtility';
 
 const Movies = () => {

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { Avatar, Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { ProfileEpisode } from '../../app/model/shows';
-import { buildTMDBImagePath } from '../utility/contentUtility';
+import { ProfileEpisode } from '../../../app/model/shows';
+import { buildTMDBImagePath } from '../../utility/contentUtility';
 
 interface PropTypes {
   nextEpisode: ProfileEpisode;
