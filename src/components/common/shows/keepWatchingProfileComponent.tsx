@@ -34,11 +34,7 @@ const balanceShowsAcrossRows = (shows: ContinueWatchingShow[]): ContinueWatching
   return result;
 };
 
-/**
- * Main component for the Keep Watching tab content
- * Displays shows in a 2x2 grid on large screens, 1x4 grid on small screens
- */
-export const KeepWatchingContent = ({ profileId }: { profileId: string }) => {
+export const KeepWatchingProfileComponent = ({ profileId }: { profileId: string }) => {
   const nextUnwatchedEpisodes = useAppSelector(selectNextUnwatchedEpisodes);
   if (!nextUnwatchedEpisodes || nextUnwatchedEpisodes.length === 0) {
     return (

@@ -21,7 +21,7 @@ import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { MovieTile } from '../common/movies/movieTile';
 import { EpisodeTile } from '../common/shows/episodeTile';
-import { KeepWatchingContent } from '../common/shows/keepWatchingComponent';
+import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 
 const Home = () => {
@@ -147,7 +147,7 @@ const Home = () => {
 
       {/* Keep Watching Tab */}
       <TabPanel value={tabValue} index={0}>
-        <KeepWatchingContent profileId={profile.id} />
+        <KeepWatchingProfileComponent profileId={profile.id} />
       </TabPanel>
 
       {/* TV Shows Tab */}
