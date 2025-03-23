@@ -1,57 +1,98 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
-import { Avatar, Box, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
+import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
+import { useAppDispatch } from '../../../app/hooks';
 import { ProfileEpisode } from '../../../app/model/shows';
+import { updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 
-interface PropTypes {
-  nextEpisode: ProfileEpisode;
-}
+export const EpisodeCard = ({ episode }: { episode: ProfileEpisode }) => {
+  const dispatch = useAppDispatch();
+  const [isWatched, setIsWatched] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-export function EpisodeCard({ nextEpisode }: PropTypes) {
-  const buildServiceDisplay = () => {
-    if (nextEpisode.network) {
-      return nextEpisode.network;
-    }
-    return nextEpisode.streaming_services;
+  const handleWatchStatusChange = async () => {
+    setIsWatched(!isWatched);
+    setIsLoading(true);
+    await dispatch(
+      updateNextEpisodeWatchStatus({
+        profileId: episode.profile_id,
+        showId: episode.show_id,
+        seasonId: episode.season_id,
+        episodeId: episode.episode_id,
+        episodeStatus: 'WATCHED',
+      }),
+    );
+    setIsLoading(false);
   };
 
   return (
-    <Box
-      id={`nextEpisodeCard_${nextEpisode.show_name}_${nextEpisode.season_number}_${nextEpisode.episode_number}`}
-      key={nextEpisode.episode_title}
-      sx={{ p: '10px', minWidth: '200px', textAlign: 'left' }}
-    >
-      <Typography variant="h5">
-        <Link
-          id={`nextEpisodeShowLink_${nextEpisode.show_id}_${nextEpisode.episode_title}`}
-          style={{ textDecoration: 'none', color: 'black' }}
-          to={`/shows/${nextEpisode.show_id}/${nextEpisode.profile_id}`}
-          state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
+    <Card>
+      <Box sx={{ position: 'relative' }}>
+        <Box
+          component="img"
+          src={buildTMDBImagePath(episode.episode_still_image, 'original', episode.episode_title)}
+          alt={episode.episode_title}
+          sx={{ width: '100%', height: 'auto', aspectRatio: '16/9', objectFit: 'cover' }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            px: 2,
+            py: 0.5,
+          }}
         >
-          {nextEpisode.show_name}
-        </Link>
-      </Typography>
-      <Grid container spacing={2} alignItems="center">
-        <Grid>
-          <Avatar
-            alt={nextEpisode.episode_title}
-            src={buildTMDBImagePath(nextEpisode.episode_still_image)}
-            variant="rounded"
-            sx={{ width: 140, height: 96 }}
-          />
-        </Grid>
-        <Grid>
-          <Typography variant="body1">{nextEpisode.episode_title}</Typography>
-          <Typography variant="body1">
-            S{nextEpisode.season_number} E{nextEpisode.episode_number}
+          <Typography variant="body2" component="span">
+            S{episode.season_number} E{episode.episode_number}
           </Typography>
-          <Typography variant="body1">{nextEpisode.air_date}</Typography>
-          <Typography variant="body1">{buildServiceDisplay()}</Typography>
-        </Grid>
-      </Grid>
-    </Box>
+        </Box>
+      </Box>
+
+      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="subtitle1" gutterBottom>
+            {episode.episode_title}
+          </Typography>
+          <Tooltip title={isWatched ? 'Mark Not Watched' : 'Mark Watched'}>
+            <Box sx={{ position: 'relative' }}>
+              <IconButton
+                color={isWatched ? 'success' : 'default'}
+                onClick={handleWatchStatusChange}
+                size="small"
+                disabled={isLoading}
+              >
+                {isWatched ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+              </IconButton>
+              {isLoading && (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              )}
+            </Box>
+          </Tooltip>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {episode.air_date}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {episode.network || episode.streaming_services}
+        </Typography>
+      </CardContent>
+    </Card>
   );
-}
+};

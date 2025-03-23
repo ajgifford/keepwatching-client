@@ -19,38 +19,10 @@ import {
 } from '../../app/slices/activeProfileSlice';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
-import { MovieCard } from '../common/movies/movieCard';
-import { EpisodeCard } from '../common/shows/episodeCard';
+import { MovieTile } from '../common/movies/movieTile';
+import { EpisodeTile } from '../common/shows/episodeTile';
 import { KeepWatchingContent } from '../common/shows/keepWatchingComponent';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`home-tabpanel-${index}`}
-      aria-labelledby={`home-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `home-tab-${index}`,
-    'aria-controls': `home-tabpanel-${index}`,
-  };
-}
+import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 
 const Home = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -251,7 +223,7 @@ const Home = () => {
                     md={4}
                     key={`upcomingEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}
                   >
-                    <EpisodeCard nextEpisode={episode} />
+                    <EpisodeTile episode={episode} />
                   </Grid>
                 ))}
               </Grid>
@@ -271,7 +243,7 @@ const Home = () => {
               <Grid container spacing={2}>
                 {recentEpisodes.map((episode: ProfileEpisode) => (
                   <Grid item xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}>
-                    <EpisodeCard nextEpisode={episode} />
+                    <EpisodeTile episode={episode} />
                   </Grid>
                 ))}
               </Grid>
@@ -331,7 +303,7 @@ const Home = () => {
               <Grid container spacing={2}>
                 {recentMovies.map((movie) => (
                   <Grid item xs={12} md={4} key={`recentMovie_${movie.movie_id}`}>
-                    <MovieCard movie={movie} />
+                    <MovieTile movie={movie} />
                   </Grid>
                 ))}
               </Grid>
@@ -351,7 +323,7 @@ const Home = () => {
               <Grid container spacing={2}>
                 {upcomingMovies.map((movie) => (
                   <Grid item xs={12} md={4} key={`upcomingMovie_${movie.movie_id}`}>
-                    <MovieCard movie={movie} />
+                    <MovieTile movie={movie} />
                   </Grid>
                 ))}
               </Grid>

@@ -8,7 +8,7 @@ interface PropTypes {
   movie: Movie;
 }
 
-export function MovieCard({ movie }: PropTypes) {
+export function MovieTile({ movie }: PropTypes) {
   return (
     <Box id={`movieCard_${movie.movie_id}`} key={movie.title} sx={{ p: '10px', minWidth: '200px', textAlign: 'left' }}>
       <Grid container spacing={2} alignItems="center">
