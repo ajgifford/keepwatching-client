@@ -4,29 +4,27 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
-import { useAppDispatch } from '../../../app/hooks';
 import { ProfileEpisode } from '../../../app/model/shows';
-import { updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
+import { WatchStatus } from '../../../app/model/watchStatus';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 
-export const EpisodeCard = ({ episode }: { episode: ProfileEpisode }) => {
-  const dispatch = useAppDispatch();
+interface EpisodeCardProps {
+  episode: ProfileEpisode;
+  onWatchStatusChange: (episode: ProfileEpisode, newStatus: WatchStatus) => Promise<void>;
+}
+
+export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) => {
   const [isWatched, setIsWatched] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleWatchStatusChange = async () => {
     setIsWatched(!isWatched);
     setIsLoading(true);
-    await dispatch(
-      updateNextEpisodeWatchStatus({
-        profileId: episode.profile_id,
-        showId: episode.show_id,
-        seasonId: episode.season_id,
-        episodeId: episode.episode_id,
-        episodeStatus: 'WATCHED',
-      }),
-    );
-    setIsLoading(false);
+    try {
+      await onWatchStatusChange(episode, 'WATCHED');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

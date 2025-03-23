@@ -41,6 +41,7 @@ import {
 } from '../../app/slices/activeShowSlice';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
+import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
 import { SimilarShowsComponent } from '../common/shows/similarShowsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
@@ -201,7 +202,9 @@ function ShowDetails() {
       </Box>
 
       <TabPanel value={tabValue} index={0}>
-        <Typography variant="body1">KeepWatching Placeholder</Typography>
+        <TabPanel value={tabValue} index={0}>
+          {profileId && <KeepWatchingShowComponent profileId={profileId} />}
+        </TabPanel>
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
