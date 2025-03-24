@@ -165,67 +165,70 @@ function Discover() {
     [isLoading, hasMore, results.length, totalResults],
   );
 
-  const findContent = async (isNewSearch = false) => {
-    setIsLoading(true);
-    const currentPage = isNewSearch ? 1 : page;
-    let endpoint = '';
-    if (discoverMode === 'trending') {
-      endpoint = '/discover/trending';
-    } else {
-      switch (selectedFilter) {
-        case 'top':
-          endpoint = '/discover/top';
-          break;
-        default:
-          endpoint = '/discover/changes';
-          break;
-      }
-    }
-
-    const params: DiscoverParams = {
-      showType: selectedType === 'movies' ? 'movie' : selectedType,
-      page: currentPage,
-    };
-    if (discoverMode === 'byService') {
-      params.service = selectedService;
-      if (selectedFilter !== 'top') {
-        params.changeType = selectedFilter;
-      }
-    }
-
-    try {
-      const response = await axiosInstance.get(endpoint, { params });
-
-      if (isNewSearch) {
-        setResults(response.data.results);
-        setTotalResults(response.data.total_results || 0);
+  const findContent = useCallback(
+    async (isNewSearch = false) => {
+      setIsLoading(true);
+      const currentPage = isNewSearch ? 1 : page;
+      let endpoint = '';
+      if (discoverMode === 'trending') {
+        endpoint = '/discover/trending';
       } else {
-        setResults((prev) => [...prev, ...response.data.results]);
+        switch (selectedFilter) {
+          case 'top':
+            endpoint = '/discover/top';
+            break;
+          default:
+            endpoint = '/discover/changes';
+            break;
+        }
       }
 
-      setSearchPerformed(true);
-      setHasMore(response.data.current_page < response.data.total_pages);
-    } catch (error: unknown) {
-      let errorMessage = 'Failed to load content';
-      if (error instanceof AxiosError) {
-        errorMessage = error.response?.data?.message || errorMessage;
+      const params: DiscoverParams = {
+        showType: selectedType === 'movies' ? 'movie' : selectedType,
+        page: currentPage,
+      };
+      if (discoverMode === 'byService') {
+        params.service = selectedService;
+        if (selectedFilter !== 'top') {
+          params.changeType = selectedFilter;
+        }
       }
-      dispatch(
-        showActivityNotification({
-          message: errorMessage,
-          type: ActivityNotificationType.Error,
-        }),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
+      try {
+        const response = await axiosInstance.get(endpoint, { params });
+
+        if (isNewSearch) {
+          setResults(response.data.results);
+          setTotalResults(response.data.total_results || 0);
+        } else {
+          setResults((prev) => [...prev, ...response.data.results]);
+        }
+
+        setSearchPerformed(true);
+        setHasMore(response.data.current_page < response.data.total_pages);
+      } catch (error: unknown) {
+        let errorMessage = 'Failed to load content';
+        if (error instanceof AxiosError) {
+          errorMessage = error.response?.data?.message || errorMessage;
+        }
+        dispatch(
+          showActivityNotification({
+            message: errorMessage,
+            type: ActivityNotificationType.Error,
+          }),
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [discoverMode, dispatch, page, selectedFilter, selectedService, selectedType],
+  );
 
   useEffect(() => {
     if (page > 1 && searchPerformed) {
       findContent(false);
     }
-  }, [page]);
+  }, [page, searchPerformed, findContent]);
 
   useEffect(() => {
     return () => {
