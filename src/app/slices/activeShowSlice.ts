@@ -35,9 +35,16 @@ const initialState: ActiveShowState = {
 
 export const fetchShowWithDetails = createAsyncThunk(
   'activeShow/fetchShowWithDetails',
-  async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: string; showId: string }, { getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/profiles/${profileId}/shows/${showId}/details`);
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/shows/${showId}/details`);
       const show: Show = response.data.results;
 
       const watchedEpisodes: Record<number, boolean> = {};
@@ -103,8 +110,13 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
       const localWatchedEpisodes = { ...state.activeShow.watchedEpisodes };
       localWatchedEpisodes[episode_id] = episodeStatus === 'WATCHED';
 
-      const response = await axiosInstance.put(`/profiles/${profileId}/episodes/watchStatus`, {
-        episode_id: episode_id,
+      const accountId = state.auth.account?.id;
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/episodes/watchStatus`, {
+        episodeId: episode_id,
         status: episodeStatus,
       });
       const result = response.data.result;
@@ -121,8 +133,8 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
 
       if (seasonStatusChanged) {
         seasonStatus = newSeasonStatus;
-        await axiosInstance.put(`/profiles/${profileId}/seasons/watchStatus`, {
-          season_id: season_id,
+        await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/seasons/watchStatus`, {
+          seasonId: season_id,
           status: seasonStatus,
           recursive: false,
         });
@@ -135,8 +147,8 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
 
         if (showStatusChanged) {
           showStatus = newShowStatus;
-          await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
-            show_id: showId,
+          await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`, {
+            showId: showId,
             status: showStatus,
             recursive: false,
           });
@@ -170,6 +182,12 @@ export const updateSeasonWatchStatus = createAsyncThunk(
   ) => {
     try {
       const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
       const show = state.activeShow.show!;
       const seasons: Season[] = JSON.parse(JSON.stringify(show.seasons));
       const updateSeason = seasons.find((findSeason) => findSeason.season_id === season.season_id)!;
@@ -177,15 +195,15 @@ export const updateSeasonWatchStatus = createAsyncThunk(
       const showStatus: WatchStatus = determineShowWatchStatus(seasons);
 
       const season_id = season.season_id;
-      await axiosInstance.put(`/profiles/${profileId}/seasons/watchStatus`, {
-        season_id: season_id,
+      await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/seasons/watchStatus`, {
+        seasonId: season_id,
         status: seasonStatus,
         recursive: true,
       });
 
       const showId = show.show_id;
-      await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
-        show_id: showId,
+      await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`, {
+        showId: showId,
         status: showStatus,
         recursive: false,
       });
@@ -202,9 +220,17 @@ export const updateSeasonWatchStatus = createAsyncThunk(
 
 export const fetchRecommendedShows = createAsyncThunk(
   'activeShow/fetchRecommendedShows',
-  async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: string; showId: string }, { getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/profiles/${profileId}/shows/${showId}/recommendations`);
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+      const response = await axiosInstance.get(
+        `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/recommendations`,
+      );
       return response.data.results;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -217,9 +243,16 @@ export const fetchRecommendedShows = createAsyncThunk(
 
 export const fetchSimilarShows = createAsyncThunk(
   'activeShow/fetchSimilarShows',
-  async ({ profileId, showId }: { profileId: string; showId: string }, { rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: string; showId: string }, { getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/profiles/${profileId}/shows/${showId}/similar`);
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/shows/${showId}/similar`);
       return response.data.results;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

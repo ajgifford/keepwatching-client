@@ -75,7 +75,7 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
   }
 
   try {
-    const response = await axiosInstance.post('/login', { uid: userCredential.user.uid });
+    const response = await axiosInstance.post('/authentication/login', { uid: userCredential.user.uid });
     const loginResult: Account = response.data.result;
 
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
@@ -135,7 +135,7 @@ export const register = createAsyncThunk(
     }
 
     try {
-      const response = await axiosInstance.post('/accounts', {
+      const response = await axiosInstance.post('/authentication/register', {
         email: data.email,
         uid: userCredential.user.uid,
         name: data.name,
@@ -198,7 +198,7 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
   }
 
   try {
-    const response = await axiosInstance.post('/googleLogin', {
+    const response = await axiosInstance.post('/authentication/googleLogin', {
       email: user.email,
       uid: user.uid,
       name: user.displayName,
@@ -243,6 +243,7 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
 export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
     await signOut(auth);
+    await axiosInstance.post('/authentication/logout');
 
     localStorage.removeItem(ACCOUNT_KEY);
     dispatch(

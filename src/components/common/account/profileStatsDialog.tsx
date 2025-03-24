@@ -17,6 +17,7 @@ import axiosInstance from '../../../app/api/axiosInstance';
 interface NameEditDialogProps {
   open: boolean;
   title: string;
+  accountId: string;
   profileId: string;
   onClose: () => void;
 }
@@ -25,14 +26,14 @@ interface ProfileStatistics {
   totalShows: number;
 }
 
-const ProfileStatsDialog = ({ open, title, profileId, onClose }: NameEditDialogProps) => {
+const ProfileStatsDialog = ({ open, title, accountId, profileId, onClose }: NameEditDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [statistics, setStatistics] = useState<ProfileStatistics | null>(null);
 
   useEffect(() => {
     const fetchProfileStats = async () => {
       setLoading(true);
-      const response = await axiosInstance.get(`/profiles/${profileId}/shows/statistics`);
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/shows/statistics`);
       setStatistics(response.data.results);
       setLoading(false);
     };

@@ -99,7 +99,7 @@ export const reloadActiveProfile = createAsyncThunk(
       const profileId = state.activeProfile.profile?.id;
 
       if (!accountId || !profileId) {
-        throw new Error('No active profile found');
+        return rejectWithValue('No account or active profile found');
       }
 
       const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}`);
@@ -137,13 +137,19 @@ export const reloadProfileEpisodes = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
       const profileId = state.activeProfile.profile?.id;
-      const response = await axiosInstance.get(`/profiles/${profileId}/episodes`);
+
+      if (!accountId || !profileId) {
+        return rejectWithValue('No account or active profile found');
+      }
+
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/episodes`);
       const results = response.data.results;
       const upcomingEpisodes: ProfileEpisode[] = results.upcomingEpisodes;
       const recentEpisodes: ProfileEpisode[] = results.recentEpisodes;
       const nextUnwatchedEpisodes: ContinueWatchingShow[] = results.nextUnwatchedEpisodes;
-      console.log('Reload profile episodes', upcomingEpisodes);
+
       return { upcomingEpisodes, recentEpisodes, nextUnwatchedEpisodes };
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -156,10 +162,17 @@ export const reloadProfileEpisodes = createAsyncThunk(
 
 export const addShowFavorite = createAsyncThunk(
   'activeProfile/addShowFavorite',
-  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/profiles/${profileId}/shows/favorites`, {
-        id: showId,
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.post(`/accounts/${accountId}/profiles/${profileId}/shows/favorites`, {
+        showId: showId,
       });
       const result = response.data.result;
       const show = result.favoritedShow;
@@ -194,9 +207,18 @@ export const updateAfterAddShowFavorite = createAsyncThunk(
 
 export const removeShowFavorite = createAsyncThunk(
   'activeProfile/removeShowFavorite',
-  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/profiles/${profileId}/shows/favorites/${showId}`);
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.delete(
+        `/accounts/${accountId}/profiles/${profileId}/shows/favorites/${showId}`,
+      );
       const result = response.data.result;
       const show = result.removedShow;
       const showTitle = show.title;
@@ -223,11 +245,18 @@ export const updateShowStatus = createAsyncThunk(
   'activeProfile/updateShowStatus',
   async (
     { profileId, showId, status }: { profileId: string; showId: number; status: WatchStatus },
-    { rejectWithValue },
+    { getState, rejectWithValue },
   ) => {
     try {
-      await axiosInstance.put(`/profiles/${profileId}/shows/watchStatus`, {
-        show_id: showId,
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`, {
+        showId: showId,
         status: status,
         recursive: true,
       });
@@ -243,10 +272,17 @@ export const updateShowStatus = createAsyncThunk(
 
 export const addMovieFavorite = createAsyncThunk(
   'activeProfile/addMovieFavorite',
-  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, rejectWithValue }) => {
+  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/profiles/${profileId}/movies/favorites`, {
-        id: movieId,
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.post(`/accounts/${accountId}/profiles/${profileId}/movies/favorites`, {
+        movieId: movieId,
       });
       const result = response.data.result;
       const movie = result.favoritedMovie;
@@ -271,9 +307,18 @@ export const addMovieFavorite = createAsyncThunk(
 
 export const removeMovieFavorite = createAsyncThunk(
   'activeProfile/removeMovieFavorite',
-  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, rejectWithValue }) => {
+  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/profiles/${profileId}/movies/favorites/${movieId}`);
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.delete(
+        `/accounts/${accountId}/profiles/${profileId}/movies/favorites/${movieId}`,
+      );
       const result = response.data.result;
       const movie = result.removedMovie;
       const movieTitle = movie.title;
@@ -299,11 +344,18 @@ export const updateMovieStatus = createAsyncThunk(
   'activeProfile/updateMovieStatus',
   async (
     { profileId, movieId, status }: { profileId: number; movieId: number; status: WatchStatus },
-    { rejectWithValue },
+    { getState, rejectWithValue },
   ) => {
     try {
-      await axiosInstance.put(`/profiles/${profileId}/movies/watchStatus`, {
-        movie_id: movieId,
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/movies/watchStatus`, {
+        movieId: movieId,
         status: status,
       });
       return { movieId, status };
@@ -326,15 +378,25 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk(
       episodeId,
       episodeStatus,
     }: { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: WatchStatus },
-    { rejectWithValue },
+    { getState, rejectWithValue },
   ) => {
     try {
-      const response = await axiosInstance.put(`/profiles/${profileId}/episodes/nextwatchStatus`, {
-        show_id: showId,
-        season_id: seasonId,
-        episode_id: episodeId,
-        status: episodeStatus,
-      });
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue('No account found');
+      }
+
+      const response = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}/episodes/nextwatchStatus`,
+        {
+          showId: showId,
+          seasonId: seasonId,
+          episodeId: episodeId,
+          status: episodeStatus,
+        },
+      );
       const result = response.data.result;
       const nextUnwatchedEpisodes = result.nextUnwatchedEpisodes;
 

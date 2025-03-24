@@ -21,7 +21,7 @@ export const fetchSystemNotifications = createAsyncThunk(
   'systemNotifications/fetchNotifications',
   async (accountId: string, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/notifications/${accountId}`);
+      const response = await axiosInstance.get(`/accounts/${accountId}/notifications`);
       return response.data.results;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -36,7 +36,7 @@ export const dismissSystemNotification = createAsyncThunk(
   'systemNotifications/dismissNotification',
   async ({ accountId, notificationId }: { accountId: string; notificationId: number }, { rejectWithValue }) => {
     try {
-      await axiosInstance.post(`/notifications/${accountId}/dismiss/${notificationId}`);
+      await axiosInstance.post(`/accounts/${accountId}/notifications/dismiss/${notificationId}`);
       return notificationId;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
