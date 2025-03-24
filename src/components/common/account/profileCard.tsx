@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StarsIcon from '@mui/icons-material/Stars';
 import { Box, Button, Stack, Typography } from '@mui/material';
 
@@ -18,9 +19,17 @@ interface PropTypes {
   handleDelete: (profile: Profile) => void;
   handleSetDefault: (profile: Profile) => void;
   handleSetActive: (profile: Profile) => void;
+  handleViewStats: (profile: Profile) => void;
 }
 
-export function ProfileCard({ profile, handleEdit, handleDelete, handleSetDefault, handleSetActive }: PropTypes) {
+export function ProfileCard({
+  profile,
+  handleEdit,
+  handleDelete,
+  handleSetDefault,
+  handleSetActive,
+  handleViewStats,
+}: PropTypes) {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
   const activeProfile = useAppSelector(selectActiveProfile)!;
@@ -131,6 +140,15 @@ export function ProfileCard({ profile, handleEdit, handleDelete, handleSetDefaul
           disabled={profile.id === defaultProfile.id}
         >
           Set Default
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<QueryStatsIcon />}
+          onClick={() => {
+            handleViewStats(profile);
+          }}
+        >
+          View Stats
         </Button>
         <Button
           variant="outlined"

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   Box,
   Button,
@@ -13,6 +14,7 @@ import {
   DialogTitle,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
@@ -30,6 +32,8 @@ import {
 } from '../../app/slices/profilesSlice';
 import NameEditDialog from '../common/account/nameEditDialog';
 import { ProfileCard } from '../common/account/profileCard';
+import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
+import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {
@@ -43,9 +47,16 @@ const ManageAccount = () => {
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
   const [managedProfile, setManagedProfile] = useState<Profile | null>();
   const [nameDialogOpen, setNameDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState('');
+  const [nameDialogTitle, setNameDialogTitle] = useState('');
   const [currentName, setCurrentName] = useState('');
   const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
+
+  const [profileStatsDialogOpen, setProfileStatsDialogOpen] = useState<boolean>(false);
+  const [profileStatsDialogTitle, setProfileStatsDialogTitle] = useState<string>('');
+  const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<string>('');
+
+  const [accountStatsDialogOpen, setAccountStatsDialogOpen] = useState<boolean>(false);
+  const [accountStatsDialogTitle, setAccountStatsDialogTitle] = useState<string>('');
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -86,8 +97,13 @@ const ManageAccount = () => {
     });
   };
 
+  const handleViewAccountStatistics = () => {
+    setAccountStatsDialogTitle(`Statistics for ${account.name}`);
+    setAccountStatsDialogOpen(true);
+  };
+
   const openNameDialog = (title: string, initialName: string, onSave: (name: string) => void) => {
-    setDialogTitle(title);
+    setNameDialogTitle(title);
     setCurrentName(initialName);
     setOnSaveCallback(() => onSave);
     setNameDialogOpen(true);
@@ -113,6 +129,12 @@ const ManageAccount = () => {
 
   async function handleSetActiveProfile(profile: Profile) {
     await dispatch(setActiveProfile({ accountId: account.id, profileId: profile.id }));
+  }
+
+  function handleViewProfileStats(profile: Profile) {
+    setProfileStatsDialogProfileId(profile.id);
+    setProfileStatsDialogTitle(`Statistics for ${profile.name}`);
+    setProfileStatsDialogOpen(true);
   }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -210,12 +232,19 @@ const ManageAccount = () => {
         >
           <Typography variant="h3" gutterBottom sx={{ mb: '5px', display: 'flex', alignItems: 'center', gap: 1 }}>
             {account.name}
-            <IconButton size="small" onClick={handleEditAccountName} color="primary">
-              <EditIcon fontSize="inherit" />
-            </IconButton>
+            <Tooltip title="Edit Account Name" placement="top">
+              <IconButton size="small" onClick={handleEditAccountName} color="primary">
+                <EditIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="View Account Stats" placement="top">
+              <IconButton size="small" onClick={handleViewAccountStatistics} color="primary">
+                <QueryStatsIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Email: {account.email}{' '}
+            Email: <i>{account.email}</i>{' '}
             <Button
               color="primary"
               size="small"
@@ -227,15 +256,15 @@ const ManageAccount = () => {
             </Button>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Default Profile: {defaultProfile.name}
+            Default Profile: <i>{defaultProfile.name}</i>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Active Profile: {activeProfile.name}{' '}
+            Active Profile: <i>{activeProfile.name}</i>{' '}
             {/*TODO Update the active profile name when it's changed by the user, might need an update in the activeProfileSlice*/}
           </Typography>
           {lastUpdated && (
             <Typography variant="subtitle1" color="primary" gutterBottom>
-              Last Updated: {lastUpdated}
+              Last Updated: <i>{lastUpdated}</i>
             </Typography>
           )}
         </Grid>
@@ -268,16 +297,30 @@ const ManageAccount = () => {
               handleDelete={handleDeleteProfileButton}
               handleSetDefault={handleSetDefaultProfile}
               handleSetActive={handleSetActiveProfile}
+              handleViewStats={handleViewProfileStats}
             />
           ))}
         </Stack>
       </Box>
       <NameEditDialog
         open={nameDialogOpen}
-        title={dialogTitle}
+        title={nameDialogTitle}
         initialName={currentName}
         onClose={() => setNameDialogOpen(false)}
         onSave={onSaveCallback}
+      />
+      <ProfileStatisticsDialog
+        open={profileStatsDialogOpen}
+        title={profileStatsDialogTitle}
+        accountId={account.id}
+        profileId={profileStatsDialogProfileId}
+        onClose={() => setProfileStatsDialogOpen(false)}
+      />
+      <AccountStatisticsDialog
+        open={accountStatsDialogOpen}
+        title={accountStatsDialogTitle}
+        accountId={account.id}
+        onClose={() => setAccountStatsDialogOpen(false)}
       />
       {/* Confirm Profile Delete Dialog */}
       <Dialog
