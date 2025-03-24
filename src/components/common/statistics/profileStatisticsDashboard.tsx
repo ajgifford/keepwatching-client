@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { Statistics } from '../../../app/model/statistics';
+import { ProfileStatistics } from '../../../app/model/statistics';
 import {
   Bar,
   BarChart,
@@ -29,8 +29,8 @@ import {
   YAxis,
 } from 'recharts';
 
-interface StatisticsDashboardProps {
-  statistics?: Statistics | null;
+interface ProfileStatisticsDashboardProps {
+  statistics?: ProfileStatistics | null;
   isLoading?: boolean;
 }
 
@@ -41,7 +41,7 @@ const WATCH_STATUS_COLORS = {
   notWatched: '#F44336',
 };
 
-export default function StatisticsDashboard({ statistics, isLoading = false }: StatisticsDashboardProps) {
+export default function ProfileStatisticsDashboard({ statistics, isLoading = false }: ProfileStatisticsDashboardProps) {
   const theme = useTheme();
 
   const watchStatusData = useMemo(() => {
@@ -102,8 +102,8 @@ export default function StatisticsDashboard({ statistics, isLoading = false }: S
 
   // Order shows by completion percentage (descending)
   const sortedShowsProgress = useMemo(() => {
-    if (!statistics?.progress.showsProgress) return [];
-    return [...statistics.progress.showsProgress].sort((a, b) => b.percentComplete - a.percentComplete);
+    if (!statistics?.episodeWatchProgress.showsProgress) return [];
+    return [...statistics.episodeWatchProgress.showsProgress].sort((a, b) => b.percentComplete - a.percentComplete);
   }, [statistics]);
 
   if (isLoading) {
@@ -141,17 +141,18 @@ export default function StatisticsDashboard({ statistics, isLoading = false }: S
               <Box sx={{ width: '100%', mr: 1 }}>
                 <LinearProgress
                   variant="determinate"
-                  value={statistics.progress.overallProgress}
+                  value={statistics.episodeWatchProgress.overallProgress}
                   color="success"
                   sx={{ height: 10, borderRadius: 5 }}
                 />
               </Box>
               <Typography variant="body2" color="text.secondary">
-                {Math.round(statistics.progress.overallProgress)}%
+                {Math.round(statistics.episodeWatchProgress.overallProgress)}%
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              {statistics.progress.watchedEpisodes} of {statistics.progress.totalEpisodes} episodes watched
+              {statistics.episodeWatchProgress.watchedEpisodes} of {statistics.episodeWatchProgress.totalEpisodes}{' '}
+              episodes watched
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -174,7 +175,7 @@ export default function StatisticsDashboard({ statistics, isLoading = false }: S
               </Box>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="success.main">
-                  {statistics.progress.totalEpisodes}
+                  {statistics.episodeWatchProgress.totalEpisodes}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Episodes

@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
-import { Statistics } from '../../../app/model/statistics';
-import StatisticsDashboard from './statisticsDashboard';
+import { ProfileStatistics } from '../../../app/model/statistics';
+import ProfileStatisticsDashboard from './profileStatisticsDashboard';
 
 interface ProfileStatisticsDialogProps {
   open: boolean;
@@ -16,7 +16,7 @@ interface ProfileStatisticsDialogProps {
 
 const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }: ProfileStatisticsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [statistics, setStatistics] = useState<ProfileStatistics | null>(null);
 
   useEffect(() => {
     const fetchProfileStats = async () => {
@@ -53,7 +53,7 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent dividers>
-        <StatisticsDashboard statistics={statistics} isLoading={loading} />
+        <ProfileStatisticsDashboard statistics={statistics} isLoading={loading} />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} variant="outlined">

@@ -1,7 +1,15 @@
-export interface Statistics {
+export interface ProfileStatistics {
   showStatistics: Statistics;
   movieStatistics: Statistics;
-  progress: Progress;
+  episodeWatchProgress: EpisodeWatchProgress;
+}
+
+export interface AccountStatistics {
+  profileCount: number;
+  uniqueContent: UniqueContent;
+  showStatistics: Statistics;
+  movieStatistics: Statistics;
+  episodeStatistics: EpisodeStatistics;
 }
 
 export interface Statistics {
@@ -19,7 +27,7 @@ export interface WatchStatusCounts {
   [key: string]: number | undefined;
 }
 
-export interface Progress {
+export interface EpisodeWatchProgress {
   totalEpisodes: number;
   watchedEpisodes: number;
   overallProgress: number;
@@ -33,4 +41,15 @@ export interface ShowProgress {
   totalEpisodes: number;
   watchedEpisodes: number;
   percentComplete: number;
+}
+
+export interface UniqueContent {
+  showCount: number;
+  movieCount: number;
+}
+
+export interface EpisodeStatistics {
+  totalEpisodes: number;
+  watchedEpisodes: number;
+  watchProgress: number;
 }

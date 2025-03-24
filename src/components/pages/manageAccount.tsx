@@ -98,7 +98,7 @@ const ManageAccount = () => {
   };
 
   const handleViewAccountStatistics = () => {
-    setAccountStatsDialogTitle(`Statistics for ${account.name}`);
+    setAccountStatsDialogTitle(`${account.name}`);
     setAccountStatsDialogOpen(true);
   };
 
@@ -133,7 +133,7 @@ const ManageAccount = () => {
 
   function handleViewProfileStats(profile: Profile) {
     setProfileStatsDialogProfileId(profile.id);
-    setProfileStatsDialogTitle(`Statistics for ${profile.name}`);
+    setProfileStatsDialogTitle(`${profile.name}`);
     setProfileStatsDialogOpen(true);
   }
 
