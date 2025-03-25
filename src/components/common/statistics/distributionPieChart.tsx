@@ -1,5 +1,5 @@
 import { ChartDataItem } from './distributionTypes';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface DistributionPieChartProps {
   data: ChartDataItem[];
@@ -10,7 +10,6 @@ interface DistributionPieChartProps {
 const DEFAULT_COLORS = ['#4CAF50', '#FFC107', '#F44336', '#2196F3', '#9C27B0', '#FF9800'];
 
 const DistributionPieChart = ({ data, height = 300, colors = DEFAULT_COLORS }: DistributionPieChartProps) => {
-  // Ensure we have valid data to display
   const validData = data && data.length > 0 ? data : [{ name: 'No Data', value: 1 }];
 
   return (
@@ -32,7 +31,6 @@ const DistributionPieChart = ({ data, height = 300, colors = DEFAULT_COLORS }: D
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
-        <Legend />
         <Tooltip
           formatter={(value: number) => [`${value} items`, 'Count']}
           contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}

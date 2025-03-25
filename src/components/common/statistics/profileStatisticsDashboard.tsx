@@ -11,40 +11,21 @@ import {
   LinearProgress,
   Paper,
   Typography,
-  useTheme,
 } from '@mui/material';
 
 import { ProfileStatistics } from '../../../app/model/statistics';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import DistributionBarChart from './distributionBarChart';
+import DistributionPieChart from './distributionPieChart';
+import { ChartDataItem, convertToChartData } from './distributionTypes';
+import WatchStatusChart, { WatchStatusDataItem } from './watchStatusChart';
 
 interface ProfileStatisticsDashboardProps {
   statistics?: ProfileStatistics | null;
   isLoading?: boolean;
 }
 
-const COLORS = ['#4CAF50', '#FFC107', '#F44336', '#2196F3', '#9C27B0', '#FF9800'];
-const WATCH_STATUS_COLORS = {
-  watched: '#4CAF50',
-  watching: '#FFC107',
-  notWatched: '#F44336',
-};
-
 export default function ProfileStatisticsDashboard({ statistics, isLoading = false }: ProfileStatisticsDashboardProps) {
-  const theme = useTheme();
-
-  const watchStatusData = useMemo(() => {
+  const watchStatusData = useMemo((): WatchStatusDataItem[] => {
     if (!statistics) return [];
 
     const showCounts = statistics.showStatistics.watchStatusCounts;
@@ -66,38 +47,34 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
     ];
   }, [statistics]);
 
-  const genreData = useMemo(() => {
+  const genreData = useMemo((): ChartDataItem[] => {
     if (!statistics) return [];
 
     const showGenres = statistics.showStatistics.genreDistribution;
     const combinedGenres: Record<string, number> = { ...showGenres };
 
-    // Combine with movie genres
-    Object.entries(statistics.movieStatistics.genreDistribution).forEach(([genre, count]) => {
-      combinedGenres[genre] = (combinedGenres[genre] || 0) + count;
-    });
+    if (statistics.movieStatistics.genreDistribution) {
+      Object.entries(statistics.movieStatistics.genreDistribution).forEach(([genre, count]) => {
+        combinedGenres[genre] = (combinedGenres[genre] || 0) + count;
+      });
+    }
 
-    return Object.entries(combinedGenres)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 6); // Take top 6 genres
+    return convertToChartData(combinedGenres, 6);
   }, [statistics]);
 
-  const serviceData = useMemo(() => {
+  const serviceData = useMemo((): ChartDataItem[] => {
     if (!statistics) return [];
 
     const showServices = statistics.showStatistics.serviceDistribution;
     const combinedServices: Record<string, number> = { ...showServices };
 
-    // Combine with movie services
-    Object.entries(statistics.movieStatistics.serviceDistribution).forEach(([service, count]) => {
-      combinedServices[service] = (combinedServices[service] || 0) + count;
-    });
+    if (statistics.movieStatistics.serviceDistribution) {
+      Object.entries(statistics.movieStatistics.serviceDistribution).forEach(([service, count]) => {
+        combinedServices[service] = (combinedServices[service] || 0) + count;
+      });
+    }
 
-    return Object.entries(combinedServices)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 6); // Take top 6 services
+    return convertToChartData(combinedServices, 8);
   }, [statistics]);
 
   // Order shows by completion percentage (descending)
@@ -194,18 +171,7 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
               <Typography variant="h6" gutterBottom>
                 Watch Status
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={watchStatusData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="watched" stackId="a" fill={WATCH_STATUS_COLORS.watched} name="Watched" />
-                  <Bar dataKey="watching" stackId="a" fill={WATCH_STATUS_COLORS.watching} name="Watching" />
-                  <Bar dataKey="notWatched" stackId="a" fill={WATCH_STATUS_COLORS.notWatched} name="Not Watched" />
-                </BarChart>
-              </ResponsiveContainer>
+              <WatchStatusChart data={watchStatusData} />
             </CardContent>
           </Card>
         </Grid>
@@ -217,25 +183,13 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
               <Typography variant="h6" gutterBottom>
                 Top Genres
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={genreData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {genreData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`${value} items`, 'Count']} />
-                </PieChart>
-              </ResponsiveContainer>
+              {genreData.length > 0 ? (
+                <DistributionPieChart data={genreData} />
+              ) : (
+                <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 4 }}>
+                  No genre data available
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -247,15 +201,13 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
               <Typography variant="h6" gutterBottom>
                 Streaming Services
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={serviceData} layout="vertical" margin={{ top: 20, right: 30, left: 50, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" />
-                  <Tooltip />
-                  <Bar dataKey="value" fill={theme.palette.primary.main} name="Count" />
-                </BarChart>
-              </ResponsiveContainer>
+              {serviceData.length > 0 ? (
+                <DistributionBarChart data={serviceData} />
+              ) : (
+                <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 4 }}>
+                  No streaming service data available
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -284,7 +236,9 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
                         color={show.percentComplete > 75 ? 'success' : show.percentComplete > 25 ? 'warning' : 'error'}
                         sx={{ height: 8, borderRadius: 4 }}
                       />
-                      {index < sortedShowsProgress.length - 1 && <Divider sx={{ mt: 1 }} />}
+                      {index < sortedShowsProgress.filter((show) => show.status === 'WATCHING').length - 1 && (
+                        <Divider sx={{ mt: 1 }} />
+                      )}
                     </Box>
                   ))}
                 {sortedShowsProgress.filter((show) => show.status === 'WATCHING').length === 0 && (

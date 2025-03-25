@@ -53,9 +53,13 @@ export default function AccountStatisticsDashboard({ statistics, isLoading = fal
     const showGenres = statistics.showStatistics.genreDistribution;
     const combinedGenres: Record<string, number> = { ...showGenres };
 
-    Object.entries(statistics.movieStatistics.genreDistribution).forEach(([genre, count]) => {
-      combinedGenres[genre] = (combinedGenres[genre] || 0) + count;
-    });
+    if (statistics.movieStatistics.genreDistribution) {
+      Object.entries(statistics.movieStatistics.genreDistribution).forEach(([genre, count]) => {
+        if (genre !== '') {
+          combinedGenres[genre] = (combinedGenres[genre] || 0) + count;
+        }
+      });
+    }
 
     return convertToChartData(combinedGenres);
   }, [statistics]);
@@ -66,11 +70,13 @@ export default function AccountStatisticsDashboard({ statistics, isLoading = fal
     const showServices = statistics.showStatistics.serviceDistribution;
     const combinedServices: Record<string, number> = { ...showServices };
 
-    Object.entries(statistics.movieStatistics.serviceDistribution).forEach(([service, count]) => {
-      combinedServices[service] = (combinedServices[service] || 0) + count;
-    });
+    if (statistics.movieStatistics.serviceDistribution) {
+      Object.entries(statistics.movieStatistics.serviceDistribution).forEach(([service, count]) => {
+        combinedServices[service] = (combinedServices[service] || 0) + count;
+      });
+    }
 
-    return convertToChartData(combinedServices);
+    return convertToChartData(combinedServices, 8);
   }, [statistics]);
 
   if (isLoading) {
@@ -196,7 +202,7 @@ export default function AccountStatisticsDashboard({ statistics, isLoading = fal
                 Streaming Services
               </Typography>
               {serviceData.length > 0 ? (
-                <DistributionBarChart data={serviceData} vertical={true} />
+                <DistributionBarChart data={serviceData} />
               ) : (
                 <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 4 }}>
                   No streaming service data available
@@ -230,7 +236,7 @@ export default function AccountStatisticsDashboard({ statistics, isLoading = fal
                 %), while movies are predominantly {getTopCategory(statistics.movieStatistics.watchStatusCounts)} (
                 {getTopCategoryPercentage(
                   statistics.movieStatistics.watchStatusCounts,
-                  statistics.movieStatistics.total,
+                  statistics.movieStatistics.total
                 )}
                 %).
               </Typography>

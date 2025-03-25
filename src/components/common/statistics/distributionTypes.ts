@@ -13,9 +13,10 @@ export interface ServiceDistribution {
 
 export function convertToChartData(
   distribution: GenreDistribution | ServiceDistribution,
-  limit: number = 6,
+  limit: number = 6
 ): ChartDataItem[] {
   return Object.entries(distribution)
+    .filter(([value]) => value && value.trim() !== '')
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value)
     .slice(0, limit);
