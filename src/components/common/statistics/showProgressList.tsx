@@ -10,8 +10,6 @@ interface ShowProgressListProps {
 
 const ShowProgressList = ({ shows, maxHeight = 300, filter = 'WATCHING' }: ShowProgressListProps) => {
   const filteredShows = filter ? shows.filter((show) => show.status === filter) : shows;
-
-  // Sort by completion percentage (descending)
   const sortedShows = [...filteredShows].sort((a, b) => b.percentComplete - a.percentComplete);
 
   if (sortedShows.length === 0) {
