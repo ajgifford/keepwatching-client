@@ -67,14 +67,14 @@ export const fetchProfiles = createAsyncThunk(
         return false;
       }
     },
-  },
+  }
 );
 
 export const addProfile = createAsyncThunk(
   'profiles/addProfile',
   async (
     { accountId, newProfileName }: { accountId: string; newProfileName: string },
-    { dispatch, rejectWithValue },
+    { dispatch, rejectWithValue }
   ) => {
     try {
       const response = await axiosInstance.post(`/accounts/${accountId}/profiles`, { name: newProfileName });
@@ -82,7 +82,7 @@ export const addProfile = createAsyncThunk(
         showActivityNotification({
           message: `Added profile: ${newProfileName}`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return response.data.result;
     } catch (error: unknown) {
@@ -91,7 +91,7 @@ export const addProfile = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const deleteProfile = createAsyncThunk(
@@ -103,7 +103,7 @@ export const deleteProfile = createAsyncThunk(
         showActivityNotification({
           message: `Profile deleted successfully`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return profileId;
     } catch (error: unknown) {
@@ -112,7 +112,7 @@ export const deleteProfile = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const editProfile = createAsyncThunk(
@@ -124,7 +124,7 @@ export const editProfile = createAsyncThunk(
         showActivityNotification({
           message: `Profile edited successfully`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return response.data.result;
     } catch (error: unknown) {
@@ -133,7 +133,7 @@ export const editProfile = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const updateProfileImage = createAsyncThunk(
@@ -153,7 +153,7 @@ export const updateProfileImage = createAsyncThunk(
         showActivityNotification({
           message: `Profile image updated successfully`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return result;
     } catch (error: unknown) {
@@ -163,7 +163,7 @@ export const updateProfileImage = createAsyncThunk(
           showActivityNotification({
             message: errorResponse.message,
             type: ActivityNotificationType.Error,
-          }),
+          })
         );
         return rejectWithValue(errorResponse);
       }
@@ -171,11 +171,11 @@ export const updateProfileImage = createAsyncThunk(
         showActivityNotification({
           message: 'An error occurred',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 const profileSlice = createSlice({

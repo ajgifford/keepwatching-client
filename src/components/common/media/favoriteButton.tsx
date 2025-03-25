@@ -36,14 +36,14 @@ function FavoritesButton(props: FavoritesButtonProps) {
         addMovieFavorite({
           profileId: Number(profile?.id),
           movieId: tmdbId,
-        }),
+        })
       );
     } else {
       dispatch(
         addShowFavorite({
           profileId: Number(profile?.id),
           showId: tmdbId,
-        }),
+        })
       );
     }
   };

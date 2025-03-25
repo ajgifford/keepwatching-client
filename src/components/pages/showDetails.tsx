@@ -237,7 +237,7 @@ function ShowDetails() {
                             profileId,
                             season,
                             seasonStatus: season.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED',
-                          }),
+                          })
                         );
                       }}
                     >
@@ -293,7 +293,7 @@ function ShowDetails() {
                                       season,
                                       episode,
                                       episodeStatus: episode?.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED',
-                                    }),
+                                    })
                                   )
                                 }
                               >

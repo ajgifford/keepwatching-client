@@ -30,7 +30,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) 
         season,
         episode: episodeObj,
         episodeStatus: newStatus,
-      }),
+      })
     ).unwrap();
   };
 
@@ -62,7 +62,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) 
   show.seasons.forEach((season: Season) => {
     const validEpisodes = season.episodes.filter(
       (episode) =>
-        !watchedEpisodes[episode.episode_id] && (!episode.air_date || new Date(episode.air_date) <= new Date()),
+        !watchedEpisodes[episode.episode_id] && (!episode.air_date || new Date(episode.air_date) <= new Date())
     );
 
     validEpisodes.forEach((episode: Episode) => {

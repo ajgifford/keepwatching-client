@@ -92,7 +92,7 @@ const ManageAccount = () => {
           account_id: account.id,
           account_name: newName,
           default_profile_id: account.default_profile_id,
-        }),
+        })
       );
     });
   };
@@ -123,7 +123,7 @@ const ManageAccount = () => {
         account_id: account.id,
         account_name: account.name,
         default_profile_id: profile.id,
-      }),
+      })
     );
   }
 

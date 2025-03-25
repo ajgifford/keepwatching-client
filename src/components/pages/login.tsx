@@ -55,7 +55,7 @@ const Login = () => {
         showActivityNotification({
           message: 'Please provide an email and password',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
     }
   };

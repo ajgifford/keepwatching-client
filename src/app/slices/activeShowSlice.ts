@@ -61,7 +61,7 @@ export const fetchShowWithDetails = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 const isSeasonFullyWatched = (season: Season, watchedEpisodes: Record<number, boolean>) =>
@@ -102,7 +102,7 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
       episode,
       episodeStatus,
     }: { profileId: string | undefined; season: Season; episode: Episode; episodeStatus: WatchStatus },
-    { getState, rejectWithValue },
+    { getState, rejectWithValue }
   ) => {
     try {
       const episode_id = episode.episode_id;
@@ -171,14 +171,14 @@ export const updateEpisodeWatchStatus = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const updateSeasonWatchStatus = createAsyncThunk(
   'activeShow/updateSeasonWatchState',
   async (
     { profileId, season, seasonStatus }: { profileId: string | undefined; season: Season; seasonStatus: WatchStatus },
-    { getState, rejectWithValue },
+    { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as RootState;
@@ -215,7 +215,7 @@ export const updateSeasonWatchStatus = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const fetchRecommendedShows = createAsyncThunk(
@@ -229,7 +229,7 @@ export const fetchRecommendedShows = createAsyncThunk(
         return rejectWithValue('No account found');
       }
       const response = await axiosInstance.get(
-        `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/recommendations`,
+        `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/recommendations`
       );
       return response.data.results;
     } catch (error: unknown) {
@@ -238,7 +238,7 @@ export const fetchRecommendedShows = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const fetchSimilarShows = createAsyncThunk(
@@ -260,7 +260,7 @@ export const fetchSimilarShows = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 const activeShowSlice = createSlice({

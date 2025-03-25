@@ -51,7 +51,7 @@ function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownActi
     setActiveProfile({
       accountId: account.id,
       profileId: account.default_profile_id,
-    }),
+    })
   );
   dispatch(fetchSystemNotifications(account.id));
 }
@@ -63,13 +63,13 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
   } catch (error) {
     const errorMessage = getFirebaseAuthErrorMessage(
       error as FirebaseError,
-      'An unknown error occurred during login. Please try again.',
+      'An unknown error occurred during login. Please try again.'
     );
     dispatch(
       showActivityNotification({
         message: errorMessage,
         type: ActivityNotificationType.Error,
-      }),
+      })
     );
     return rejectWithValue({ message: errorMessage });
   }
@@ -83,7 +83,7 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
       showActivityNotification({
         message: response.data.message || 'Success',
         type: ActivityNotificationType.Success,
-      }),
+      })
     );
 
     initializeAccount(dispatch, loginResult);
@@ -96,7 +96,7 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
         showActivityNotification({
           message: errorResponse.message,
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       return rejectWithValue(errorResponse);
     }
@@ -104,7 +104,7 @@ export const login = createAsyncThunk('account/login', async (data: LoginData, {
       showActivityNotification({
         message: 'An error occurred',
         type: ActivityNotificationType.Error,
-      }),
+      })
     );
 
     console.error(error);
@@ -123,13 +123,13 @@ export const register = createAsyncThunk(
     } catch (error) {
       const errorMessage = getFirebaseAuthErrorMessage(
         error as FirebaseError,
-        'An unknown error occurred during registration. Please try again.',
+        'An unknown error occurred during registration. Please try again.'
       );
       dispatch(
         showActivityNotification({
           message: errorMessage,
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       return rejectWithValue({ message: errorMessage });
     }
@@ -147,7 +147,7 @@ export const register = createAsyncThunk(
         showActivityNotification({
           message: response.data.message || 'Success',
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
 
       initializeAccount(dispatch, registerResult);
@@ -160,7 +160,7 @@ export const register = createAsyncThunk(
           showActivityNotification({
             message: errorResponse.message,
             type: ActivityNotificationType.Error,
-          }),
+          })
         );
         return rejectWithValue(errorResponse);
       }
@@ -168,13 +168,13 @@ export const register = createAsyncThunk(
         showActivityNotification({
           message: 'An error occurred',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
 
       console.error(error);
       return rejectWithValue({ message: 'Register: Unexpected Error' });
     }
-  },
+  }
 );
 
 export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { dispatch, rejectWithValue }) => {
@@ -186,13 +186,13 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
   } catch (error) {
     const errorMessage = getFirebaseAuthErrorMessage(
       error as FirebaseError,
-      'An unknown error occurred during Google login. Please try again.',
+      'An unknown error occurred during Google login. Please try again.'
     );
     dispatch(
       showActivityNotification({
         message: errorMessage,
         type: ActivityNotificationType.Error,
-      }),
+      })
     );
     return rejectWithValue({ message: errorMessage });
   }
@@ -211,7 +211,7 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
       showActivityNotification({
         message: response.data.message || 'Success',
         type: ActivityNotificationType.Success,
-      }),
+      })
     );
 
     initializeAccount(dispatch, googleResult);
@@ -224,7 +224,7 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
         showActivityNotification({
           message: errorResponse.message,
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       return rejectWithValue(errorResponse);
     }
@@ -232,7 +232,7 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
       showActivityNotification({
         message: 'An error occurred',
         type: ActivityNotificationType.Error,
-      }),
+      })
     );
 
     console.error(error);
@@ -250,20 +250,20 @@ export const logout = createAsyncThunk('account/logout', async (_, { dispatch, r
       showActivityNotification({
         message: 'Successfully logged out',
         type: ActivityNotificationType.Success,
-      }),
+      })
     );
 
     return;
   } catch (error) {
     const errorMessage = getFirebaseAuthErrorMessage(
       error as FirebaseError,
-      'An unknown error occurred during logout. Please try again.',
+      'An unknown error occurred during logout. Please try again.'
     );
     dispatch(
       showActivityNotification({
         message: errorMessage,
         type: ActivityNotificationType.Error,
-      }),
+      })
     );
     return rejectWithValue({ message: errorMessage });
   }
@@ -287,7 +287,7 @@ export const updateAccountImage = createAsyncThunk(
         showActivityNotification({
           message: `Account image updated successfully`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return result;
     } catch (error) {
@@ -297,7 +297,7 @@ export const updateAccountImage = createAsyncThunk(
           showActivityNotification({
             message: errorResponse.message,
             type: ActivityNotificationType.Error,
-          }),
+          })
         );
         return rejectWithValue(errorResponse);
       }
@@ -305,12 +305,12 @@ export const updateAccountImage = createAsyncThunk(
         showActivityNotification({
           message: 'An error occurred',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       console.error(error);
       return rejectWithValue({ message: 'UpdateImage: Unexpected Error' });
     }
-  },
+  }
 );
 
 export const verifyEmail = createAsyncThunk(
@@ -322,22 +322,22 @@ export const verifyEmail = createAsyncThunk(
         showActivityNotification({
           message: `Verification email sent`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
     } catch (error) {
       const errorMessage = getFirebaseAuthErrorMessage(
         error as FirebaseError,
-        'An unknown error occurred changing the password. Please try again.',
+        'An unknown error occurred changing the password. Please try again.'
       );
       dispatch(
         showActivityNotification({
           message: errorMessage,
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       return rejectWithValue({ message: errorMessage });
     }
-  },
+  }
 );
 
 export const updateAccount = createAsyncThunk(
@@ -348,7 +348,7 @@ export const updateAccount = createAsyncThunk(
       account_name,
       default_profile_id,
     }: { account_id: string; account_name: string; default_profile_id: string },
-    { dispatch, rejectWithValue },
+    { dispatch, rejectWithValue }
   ) => {
     try {
       const response = await axiosInstance.put(`/accounts/${account_id}/`, { account_name, default_profile_id });
@@ -358,7 +358,7 @@ export const updateAccount = createAsyncThunk(
         showActivityNotification({
           message: `Account edited successfully`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return updateResult;
     } catch (error) {
@@ -368,7 +368,7 @@ export const updateAccount = createAsyncThunk(
           showActivityNotification({
             message: errorResponse.message,
             type: ActivityNotificationType.Error,
-          }),
+          })
         );
         return rejectWithValue(errorResponse);
       }
@@ -376,12 +376,12 @@ export const updateAccount = createAsyncThunk(
         showActivityNotification({
           message: 'An error occurred',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
       console.error(error);
       return rejectWithValue({ message: 'Update Account: Unexpected Error' });
     }
-  },
+  }
 );
 
 const authSlice = createSlice({

@@ -29,7 +29,7 @@ export const fetchSystemNotifications = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const dismissSystemNotification = createAsyncThunk(
@@ -44,7 +44,7 @@ export const dismissSystemNotification = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 const systemNotificationSlice = createSlice({

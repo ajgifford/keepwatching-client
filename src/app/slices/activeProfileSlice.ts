@@ -87,7 +87,7 @@ export const setActiveProfile = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const reloadActiveProfile = createAsyncThunk(
@@ -129,7 +129,7 @@ export const reloadActiveProfile = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const reloadProfileEpisodes = createAsyncThunk(
@@ -157,7 +157,7 @@ export const reloadProfileEpisodes = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const addShowFavorite = createAsyncThunk(
@@ -183,7 +183,7 @@ export const addShowFavorite = createAsyncThunk(
         showActivityNotification({
           message: `${showTitle} favorited`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return { show, upcomingEpisodes, recentEpisodes };
     } catch (error: unknown) {
@@ -192,7 +192,7 @@ export const addShowFavorite = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const updateAfterAddShowFavorite = createAsyncThunk(
@@ -202,7 +202,7 @@ export const updateAfterAddShowFavorite = createAsyncThunk(
       return show;
     }
     return rejectWithValue('Error while updating show after making it a favorite');
-  },
+  }
 );
 
 export const removeShowFavorite = createAsyncThunk(
@@ -217,7 +217,7 @@ export const removeShowFavorite = createAsyncThunk(
       }
 
       const response = await axiosInstance.delete(
-        `/accounts/${accountId}/profiles/${profileId}/shows/favorites/${showId}`,
+        `/accounts/${accountId}/profiles/${profileId}/shows/favorites/${showId}`
       );
       const result = response.data.result;
       const show = result.removedShow;
@@ -229,7 +229,7 @@ export const removeShowFavorite = createAsyncThunk(
         showActivityNotification({
           message: `${showTitle} removed`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return { show, upcomingEpisodes, recentEpisodes, nextUnwatchedEpisodes };
     } catch (error: unknown) {
@@ -238,14 +238,14 @@ export const removeShowFavorite = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const updateShowStatus = createAsyncThunk(
   'activeProfile/updateShowStatus',
   async (
     { profileId, showId, status }: { profileId: string; showId: number; status: WatchStatus },
-    { getState, rejectWithValue },
+    { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as RootState;
@@ -267,7 +267,7 @@ export const updateShowStatus = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const addMovieFavorite = createAsyncThunk(
@@ -293,7 +293,7 @@ export const addMovieFavorite = createAsyncThunk(
         showActivityNotification({
           message: `${movieTitle} favorited`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return { movie, recentMovies, upcomingMovies };
     } catch (error: unknown) {
@@ -302,7 +302,7 @@ export const addMovieFavorite = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const removeMovieFavorite = createAsyncThunk(
@@ -317,7 +317,7 @@ export const removeMovieFavorite = createAsyncThunk(
       }
 
       const response = await axiosInstance.delete(
-        `/accounts/${accountId}/profiles/${profileId}/movies/favorites/${movieId}`,
+        `/accounts/${accountId}/profiles/${profileId}/movies/favorites/${movieId}`
       );
       const result = response.data.result;
       const movie = result.removedMovie;
@@ -328,7 +328,7 @@ export const removeMovieFavorite = createAsyncThunk(
         showActivityNotification({
           message: `${movieTitle} removed`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
       return { movie, recentMovies, upcomingMovies };
     } catch (error: unknown) {
@@ -337,14 +337,14 @@ export const removeMovieFavorite = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const updateMovieStatus = createAsyncThunk(
   'activeProfile/updateMovieStatus',
   async (
     { profileId, movieId, status }: { profileId: number; movieId: number; status: WatchStatus },
-    { getState, rejectWithValue },
+    { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as RootState;
@@ -365,7 +365,7 @@ export const updateMovieStatus = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 export const updateNextEpisodeWatchStatus = createAsyncThunk(
@@ -378,7 +378,7 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk(
       episodeId,
       episodeStatus,
     }: { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: WatchStatus },
-    { getState, rejectWithValue },
+    { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as RootState;
@@ -395,7 +395,7 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk(
           seasonId: seasonId,
           episodeId: episodeId,
           status: episodeStatus,
-        },
+        }
       );
       const result = response.data.result;
       const nextUnwatchedEpisodes = result.nextUnwatchedEpisodes;
@@ -407,7 +407,7 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk(
       }
       return rejectWithValue('An unknown error occurred');
     }
-  },
+  }
 );
 
 const activeProfileSlice = createSlice({
@@ -720,14 +720,14 @@ export const selectShowByTMDBId = createSelector(
   [selectShows, (state: RootState, tmdbId: number) => tmdbId],
   (shows = [], tmdbId) => {
     return shows.find((show) => show.tmdb_id === tmdbId);
-  },
+  }
 );
 
 export const selectMovieByTMDBId = createSelector(
   [selectMovies, (state: RootState, tmdbId: number) => tmdbId],
   (movies = [], tmdbId) => {
     return movies.find((movie) => movie.tmdb_id === tmdbId);
-  },
+  }
 );
 
 export const selectMoviesByIds = createSelector(
@@ -741,7 +741,7 @@ export const selectMoviesByIds = createSelector(
       }
     });
     return selectedMovies;
-  },
+  }
 );
 
 export const selectShowWatchCounts = createSelector([selectShows], (shows = []) => {

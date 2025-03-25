@@ -41,7 +41,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
         profileId: Number(movie.profile_id),
         movieId: movie.movie_id,
         status: determineNewWatchStatus(currentStatus),
-      }),
+      })
     );
   };
 
@@ -59,7 +59,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
       removeMovieFavorite({
         profileId: Number(movie.profile_id),
         movieId: movie.movie_id,
-      }),
+      })
     );
   };
 

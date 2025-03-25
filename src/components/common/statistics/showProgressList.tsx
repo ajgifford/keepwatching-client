@@ -1,4 +1,5 @@
 import { Box, Divider, LinearProgress, Typography } from '@mui/material';
+
 import { ShowProgress } from '../../../app/model/statistics';
 
 interface ShowProgressListProps {
@@ -9,20 +10,20 @@ interface ShowProgressListProps {
 
 const ShowProgressList = ({ shows, maxHeight = 300, filter = 'WATCHING' }: ShowProgressListProps) => {
   const filteredShows = filter ? shows.filter((show) => show.status === filter) : shows;
-  
+
   // Sort by completion percentage (descending)
   const sortedShows = [...filteredShows].sort((a, b) => b.percentComplete - a.percentComplete);
 
   if (sortedShows.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-        {filter === 'WATCHING' 
-          ? "No shows currently being watched" 
+        {filter === 'WATCHING'
+          ? 'No shows currently being watched'
           : filter === 'WATCHED'
-          ? "No shows completed yet"
-          : filter === 'NOT_WATCHED'
-          ? "No unwatched shows"
-          : "No shows available"}
+            ? 'No shows completed yet'
+            : filter === 'NOT_WATCHED'
+              ? 'No unwatched shows'
+              : 'No shows available'}
       </Typography>
     );
   }

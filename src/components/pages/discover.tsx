@@ -162,7 +162,7 @@ function Discover() {
         observerRef.current.observe(node);
       }
     },
-    [isLoading, hasMore, results.length, totalResults],
+    [isLoading, hasMore, results.length, totalResults]
   );
 
   const findContent = useCallback(
@@ -215,13 +215,13 @@ function Discover() {
           showActivityNotification({
             message: errorMessage,
             type: ActivityNotificationType.Error,
-          }),
+          })
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [discoverMode, dispatch, page, selectedFilter, selectedService, selectedType],
+    [discoverMode, dispatch, page, selectedFilter, selectedService, selectedType]
   );
 
   useEffect(() => {

@@ -54,7 +54,7 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 // Response interceptor to handle retries
@@ -71,7 +71,7 @@ axiosInstance.interceptors.response.use(
       // Calculate delay using exponential backoff with jitter
       const delay = Math.min(
         retryConfig.initialDelayMs * Math.pow(retryConfig.backoffFactor, config._retryCount - 1),
-        retryConfig.maxDelayMs,
+        retryConfig.maxDelayMs
       );
 
       // Add some randomness to prevent all clients from retrying simultaneously
@@ -80,7 +80,7 @@ axiosInstance.interceptors.response.use(
 
       // Log retry information (consider using a proper logging system in production)
       console.log(
-        `Retrying request to ${config.url} (Attempt ${config._retryCount}/${retryConfig.retries}) after ${Math.round(retryDelay)}ms`,
+        `Retrying request to ${config.url} (Attempt ${config._retryCount}/${retryConfig.retries}) after ${Math.round(retryDelay)}ms`
       );
 
       // Wait for the calculated delay
@@ -92,7 +92,7 @@ axiosInstance.interceptors.response.use(
 
     // If we shouldn't retry or have exhausted retries, reject with the error
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosInstance;

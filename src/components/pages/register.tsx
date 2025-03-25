@@ -58,7 +58,7 @@ const Register = () => {
         showActivityNotification({
           message: 'Please fill out all required fields',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
     }
   };

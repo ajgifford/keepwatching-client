@@ -64,7 +64,7 @@ function Search() {
         observerRef.current.observe(node);
       }
     },
-    [isLoading, hasMore, results.length, totalResults],
+    [isLoading, hasMore, results.length, totalResults]
   );
 
   const sortResults = useCallback(
@@ -92,7 +92,7 @@ function Search() {
         }
       });
     },
-    [sortBy, sortOrder],
+    [sortBy, sortOrder]
   );
 
   const performSearch = useCallback(
@@ -128,7 +128,7 @@ function Search() {
         setIsLoading(false);
       }
     },
-    [searchText, page, year, searchType, sortResults],
+    [searchText, page, year, searchType, sortResults]
   );
 
   useEffect(() => {

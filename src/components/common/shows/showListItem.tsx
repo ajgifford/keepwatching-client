@@ -62,7 +62,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
         profileId: show.profile_id,
         showId: show.show_id,
         status: determineNewWatchStatus(show.watch_status),
-      }),
+      })
     );
   };
 
@@ -90,7 +90,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
       removeShowFavorite({
         profileId: Number(show.profile_id),
         showId: show.show_id,
-      }),
+      })
     );
   };
 

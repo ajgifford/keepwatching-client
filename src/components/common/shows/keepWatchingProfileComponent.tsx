@@ -74,7 +74,7 @@ const ShowWithEpisodes = ({ show, profileId }: { show: ContinueWatchingShow; pro
         seasonId: episode.season_id,
         episodeId: episode.episode_id,
         episodeStatus: newStatus,
-      }),
+      })
     );
   };
 
