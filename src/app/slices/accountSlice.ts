@@ -240,10 +240,12 @@ export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { d
   }
 });
 
-export const logout = createAsyncThunk('account/logout', async (_, { dispatch, rejectWithValue }) => {
+export const logout = createAsyncThunk('account/logout', async (_, { dispatch, getState, rejectWithValue }) => {
   try {
     await signOut(auth);
-    await axiosInstance.post('/authentication/logout');
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
+    await axiosInstance.post('/authentication/logout', { accountId: accountId });
 
     localStorage.removeItem(ACCOUNT_KEY);
     dispatch(
