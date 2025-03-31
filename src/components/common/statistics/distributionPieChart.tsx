@@ -27,12 +27,12 @@ const DistributionPieChart = ({ data, height = 300, colors = DEFAULT_COLORS }: D
           paddingAngle={2}
           nameKey="name"
         >
-          {validData.map((entry, index) => (
+          {validData.map((_entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => [`${value} items`, 'Count']}
+          formatter={(value: number) => [`${value} shows/movies`]}
           contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
         />
       </PieChart>
