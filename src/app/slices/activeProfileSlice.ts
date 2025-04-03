@@ -684,6 +684,7 @@ const activeProfileSlice = createSlice({
             movie.watch_status = status;
           }
         }
+        state.loading = false;
         state.lastUpdated = new Date().toLocaleString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
