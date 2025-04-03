@@ -44,7 +44,7 @@ export function ProfileCard({
       return;
     }
     const file = files[0];
-    dispatch(updateProfileImage({ profileId: profile.id, file }));
+    dispatch(updateProfileImage({ accountId: account.id, profileId: profile.id, file }));
   };
 
   const handleImageClick = () => {

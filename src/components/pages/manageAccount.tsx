@@ -81,7 +81,7 @@ const ManageAccount = () => {
 
   const handleEditProfileButton = (profile: Profile) => {
     openNameDialog('Edit Profile', profile.name, (newName) => {
-      dispatch(editProfile({ accountId: account.id, id: profile.id, name: newName }));
+      dispatch(editProfile({ accountId: account.id, profileId: profile.id, name: newName }));
     });
   };
 

@@ -117,9 +117,12 @@ export const deleteProfile = createAsyncThunk(
 
 export const editProfile = createAsyncThunk(
   'profiles/editProfile',
-  async ({ accountId, id, name }: { accountId: string; id: string; name: string }, { dispatch, rejectWithValue }) => {
+  async (
+    { accountId, profileId, name }: { accountId: string; profileId: string; name: string },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.put(`/accounts/${accountId}/profiles/${id}`, { name });
+      const response = await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}`, { name });
       dispatch(
         showActivityNotification({
           message: `Profile edited successfully`,
@@ -138,11 +141,14 @@ export const editProfile = createAsyncThunk(
 
 export const updateProfileImage = createAsyncThunk(
   'profiles/updateImage',
-  async ({ profileId, file }: { profileId: string; file: File }, { dispatch, rejectWithValue }) => {
+  async (
+    { accountId, profileId, file }: { accountId: string; profileId: string; file: File },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      const response = await axiosInstance.post(`/upload/profiles/${profileId}`, formData, {
+      const response = await axiosInstance.post(`/upload/accounts/${accountId}/profiles/${profileId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
