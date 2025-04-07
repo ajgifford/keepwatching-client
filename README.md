@@ -55,17 +55,17 @@ Users are able to search TV Shows and Movies and favorite a search result for th
 
 #### Search TV
 ![Search TV Show with results](images/search_tv_show.png)
+![Search TV Show with additional results](images/search_tv_show_favorite.png)
 
 #### Search Movies
 ![Search Movie with results](images/search_movie.png)
+![Search Movie with results filtered by premier year](images/search_movie_filtered.png)
 
 ### Discovery
 Coming Soon!
 
 ### Shows
-When first navigating to the Shows page, no profile is selected.
-![Shows No Profile](images/shows_noprofile.png)
-After selecting a profile from the drop-down, the shows for that profile will be displayed.
+When navigating to the Shows page, a default filter of 'Not Watched, Watching' is applied to the profile's list of shows that they have favorited.
 ![Shows for a profile](images/shows.png)
 The list of shows can further be filtered by Genre, Streaming Service and Watch Status.
 ![Shows for a profile with filter](images/shows_with_filters.png)
