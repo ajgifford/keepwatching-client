@@ -163,7 +163,12 @@ function ShowDetails() {
           zIndex: 999,
         }}
       >
-        <Toolbar sx={{ display: 'flex', alignItems: 'flex-start' }}>
+        <Toolbar sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: 'flex-start',
+          pt: 2
+        }}>
           <Tooltip title="Back">
             <IconButton
               edge="start"
@@ -172,7 +177,10 @@ function ShowDetails() {
                 dispatch(clearActiveShow());
                 navigate(buildBackButtonPath());
               }}
-              sx={{ mt: 2 }}
+              sx={{ 
+                alignSelf: { xs: 'flex-start', sm: 'center' },
+                mb: { xs: 2, sm: 0 }
+              }}
             >
               <ArrowBackIosIcon />
             </IconButton>
@@ -180,12 +188,15 @@ function ShowDetails() {
 
           <Box
             sx={{
-              width: { xs: 120, sm: 150, md: 200 },
+              width: { xs: '70%', sm: 150, md: 200 },
+              maxWidth: { xs: 200, sm: 150, md: 200 },
               height: 'auto',
-              mr: { xs: 2, sm: 3, md: 4 },
+              mr: { xs: 0, sm: 3, md: 4 },
+              mb: { xs: 2, sm: 0 },
               borderRadius: 1,
               overflow: 'hidden',
               flexShrink: 0,
+              alignSelf: { xs: 'center', sm: 'flex-start' }
             }}
           >
             <Box
@@ -200,28 +211,32 @@ function ShowDetails() {
             />
           </Box>
 
-          <Box sx={{ p: 2, flexGrow: 1, overflow: 'hidden' }}>
-            <Typography variant="h4" noWrap>
+          <Box sx={{ p: { xs: 0, sm: 2 }, flexGrow: 1, overflow: 'hidden' }}>
+            <Typography variant="h4" sx={{ textAlign: { xs: 'center', sm: 'left' } }} noWrap>
               {show?.title}
             </Typography>
-            <Typography variant="subtitle1" fontStyle="italic">
+            <Typography variant="subtitle1" fontStyle="italic" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
               {show?.description}
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
               {show?.type} | {show?.status}
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
               <b>Genres:</b> {show?.genres}
             </Typography>
-            <Typography variant="body1">{buildServicesLine(show)}</Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+              {buildServicesLine(show)}
+            </Typography>
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
               <b>Premiered: </b> {show?.release_date} | <b>Rated: </b> {show?.content_rating}
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
               <b>Seasons:</b> {show?.season_count} | <b>Episodes:</b> {show?.episode_count}
             </Typography>
-            <Typography variant="body1">{buildEpisodeLine(show)}</Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+              {buildEpisodeLine(show)}
+            </Typography>
+            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
               <b>Status:</b> {getWatchStatusDisplay(show?.watch_status)}
             </Typography>
           </Box>
@@ -245,9 +260,7 @@ function ShowDetails() {
       </Box>
 
       <TabPanel value={tabValue} index={0}>
-        <TabPanel value={tabValue} index={0}>
-          {profileId && <KeepWatchingShowComponent profileId={profileId} />}
-        </TabPanel>
+        {profileId && <KeepWatchingShowComponent profileId={profileId} />}
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
@@ -341,7 +354,7 @@ function ShowDetails() {
                                 </>
                               }
                             />
-                            <Box sx={{ position: 'relative' }}>
+                            <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 } }}>
                               <Tooltip title={watchedEpisodes[episode.episode_id] ? 'Mark Not Watched' : 'Mark Watched'}>
                                 <IconButton
                                   color={watchedEpisodes[episode.episode_id] ? 'success' : 'default'}
