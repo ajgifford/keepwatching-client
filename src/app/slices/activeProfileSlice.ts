@@ -8,7 +8,7 @@ import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
-import { updateProfileImage } from './profilesSlice';
+import { editProfile, updateProfileImage } from './profilesSlice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
@@ -697,6 +697,11 @@ const activeProfileSlice = createSlice({
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(editProfile.fulfilled, (state, action) => {
+        if (state.profile && state.profile.id === action.payload.id) {
+          state.profile = action.payload;
+        }
       });
   },
 });
