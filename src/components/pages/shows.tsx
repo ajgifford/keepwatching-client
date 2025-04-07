@@ -28,11 +28,11 @@ import { stripArticle } from '../utility/contentUtility';
 const Shows = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const genreParam = decodeURIComponent(searchParams.get('genre') || '');
-  const streamingServiveParam = decodeURIComponent(searchParams.get('streamingService') || '');
+  const streamingServiceParam = decodeURIComponent(searchParams.get('streamingService') || '');
   const watchStatusParam = decodeURIComponent(searchParams.get('watchStatus') || '').split(',');
 
   const [genreFilter, setGenreFilter] = useState<string>(genreParam);
-  const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>(streamingServiveParam);
+  const [streamingServiceFilter, setStreamingServiceFilter] = useState<string>(streamingServiceParam);
   const [watchStatusFilter, setWatchStatusFilter] = useState<string[]>(watchStatusParam.filter(Boolean));
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
