@@ -90,8 +90,8 @@ const ManageAccount = () => {
       dispatch(
         updateAccount({
           account_id: account.id,
-          account_name: newName,
-          default_profile_id: account.default_profile_id,
+          name: newName,
+          defaultProfileId: account.default_profile_id,
         })
       );
     });
@@ -121,8 +121,8 @@ const ManageAccount = () => {
     await dispatch(
       updateAccount({
         account_id: account.id,
-        account_name: account.name,
-        default_profile_id: profile.id,
+        name: account.name,
+        defaultProfileId: profile.id,
       })
     );
   }

@@ -345,15 +345,11 @@ export const verifyEmail = createAsyncThunk(
 export const updateAccount = createAsyncThunk(
   'account/update',
   async (
-    {
-      account_id,
-      account_name,
-      default_profile_id,
-    }: { account_id: string; account_name: string; default_profile_id: string },
+    { account_id, name, defaultProfileId }: { account_id: string; name: string; defaultProfileId: string },
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.put(`/accounts/${account_id}/`, { account_name, default_profile_id });
+      const response = await axiosInstance.put(`/accounts/${account_id}/`, { name, defaultProfileId });
       const updateResult = response.data.result;
       localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
       dispatch(
