@@ -51,6 +51,8 @@ const ManageAccount = () => {
   const [currentName, setCurrentName] = useState('');
   const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
 
+  const [changingActiveProfile, setChangingActiveProfile] = useState<string | null>(null);
+
   const [profileStatsDialogOpen, setProfileStatsDialogOpen] = useState<boolean>(false);
   const [profileStatsDialogTitle, setProfileStatsDialogTitle] = useState<string>('');
   const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<string>('');
@@ -128,7 +130,12 @@ const ManageAccount = () => {
   }
 
   async function handleSetActiveProfile(profile: Profile) {
-    await dispatch(setActiveProfile({ accountId: account.id, profileId: profile.id }));
+    setChangingActiveProfile(profile.id);
+    try {
+      await dispatch(setActiveProfile({ accountId: account.id, profileId: profile.id }));
+    } finally {
+      setChangingActiveProfile(null);
+    }
   }
 
   function handleViewProfileStats(profile: Profile) {
@@ -260,7 +267,6 @@ const ManageAccount = () => {
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Active Profile: <i>{activeProfile.name}</i>{' '}
-            {/*TODO Update the active profile name when it's changed by the user, might need an update in the activeProfileSlice*/}
           </Typography>
           {lastUpdated && (
             <Typography variant="subtitle1" color="primary" gutterBottom>
@@ -298,6 +304,7 @@ const ManageAccount = () => {
               handleSetDefault={handleSetDefaultProfile}
               handleSetActive={handleSetActiveProfile}
               handleViewStats={handleViewProfileStats}
+              isLoading={changingActiveProfile === profile.id}
             />
           ))}
         </Stack>

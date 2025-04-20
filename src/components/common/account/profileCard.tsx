@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StarsIcon from '@mui/icons-material/Stars';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { Profile } from '../../../app/model/profile';
@@ -20,6 +20,7 @@ interface PropTypes {
   handleSetDefault: (profile: Profile) => void;
   handleSetActive: (profile: Profile) => void;
   handleViewStats: (profile: Profile) => void;
+  isLoading?: boolean;
 }
 
 export function ProfileCard({
@@ -29,6 +30,7 @@ export function ProfileCard({
   handleSetDefault,
   handleSetActive,
   handleViewStats,
+  isLoading = false,
 }: PropTypes) {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
@@ -123,13 +125,13 @@ export function ProfileCard({
       <Stack direction="column" spacing={2} sx={{ pt: '8px' }}>
         <Button
           variant="outlined"
-          startIcon={<CheckIcon />}
+          startIcon={isLoading ? <CircularProgress size={16} /> : <CheckIcon />}
           onClick={() => {
             handleSetActive(profile);
           }}
-          disabled={profile.id === activeProfile.id}
+          disabled={profile.id === activeProfile.id || isLoading}
         >
-          Set Active
+          {isLoading ? 'Setting Active...' : 'Set Active'}
         </Button>
         <Button
           variant="outlined"
