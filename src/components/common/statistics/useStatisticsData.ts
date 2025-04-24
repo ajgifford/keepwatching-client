@@ -17,6 +17,7 @@ export function useStatisticsData(statistics: AccountStatistics | ProfileStatist
         watched: showCounts.watched || 0,
         watching: showCounts.watching || 0,
         notWatched: showCounts.notWatched || 0,
+        upToDate: showCounts.upToDate || 0,
       },
       {
         name: 'Movies',

@@ -5,7 +5,8 @@ export interface WatchStatusDataItem {
   watched: number;
   watching: number;
   notWatched: number;
-  [key: string]: string | number;
+  upToDate?: number;
+  [key: string]: string | number | undefined;
 }
 
 interface WatchStatusChartProps {
@@ -17,6 +18,7 @@ const WATCH_STATUS_COLORS = {
   watched: '#4CAF50',
   watching: '#FFC107',
   notWatched: '#F44336',
+  upToDate: '#2196F3',
 };
 
 const WatchStatusChart = ({ data, height = 300 }: WatchStatusChartProps) => {
@@ -29,6 +31,7 @@ const WatchStatusChart = ({ data, height = 300 }: WatchStatusChartProps) => {
         <Tooltip />
         <Legend />
         <Bar dataKey="watched" stackId="a" fill={WATCH_STATUS_COLORS.watched} name="Watched" />
+        <Bar dataKey="upToDate" stackId="a" fill={WATCH_STATUS_COLORS.upToDate} name="Up To Date" />
         <Bar dataKey="watching" stackId="a" fill={WATCH_STATUS_COLORS.watching} name="Watching" />
         <Bar dataKey="notWatched" stackId="a" fill={WATCH_STATUS_COLORS.notWatched} name="Not Watched" />
       </BarChart>

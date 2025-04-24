@@ -24,6 +24,7 @@ export interface WatchStatusCounts {
   watched?: number;
   watching?: number;
   notWatched?: number;
+  upToDate?: number;
   [key: string]: number | undefined;
 }
 
