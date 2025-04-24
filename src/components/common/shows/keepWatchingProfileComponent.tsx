@@ -4,7 +4,7 @@ import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { ContinueWatchingShow, ProfileEpisode } from '../../../app/model/shows';
-import { WatchStatus } from '../../../app/model/watchStatus';
+import { ShowWatchStatus } from '../../../app/model/watchStatus';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { EpisodeCard } from './episodeCard';
@@ -66,7 +66,7 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: string 
 const ShowWithEpisodes = ({ show, profileId }: { show: ContinueWatchingShow; profileId: string }) => {
   const dispatch = useAppDispatch();
 
-  const handleNextEpisodeWatchStatusChange = async (episode: ProfileEpisode, newStatus: WatchStatus) => {
+  const handleNextEpisodeWatchStatusChange = async (episode: ProfileEpisode, newStatus: ShowWatchStatus) => {
     await dispatch(
       updateNextEpisodeWatchStatus({
         profileId: episode.profile_id,

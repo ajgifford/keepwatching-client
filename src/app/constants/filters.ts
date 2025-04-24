@@ -1,4 +1,12 @@
-export const watchStatuses = [
+export const showWatchStatuses = [
+  { value: '', display: '--All--' },
+  { value: 'NOT_WATCHED', display: 'Not Watched' },
+  { value: 'WATCHING', display: 'Watching' },
+  { value: 'UP_TO_DATE', display: 'Up To Date' },
+  { value: 'WATCHED', display: 'Watched' },
+];
+
+export const movieWatchStatuses = [
   { value: '', display: '--All--' },
   { value: 'NOT_WATCHED', display: 'Not Watched' },
   { value: 'WATCHING', display: 'Watching' },

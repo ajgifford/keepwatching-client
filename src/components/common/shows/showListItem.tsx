@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import StarIcon from '@mui/icons-material/Star';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
-import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Avatar,
   Box,
@@ -26,9 +23,13 @@ import {
 
 import { useAppDispatch } from '../../../app/hooks';
 import { Show } from '../../../app/model/shows';
-import { WatchStatus } from '../../../app/model/watchStatus';
 import { removeShowFavorite, updateShowStatus } from '../../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../../utility/contentUtility';
+import {
+  WatchStatusIcon,
+  determineNextShowWatchStatus,
+  getShowWatchStatusTooltip,
+} from '../../utility/watchStatusUtility';
 
 export type FilterProps = {
   genre: string;
@@ -51,6 +52,8 @@ export const ShowListItem = (props: ShowListItemProps) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [confirmChangeWatchStatusDialogOpen, setConfirmChangeWatchStatusDialogOpen] = useState<boolean>(false);
 
+  const nextWatchStatus = determineNextShowWatchStatus(show);
+
   const handleCloseConfirmChangeWatchStatusDialog = () => {
     setConfirmChangeWatchStatusDialogOpen(false);
   };
@@ -61,7 +64,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
       updateShowStatus({
         profileId: show.profile_id,
         showId: show.show_id,
-        status: determineNewWatchStatus(show.watch_status),
+        status: nextWatchStatus,
       })
     );
   };
@@ -69,15 +72,6 @@ export const ShowListItem = (props: ShowListItemProps) => {
   const handleWatchStatusChange = () => {
     setConfirmChangeWatchStatusDialogOpen(true);
   };
-
-  function determineNewWatchStatus(currentStatus: WatchStatus): WatchStatus {
-    if (currentStatus === 'NOT_WATCHED') {
-      return 'WATCHED';
-    } else if (currentStatus === 'WATCHING') {
-      return 'WATCHED';
-    }
-    return 'NOT_WATCHED';
-  }
 
   const buildLinkState = () => {
     const filterProps = props.getFilters();
@@ -165,10 +159,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
             <StarIcon color="primary" />
           </IconButton>
         </Tooltip>
-        <Tooltip
-          key={`watchStatusTooltip_${show.show_id}`}
-          title={show.watch_status === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}
-        >
+        <Tooltip key={`watchStatusTooltip_${show.show_id}`} title={getShowWatchStatusTooltip(show)}>
           <IconButton
             key={`watchStatusIconButton_${show.show_id}`}
             onClick={(event) => {
@@ -176,9 +167,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
               event.stopPropagation();
             }}
           >
-            {show.watch_status === 'NOT_WATCHED' && <WatchLaterOutlinedIcon />}
-            {show.watch_status === 'WATCHING' && <WatchLaterTwoToneIcon color="success" />}
-            {show.watch_status === 'WATCHED' && <WatchLaterIcon color="success" />}
+            <WatchStatusIcon status={show.watch_status} />
           </IconButton>
         </Tooltip>
       </ListItem>
@@ -189,13 +178,25 @@ export const ShowListItem = (props: ShowListItemProps) => {
         aria-describedby="confirm-watch-status-change-dialog-description"
       >
         <DialogTitle id="confirm-watch-status-change-dialog-title">
-          {show.watch_status === 'WATCHED' ? `Mark '${show.title}' Unwatched?` : `Mark '${show.title}' Watched?`}
+          {`Mark '${show.title}' ${
+            nextWatchStatus === 'NOT_WATCHED'
+              ? 'Not Watched'
+              : nextWatchStatus === 'WATCHING'
+                ? 'Watching'
+                : nextWatchStatus === 'UP_TO_DATE'
+                  ? 'Up To Date'
+                  : 'Watched'
+          }?`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="confirm-watch-status-change-dialog-description">
-            {show.watch_status === 'WATCHED'
-              ? `Marking '${show.title}' unwatched will mark all seasons and episodes unwatched as well. Do you want to proceed?`
-              : `Marking '${show.title}' watched will mark all seasons and episodes watched as well. Do you want to proceed?`}
+            {nextWatchStatus === 'NOT_WATCHED'
+              ? `Marking '${show.title}' not watched will mark all seasons and episodes not watched as well. Do you want to proceed?`
+              : nextWatchStatus === 'WATCHED'
+                ? `Marking '${show.title}' watched will mark all seasons and episodes watched as well. Do you want to proceed?`
+                : nextWatchStatus === 'UP_TO_DATE'
+                  ? `Marking '${show.title}' up to date will mark all aired episodes as watched. Do you want to proceed?`
+                  : `Marking '${show.title}' as watching will not change any episode status. Do you want to proceed?`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

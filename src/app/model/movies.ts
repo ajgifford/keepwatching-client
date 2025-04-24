@@ -1,4 +1,4 @@
-import { WatchStatus } from './watchStatus';
+import { MovieWatchStatus } from './watchStatus';
 
 export type Movie = {
   movie_id: number;
@@ -13,7 +13,7 @@ export type Movie = {
   user_rating: number | null;
   mpa_rating: string;
   streaming_services: string;
-  watch_status: WatchStatus;
+  watch_status: MovieWatchStatus;
   profile_id: string;
 };
 

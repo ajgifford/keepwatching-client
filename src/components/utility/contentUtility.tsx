@@ -1,5 +1,4 @@
 import { EpisodeToAir, Show } from '../../app/model/shows';
-import { WatchStatus } from '../../app/model/watchStatus';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 
@@ -41,13 +40,6 @@ export function calculateRuntimeDisplay(runtime: number): string {
 
 export function stripArticle(title: string): string {
   return title.replace(/^(a |an |the )/i, '').trim();
-}
-
-export function getWatchStatusDisplay(status: WatchStatus | undefined) {
-  if (!status) return '';
-  if (status === 'WATCHED') return 'Watched';
-  if (status === 'WATCHING') return 'Watching';
-  if (status === 'NOT_WATCHED') return 'Not Watched';
 }
 
 export const buildEpisodeAirDate = (airDate: string) => {

@@ -3,9 +3,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
-import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Accordion,
   AccordionDetails,
@@ -36,7 +33,6 @@ import {
   selectShow,
   selectShowError,
   selectShowLoading,
-  selectWatchedEpisodes,
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
@@ -53,8 +49,13 @@ import {
   buildServicesLine,
   buildTMDBImagePath,
   calculateRuntimeDisplay,
-  getWatchStatusDisplay,
 } from '../utility/contentUtility';
+import {
+  WatchStatusIcon,
+  determineNextSeasonWatchStatus,
+  getSeasonWatchStatusTooltip,
+  getWatchStatusDisplay,
+} from '../utility/watchStatusUtility';
 
 function ShowDetails() {
   const { showId, profileId } = useParams();
@@ -65,13 +66,12 @@ function ShowDetails() {
   const seasons = useAppSelector(selectSeasons);
   const showDetailsLoading = useAppSelector(selectShowLoading);
   const showDetailsError = useAppSelector(selectShowError);
-  const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
 
   const [tabValue, setTabValue] = useState(0);
   const [loadingSeasons, setLoadingSeasons] = useState<Record<number, boolean>>({});
   const [loadingEpisodes, setLoadingEpisodes] = useState<Record<number, boolean>>({});
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -94,48 +94,41 @@ function ShowDetails() {
     return <ErrorComponent error={showDetailsError} />;
   }
 
-  const isSeasonFullyWatched = (season: Season) =>
-    season.episodes.every((episode) => watchedEpisodes[episode.episode_id]);
-
-  const isSeasonPartiallyWatched = (season: Season) =>
-    season.episodes.some((episode) => watchedEpisodes[episode.episode_id]) && !isSeasonFullyWatched(season);
-
   const handleSeasonWatchStatusChange = async (season: Season, event: React.MouseEvent) => {
     event.stopPropagation();
-    
-    // Set loading state for this season
-    setLoadingSeasons(prev => ({ ...prev, [season.season_id]: true }));
-    
+
+    setLoadingSeasons((prev) => ({ ...prev, [season.season_id]: true }));
+    const nextStatus = determineNextSeasonWatchStatus(season, show!);
+
     try {
       await dispatch(
         updateSeasonWatchStatus({
           profileId,
           season,
-          seasonStatus: season.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED',
+          seasonStatus: nextStatus,
         })
-      ).unwrap();
+      );
     } finally {
-      // Clear loading state when done
-      setLoadingSeasons(prev => ({ ...prev, [season.season_id]: false }));
+      setLoadingSeasons((prev) => ({ ...prev, [season.season_id]: false }));
     }
   };
 
   const handleEpisodeWatchStatusChange = async (season: Season, episode: Episode) => {
-    // Set loading state for this episode
-    setLoadingEpisodes(prev => ({ ...prev, [episode.episode_id]: true }));
-    
+    setLoadingEpisodes((prev) => ({ ...prev, [episode.episode_id]: true }));
+
     try {
+      const nextStatus = episode.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED';
+
       await dispatch(
         updateEpisodeWatchStatus({
           profileId,
           season,
           episode,
-          episodeStatus: episode?.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED',
+          episodeStatus: nextStatus,
         })
-      ).unwrap();
+      );
     } finally {
-      // Clear loading state when done
-      setLoadingEpisodes(prev => ({ ...prev, [episode.episode_id]: false }));
+      setLoadingEpisodes((prev) => ({ ...prev, [episode.episode_id]: false }));
     }
   };
 
@@ -163,12 +156,14 @@ function ShowDetails() {
           zIndex: 999,
         }}
       >
-        <Toolbar sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: 'flex-start',
-          pt: 2
-        }}>
+        <Toolbar
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'flex-start',
+            pt: 2,
+          }}
+        >
           <Tooltip title="Back">
             <IconButton
               edge="start"
@@ -177,9 +172,9 @@ function ShowDetails() {
                 dispatch(clearActiveShow());
                 navigate(buildBackButtonPath());
               }}
-              sx={{ 
+              sx={{
                 alignSelf: { xs: 'flex-start', sm: 'center' },
-                mb: { xs: 2, sm: 0 }
+                mb: { xs: 2, sm: 0 },
               }}
             >
               <ArrowBackIosIcon />
@@ -196,7 +191,7 @@ function ShowDetails() {
               borderRadius: 1,
               overflow: 'hidden',
               flexShrink: 0,
-              alignSelf: { xs: 'center', sm: 'flex-start' }
+              alignSelf: { xs: 'center', sm: 'flex-start' },
             }}
           >
             <Box
@@ -268,12 +263,12 @@ function ShowDetails() {
           <Box>
             {seasons.map((season) => (
               <Accordion key={season.season_id}>
-                <AccordionSummary 
+                <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   sx={{
                     '& .MuiAccordionSummary-content': {
                       alignItems: 'center', // Align items vertically
-                    }
+                    },
                   }}
                 >
                   <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
@@ -292,20 +287,14 @@ function ShowDetails() {
                     </Typography>
                   </Box>
                   <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <Tooltip title={isSeasonFullyWatched(season) ? 'Mark Not Watched' : 'Mark Watched'}>
+                    <Tooltip title={getSeasonWatchStatusTooltip(season, show!)}>
                       <IconButton
                         onClick={(event) => handleSeasonWatchStatusChange(season, event)}
                         disabled={loadingSeasons[season.season_id]}
                         size="medium"
-                        sx={{ my: 'auto' }} // Vertically center
+                        sx={{ my: 'auto' }}
                       >
-                        {isSeasonFullyWatched(season) ? (
-                          <WatchLaterIcon color="success" />
-                        ) : isSeasonPartiallyWatched(season) ? (
-                          <WatchLaterTwoToneIcon color="success" />
-                        ) : (
-                          <WatchLaterOutlinedIcon />
-                        )}
+                        <WatchStatusIcon status={season.watch_status} />
                       </IconButton>
                     </Tooltip>
                     {loadingSeasons[season.season_id] && (
@@ -355,13 +344,13 @@ function ShowDetails() {
                               }
                             />
                             <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 } }}>
-                              <Tooltip title={watchedEpisodes[episode.episode_id] ? 'Mark Not Watched' : 'Mark Watched'}>
+                              <Tooltip title={episode.watch_status === 'WATCHED' ? 'Mark Not Watched' : 'Mark Watched'}>
                                 <IconButton
-                                  color={watchedEpisodes[episode.episode_id] ? 'success' : 'default'}
+                                  color={episode.watch_status === 'WATCHED' ? 'success' : 'default'}
                                   onClick={() => handleEpisodeWatchStatusChange(season, episode)}
                                   disabled={loadingEpisodes[episode.episode_id]}
                                 >
-                                  {watchedEpisodes[episode.episode_id] ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                                  <WatchStatusIcon status={episode.watch_status} />
                                 </IconButton>
                               </Tooltip>
                               {loadingEpisodes[episode.episode_id] && (

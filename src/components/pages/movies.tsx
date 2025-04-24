@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { watchStatuses } from '../../app/constants/filters';
+import { movieWatchStatuses } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { selectMovieGenres, selectMovieStreamingServices, selectMovies } from '../../app/slices/activeProfileSlice';
 import { MovieListItem } from '../common/movies/movieListItem';
@@ -141,7 +141,7 @@ const Movies = () => {
             {watchStatusFilter.length > 0 && (
               <Chip
                 label={`Watch Status: ${watchStatusFilter
-                  .map((s) => watchStatuses.find((w) => w.value === s)?.display)
+                  .map((s) => movieWatchStatuses.find((w) => w.value === s)?.display)
                   .join(', ')}`}
                 color="success"
               />
@@ -229,10 +229,10 @@ const Movies = () => {
                   value={watchStatusFilter}
                   onChange={(e) => handleWatchStatusChange(e.target.value as string[])}
                   renderValue={(selected) =>
-                    selected.map((s) => watchStatuses.find((w) => w.value === s)?.display).join(', ')
+                    selected.map((s) => movieWatchStatuses.find((w) => w.value === s)?.display).join(', ')
                   }
                 >
-                  {watchStatuses
+                  {movieWatchStatuses
                     .filter((status) => status.value !== '')
                     .map((status) => (
                       <MenuItem

@@ -20,7 +20,7 @@ import {
 
 import { useAppDispatch } from '../../../app/hooks';
 import { Movie } from '../../../app/model/movies';
-import { WatchStatus } from '../../../app/model/watchStatus';
+import { MovieWatchStatus } from '../../../app/model/watchStatus';
 import { removeMovieFavorite, updateMovieStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
 
@@ -35,7 +35,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  const handleWatchStatusChange = (currentStatus: WatchStatus) => {
+  const handleWatchStatusChange = (currentStatus: MovieWatchStatus) => {
     dispatch(
       updateMovieStatus({
         profileId: Number(movie.profile_id),
@@ -45,7 +45,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
     );
   };
 
-  function determineNewWatchStatus(currentStatus: WatchStatus): WatchStatus {
+  function determineNewWatchStatus(currentStatus: MovieWatchStatus): MovieWatchStatus {
     if (currentStatus === 'NOT_WATCHED') {
       return 'WATCHED';
     } else if (currentStatus === 'WATCHING') {

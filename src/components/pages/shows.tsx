@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { watchStatuses } from '../../app/constants/filters';
+import { showWatchStatuses } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { selectShowGenres, selectShowStreamingServices, selectShows } from '../../app/slices/activeProfileSlice';
 import { FilterProps, ShowListItem } from '../common/shows/showListItem';
@@ -80,7 +80,7 @@ const Shows = () => {
   };
 
   const sortedShows = [...shows].sort((a, b) => {
-    const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
+    const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, UP_TO_DATE: 3, WATCHED: 4 };
     const aWatched = watchedOrder[a.watch_status];
     const bWatched = watchedOrder[b.watch_status];
     if (aWatched !== bWatched) {
@@ -145,7 +145,7 @@ const Shows = () => {
             {watchStatusFilter.length > 0 && (
               <Chip
                 label={`Watch Status: ${watchStatusFilter
-                  .map((s) => watchStatuses.find((w) => w.value === s)?.display)
+                  .map((s) => showWatchStatuses.find((w) => w.value === s)?.display)
                   .join(', ')}`}
                 color="success"
               />
@@ -231,10 +231,10 @@ const Shows = () => {
                   value={watchStatusFilter}
                   onChange={(e) => handleWatchStatusChange(e.target.value as string[])}
                   renderValue={(selected) =>
-                    selected.map((s) => watchStatuses.find((w) => w.value === s)?.display).join(', ')
+                    selected.map((s) => showWatchStatuses.find((w) => w.value === s)?.display).join(', ')
                   }
                 >
-                  {watchStatuses
+                  {showWatchStatuses
                     .filter((status) => status.value !== '')
                     .map((status) => (
                       <MenuItem id={`showsFilterWatchStatus_${status.value}`} key={status.value} value={status.value}>

@@ -1,4 +1,4 @@
-import { WatchStatus } from './watchStatus';
+import { ShowWatchStatus } from './watchStatus';
 
 export type Show = {
   show_id: number;
@@ -18,7 +18,7 @@ export type Show = {
   tv_parental_guidelines?: string;
   season_count?: number;
   episode_count?: number;
-  watch_status: WatchStatus;
+  watch_status: ShowWatchStatus;
   profile_id: string;
   seasons?: Season[];
   last_episode: EpisodeToAir | null;
@@ -42,7 +42,7 @@ export type Season = {
   release_date: string;
   poster_image: string;
   number_of_episodes: number;
-  watch_status: WatchStatus;
+  watch_status: ShowWatchStatus;
   episodes: Episode[];
 };
 
@@ -58,7 +58,7 @@ export type Episode = {
   runtime: number;
   air_date: string;
   still_image: string;
-  watch_status: WatchStatus;
+  watch_status: ShowWatchStatus;
 };
 
 export type ContinueWatchingShow = {

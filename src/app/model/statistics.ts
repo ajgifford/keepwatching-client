@@ -37,7 +37,7 @@ export interface EpisodeWatchProgress {
 export interface ShowProgress {
   showId: number;
   title: string;
-  status: 'WATCHED' | 'WATCHING' | 'NOT_WATCHED';
+  status: 'WATCHED' | 'WATCHING' | 'NOT_WATCHED' | 'UP_TO_DATE';
   totalEpisodes: number;
   watchedEpisodes: number;
   percentComplete: number;

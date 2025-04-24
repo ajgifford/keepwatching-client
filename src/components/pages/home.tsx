@@ -37,6 +37,7 @@ const Home = () => {
   const upcomingMovies = useAppSelector((state) => selectMoviesByIds(state, upcomingMovieIds));
   const {
     watched: showWatched,
+    upToDate: showUpToDate,
     watching: showWatching,
     notWatched: showNotWatched,
   } = useAppSelector(selectShowWatchCounts);
@@ -98,9 +99,9 @@ const Home = () => {
                   <Card variant="outlined" sx={{ textAlign: 'center' }}>
                     <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
                       <Typography variant="h6" color="primary">
-                        {showWatched}
+                        {showWatched + showUpToDate}
                       </Typography>
-                      <Typography variant="body2">Shows Watched</Typography>
+                      <Typography variant="body2">Shows Watched / Up to Date</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
@@ -186,14 +187,14 @@ const Home = () => {
                   </Link>
                 </Grid>
                 <Grid item xs={4}>
-                  <Link style={{ textDecoration: 'none' }} to={`/shows?watchStatus=WATCHED`}>
+                  <Link style={{ textDecoration: 'none' }} to={`/shows?watchStatus=WATCHED%252CUP_TO_DATE`}>
                     <Card variant="outlined" sx={{ textAlign: 'center', height: '100%', bgcolor: 'success.lighter' }}>
                       <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
                         <Typography variant="h4" color="success.main">
-                          {showWatched}
+                          {showWatched + showUpToDate}
                         </Typography>
                         <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-                          Watched
+                          Watched / Up to Date
                         </Typography>
                       </CardContent>
                     </Card>

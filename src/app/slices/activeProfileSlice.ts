@@ -3,7 +3,7 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { Movie, MovieIds } from '../model/movies';
 import { ACTIVE_PROFILE_KEY, Profile } from '../model/profile';
 import { ContinueWatchingShow, ProfileEpisode, Show } from '../model/shows';
-import { WatchStatus } from '../model/watchStatus';
+import { MovieWatchStatus, ShowWatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
@@ -244,7 +244,7 @@ export const removeShowFavorite = createAsyncThunk(
 export const updateShowStatus = createAsyncThunk(
   'activeProfile/updateShowStatus',
   async (
-    { profileId, showId, status }: { profileId: string; showId: number; status: WatchStatus },
+    { profileId, showId, status }: { profileId: string; showId: number; status: ShowWatchStatus },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -343,7 +343,7 @@ export const removeMovieFavorite = createAsyncThunk(
 export const updateMovieStatus = createAsyncThunk(
   'activeProfile/updateMovieStatus',
   async (
-    { profileId, movieId, status }: { profileId: number; movieId: number; status: WatchStatus },
+    { profileId, movieId, status }: { profileId: number; movieId: number; status: MovieWatchStatus },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -377,7 +377,7 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk(
       seasonId,
       episodeId,
       episodeStatus,
-    }: { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: WatchStatus },
+    }: { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: ShowWatchStatus },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -754,7 +754,8 @@ export const selectShowWatchCounts = createSelector([selectShows], (shows = []) 
   const watched = shows.filter((show) => show.watch_status === 'WATCHED').length;
   const notWatched = shows.filter((show) => show.watch_status === 'NOT_WATCHED').length;
   const watching = shows.filter((show) => show.watch_status === 'WATCHING').length;
-  return { watched, watching, notWatched };
+  const upToDate = shows.filter((show) => show.watch_status === 'UP_TO_DATE').length;
+  return { watched, upToDate, watching, notWatched };
 });
 
 export const selectMovieWatchCounts = createSelector([selectMovies], (movies = []) => {

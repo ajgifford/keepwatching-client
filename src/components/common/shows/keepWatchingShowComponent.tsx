@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { Episode, ProfileEpisode, Season } from '../../../app/model/shows';
-import { WatchStatus } from '../../../app/model/watchStatus';
+import { ShowWatchStatus } from '../../../app/model/watchStatus';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
 import { EpisodeCard } from './episodeCard';
 
@@ -11,19 +11,15 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) 
   const show = useAppSelector(selectShow);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
 
-  // Handler for episode watch status changes
-  const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode, newStatus: WatchStatus) => {
+  const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode, newStatus: ShowWatchStatus) => {
     if (!show) return;
 
-    // Find the season that contains this episode
     const season = show.seasons?.find((s) => s.season_id === episode.season_id);
     if (!season) return;
 
-    // Find the episode object within that season
     const episodeObj = season.episodes.find((e) => e.episode_id === episode.episode_id);
     if (!episodeObj) return;
 
-    // Dispatch the action to update the episode status
     await dispatch(
       updateEpisodeWatchStatus({
         profileId,
@@ -31,7 +27,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) 
         episode: episodeObj,
         episodeStatus: newStatus,
       })
-    ).unwrap();
+    );
   };
 
   if (!show || !show.seasons) {

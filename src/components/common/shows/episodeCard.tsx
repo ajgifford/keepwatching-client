@@ -5,12 +5,12 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
 import { ProfileEpisode } from '../../../app/model/shows';
-import { WatchStatus } from '../../../app/model/watchStatus';
+import { ShowWatchStatus } from '../../../app/model/watchStatus';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 
 interface EpisodeCardProps {
   episode: ProfileEpisode;
-  onWatchStatusChange: (episode: ProfileEpisode, newStatus: WatchStatus) => Promise<void>;
+  onWatchStatusChange: (episode: ProfileEpisode, newStatus: ShowWatchStatus) => Promise<void>;
 }
 
 export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) => {
