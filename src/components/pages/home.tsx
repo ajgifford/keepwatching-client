@@ -23,6 +23,7 @@ import { MovieTile } from '../common/movies/movieTile';
 import { EpisodeTile } from '../common/shows/episodeTile';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
+import { getProfileImageUrl } from '../utility/imageUtils';
 
 const Home = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -68,7 +69,7 @@ const Home = () => {
               <Box
                 crossOrigin="anonymous"
                 component="img"
-                src={profile.image}
+                src={getProfileImageUrl(profile.image)}
                 alt={profile.name}
                 sx={{
                   width: { xs: '40%', sm: '25%', md: '20%' },

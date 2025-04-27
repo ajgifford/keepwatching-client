@@ -12,6 +12,7 @@ import { Profile } from '../../../app/model/profile';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
 import { selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
+import { getProfileImageUrl } from '../../utility/imageUtils';
 
 interface PropTypes {
   profile: Profile;
@@ -79,7 +80,7 @@ export function ProfileCard({
           <Box
             crossOrigin="anonymous"
             component="img"
-            src={profile.image}
+            src={getProfileImageUrl(profile.image)}
             alt={profile.name}
             sx={{
               width: '100%',

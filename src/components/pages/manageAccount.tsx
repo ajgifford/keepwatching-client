@@ -34,6 +34,7 @@ import NameEditDialog from '../common/account/nameEditDialog';
 import { ProfileCard } from '../common/account/profileCard';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
+import { getAccountImageUrl } from '../utility/imageUtils';
 import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {
@@ -188,7 +189,7 @@ const ManageAccount = () => {
             <Box
               crossOrigin="anonymous"
               component="img"
-              src={account.image}
+              src={getAccountImageUrl(account.image)}
               alt={account.name}
               referrerPolicy="no-referrer"
               sx={{
