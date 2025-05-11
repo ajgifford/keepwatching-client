@@ -7,19 +7,23 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  AppBar,
   Avatar,
   Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
   CircularProgress,
   Divider,
+  Grid,
   IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Paper,
   Tab,
   Tabs,
-  Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -44,9 +48,8 @@ import { SimilarShowsComponent } from '../common/shows/similarShowsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import {
   buildEpisodeAirDate,
-  buildEpisodeLine,
+  buildEpisodeLineDetails,
   buildSeasonAirDate,
-  buildServicesLine,
   buildTMDBImagePath,
   calculateRuntimeDisplay,
 } from '../utility/contentUtility';
@@ -146,97 +149,169 @@ function ShowDetails() {
     return path;
   };
 
+  const formatYear = (dateString: string | undefined) => {
+    if (!dateString) return 'Unknown';
+
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+    });
+  };
+
   return (
     <>
-      <AppBar
-        position="sticky"
-        color="inherit"
-        elevation={0}
-        sx={{
-          zIndex: 999,
-        }}
-      >
-        <Toolbar
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: 'flex-start',
-            pt: 2,
-          }}
-        >
-          <Tooltip title="Back">
+      <Box>
+        <Box mb={3} display="flex" alignItems="center" justifyContent="space-between">
+          <Box display="flex" alignItems="center">
             <IconButton
-              edge="start"
               aria-label="back"
               onClick={() => {
                 dispatch(clearActiveShow());
                 navigate(buildBackButtonPath());
               }}
-              sx={{
-                alignSelf: { xs: 'flex-start', sm: 'center' },
-                mb: { xs: 2, sm: 0 },
-              }}
+              sx={{ mr: 2 }}
             >
               <ArrowBackIosIcon />
             </IconButton>
-          </Tooltip>
+            <Typography variant="h4">{show?.title}</Typography>
+          </Box>
+        </Box>
 
-          <Box
-            sx={{
-              width: { xs: '70%', sm: 150, md: 200 },
-              maxWidth: { xs: 200, sm: 150, md: 200 },
-              height: 'auto',
-              mr: { xs: 0, sm: 3, md: 4 },
-              mb: { xs: 2, sm: 0 },
-              borderRadius: 1,
-              overflow: 'hidden',
-              flexShrink: 0,
-              alignSelf: { xs: 'center', sm: 'flex-start' },
-            }}
-          >
+        <Card sx={{ mb: 4, position: 'relative' }}>
+          <Box sx={{ position: 'relative' }}>
+            {show?.backdrop_image ? (
+              <CardMedia
+                component="img"
+                height="300"
+                image={`https://image.tmdb.org/t/p/w1280${show.backdrop_image}`}
+                alt={show.title}
+                sx={{ filter: 'brightness(0.7)' }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  height: '300px',
+                  backgroundColor: 'grey.300',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography variant="h6" color="text.secondary">
+                  No backdrop image available
+                </Typography>
+              </Box>
+            )}
+
             <Box
-              component="img"
-              src={buildTMDBImagePath(show?.poster_image, 'w342')}
-              alt={show?.title}
               sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
                 width: '100%',
-                height: 'auto',
-                display: 'block',
+                bgcolor: 'rgba(0, 0, 0, 0.6)',
+                color: 'white',
+                p: 2,
+                display: 'flex',
+                alignItems: 'flex-end',
               }}
-            />
+            >
+              <>
+                <Box
+                  component="img"
+                  sx={{
+                    width: 140,
+                    height: 210,
+                    mr: 3,
+                    borderRadius: 1,
+                    boxShadow: 3,
+                    transform: 'translateY(-30px)',
+                  }}
+                  src={`https://image.tmdb.org/t/p/w500${show?.poster_image}`}
+                  alt={show?.title}
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    e.currentTarget.src = '/placeholder-poster.png';
+                  }}
+                />
+                <Box>
+                  <Typography variant="h5" fontWeight="bold">
+                    {show?.title}
+                  </Typography>
+                  <Typography variant="body1">
+                    <i>{show?.description}</i>
+                  </Typography>
+                  <Typography variant="body1" sx={{ mt: 1, mb: 2 }}>
+                    {formatYear(show?.release_date)} • {show?.season_count} Seasons • {show?.episode_count} Episodes
+                  </Typography>
+                  <Box display="flex" gap={1} flexWrap="wrap">
+                    {show?.network && <Chip size="small" label={show?.network} color="primary" />}
+                    <Chip size="small" label={show?.content_rating || 'Unknown'} color="secondary" />
+                    <Chip size="small" label={show?.type} color="warning" />
+                    <Chip size="small" label={show?.status} color="success" />
+                  </Box>
+                </Box>
+              </>
+            </Box>
           </Box>
 
-          <Box sx={{ p: { xs: 0, sm: 2 }, flexGrow: 1, overflow: 'hidden' }}>
-            <Typography variant="h4" sx={{ textAlign: { xs: 'center', sm: 'left' } }} noWrap>
-              {show?.title}
-            </Typography>
-            <Typography variant="subtitle1" fontStyle="italic" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              {show?.description}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              {show?.type} | {show?.status}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              <b>Genres:</b> {show?.genres}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              {buildServicesLine(show)}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              <b>Premiered: </b> {show?.release_date} | <b>Rated: </b> {show?.content_rating}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              <b>Seasons:</b> {show?.season_count} | <b>Episodes:</b> {show?.episode_count}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              {buildEpisodeLine(show)}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              <b>Status:</b> {getWatchStatusDisplay(show?.watch_status)}
-            </Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={8}>
+                <>
+                  <Box mt={2}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Genres
+                    </Typography>
+                    <Typography variant="body1">{show?.genres}</Typography>
+                  </Box>
+
+                  <Box mt={2}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Streaming On
+                    </Typography>
+                    <Typography variant="body1">{show?.streaming_services || 'Not available for streaming'}</Typography>
+                  </Box>
+
+                  <Box mt={2}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Watch Status
+                    </Typography>
+                    <Typography variant="body1">{getWatchStatusDisplay(show?.watch_status)}</Typography>
+                  </Box>
+                </>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Episodes
+                  </Typography>
+
+                  <>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Last Episode
+                      </Typography>
+                      <Typography variant="body2">
+                        {show?.last_episode ? buildEpisodeLineDetails(show?.last_episode) : 'No Last Episode'}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Next Episode
+                      </Typography>
+                      <Typography variant="body2">
+                        {show?.next_episode ? buildEpisodeLineDetails(show?.next_episode) : 'No Next Episode'}
+                      </Typography>
+                    </Box>
+                  </>
+                </Paper>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Box>
+
       <br></br>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
