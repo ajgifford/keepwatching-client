@@ -70,36 +70,51 @@ export const buildServicesLine = (show: Show | null) => {
   if (!show) {
     return <></>;
   }
-  if (show.network) {
-    if (show.streaming_services) {
-      if (!show.streaming_services.includes(show.network)) {
+
+  // Helper function to filter out 'Unknown' from streaming services
+  const filterUnknown = (services: string) => {
+    return services
+      .split(',')
+      .map((service) => service.trim())
+      .filter((service) => service.toLowerCase() !== 'unknown')
+      .join(', ');
+  };
+
+  const network = show.network?.toLowerCase() === 'unknown' ? null : show.network;
+  const filteredServices = show.streaming_services ? filterUnknown(show.streaming_services) : '';
+
+  if (network) {
+    if (filteredServices) {
+      if (!filteredServices.includes(network)) {
         return (
           <>
-            <b>Network: </b> {show.network} | <b>Streaming Service(s): </b> {show.streaming_services}
+            <b>Network: </b> {network} | <b>Streaming Service(s): </b> {filteredServices}
           </>
         );
       } else {
         return (
           <>
-            <b>Streaming Service(s): </b> {show.streaming_services}
+            <b>Streaming Service(s): </b> {filteredServices}
           </>
         );
       }
     } else {
       return (
         <>
-          <b>Network: </b> {show.network}
+          <b>Network: </b> {network}
         </>
       );
     }
   }
-  if (show.streaming_services) {
+
+  if (filteredServices) {
     return (
       <>
-        <b>Streaming Service(s): </b> {show.streaming_services}
+        <b>Streaming Service(s): </b> {filteredServices}
       </>
     );
   }
+
   return <>No Streaming Service Information</>;
 };
 

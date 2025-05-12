@@ -159,12 +159,42 @@ function ShowDetails() {
     return path;
   };
 
+  const getBackButtonTooltip = () => {
+    const basePath = returnPath.split('?')[0];
+
+    const pathMap: Record<string, string> = {
+      '/shows': 'Back to Shows',
+      '/search': 'Back to Search',
+      '/discover': 'Back to Discover',
+      '/home': 'Back to Home',
+    };
+
+    return pathMap[basePath] || 'Back';
+  };
+
   const formatYear = (dateString: string | undefined) => {
     if (!dateString) return 'Unknown';
 
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
     });
+  };
+
+  const buildServicesLine = (streamingServices: string | undefined) => {
+    if (!streamingServices) {
+      return 'Not available for streaming';
+    }
+
+    // Helper function to filter out 'Unknown' from streaming services
+    const filterUnknown = (services: string) => {
+      return services
+        .split(',')
+        .map((service) => service.trim())
+        .filter((service) => service.toLowerCase() !== 'unknown')
+        .join(', ');
+    };
+
+    return filterUnknown(streamingServices);
   };
 
   return (
@@ -180,18 +210,17 @@ function ShowDetails() {
           zIndex: 1,
         }}
       >
-        <IconButton
-          aria-label="back"
-          onClick={() => {
-            navigate(buildBackButtonPath());
-          }}
-          sx={{ color: 'text.primary' }}
-        >
-          <ArrowBackIosIcon />
-        </IconButton>
-        <Typography variant="h5" sx={{ ml: 1 }}>
-          {show?.title}
-        </Typography>
+        <Tooltip title={getBackButtonTooltip()}>
+          <IconButton
+            aria-label="back"
+            onClick={() => {
+              navigate(buildBackButtonPath());
+            }}
+            sx={{ color: 'text.primary' }}
+          >
+            <ArrowBackIosIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       {/* Show Header Card */}
@@ -371,7 +400,7 @@ function ShowDetails() {
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       Streaming On
                     </Typography>
-                    <Typography variant="body2">{show?.streaming_services || 'Not available for streaming'}</Typography>
+                    <Typography variant="body2">{buildServicesLine(show?.streaming_services)}</Typography>
                   </Box>
                 </Grid>
 
