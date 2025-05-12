@@ -126,7 +126,7 @@ export const buildEpisodeLine = (show: Show | null) => {
 export const buildEpisodeLineDetails = (episode: EpisodeToAir) => {
   return (
     <>
-      {episode.title} - {episode.air_date} - {`S${episode.season_number} E${episode.episode_number}`}
+      {`S${episode.season_number} E${episode.episode_number}`} - {episode.title} - {episode.air_date}
     </>
   );
 };
