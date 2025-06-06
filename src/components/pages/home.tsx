@@ -21,6 +21,7 @@ import { LoadingComponent } from '../common/loadingComponent';
 import { MovieTile } from '../common/movies/movieTile';
 import { EpisodeTile } from '../common/shows/episodeTile';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
+import ProfileStatisticsComponent from '../common/statistics/profileStatisticsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { getProfileImageUrl } from '../utility/imageUtils';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
@@ -144,6 +145,7 @@ const Home = () => {
           <Tab label="Keep Watching" {...a11yProps(0)} />
           <Tab label="TV Shows" {...a11yProps(1)} />
           <Tab label="Movies" {...a11yProps(2)} />
+          <Tab label="Statistics" {...a11yProps(3)} />
         </Tabs>
       </Box>
 
@@ -331,6 +333,10 @@ const Home = () => {
             )}
           </Box>
         </Box>
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={3}>
+        <ProfileStatisticsComponent accountId={profile.accountId} profileId={profile.id} />
       </TabPanel>
     </Box>
   );
