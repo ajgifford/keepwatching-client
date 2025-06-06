@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Card, CardActions, CardContent, CardMedia, Tooltip, Typography } from '@mui/material';
 
-import { SearchResult } from '../../../app/model/search';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import FavoritesButton from './favoriteButton';
+import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 
 interface MediaCardProps {
-  item: SearchResult;
+  item: SimilarOrRecommendedShow;
   searchType: 'shows' | 'movies';
 }
 

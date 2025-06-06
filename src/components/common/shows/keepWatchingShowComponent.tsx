@@ -1,23 +1,22 @@
 import { Box, Grid, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { Episode, ProfileEpisode, Season } from '../../../app/model/shows';
-import { ShowWatchStatus } from '../../../app/model/watchStatus';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
 import { EpisodeCard } from './episodeCard';
+import { BinaryWatchStatusType, NextEpisode, ProfileEpisode, ProfileSeason } from '@ajgifford/keepwatching-types';
 
-export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) => {
+export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) => {
   const dispatch = useAppDispatch();
   const show = useAppSelector(selectShow);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
 
-  const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode, newStatus: ShowWatchStatus) => {
+  const handleEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: BinaryWatchStatusType) => {
     if (!show) return;
 
-    const season = show.seasons?.find((s) => s.season_id === episode.season_id);
+    const season = show.seasons?.find((s) => s.id === episode.seasonId);
     if (!season) return;
 
-    const episodeObj = season.episodes.find((e) => e.episode_id === episode.episode_id);
+    const episodeObj = season.episodes.find((e) => e.id === episode.episodeId);
     if (!episodeObj) return;
 
     await dispatch(
@@ -40,52 +39,40 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) 
     );
   }
 
-  const nextEpisodes: {
-    profile_id: number;
-    show_id: number;
-    show_name: string;
-    season_id: number;
-    episode_id: number;
-    network: string;
-    streaming_services: string;
-    episode_title: string;
-    air_date: string;
-    episode_number: number;
-    season_number: number;
-    episode_still_image: string;
-  }[] = [];
+  const nextEpisodes: NextEpisode[] = [];
 
-  show.seasons.forEach((season: Season) => {
+  show.seasons.forEach((season: ProfileSeason) => {
     const validEpisodes = season.episodes.filter(
-      (episode) =>
-        !watchedEpisodes[episode.episode_id] && (!episode.air_date || new Date(episode.air_date) <= new Date())
+      (episode) => !watchedEpisodes[episode.id] && (!episode.airDate || new Date(episode.airDate) <= new Date())
     );
 
-    validEpisodes.forEach((episode: Episode) => {
+    validEpisodes.forEach((episode: ProfileEpisode) => {
       if (nextEpisodes.length < 6) {
         nextEpisodes.push({
-          profile_id: Number(profileId),
-          show_id: show.show_id,
-          show_name: show.title,
-          season_id: season.season_id,
-          episode_id: episode.episode_id,
+          profileId,
+          showId: show.id,
+          showName: show.title,
+          seasonId: season.id,
+          episodeId: episode.id,
           network: show.network || '',
-          streaming_services: show.streaming_services || '',
-          episode_title: episode.title,
-          air_date: episode.air_date,
-          episode_number: episode.episode_number,
-          season_number: season.season_number,
-          episode_still_image: episode.still_image,
+          streamingServices: show.streamingServices || '',
+          episodeTitle: episode.title,
+          airDate: episode.airDate,
+          episodeNumber: episode.episodeNumber,
+          seasonNumber: season.seasonNumber,
+          overview: episode.overview,
+          posterImage: show.posterImage,
+          episodeStillImage: episode.stillImage,
         });
       }
     });
   });
 
   nextEpisodes.sort((a, b) => {
-    if (a.season_number !== b.season_number) {
-      return a.season_number - b.season_number;
+    if (a.seasonNumber !== b.seasonNumber) {
+      return a.seasonNumber - b.seasonNumber;
     }
-    return a.episode_number - b.episode_number;
+    return a.episodeNumber - b.episodeNumber;
   });
 
   if (nextEpisodes.length === 0) {
@@ -108,9 +95,9 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: string }) 
       </Typography>
       <Grid container spacing={2}>
         {nextEpisodes.map((episode) => (
-          <Grid item xs={12} sm={6} md={4} key={`next-episode-${episode.episode_id}`}>
+          <Grid item xs={12} sm={6} md={4} key={`next-episode-${episode.episodeId}`}>
             <EpisodeCard
-              key={`episode-${show.show_id}-${episode.season_number}-${episode.episode_number}`}
+              key={`episode-${show.id}-${episode.seasonNumber}-${episode.episodeNumber}`}
               episode={episode}
               onWatchStatusChange={handleEpisodeWatchStatusChange}
             />

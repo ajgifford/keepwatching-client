@@ -10,8 +10,8 @@ import { MediaCard } from '../media/mediaCard';
 import { ScrollableMediaRow } from '../media/scrollableMediaRow';
 
 interface RecommendedShowsComponentProps {
-  showId: string;
-  profileId: string;
+  showId: number;
+  profileId: number;
 }
 
 export const RecommendedShowsComponent = ({ showId, profileId }: RecommendedShowsComponentProps) => {

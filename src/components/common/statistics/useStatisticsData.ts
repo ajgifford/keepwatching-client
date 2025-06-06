@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 
-import { AccountStatistics, ProfileStatistics } from '../../../app/model/statistics';
 import { ChartDataItem, convertToChartData } from './distributionTypes';
 import { WatchStatusDataItem } from './watchStatusChart';
+import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
-export function useStatisticsData(statistics: AccountStatistics | ProfileStatistics | null | undefined) {
+export function useStatisticsData(
+  statistics: AccountStatisticsResponse | ProfileStatisticsResponse | null | undefined
+) {
   const watchStatusData = useMemo((): WatchStatusDataItem[] => {
     if (!statistics) return [];
 
@@ -22,7 +24,7 @@ export function useStatisticsData(statistics: AccountStatistics | ProfileStatist
       {
         name: 'Movies',
         watched: movieCounts.watched || 0,
-        watching: movieCounts.watching || 0,
+        watching: 0,
         notWatched: movieCounts.notWatched || 0,
       },
     ];

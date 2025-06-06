@@ -8,11 +8,11 @@ import StarsIcon from '@mui/icons-material/Stars';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { Profile } from '../../../app/model/profile';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
 import { selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
 import { getProfileImageUrl } from '../../utility/imageUtils';
+import { Profile } from '@ajgifford/keepwatching-types';
 
 interface PropTypes {
   profile: Profile;
@@ -36,7 +36,7 @@ export function ProfileCard({
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
   const activeProfile = useAppSelector(selectActiveProfile)!;
-  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.default_profile_id));
+  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.defaultProfileId));
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);

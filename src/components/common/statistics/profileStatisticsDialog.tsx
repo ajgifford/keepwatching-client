@@ -3,20 +3,20 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
-import { ProfileStatistics } from '../../../app/model/statistics';
 import ProfileStatisticsDashboard from './profileStatisticsDashboard';
+import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface ProfileStatisticsDialogProps {
   open: boolean;
   title: string;
-  accountId: string;
-  profileId: string;
+  accountId: number;
+  profileId: number;
   onClose: () => void;
 }
 
 const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }: ProfileStatisticsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [statistics, setStatistics] = useState<ProfileStatistics | null>(null);
+  const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
 
   useEffect(() => {
     const fetchProfileStats = async () => {

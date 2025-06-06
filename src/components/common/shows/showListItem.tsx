@@ -22,7 +22,6 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
-import { Show } from '../../../app/model/shows';
 import { removeShowFavorite, updateShowStatus } from '../../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../../utility/contentUtility';
 import {
@@ -30,6 +29,7 @@ import {
   determineNextShowWatchStatus,
   getShowWatchStatusTooltip,
 } from '../../utility/watchStatusUtility';
+import { ProfileShow } from '@ajgifford/keepwatching-types';
 
 export type FilterProps = {
   genre: string;
@@ -39,7 +39,7 @@ export type FilterProps = {
 };
 
 export type ShowListItemProps = {
-  show: Show;
+  show: ProfileShow;
   getFilters: () => FilterProps;
 };
 
@@ -62,8 +62,8 @@ export const ShowListItem = (props: ShowListItemProps) => {
     setConfirmChangeWatchStatusDialogOpen(false);
     dispatch(
       updateShowStatus({
-        profileId: show.profile_id,
-        showId: show.show_id,
+        profileId: show.profileId,
+        showId: show.id,
         status: nextWatchStatus,
       })
     );
@@ -75,15 +75,15 @@ export const ShowListItem = (props: ShowListItemProps) => {
 
   const buildLinkState = () => {
     const filterProps = props.getFilters();
-    filterProps.returnPath = `/shows?profileId=${show.profile_id}`;
+    filterProps.returnPath = `/shows?profileId=${show.profileId}`;
     return filterProps;
   };
 
   const handleRemoveFavorite = () => {
     dispatch(
       removeShowFavorite({
-        profileId: Number(show.profile_id),
-        showId: show.show_id,
+        profileId: Number(show.profileId),
+        showId: show.id,
       })
     );
   };
@@ -91,15 +91,15 @@ export const ShowListItem = (props: ShowListItemProps) => {
   return (
     <>
       <ListItem
-        id={`showListItem_${show.show_id}`}
+        id={`showListItem_${show.id}`}
         alignItems="flex-start"
         sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center' }}
-        onClick={() => navigate(`/shows/${show.show_id}/${show.profile_id}`, { state: buildLinkState() })}
+        onClick={() => navigate(`/shows/${show.id}/${show.profileId}`, { state: buildLinkState() })}
       >
         <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
           <Avatar
             alt={show.title}
-            src={buildTMDBImagePath(show.poster_image)}
+            src={buildTMDBImagePath(show.posterImage)}
             variant="rounded"
             sx={{ width: 96, height: 140 }}
           />
@@ -127,9 +127,9 @@ export const ShowListItem = (props: ShowListItemProps) => {
                   <br />
                   {buildServicesLine(show)}
                   <br />
-                  <b>Premiered: </b> {show.release_date} | <b>Rated: </b> {show.content_rating}
+                  <b>Premiered: </b> {show.releaseDate} | <b>Rated: </b> {show.contentRating}
                   <br />
-                  <b>Seasons: </b> {show.season_count} | <b>Episodes: </b> {show.episode_count}
+                  <b>Seasons: </b> {show.seasonCount} | <b>Episodes: </b> {show.episodeCount}
                   <br />
                   {buildEpisodeLine(show)}
                 </Typography>
@@ -148,9 +148,9 @@ export const ShowListItem = (props: ShowListItemProps) => {
             }
           />
         </Box>
-        <Tooltip key={`removeFavoriteTooltip_${show.show_id}`} title="Remove Favorite">
+        <Tooltip key={`removeFavoriteTooltip_${show.id}`} title="Remove Favorite">
           <IconButton
-            key={`removeFavoriteIconButton_${show.show_id}`}
+            key={`removeFavoriteIconButton_${show.id}`}
             onClick={(event) => {
               handleRemoveFavorite();
               event.stopPropagation();
@@ -159,15 +159,15 @@ export const ShowListItem = (props: ShowListItemProps) => {
             <StarIcon color="primary" />
           </IconButton>
         </Tooltip>
-        <Tooltip key={`watchStatusTooltip_${show.show_id}`} title={getShowWatchStatusTooltip(show)}>
+        <Tooltip key={`watchStatusTooltip_${show.id}`} title={getShowWatchStatusTooltip(show)}>
           <IconButton
-            key={`watchStatusIconButton_${show.show_id}`}
+            key={`watchStatusIconButton_${show.id}`}
             onClick={(event) => {
               handleWatchStatusChange();
               event.stopPropagation();
             }}
           >
-            <WatchStatusIcon status={show.watch_status} />
+            <WatchStatusIcon status={show.watchStatus} />
           </IconButton>
         </Tooltip>
       </ListItem>

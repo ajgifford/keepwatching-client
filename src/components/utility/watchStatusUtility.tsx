@@ -5,13 +5,19 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 
-import { Season, Show } from '../../app/model/shows';
-import { ShowWatchStatus } from '../../app/model/watchStatus';
+import {
+  FullWatchStatusType,
+  ProfileSeason,
+  ProfileShow,
+  ProfileShowWithSeasons,
+  WatchStatus,
+  WatchStatusType,
+} from '@ajgifford/keepwatching-types';
 
 export type ContentType = 'show' | 'season' | 'episode';
 
 export const WatchStatusIcon: React.FC<{
-  status: ShowWatchStatus;
+  status: WatchStatusType;
   fontSize?: 'small' | 'medium' | 'large' | 'inherit';
 }> = ({ status, fontSize = 'medium' }) => {
   switch (status) {
@@ -27,22 +33,22 @@ export const WatchStatusIcon: React.FC<{
   }
 };
 
-const isShowInProduction = (show: Show | null): boolean => {
+const isShowInProduction = (show: ProfileShow | null): boolean => {
   if (!show) return false;
   return show.status === 'Returning Series' || show.status === 'In Production';
 };
 
-export function getWatchStatusDisplay(status: ShowWatchStatus | undefined) {
+export function getWatchStatusDisplay(status: WatchStatusType | undefined) {
   if (!status) return '';
-  if (status === 'WATCHED') return 'Watched';
-  if (status === 'UP_TO_DATE') return 'Up To Date';
-  if (status === 'WATCHING') return 'Watching';
-  if (status === 'NOT_WATCHED') return 'Not Watched';
+  if (status === WatchStatus.WATCHED) return 'Watched';
+  if (status === WatchStatus.UP_TO_DATE) return 'Up To Date';
+  if (status === WatchStatus.WATCHING) return 'Watching';
+  if (status === WatchStatus.NOT_WATCHED) return 'Not Watched';
 }
 
-export function determineNextShowWatchStatus(show: Show): ShowWatchStatus {
+export function determineNextShowWatchStatus(show: ProfileShow): FullWatchStatusType {
   const showInProduction = isShowInProduction(show);
-  const currentStatus = show.watch_status;
+  const currentStatus = show.watchStatus;
 
   if (showInProduction) {
     switch (currentStatus) {
@@ -60,54 +66,68 @@ export function determineNextShowWatchStatus(show: Show): ShowWatchStatus {
   }
 }
 
-export function determineNextSeasonWatchStatus(season: Season, show: Show): ShowWatchStatus {
-  const isLatestSeason = season.season_number === Math.max(...(show.seasons || []).map((s) => s.season_number));
+export function determineNextSeasonWatchStatus(
+  season: ProfileSeason,
+  show: ProfileShowWithSeasons
+): FullWatchStatusType {
+  const isLatestSeason = season.seasonNumber === Math.max(...(show.seasons || []).map((s) => s.seasonNumber));
   const isInProduction = show.status === 'Returning Series' || show.status === 'In Production';
   const hasAllEpisodesAired = allEpisodesAired(season);
-  const currentStatus = season.watch_status;
+  const currentStatus = season.watchStatus;
 
   if (isLatestSeason && isInProduction) {
     switch (currentStatus) {
-      case 'NOT_WATCHED':
-        return hasAllEpisodesAired ? 'WATCHED' : 'UP_TO_DATE';
-      case 'WATCHING':
-      case 'UP_TO_DATE':
-      case 'WATCHED':
-        return 'NOT_WATCHED';
+      case WatchStatus.NOT_WATCHED:
+        return hasAllEpisodesAired ? WatchStatus.WATCHED : WatchStatus.UP_TO_DATE;
+      case WatchStatus.WATCHING:
+      case WatchStatus.UP_TO_DATE:
+      case WatchStatus.WATCHED:
+        return WatchStatus.NOT_WATCHED;
       default:
-        return 'NOT_WATCHED';
+        return WatchStatus.NOT_WATCHED;
     }
   } else {
-    return currentStatus === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED';
+    return currentStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
   }
 }
 
-export function getShowWatchStatusTooltip(show: Show) {
+export function getShowWatchStatusTooltip(show: ProfileShow) {
   return getWatchStatusTooltip(determineNextShowWatchStatus(show));
 }
 
-export function getSeasonWatchStatusTooltip(season: Season, show: Show) {
+export function getSeasonWatchStatusTooltip(season: ProfileSeason, show: ProfileShowWithSeasons) {
   return getWatchStatusTooltip(determineNextSeasonWatchStatus(season, show));
 }
 
-function getWatchStatusTooltip(status: ShowWatchStatus): string {
+function getWatchStatusTooltip(status: WatchStatusType): string {
   return `Mark ${
-    status === 'NOT_WATCHED'
+    status === WatchStatus.NOT_WATCHED
       ? 'Not Watched'
-      : status === 'WATCHING'
+      : status === WatchStatus.WATCHING
         ? 'Watching'
-        : status === 'UP_TO_DATE'
+        : status === WatchStatus.UP_TO_DATE
           ? 'Up To Date'
           : 'Watched'
   }`;
 }
 
-const allEpisodesAired = (season: Season): boolean => {
+export function canChangeWatchStatus(season: ProfileSeason, show: ProfileShowWithSeasons): boolean {
+  const isLatestSeason = season.seasonNumber === Math.max(...(show.seasons || []).map((s) => s.seasonNumber));
+
+  if (isLatestSeason) {
+    if (season.episodes.length === 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
+const allEpisodesAired = (season: ProfileSeason): boolean => {
   const now = new Date();
   return season.episodes.every((episode) => {
-    if (!episode.air_date) return false;
+    if (!episode.airDate) return false;
 
-    const airDate = new Date(episode.air_date);
+    const airDate = new Date(episode.airDate);
     return airDate <= now;
   });
 };

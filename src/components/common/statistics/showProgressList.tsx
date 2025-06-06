@@ -1,6 +1,6 @@
 import { Box, Divider, LinearProgress, Typography } from '@mui/material';
 
-import { ShowProgress } from '../../../app/model/statistics';
+import { ShowProgress } from '@ajgifford/keepwatching-types';
 
 interface ShowProgressListProps {
   shows: ShowProgress[];

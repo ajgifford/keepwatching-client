@@ -1,24 +1,54 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
-import { SearchResult } from '../model/search';
-import { Episode, Season, Show } from '../model/shows';
-import { ShowWatchStatus } from '../model/watchStatus';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
+import {
+  BinaryWatchStatusType,
+  FullWatchStatusType,
+  KeepWatchingShow,
+  ProfileEpisode,
+  ProfileSeason,
+  ProfileShowWithSeasons,
+  ShowDetailsResponse,
+  SimilarOrRecommendedShow,
+  SimilarOrRecommendedShowsResponse,
+  UpdateWatchStatusResponse,
+  WatchStatus,
+} from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface ActiveShowState {
-  show: Show | null;
+  showDetailsLoading: boolean;
+  show: ProfileShowWithSeasons | null;
   watchedEpisodes: Record<number, boolean>;
-  similarShows: SearchResult[];
-  recommendedShows: SearchResult[];
-  loading: boolean;
-  similarShowsLoading: boolean;
+  showDetailsError: ApiErrorResponse | null;
   recommendedShowsLoading: boolean;
-  error: ApiErrorResponse | null;
-  similarShowsError: ApiErrorResponse | null;
+  recommendedShows: SimilarOrRecommendedShow[];
   recommendedShowsError: ApiErrorResponse | null;
+  similarShowsLoading: boolean;
+  similarShows: SimilarOrRecommendedShow[];
+  similarShowsError: ApiErrorResponse | null;
+}
+
+interface UpdateEpisodeWatchStatusResponse {
+  profileId: number;
+  episodeId: number;
+  episodeStatus: BinaryWatchStatusType;
+  seasonId: number;
+  seasonStatus: FullWatchStatusType;
+  showId: number;
+  showStatus: FullWatchStatusType;
+  nextUnwatchedEpisodes?: any; // Replace with actual type if available
+}
+
+interface UpdateSeasonWatchStatusResponse {
+  profileId: number;
+  seasonId: number;
+  seasonStatus: FullWatchStatusType;
+  showId: number;
+  showStatus: FullWatchStatusType;
+  nextUnwatchedEpisodes: KeepWatchingShow[];
 }
 
 const initialState: ActiveShowState = {
@@ -26,21 +56,21 @@ const initialState: ActiveShowState = {
   watchedEpisodes: {},
   similarShows: [],
   recommendedShows: [],
-  loading: false,
+  showDetailsLoading: false,
   similarShowsLoading: false,
   recommendedShowsLoading: false,
-  error: null,
+  showDetailsError: null,
   similarShowsError: null,
   recommendedShowsError: null,
 };
 
 export const fetchShowWithDetails = createAsyncThunk<
-  { show: Show; watchedEpisodesMap: Record<number, boolean> },
-  { profileId: string; showId: string },
+  { show: ProfileShowWithSeasons; watchedEpisodesMap: Record<number, boolean> },
+  { profileId: number; showId: number },
   { rejectValue: ApiErrorResponse }
 >(
   'activeShow/fetchShowWithDetails',
-  async ({ profileId, showId }: { profileId: string; showId: string }, { getState, rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: number; showId: number }, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -49,14 +79,16 @@ export const fetchShowWithDetails = createAsyncThunk<
         return rejectWithValue({ message: 'No account found' });
       }
 
-      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/shows/${showId}/details`);
-      const show: Show = response.data.results;
+      const response: AxiosResponse<ShowDetailsResponse> = await axiosInstance.get(
+        `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/details`
+      );
+      const show = response.data.show;
 
       const watchedEpisodes: Record<number, boolean> = {};
       if (show.seasons) {
         show.seasons.forEach((season) => {
           season.episodes.forEach((episode) => {
-            watchedEpisodes[episode.episode_id] = episode.watch_status === 'WATCHED';
+            watchedEpisodes[episode.id] = episode.watchStatus === WatchStatus.WATCHED;
           });
         });
 
@@ -68,7 +100,7 @@ export const fetchShowWithDetails = createAsyncThunk<
           };
         });
 
-        show.watch_status = determineShowWatchStatus(show, show.seasons);
+        show.watchStatus = determineShowWatchStatus(show, show.seasons);
       }
 
       return { show, watchedEpisodesMap: watchedEpisodes };
@@ -82,93 +114,82 @@ export const fetchShowWithDetails = createAsyncThunk<
 );
 
 const determineSeasonWatchStatus = (
-  season: Season,
+  season: ProfileSeason,
   watchEpisodes: Record<number, boolean>,
-  show: Show
-): ShowWatchStatus => {
+  show: ProfileShowWithSeasons
+): FullWatchStatusType => {
   const now = new Date();
-  const isLatestSeason = season.season_number === Math.max(...(show.seasons || []).map((s) => s.season_number));
+  const isLatestSeason = season.seasonNumber === Math.max(...(show.seasons || []).map((s) => s.seasonNumber));
   const isShowInProduction = show.status === 'Returning Series' || show.status === 'In Production';
 
   const allAiredEpisodesWatched = season.episodes.every((episode) => {
-    if (!episode.air_date || new Date(episode.air_date) > now) {
+    if (!episode.airDate || new Date(episode.airDate) > now) {
       return true;
     }
-    return watchEpisodes[episode.episode_id];
+    return watchEpisodes[episode.id];
   });
 
   const anyAiredEpisodeWatched = season.episodes.some((episode) => {
-    if (!episode.air_date || new Date(episode.air_date) > now) {
+    if (!episode.airDate || new Date(episode.airDate) > now) {
       return false;
     }
-    return watchEpisodes[episode.episode_id];
+    return watchEpisodes[episode.id];
   });
 
-  const hasFutureEpisodes = season.episodes.some((episode) => episode.air_date && new Date(episode.air_date) > now);
+  const hasFutureEpisodes = season.episodes.some((episode) => episode.airDate && new Date(episode.airDate) > now);
 
   if (isLatestSeason && isShowInProduction) {
     if (allAiredEpisodesWatched && hasFutureEpisodes) {
-      return 'UP_TO_DATE';
+      return WatchStatus.UP_TO_DATE;
     }
     if (allAiredEpisodesWatched && !hasFutureEpisodes) {
-      return 'WATCHED';
+      return WatchStatus.WATCHED;
     }
     if (anyAiredEpisodeWatched) {
-      return 'WATCHING';
+      return WatchStatus.WATCHING;
     }
-    return 'NOT_WATCHED';
+    return WatchStatus.NOT_WATCHED;
   } else {
-    if (season.episodes.every((episode) => watchEpisodes[episode.episode_id])) {
-      return 'WATCHED';
+    if (season.episodes.every((episode) => watchEpisodes[episode.id])) {
+      return WatchStatus.WATCHED;
     }
-    if (season.episodes.some((episode) => watchEpisodes[episode.episode_id])) {
-      return 'WATCHING';
+    if (season.episodes.some((episode) => watchEpisodes[episode.id])) {
+      return WatchStatus.WATCHING;
     }
-    return 'NOT_WATCHED';
+    return WatchStatus.NOT_WATCHED;
   }
 };
 
-const determineShowWatchStatus = (show: Show, seasons: Season[]): ShowWatchStatus => {
+const determineShowWatchStatus = (show: ProfileShowWithSeasons, seasons: ProfileSeason[]): FullWatchStatusType => {
   const isInProduction = show.status === 'Returning Series' || show.status === 'In Production';
   const allSeasonsWatchedOrUpToDate = seasons.every(
-    (season) => season.watch_status === 'WATCHED' || season.watch_status === 'UP_TO_DATE'
+    (season) => season.watchStatus === WatchStatus.WATCHED || season.watchStatus === WatchStatus.UP_TO_DATE
   );
-  const anySeasonsWatching = seasons.some((season) => season.watch_status === 'WATCHING');
-  const allSeasonsNotWatched = seasons.every((season) => season.watch_status === 'NOT_WATCHED');
+  const anySeasonsWatching = seasons.some((season) => season.watchStatus === WatchStatus.WATCHING);
+  const allSeasonsNotWatched = seasons.every((season) => season.watchStatus === WatchStatus.NOT_WATCHED);
 
   if (allSeasonsWatchedOrUpToDate) {
-    return isInProduction ? 'UP_TO_DATE' : 'WATCHED';
+    return isInProduction ? WatchStatus.UP_TO_DATE : WatchStatus.WATCHED;
   }
 
   if (anySeasonsWatching) {
-    return 'WATCHING';
+    return WatchStatus.WATCHING;
   }
 
   if (allSeasonsNotWatched) {
-    return 'NOT_WATCHED';
+    return WatchStatus.NOT_WATCHED;
   }
 
-  return 'WATCHING';
+  return WatchStatus.WATCHING;
 };
-
-interface UpdateEpisodeWatchStatusResponse {
-  profileId: string | undefined;
-  episode_id: number;
-  episodeStatus: ShowWatchStatus;
-  season_id: number;
-  seasonStatus: ShowWatchStatus;
-  showId: number;
-  showStatus: ShowWatchStatus;
-  nextUnwatchedEpisodes?: any; // Replace with actual type if available
-}
 
 export const updateEpisodeWatchStatus = createAsyncThunk<
   UpdateEpisodeWatchStatusResponse,
   {
-    profileId: string | undefined;
-    season: Season;
-    episode: Episode;
-    episodeStatus: ShowWatchStatus;
+    profileId: number;
+    season: ProfileSeason;
+    episode: ProfileEpisode;
+    episodeStatus: BinaryWatchStatusType;
   },
   { rejectValue: ApiErrorResponse }
 >(
@@ -179,14 +200,14 @@ export const updateEpisodeWatchStatus = createAsyncThunk<
       season,
       episode,
       episodeStatus,
-    }: { profileId: string | undefined; season: Season; episode: Episode; episodeStatus: ShowWatchStatus },
+    }: { profileId: number; season: ProfileSeason; episode: ProfileEpisode; episodeStatus: BinaryWatchStatusType },
     { getState, rejectWithValue }
   ) => {
     try {
-      const episode_id = episode.episode_id;
+      const episode_id = episode.id;
       const state = getState() as RootState;
       const localWatchedEpisodes = { ...state.activeShow.watchedEpisodes };
-      localWatchedEpisodes[episode_id] = episodeStatus === 'WATCHED';
+      localWatchedEpisodes[episode_id] = episodeStatus === WatchStatus.WATCHED;
 
       const accountId = state.auth.account?.id;
       if (!accountId) {
@@ -197,15 +218,15 @@ export const updateEpisodeWatchStatus = createAsyncThunk<
         episodeId: episode_id,
         status: episodeStatus,
       });
-      const result = response.data.result;
-      const nextUnwatchedEpisodes = result.nextUnwatchedEpisodes;
+
+      const nextUnwatchedEpisodes = response.data.nextUnwatchedEpisodes;
 
       const show = state.activeShow.show!;
-      const season_id = season.season_id;
+      const season_id = season.id;
 
-      const newSeasonStatus: ShowWatchStatus = determineSeasonWatchStatus(season, localWatchedEpisodes, show);
+      const newSeasonStatus = determineSeasonWatchStatus(season, localWatchedEpisodes, show);
 
-      if (season.watch_status !== newSeasonStatus) {
+      if (season.watchStatus !== newSeasonStatus) {
         await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/seasons/watchStatus`, {
           seasonId: season_id,
           status: newSeasonStatus,
@@ -213,16 +234,16 @@ export const updateEpisodeWatchStatus = createAsyncThunk<
         });
       }
 
-      const showId = show.show_id;
+      const showId = show.id;
 
-      const updatedSeasons: Season[] = JSON.parse(JSON.stringify(show.seasons));
-      const seasonIndex = updatedSeasons.findIndex((s) => s.season_id === season_id);
+      const updatedSeasons: ProfileSeason[] = JSON.parse(JSON.stringify(show.seasons));
+      const seasonIndex = updatedSeasons.findIndex((s) => s.id === season_id);
       if (seasonIndex >= 0) {
-        updatedSeasons[seasonIndex].watch_status = newSeasonStatus;
+        updatedSeasons[seasonIndex].watchStatus = newSeasonStatus;
       }
-      const newShowStatus: ShowWatchStatus = determineShowWatchStatus(show, updatedSeasons);
+      const newShowStatus = determineShowWatchStatus(show, updatedSeasons);
 
-      if (show.watch_status !== newShowStatus) {
+      if (show.watchStatus !== newShowStatus) {
         await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`, {
           showId: showId,
           status: newShowStatus,
@@ -232,9 +253,9 @@ export const updateEpisodeWatchStatus = createAsyncThunk<
 
       return {
         profileId,
-        episode_id,
+        episodeId: episode_id,
         episodeStatus,
-        season_id,
+        seasonId: season_id,
         seasonStatus: newSeasonStatus,
         showId,
         showStatus: newShowStatus,
@@ -249,30 +270,18 @@ export const updateEpisodeWatchStatus = createAsyncThunk<
   }
 );
 
-interface UpdateSeasonWatchStatusResponse {
-  profileId: string | undefined;
-  season_id: number;
-  seasonStatus: ShowWatchStatus;
-  showId: number;
-  showStatus: ShowWatchStatus;
-}
-
 export const updateSeasonWatchStatus = createAsyncThunk<
   UpdateSeasonWatchStatusResponse,
   {
-    profileId: string | undefined;
-    season: Season;
-    seasonStatus: ShowWatchStatus;
+    profileId: number;
+    seasonId: number;
+    seasonStatus: FullWatchStatusType;
   },
   { rejectValue: ApiErrorResponse }
 >(
   'activeShow/updateSeasonWatchState',
   async (
-    {
-      profileId,
-      season,
-      seasonStatus,
-    }: { profileId: string | undefined; season: Season; seasonStatus: ShowWatchStatus },
+    { profileId, seasonId, seasonStatus }: { profileId: number; seasonId: number; seasonStatus: FullWatchStatusType },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -284,26 +293,35 @@ export const updateSeasonWatchStatus = createAsyncThunk<
       }
 
       const show = state.activeShow.show!;
-      const seasons: Season[] = JSON.parse(JSON.stringify(show.seasons));
-      const updateSeason = seasons.find((findSeason) => findSeason.season_id === season.season_id)!;
-      updateSeason.watch_status = seasonStatus;
-      const showStatus: ShowWatchStatus = determineShowWatchStatus(show, seasons);
+      const seasons: ProfileSeason[] = JSON.parse(JSON.stringify(show.seasons));
+      const updateSeason = seasons.find((findSeason) => findSeason.id === seasonId)!;
+      updateSeason.watchStatus = seasonStatus;
+      const showStatus = determineShowWatchStatus(show, seasons);
 
-      const season_id = season.season_id;
       await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/seasons/watchStatus`, {
-        seasonId: season_id,
+        seasonId,
         status: seasonStatus,
         recursive: true,
       });
 
-      const showId = show.show_id;
-      await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`, {
-        showId: showId,
-        status: showStatus,
-        recursive: false,
-      });
+      const showId = show.id;
+      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`,
+        {
+          showId: showId,
+          status: showStatus,
+          recursive: false,
+        }
+      );
 
-      return { profileId, season_id, seasonStatus, showId, showStatus };
+      return {
+        profileId,
+        seasonId,
+        seasonStatus,
+        showId,
+        showStatus,
+        nextUnwatchedEpisodes: response.data.nextUnwatchedEpisodes,
+      };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
@@ -314,12 +332,12 @@ export const updateSeasonWatchStatus = createAsyncThunk<
 );
 
 export const fetchRecommendedShows = createAsyncThunk<
-  SearchResult[],
-  { profileId: string; showId: string },
+  SimilarOrRecommendedShow[],
+  { profileId: number; showId: number },
   { rejectValue: ApiErrorResponse }
 >(
   'activeShow/fetchRecommendedShows',
-  async ({ profileId, showId }: { profileId: string; showId: string }, { getState, rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: number; showId: number }, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -327,10 +345,10 @@ export const fetchRecommendedShows = createAsyncThunk<
       if (!accountId) {
         return rejectWithValue({ message: 'No account found' });
       }
-      const response = await axiosInstance.get(
+      const response: AxiosResponse<SimilarOrRecommendedShowsResponse> = await axiosInstance.get(
         `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/recommendations`
       );
-      return response.data.results;
+      return response.data.shows;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
@@ -341,12 +359,12 @@ export const fetchRecommendedShows = createAsyncThunk<
 );
 
 export const fetchSimilarShows = createAsyncThunk<
-  SearchResult[],
-  { profileId: string; showId: string },
+  SimilarOrRecommendedShow[],
+  { profileId: number; showId: number },
   { rejectValue: ApiErrorResponse }
 >(
   'activeShow/fetchSimilarShows',
-  async ({ profileId, showId }: { profileId: string; showId: string }, { getState, rejectWithValue }) => {
+  async ({ profileId, showId }: { profileId: number; showId: number }, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -355,8 +373,10 @@ export const fetchSimilarShows = createAsyncThunk<
         return rejectWithValue({ message: 'No account found' });
       }
 
-      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/shows/${showId}/similar`);
-      return response.data.results;
+      const response: AxiosResponse<SimilarOrRecommendedShowsResponse> = await axiosInstance.get(
+        `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/similar`
+      );
+      return response.data.shows;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
@@ -374,11 +394,11 @@ const activeShowSlice = createSlice({
       return initialState;
     },
     toggleSeasonWatched: (state, action) => {
-      const season = action.payload as Season;
-      const isFullyWatched = season.episodes.every((episode) => state.watchedEpisodes[episode.episode_id]);
+      const season = action.payload as ProfileSeason;
+      const isFullyWatched = season.episodes.every((episode) => state.watchedEpisodes[episode.id]);
 
       season.episodes.forEach((episode) => {
-        state.watchedEpisodes[episode.episode_id] = !isFullyWatched;
+        state.watchedEpisodes[episode.id] = !isFullyWatched;
       });
     },
   },
@@ -388,62 +408,61 @@ const activeShowSlice = createSlice({
         return initialState;
       })
       .addCase(fetchShowWithDetails.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.showDetailsLoading = true;
+        state.showDetailsError = null;
       })
       .addCase(fetchShowWithDetails.fulfilled, (state, action) => {
         state.show = action.payload.show;
         state.watchedEpisodes = action.payload.watchedEpisodesMap;
-        state.loading = false;
+        state.showDetailsLoading = false;
       })
       .addCase(fetchShowWithDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || { message: 'Failed to load show details' };
+        state.showDetailsLoading = false;
+        state.showDetailsError = action.payload || { message: 'Failed to load show details' };
       })
       .addCase(updateEpisodeWatchStatus.pending, (state) => {
-        state.error = null;
+        state.showDetailsError = null;
       })
       .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
-        const seasonId = action.payload.season_id;
+        const seasonId = action.payload.seasonId;
         const seasonStatus = action.payload.seasonStatus;
-        const episodeId = action.payload.episode_id;
+        const episodeId = action.payload.episodeId;
         const episodeStatus = action.payload.episodeStatus;
         const showStatus = action.payload.showStatus;
 
         const show = state.show!;
-        show.watch_status = showStatus;
-        const season = state.show?.seasons?.find((season) => season.season_id === seasonId);
+        show.watchStatus = showStatus;
+        const season = state.show?.seasons?.find((season) => season.id === seasonId);
         if (season) {
-          season.watch_status = seasonStatus;
-          const episode = season.episodes.find((episode) => episode.episode_id === episodeId)!;
-          episode.watch_status = episodeStatus;
-          state.watchedEpisodes[action.payload.episode_id] = episodeStatus === 'WATCHED';
+          season.watchStatus = seasonStatus;
+          const episode = season.episodes.find((episode) => episode.id === episodeId)!;
+          episode.watchStatus = episodeStatus;
+          state.watchedEpisodes[action.payload.episodeId] = episodeStatus === WatchStatus.WATCHED;
         }
       })
       .addCase(updateEpisodeWatchStatus.rejected, (state, action) => {
-        state.error = action.payload || { message: 'Failed to update episode watch status' };
-        console.log(action);
+        state.showDetailsError = action.payload || { message: 'Failed to update episode watch status' };
       })
       .addCase(updateSeasonWatchStatus.pending, (state) => {
-        state.error = null;
+        state.showDetailsError = null;
       })
       .addCase(updateSeasonWatchStatus.fulfilled, (state, action) => {
-        const seasonId = action.payload.season_id;
+        const seasonId = action.payload.seasonId;
         const seasonStatus = action.payload.seasonStatus;
         const showStatus = action.payload.showStatus;
 
         const show = state.show!;
-        show.watch_status = showStatus;
-        const season = state.show?.seasons?.find((season) => season.season_id === seasonId);
+        show.watchStatus = showStatus;
+        const season = state.show?.seasons?.find((season) => season.id === seasonId);
         if (season) {
-          season.watch_status = seasonStatus;
+          season.watchStatus = seasonStatus;
           season.episodes.forEach((episode) => {
-            state.watchedEpisodes[episode.episode_id] = seasonStatus === 'WATCHED';
+            state.watchedEpisodes[episode.id] = seasonStatus === WatchStatus.WATCHED;
           });
         }
       })
       .addCase(updateSeasonWatchStatus.rejected, (state, action) => {
-        state.error = action.payload || { message: 'Failed to update season watch status' };
+        state.showDetailsError = action.payload || { message: 'Failed to update season watch status' };
       })
       .addCase(fetchSimilarShows.pending, (state) => {
         state.similarShowsError = null;
@@ -479,8 +498,8 @@ export const { clearActiveShow, toggleSeasonWatched } = activeShowSlice.actions;
 export const selectShow = (state: RootState) => state.activeShow.show;
 export const selectSeasons = (state: RootState) => state.activeShow.show?.seasons;
 export const selectWatchedEpisodes = (state: RootState) => state.activeShow.watchedEpisodes;
-export const selectShowLoading = (state: RootState) => state.activeShow.loading;
-export const selectShowError = (state: RootState) => state.activeShow.error;
+export const selectShowLoading = (state: RootState) => state.activeShow.showDetailsLoading;
+export const selectShowError = (state: RootState) => state.activeShow.showDetailsError;
 export const selectSimilarShows = (state: RootState) => state.activeShow.similarShows;
 export const selectSimilarShowsLoading = (state: RootState) => state.activeShow.similarShowsLoading;
 export const selectSimilarShowsError = (state: RootState) => state.activeShow.similarShowsError;

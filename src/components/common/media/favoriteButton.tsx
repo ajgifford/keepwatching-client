@@ -12,7 +12,7 @@ import {
 } from '../../../app/slices/activeProfileSlice';
 
 interface FavoritesButtonProps {
-  id: number;
+  id: string | number;
   searchType: string;
 }
 
@@ -20,7 +20,12 @@ function FavoritesButton(props: FavoritesButtonProps) {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectActiveProfile);
   const searchType = props.searchType;
-  const tmdbId = Number(props.id);
+  let tmdbId: number;
+  if (typeof props.id === 'string') {
+    tmdbId = Number(props.id);
+  } else {
+    tmdbId = props.id;
+  }
   const show = useAppSelector((state) => selectShowByTMDBId(state, tmdbId));
   const movie = useAppSelector((state) => selectMovieByTMDBId(state, tmdbId));
   const alreadyFavorited = show || movie;
@@ -34,7 +39,7 @@ function FavoritesButton(props: FavoritesButtonProps) {
     if (searchType === 'movies') {
       dispatch(
         addMovieFavorite({
-          profileId: Number(profile?.id),
+          profileId: profile?.id || -1,
           movieId: tmdbId,
         })
       );

@@ -20,7 +20,6 @@ import {
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { Profile } from '../../app/model/profile';
 import { selectCurrentAccount, updateAccount, updateAccountImage, verifyEmail } from '../../app/slices/accountSlice';
 import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import {
@@ -35,6 +34,7 @@ import { ProfileCard } from '../common/account/profileCard';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { getAccountImageUrl } from '../utility/imageUtils';
+import { Profile } from '@ajgifford/keepwatching-types';
 import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {
@@ -43,7 +43,7 @@ const ManageAccount = () => {
   const profiles = useAppSelector(selectAllProfiles);
   const activeProfile = useAppSelector(selectActiveProfile)!;
   const lastUpdated = useAppSelector(selectLastUpdated);
-  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.default_profile_id));
+  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.defaultProfileId));
 
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
   const [managedProfile, setManagedProfile] = useState<Profile | null>();
@@ -52,11 +52,11 @@ const ManageAccount = () => {
   const [currentName, setCurrentName] = useState('');
   const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
 
-  const [changingActiveProfile, setChangingActiveProfile] = useState<string | null>(null);
+  const [changingActiveProfile, setChangingActiveProfile] = useState<number | null>(null);
 
   const [profileStatsDialogOpen, setProfileStatsDialogOpen] = useState<boolean>(false);
   const [profileStatsDialogTitle, setProfileStatsDialogTitle] = useState<string>('');
-  const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<string>('');
+  const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<number>(0);
 
   const [accountStatsDialogOpen, setAccountStatsDialogOpen] = useState<boolean>(false);
   const [accountStatsDialogTitle, setAccountStatsDialogTitle] = useState<string>('');
@@ -94,7 +94,7 @@ const ManageAccount = () => {
         updateAccount({
           account_id: account.id,
           name: newName,
-          defaultProfileId: account.default_profile_id,
+          defaultProfileId: account.defaultProfileId,
         })
       );
     });

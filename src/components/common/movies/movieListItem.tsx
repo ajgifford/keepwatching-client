@@ -3,7 +3,6 @@ import { useState } from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
-import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
 import {
   Avatar,
   Box,
@@ -19,13 +18,12 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
-import { Movie } from '../../../app/model/movies';
-import { MovieWatchStatus } from '../../../app/model/watchStatus';
 import { removeMovieFavorite, updateMovieStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
+import { BinaryWatchStatusType, ProfileMovie } from '@ajgifford/keepwatching-types';
 
 export type MovieListItemProps = {
-  movie: Movie;
+  movie: ProfileMovie;
 };
 
 export const MovieListItem = (props: MovieListItemProps) => {
@@ -35,20 +33,18 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  const handleWatchStatusChange = (currentStatus: MovieWatchStatus) => {
+  const handleWatchStatusChange = (currentStatus: BinaryWatchStatusType) => {
     dispatch(
       updateMovieStatus({
-        profileId: Number(movie.profile_id),
-        movieId: movie.movie_id,
+        profileId: movie.profileId,
+        movieId: movie.id,
         status: determineNewWatchStatus(currentStatus),
       })
     );
   };
 
-  function determineNewWatchStatus(currentStatus: MovieWatchStatus): MovieWatchStatus {
+  function determineNewWatchStatus(currentStatus: BinaryWatchStatusType): BinaryWatchStatusType {
     if (currentStatus === 'NOT_WATCHED') {
-      return 'WATCHED';
-    } else if (currentStatus === 'WATCHING') {
       return 'WATCHED';
     }
     return 'NOT_WATCHED';
@@ -57,18 +53,18 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const handleRemoveFavorite = () => {
     dispatch(
       removeMovieFavorite({
-        profileId: Number(movie.profile_id),
-        movieId: movie.movie_id,
+        profileId: Number(movie.profileId),
+        movieId: movie.id,
       })
     );
   };
 
   return (
-    <ListItem key={`listItem_${movie.movie_id}`} alignItems="flex-start">
+    <ListItem key={`listItem_${movie.id}`} alignItems="flex-start">
       <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
         <Avatar
           alt={movie.title}
-          src={buildTMDBImagePath(movie.poster_image)}
+          src={buildTMDBImagePath(movie.posterImage)}
           variant="rounded"
           sx={{ width: 96, height: 140 }}
         />
@@ -92,10 +88,10 @@ export const MovieListItem = (props: MovieListItemProps) => {
                 <br />
                 <b>Genres: </b> {movie.genres}
                 <br />
-                <b>Streaming Service: </b> {movie.streaming_services}
+                <b>Streaming Service: </b> {movie.streamingServices}
                 <br />
                 <b>Release Date: </b>
-                {movie.release_date} | <b>Rated: </b> {movie.mpa_rating}
+                {movie.releaseDate} | <b>Rated: </b> {movie.mpaRating}
                 <br />
                 <b>Runtime: </b>
                 {calculateRuntimeDisplay(movie.runtime)}
@@ -115,9 +111,9 @@ export const MovieListItem = (props: MovieListItemProps) => {
           }
         />
       </Box>
-      <Tooltip key={`removeFavoriteTooltip_${movie.movie_id}`} title="Remove Favorite">
+      <Tooltip key={`removeFavoriteTooltip_${movie.id}`} title="Remove Favorite">
         <IconButton
-          key={`removeFavoriteIconButton_${movie.movie_id}`}
+          key={`removeFavoriteIconButton_${movie.id}`}
           onClick={(event) => {
             handleRemoveFavorite();
             event.stopPropagation();
@@ -126,17 +122,16 @@ export const MovieListItem = (props: MovieListItemProps) => {
           <StarIcon color="primary" />
         </IconButton>
       </Tooltip>
-      <Tooltip key={movie.profile_id} title={movie.watch_status === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
+      <Tooltip key={movie.profileId} title={movie.watchStatus === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
         <IconButton
-          key={movie.profile_id}
+          key={movie.profileId}
           onClick={(event) => {
-            handleWatchStatusChange(movie.watch_status);
+            handleWatchStatusChange(movie.watchStatus);
             event.stopPropagation();
           }}
         >
-          {movie.watch_status === 'NOT_WATCHED' && <WatchLaterOutlinedIcon />}
-          {movie.watch_status === 'WATCHING' && <WatchLaterTwoToneIcon color="success" />}
-          {movie.watch_status === 'WATCHED' && <WatchLaterIcon color="success" />}
+          {movie.watchStatus === 'NOT_WATCHED' && <WatchLaterOutlinedIcon />}
+          {movie.watchStatus === 'WATCHED' && <WatchLaterIcon color="success" />}
         </IconButton>
       </Tooltip>
     </ListItem>

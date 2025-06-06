@@ -29,7 +29,6 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { Episode, Season } from '../../app/model/shows';
 import {
   clearActiveShow,
   fetchShowWithDetails,
@@ -37,6 +36,7 @@ import {
   selectShow,
   selectShowError,
   selectShowLoading,
+  selectWatchedEpisodes,
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
@@ -55,10 +55,12 @@ import {
 } from '../utility/contentUtility';
 import {
   WatchStatusIcon,
+  canChangeWatchStatus,
   determineNextSeasonWatchStatus,
   getSeasonWatchStatusTooltip,
   getWatchStatusDisplay,
 } from '../utility/watchStatusUtility';
+import { ProfileEpisode, ProfileSeason, WatchStatus } from '@ajgifford/keepwatching-types';
 
 function ShowDetails() {
   const { showId, profileId } = useParams();
@@ -68,6 +70,7 @@ function ShowDetails() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const show = useAppSelector(selectShow);
+  const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
   const seasons = useAppSelector(selectSeasons);
   const showDetailsLoading = useAppSelector(selectShowLoading);
   const showDetailsError = useAppSelector(selectShowError);
@@ -88,7 +91,7 @@ function ShowDetails() {
 
   useEffect(() => {
     if (showId && profileId) {
-      dispatch(fetchShowWithDetails({ profileId, showId }));
+      dispatch(fetchShowWithDetails({ profileId: Number(profileId), showId: Number(showId) }));
     }
 
     // Cleanup function to clear the active show when component unmounts
@@ -104,41 +107,41 @@ function ShowDetails() {
     return <ErrorComponent error={showDetailsError} />;
   }
 
-  const handleSeasonWatchStatusChange = async (season: Season, event: React.MouseEvent) => {
+  const handleSeasonWatchStatusChange = async (season: ProfileSeason, event: React.MouseEvent) => {
     event.stopPropagation();
 
-    setLoadingSeasons((prev) => ({ ...prev, [season.season_id]: true }));
+    setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
     const nextStatus = determineNextSeasonWatchStatus(season, show!);
 
     try {
       await dispatch(
         updateSeasonWatchStatus({
-          profileId,
-          season,
+          profileId: Number(profileId),
+          seasonId: season.id,
           seasonStatus: nextStatus,
         })
       );
     } finally {
-      setLoadingSeasons((prev) => ({ ...prev, [season.season_id]: false }));
+      setLoadingSeasons((prev) => ({ ...prev, [season.id]: false }));
     }
   };
 
-  const handleEpisodeWatchStatusChange = async (season: Season, episode: Episode) => {
-    setLoadingEpisodes((prev) => ({ ...prev, [episode.episode_id]: true }));
+  const handleEpisodeWatchStatusChange = async (season: ProfileSeason, episode: ProfileEpisode) => {
+    setLoadingEpisodes((prev) => ({ ...prev, [episode.id]: true }));
 
     try {
-      const nextStatus = episode.watch_status === 'WATCHED' ? 'NOT_WATCHED' : 'WATCHED';
+      const nextStatus = watchedEpisodes[episode.id] ? 'NOT_WATCHED' : 'WATCHED';
 
       await dispatch(
         updateEpisodeWatchStatus({
-          profileId,
+          profileId: Number(profileId),
           season,
           episode,
           episodeStatus: nextStatus,
         })
       );
     } finally {
-      setLoadingEpisodes((prev) => ({ ...prev, [episode.episode_id]: false }));
+      setLoadingEpisodes((prev) => ({ ...prev, [episode.id]: false }));
     }
   };
 
@@ -235,11 +238,11 @@ function ShowDetails() {
       >
         {/* Backdrop Image Section */}
         <Box sx={{ position: 'relative' }}>
-          {show?.backdrop_image ? (
+          {show?.backdropImage ? (
             <CardMedia
               component="img"
               height={isMobile ? '380' : '320'}
-              image={`https://image.tmdb.org/t/p/w1280${show.backdrop_image}`}
+              image={`https://image.tmdb.org/t/p/w1280${show.backdropImage}`}
               alt={show.title}
               sx={{
                 filter: 'brightness(0.65)',
@@ -256,11 +259,7 @@ function ShowDetails() {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-            >
-              <Typography variant="h6" color="text.secondary">
-                No backdrop image available
-              </Typography>
-            </Box>
+            ></Box>
           )}
 
           {/* Overlay Content */}
@@ -292,7 +291,7 @@ function ShowDetails() {
                 transform: 'translateY(-30px)',
                 objectFit: 'cover',
               }}
-              src={buildTMDBImagePath(show?.poster_image, 'w500')}
+              src={buildTMDBImagePath(show?.posterImage, 'w500')}
               alt={show?.title}
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                 e.currentTarget.src = 'https://placehold.co/300x450/gray/white?text=No+Image';
@@ -303,7 +302,7 @@ function ShowDetails() {
             <Box sx={{ flexGrow: 1, pb: 2 }}>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography
-                  variant={isMobile ? 'h6' : 'h5'}
+                  variant={isMobile ? 'h5' : 'h4'}
                   fontWeight="bold"
                   sx={{
                     textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
@@ -342,7 +341,7 @@ function ShowDetails() {
                   textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
                 }}
               >
-                {formatYear(show?.release_date)} • {show?.season_count} Seasons • {show?.episode_count} Episodes
+                {formatYear(show?.releaseDate)} • {show?.seasonCount} Seasons • {show?.episodeCount} Episodes
               </Typography>
 
               <Box display="flex" gap={1} flexWrap="wrap">
@@ -359,7 +358,7 @@ function ShowDetails() {
                 )}
                 <Chip
                   size="small"
-                  label={show?.content_rating || 'Not Rated'}
+                  label={show?.contentRating || 'Not Rated'}
                   color="secondary"
                   sx={{ fontWeight: 'medium', boxShadow: 1 }}
                 />
@@ -400,7 +399,7 @@ function ShowDetails() {
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       Streaming On
                     </Typography>
-                    <Typography variant="body2">{buildServicesLine(show?.streaming_services)}</Typography>
+                    <Typography variant="body2">{buildServicesLine(show?.streamingServices)}</Typography>
                   </Box>
                 </Grid>
 
@@ -410,8 +409,8 @@ function ShowDetails() {
                       Watch Status
                     </Typography>
                     <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <WatchStatusIcon status={show?.watch_status!} fontSize="small" />
-                      {getWatchStatusDisplay(show?.watch_status)}
+                      <WatchStatusIcon status={show?.watchStatus!} fontSize="small" />
+                      {getWatchStatusDisplay(show?.watchStatus)}
                     </Typography>
                   </Box>
                 </Grid>
@@ -439,7 +438,7 @@ function ShowDetails() {
                   </Grid>
                   <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
                     <Typography variant="body2" fontWeight={500}>
-                      {show?.last_episode ? buildEpisodeLineDetails(show?.last_episode) : 'No Last Episode'}
+                      {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode) : 'No Last Episode'}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -454,7 +453,7 @@ function ShowDetails() {
                   </Grid>
                   <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
                     <Typography variant="body2" fontWeight={500}>
-                      {show?.next_episode ? buildEpisodeLineDetails(show?.next_episode) : 'No Next Episode'}
+                      {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode) : 'No Next Episode'}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -482,7 +481,7 @@ function ShowDetails() {
 
       {/* Tab Content */}
       <TabPanel value={tabValue} index={0}>
-        {profileId && <KeepWatchingShowComponent profileId={profileId} />}
+        {profileId && <KeepWatchingShowComponent profileId={Number(profileId)} />}
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
@@ -490,7 +489,7 @@ function ShowDetails() {
           <Box>
             {seasons.map((season) => (
               <Accordion
-                key={season.season_id}
+                key={season.id}
                 sx={{
                   mb: 1.5,
                   '&:before': { display: 'none' },
@@ -511,7 +510,7 @@ function ShowDetails() {
                 >
                   <Avatar
                     alt={season.name}
-                    src={buildTMDBImagePath(season.poster_image)}
+                    src={buildTMDBImagePath(season.posterImage)}
                     variant="rounded"
                     sx={{
                       width: { xs: 70, sm: 90 },
@@ -524,10 +523,10 @@ function ShowDetails() {
                       {season.name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Season {season.season_number} • {season.number_of_episodes} Episodes
+                      Season {season.seasonNumber} • {season.numberOfEpisodes} Episodes
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {buildSeasonAirDate(season.release_date)}
+                      {buildSeasonAirDate(season.releaseDate)}
                     </Typography>
                   </Box>
 
@@ -535,14 +534,14 @@ function ShowDetails() {
                     <Tooltip title={getSeasonWatchStatusTooltip(season, show!)}>
                       <IconButton
                         onClick={(event) => handleSeasonWatchStatusChange(season, event)}
-                        disabled={loadingSeasons[season.season_id]}
+                        disabled={loadingSeasons[season.id] || !canChangeWatchStatus(season, show!)}
                         size="medium"
                         sx={{ my: 'auto' }}
                       >
-                        <WatchStatusIcon status={season.watch_status} />
+                        <WatchStatusIcon status={season.watchStatus} />
                       </IconButton>
                     </Tooltip>
-                    {loadingSeasons[season.season_id] && (
+                    {loadingSeasons[season.id] && (
                       <CircularProgress
                         size={24}
                         sx={{
@@ -558,10 +557,10 @@ function ShowDetails() {
                 </AccordionSummary>
 
                 <AccordionDetails sx={{ p: 0 }}>
-                  {season.episodes ? (
+                  {season.episodes && season.episodes.length > 0 ? (
                     <List disablePadding>
                       {season.episodes.map((episode, index) => (
-                        <React.Fragment key={episode.episode_id}>
+                        <React.Fragment key={episode.id}>
                           <ListItem
                             sx={{
                               display: 'flex',
@@ -576,7 +575,7 @@ function ShowDetails() {
                             <Box sx={{ position: 'relative', mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }}>
                               <Avatar
                                 alt={episode.title}
-                                src={buildTMDBImagePath(episode.still_image)}
+                                src={buildTMDBImagePath(episode.stillImage)}
                                 variant="rounded"
                                 sx={{
                                   width: { xs: 200, sm: 160 },
@@ -596,7 +595,7 @@ function ShowDetails() {
                                   borderTopRightRadius: 4,
                                 }}
                               >
-                                S{season.season_number} E{episode.episode_number}
+                                S{season.seasonNumber} E{episode.episodeNumber}
                               </Box>
                             </Box>
 
@@ -619,21 +618,23 @@ function ShowDetails() {
                                 <i>{episode.overview || 'No description available.'}</i>
                               </Typography>
                               <Typography variant="body2" color="text.secondary">
-                                {buildEpisodeAirDate(episode.air_date)} • {calculateRuntimeDisplay(episode.runtime)}
+                                {buildEpisodeAirDate(episode.airDate)} • {calculateRuntimeDisplay(episode.runtime)}
                               </Typography>
                             </Box>
 
                             <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 }, ml: { xs: 0, sm: 2 } }}>
-                              <Tooltip title={episode.watch_status === 'WATCHED' ? 'Mark Not Watched' : 'Mark Watched'}>
+                              <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}>
                                 <IconButton
-                                  color={episode.watch_status === 'WATCHED' ? 'success' : 'default'}
+                                  color={watchedEpisodes[episode.id] ? 'success' : 'default'}
                                   onClick={() => handleEpisodeWatchStatusChange(season, episode)}
-                                  disabled={loadingEpisodes[episode.episode_id]}
+                                  disabled={loadingEpisodes[episode.id]}
                                 >
-                                  <WatchStatusIcon status={episode.watch_status} />
+                                  <WatchStatusIcon
+                                    status={watchedEpisodes[episode.id] ? WatchStatus.WATCHED : WatchStatus.NOT_WATCHED}
+                                  />
                                 </IconButton>
                               </Tooltip>
-                              {loadingEpisodes[episode.episode_id] && (
+                              {loadingEpisodes[episode.id] && (
                                 <CircularProgress
                                   size={24}
                                   sx={{
@@ -672,8 +673,8 @@ function ShowDetails() {
       </TabPanel>
 
       <TabPanel value={tabValue} index={2}>
-        {show && <RecommendedShowsComponent showId={String(show.show_id)} profileId={profileId || ''} />}
-        {show && <SimilarShowsComponent showId={String(show.show_id)} profileId={profileId || ''} />}
+        {show && <RecommendedShowsComponent showId={show.id} profileId={Number(profileId)} />}
+        {show && <SimilarShowsComponent showId={show.id} profileId={Number(profileId)} />}
       </TabPanel>
     </Box>
   );

@@ -1,15 +1,8 @@
 import { ReactNode, useMemo } from 'react';
 
-import {
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  LinearProgress,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Divider, LinearProgress, Typography } from '@mui/material';
 
-import { ShowProgress } from '../../../app/model/statistics';
+import { ShowProgress } from '@ajgifford/keepwatching-types';
 
 export interface ShowProgressCardProps {
   title: string;
@@ -31,14 +24,14 @@ export default function ShowProgressCard({
   const filteredShows = useMemo(() => {
     // Filter shows if a filter is provided
     const filtered = filter ? shows.filter((show) => show.status === filter) : shows;
-    
+
     // Sort by completion percentage (descending)
     return [...filtered].sort((a, b) => b.percentComplete - a.percentComplete);
   }, [shows, filter]);
 
   const defaultEmptyMessage = useMemo(() => {
     if (emptyMessage) return emptyMessage;
-    
+
     return filter === 'WATCHING'
       ? 'No shows currently being watched'
       : filter === 'WATCHED'

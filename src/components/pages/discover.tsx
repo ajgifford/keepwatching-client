@@ -20,10 +20,10 @@ import {
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
-import { SearchResult } from '../../app/model/search';
 import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
 import SearchResults from '../common/search/searchResults';
-import { AxiosError } from 'axios';
+import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
+import { AxiosError, AxiosResponse } from 'axios';
 
 type ServiceType = 'none' | 'netflix' | 'disney' | 'hbo' | 'apple' | 'prime';
 type ContentType = 'none' | 'movies' | 'series';
@@ -68,7 +68,7 @@ function a11yProps(index: number) {
 
 function Discover() {
   const dispatch = useAppDispatch();
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<DiscoverAndSearchResult[]>([]);
   const [selectedService, setSelectedService] = useState<ServiceType>('none');
   const [selectedType, setSelectedType] = useState<ContentType>('none');
   const [selectedFilter, setSelectedFilter] = useState<ContentFilterType>('top');
@@ -195,17 +195,17 @@ function Discover() {
       }
 
       try {
-        const response = await axiosInstance.get(endpoint, { params });
+        const response: AxiosResponse<DiscoverAndSearchResponse> = await axiosInstance.get(endpoint, { params });
 
         if (isNewSearch) {
           setResults(response.data.results);
-          setTotalResults(response.data.total_results || 0);
+          setTotalResults(response.data.totalResults || 0);
         } else {
           setResults((prev) => [...prev, ...response.data.results]);
         }
 
         setSearchPerformed(true);
-        setHasMore(response.data.current_page < response.data.total_pages);
+        setHasMore(response.data.currentPage < response.data.totalPages);
       } catch (error: unknown) {
         let errorMessage = 'Failed to load content';
         if (error instanceof AxiosError) {

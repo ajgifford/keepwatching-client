@@ -1,4 +1,4 @@
-import { AccountStatistics, ProfileStatistics } from '../../../app/model/statistics';
+import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 export interface SummaryCardProps {
   progressLabel: string;
@@ -12,7 +12,7 @@ export interface SummaryCardProps {
   }>;
 }
 
-export function getAccountSummaryProps(stats: AccountStatistics | null | undefined): SummaryCardProps | null {
+export function getAccountSummaryProps(stats: AccountStatisticsResponse | null | undefined): SummaryCardProps | null {
   if (!stats) return null;
 
   return {
@@ -28,7 +28,7 @@ export function getAccountSummaryProps(stats: AccountStatistics | null | undefin
   };
 }
 
-export function getProfileSummaryProps(stats: ProfileStatistics | null | undefined): SummaryCardProps | null {
+export function getProfileSummaryProps(stats: ProfileStatisticsResponse | null | undefined): SummaryCardProps | null {
   if (!stats) return null;
 
   return {
@@ -45,14 +45,14 @@ export function getProfileSummaryProps(stats: ProfileStatistics | null | undefin
 }
 
 export function isAccountStatistics(
-  stats: AccountStatistics | ProfileStatistics | null | undefined
-): stats is AccountStatistics {
+  stats: AccountStatisticsResponse | ProfileStatisticsResponse | null | undefined
+): stats is AccountStatisticsResponse {
   return stats !== null && stats !== undefined && 'profileCount' in stats;
 }
 
 export function isProfileStatistics(
-  stats: AccountStatistics | ProfileStatistics | null | undefined
-): stats is ProfileStatistics {
+  stats: AccountStatisticsResponse | ProfileStatisticsResponse | null | undefined
+): stats is ProfileStatisticsResponse {
   return (
     stats !== null &&
     stats !== undefined &&

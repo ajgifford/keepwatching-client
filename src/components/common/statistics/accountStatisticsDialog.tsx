@@ -3,19 +3,19 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
-import { AccountStatistics } from '../../../app/model/statistics';
 import AccountStatisticsDashboard from './accountStatisticsDashboard';
+import { AccountStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface AccountStatisticsDialogProps {
   open: boolean;
   title: string;
-  accountId: string;
+  accountId: number;
   onClose: () => void;
 }
 
 const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountStatisticsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [statistics, setStatistics] = useState<AccountStatistics | null>(null);
+  const [statistics, setStatistics] = useState<AccountStatisticsResponse | null>(null);
 
   useEffect(() => {
     const fetchAccountStats = async () => {

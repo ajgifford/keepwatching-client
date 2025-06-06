@@ -6,8 +6,8 @@ import { MediaCard } from '../media/mediaCard';
 import { ScrollableMediaRow } from '../media/scrollableMediaRow';
 
 interface SimilarShowsComponentProps {
-  showId: string;
-  profileId: string;
+  showId: number;
+  profileId: number;
 }
 
 export const SimilarShowsComponent = ({ showId, profileId }: SimilarShowsComponentProps) => {

@@ -2,11 +2,11 @@ import { Fragment } from 'react/jsx-runtime';
 
 import { Box, CircularProgress, Divider, List, Typography } from '@mui/material';
 
-import { SearchResult } from '../../../app/model/search';
 import { SearchResultItem } from './searchResultItem';
+import { DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 
 interface SearchResultProps {
-  results: SearchResult[];
+  results: DiscoverAndSearchResult[];
   searchType: string;
   source: 'search' | 'discover';
   isLoading: boolean;

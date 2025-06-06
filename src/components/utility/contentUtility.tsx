@@ -1,4 +1,4 @@
-import { EpisodeToAir, Show } from '../../app/model/shows';
+import { ProfileShow, ShowEpisode } from '@ajgifford/keepwatching-types';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 
@@ -66,7 +66,7 @@ export const buildSeasonAirDate = (airDate: string) => {
   return `Premiering On: TBD`;
 };
 
-export const buildServicesLine = (show: Show | null) => {
+export const buildServicesLine = (show: ProfileShow | null) => {
   if (!show) {
     return <></>;
   }
@@ -81,7 +81,7 @@ export const buildServicesLine = (show: Show | null) => {
   };
 
   const network = show.network?.toLowerCase() === 'unknown' ? null : show.network;
-  const filteredServices = show.streaming_services ? filterUnknown(show.streaming_services) : '';
+  const filteredServices = show.streamingServices ? filterUnknown(show.streamingServices) : '';
 
   if (network) {
     if (filteredServices) {
@@ -118,30 +118,30 @@ export const buildServicesLine = (show: Show | null) => {
   return <>No Streaming Service Information</>;
 };
 
-export const buildEpisodeLine = (show: Show | null) => {
-  if (show && show.last_episode) {
-    if (show.next_episode) {
+export const buildEpisodeLine = (show: ProfileShow | null) => {
+  if (show && show.lastEpisode) {
+    if (show.nextEpisode) {
       return (
         <>
           <b>Last Episode: </b>
-          {buildEpisodeLineDetails(show.last_episode)} | <b>Next Episode: </b>
-          {buildEpisodeLineDetails(show.next_episode)}
+          {buildEpisodeLineDetails(show.lastEpisode)} | <b>Next Episode: </b>
+          {buildEpisodeLineDetails(show.nextEpisode)}
         </>
       );
     }
     return (
       <>
-        <b>Last Episode: </b> {buildEpisodeLineDetails(show.last_episode)}
+        <b>Last Episode: </b> {buildEpisodeLineDetails(show.lastEpisode)}
       </>
     );
   }
   return <>No Episode Data</>;
 };
 
-export const buildEpisodeLineDetails = (episode: EpisodeToAir) => {
+export const buildEpisodeLineDetails = (episode: ShowEpisode) => {
   return (
     <>
-      {`S${episode.season_number} E${episode.episode_number}`} - {episode.title} - {episode.air_date}
+      {`S${episode.seasonNumber} E${episode.episodeNumber}`} - {episode.title} - {episode.airDate}
     </>
   );
 };

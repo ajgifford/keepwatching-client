@@ -48,13 +48,13 @@ function SystemNotificationTray() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '98%', margin: '0 auto' }}>
-      {notifications.slice(startIndex, startIndex + 2).map(({ notification_id, message }) => {
+      {notifications.slice(startIndex, startIndex + 2).map(({ id, message }) => {
         const parsedMessage = parseMessage(message);
         const firstLine = parsedMessage.split('\n')[0];
         const hasMoreText = parsedMessage.includes('\n');
 
         return (
-          <Card key={notification_id} sx={{ width: '100%', boxShadow: 1 }}>
+          <Card key={id} sx={{ width: '100%', boxShadow: 1 }}>
             <CardContent
               sx={{
                 display: 'flex',
@@ -68,7 +68,7 @@ function SystemNotificationTray() {
                 <Typography color="primary" variant="body2">
                   {firstLine}
                 </Typography>
-                <Collapse in={!!expanded[notification_id]}>
+                <Collapse in={!!expanded[id]}>
                   <Typography variant="body2" sx={{ mt: 1 }}>
                     {parsedMessage}
                   </Typography>
@@ -76,12 +76,12 @@ function SystemNotificationTray() {
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {hasMoreText && (
-                  <IconButton size="small" onClick={() => toggleExpand(notification_id)}>
-                    {expanded[notification_id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  <IconButton size="small" onClick={() => toggleExpand(id)}>
+                    {expanded[id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </IconButton>
                 )}
                 <Tooltip title="Dismiss">
-                  <IconButton size="small" onClick={() => onDismiss(notification_id)}>
+                  <IconButton size="small" onClick={() => onDismiss(id)}>
                     <CloseIcon />
                   </IconButton>
                 </Tooltip>

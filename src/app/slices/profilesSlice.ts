@@ -1,10 +1,13 @@
 import axiosInstance from '../api/axiosInstance';
-import { PROFILE_KEY, Profile } from '../model/profile';
+import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
+import { Profile, ProfileResponse, ProfilesResponse } from '@ajgifford/keepwatching-types';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
+
+const PROFILE_KEY = 'profiles';
 
 const saveToLocalStorage = (profiles: Profile[]) => {
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
@@ -16,14 +19,14 @@ const loadFromLocalStorage = () => {
   return profiles;
 };
 
-interface ProfileStatus extends EntityState<Profile, string> {
-  status: 'idle' | 'pending' | 'succeeded' | 'failed';
-  error: string | null;
+interface ProfileStatus extends EntityState<Profile, number> {
+  loading: boolean;
+  error: ApiErrorResponse | null;
 }
 
 interface ProfileSubStatus {
-  status: 'idle' | 'pending' | 'succeeded' | 'failed';
-  error: string | null;
+  loading: boolean;
+  error: ApiErrorResponse | null;
 }
 
 const profilesAdapter = createEntityAdapter<Profile>({
@@ -33,70 +36,76 @@ const profilesAdapter = createEntityAdapter<Profile>({
 const calculateInitialState = (): ProfileSubStatus => {
   const profiles = loadFromLocalStorage();
   if (profiles.length > 0) {
-    return { status: 'succeeded', error: null };
+    return { loading: false, error: null };
   }
-  return { status: 'idle', error: null };
+  return { loading: false, error: null };
 };
 
 const initialState: ProfileStatus = profilesAdapter.getInitialState(calculateInitialState(), loadFromLocalStorage());
 
-type ErrorResponse = {
-  message: string;
-};
-
-export const fetchProfiles = createAsyncThunk(
+export const fetchProfiles = createAsyncThunk<Profile[], number, { rejectValue: ApiErrorResponse }>(
   'profiles/fetchProfiles',
-  async (accountId: string, { rejectWithValue }) => {
+  async (accountId: number, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/accounts/${accountId}/profiles`);
-      const profiles: Profile[] = response.data.results;
+      const response: AxiosResponse<ProfilesResponse> = await axiosInstance.get(`/accounts/${accountId}/profiles`);
+      const profiles: Profile[] = response.data.profiles;
       return profiles;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      return rejectWithValue('An unknown error occurred');
+      return rejectWithValue({ message: 'An unknown error occurred' });
     }
   },
   {
-    condition(arg, thunkApi) {
+    condition(_arg, thunkApi) {
       const state = thunkApi.getState() as RootState;
-      const profileStatus = selectProfilesStatus(state);
+      const loading = selectProfilesLoading(state);
       const profiles = selectAllProfiles(state);
-      if (profileStatus !== 'idle' || profiles.length > 0) {
+      if (loading || profiles.length > 0) {
         return false;
       }
     },
   }
 );
 
-export const addProfile = createAsyncThunk(
+export const addProfile = createAsyncThunk<
+  Profile,
+  { accountId: number; newProfileName: string },
+  { rejectValue: ApiErrorResponse }
+>(
   'profiles/addProfile',
   async (
-    { accountId, newProfileName }: { accountId: string; newProfileName: string },
+    { accountId, newProfileName }: { accountId: number; newProfileName: string },
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.post(`/accounts/${accountId}/profiles`, { name: newProfileName });
+      const response: AxiosResponse<ProfileResponse> = await axiosInstance.post(`/accounts/${accountId}/profiles`, {
+        name: newProfileName,
+      });
       dispatch(
         showActivityNotification({
           message: `Added profile: ${newProfileName}`,
           type: ActivityNotificationType.Success,
         })
       );
-      return response.data.result;
+      return response.data.profile;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      return rejectWithValue('An unknown error occurred');
+      return rejectWithValue({ message: 'An unknown error occurred' });
     }
   }
 );
 
-export const deleteProfile = createAsyncThunk(
+export const deleteProfile = createAsyncThunk<
+  number,
+  { accountId: number; profileId: number },
+  { rejectValue: ApiErrorResponse }
+>(
   'profiles/deleteProfile',
-  async ({ accountId, profileId }: { accountId: string; profileId: string }, { dispatch, rejectWithValue }) => {
+  async ({ accountId, profileId }: { accountId: number; profileId: number }, { dispatch, rejectWithValue }) => {
     try {
       await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}`);
       dispatch(
@@ -110,50 +119,64 @@ export const deleteProfile = createAsyncThunk(
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      return rejectWithValue('An unknown error occurred');
+      return rejectWithValue({ message: 'An unknown error occurred' });
     }
   }
 );
 
-export const editProfile = createAsyncThunk(
+export const editProfile = createAsyncThunk<
+  Profile,
+  { accountId: number; profileId: number; name: string },
+  { rejectValue: ApiErrorResponse }
+>(
   'profiles/editProfile',
   async (
-    { accountId, profileId, name }: { accountId: string; profileId: string; name: string },
+    { accountId, profileId, name }: { accountId: number; profileId: number; name: string },
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}`, { name });
+      const response: AxiosResponse<ProfileResponse> = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}`,
+        { name }
+      );
       dispatch(
         showActivityNotification({
           message: `Profile edited successfully`,
           type: ActivityNotificationType.Success,
         })
       );
-      return response.data.result;
+      return response.data.profile;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      return rejectWithValue('An unknown error occurred');
+      return rejectWithValue({ message: 'An unknown error occurred' });
     }
   }
 );
 
-export const updateProfileImage = createAsyncThunk(
+export const updateProfileImage = createAsyncThunk<
+  Profile,
+  { accountId: number; profileId: number; file: File },
+  { rejectValue: ApiErrorResponse }
+>(
   'profiles/updateImage',
   async (
-    { accountId, profileId, file }: { accountId: string; profileId: string; file: File },
+    { accountId, profileId, file }: { accountId: number; profileId: number; file: File },
     { dispatch, rejectWithValue }
   ) => {
     try {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      const response = await axiosInstance.post(`/upload/accounts/${accountId}/profiles/${profileId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      const result = response.data.result;
+      const response: AxiosResponse<ProfileResponse> = await axiosInstance.post(
+        `/upload/accounts/${accountId}/profiles/${profileId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       dispatch(
         showActivityNotification({
@@ -161,7 +184,7 @@ export const updateProfileImage = createAsyncThunk(
           type: ActivityNotificationType.Success,
         })
       );
-      return result;
+      return response.data.profile;
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
@@ -179,7 +202,7 @@ export const updateProfileImage = createAsyncThunk(
           type: ActivityNotificationType.Error,
         })
       );
-      return rejectWithValue('An unknown error occurred');
+      return rejectWithValue({ message: 'An unknown error occurred updating a profile image' });
     }
   }
 );
@@ -195,88 +218,73 @@ const profileSlice = createSlice({
         return profilesAdapter.getInitialState(calculateInitialState());
       })
       .addCase(addProfile.pending, (state) => {
-        state.status = 'pending';
+        state.loading = true;
         state.error = null;
       })
       .addCase(addProfile.fulfilled, (state, action) => {
         profilesAdapter.addOne(state, action.payload);
         saveToLocalStorage(Object.values(state.entities));
-        state.status = 'succeeded';
+        state.loading = false;
+        state.error = null;
       })
       .addCase(addProfile.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Add Profile Failed';
-        } else {
-          state.error = action.error.message || 'Add Profile Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Add Profile Failed' };
       })
       .addCase(deleteProfile.pending, (state) => {
-        state.status = 'pending';
+        state.loading = true;
         state.error = null;
       })
       .addCase(deleteProfile.fulfilled, (state, action) => {
         profilesAdapter.removeOne(state, action.payload);
         saveToLocalStorage(Object.values(state.entities));
-        state.status = 'succeeded';
+        state.loading = false;
+        state.error = null;
       })
       .addCase(deleteProfile.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Delete Profile Failed';
-        } else {
-          state.error = action.error.message || 'Delete Profile Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Delete Profile Failed' };
       })
       .addCase(editProfile.pending, (state) => {
-        state.status = 'pending';
+        state.loading = true;
         state.error = null;
       })
       .addCase(editProfile.fulfilled, (state, action) => {
         profilesAdapter.upsertOne(state, action.payload);
         saveToLocalStorage(Object.values(state.entities));
-        state.status = 'succeeded';
+        state.loading = false;
+        state.error = null;
       })
       .addCase(editProfile.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Edit Profile Failed';
-        } else {
-          state.error = action.error.message || 'Edit Profile Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Edit Profile Failed' };
       })
       .addCase(fetchProfiles.pending, (state) => {
-        state.status = 'pending';
+        state.loading = true;
       })
       .addCase(fetchProfiles.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.loading = false;
         profilesAdapter.setAll(state, action.payload);
         saveToLocalStorage(action.payload);
+        state.error = null;
       })
       .addCase(fetchProfiles.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Get Profiles Failed';
-        } else {
-          state.error = action.error.message || 'Get Profiles Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Get Profiles Failed' };
       })
       .addCase(updateProfileImage.pending, (state) => {
-        state.status = 'pending';
+        state.loading = true;
         state.error = null;
       })
       .addCase(updateProfileImage.fulfilled, (state, action) => {
         profilesAdapter.upsertOne(state, action.payload);
         saveToLocalStorage(Object.values(state.entities));
-        state.status = 'succeeded';
+        state.loading = false;
+        state.error = null;
       })
       .addCase(updateProfileImage.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Profile Image Update Failed';
-        } else {
-          state.error = action.error.message || 'Profile Image Update Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Profile Image Update Failed' };
       });
   },
 });
@@ -286,7 +294,8 @@ export const {
   selectById: selectProfileById,
   selectIds: selectProfileIds,
 } = profilesAdapter.getSelectors((state: RootState) => state.profiles);
-export const selectProfilesStatus = (state: RootState) => state.profiles.status;
+
+export const selectProfilesLoading = (state: RootState) => state.profiles.loading;
 export const selectProfilesError = (state: RootState) => state.profiles.error;
 
 export default profileSlice.reducer;

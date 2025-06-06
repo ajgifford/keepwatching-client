@@ -81,8 +81,8 @@ const Shows = () => {
 
   const sortedShows = [...shows].sort((a, b) => {
     const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, UP_TO_DATE: 3, WATCHED: 4 };
-    const aWatched = watchedOrder[a.watch_status];
-    const bWatched = watchedOrder[b.watch_status];
+    const aWatched = watchedOrder[a.watchStatus];
+    const bWatched = watchedOrder[b.watchStatus];
     if (aWatched !== bWatched) {
       return aWatched - bWatched;
     }
@@ -92,8 +92,8 @@ const Shows = () => {
   const filteredShows = sortedShows.filter((show) => {
     return (
       (genreFilter === '' || show.genres.includes(genreFilter)) &&
-      (streamingServiceFilter === '' || show.streaming_services.includes(streamingServiceFilter)) &&
-      (watchStatusFilter.length === 0 || watchStatusFilter.includes(show.watch_status))
+      (streamingServiceFilter === '' || show.streamingServices.includes(streamingServiceFilter)) &&
+      (watchStatusFilter.length === 0 || watchStatusFilter.includes(show.watchStatus))
     );
   });
 
@@ -161,9 +161,9 @@ const Shows = () => {
           <Box>
             <List id="showsList">
               {filteredShows.map((show) => (
-                <Fragment key={`showListItemFragment_${show.show_id}`}>
+                <Fragment key={`showListItemFragment_${show.id}`}>
                   <ShowListItem show={show} getFilters={getFilters} />
-                  <Divider key={`showListItemDivider_${show.show_id}`} variant="inset" component="li" />
+                  <Divider key={`showListItemDivider_${show.id}`} variant="inset" component="li" />
                 </Fragment>
               ))}
             </List>

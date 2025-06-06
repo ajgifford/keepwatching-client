@@ -81,8 +81,8 @@ const Movies = () => {
 
   const sortedMovies = [...movies].sort((a, b) => {
     const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
-    const aWatched = watchedOrder[a.watch_status];
-    const bWatched = watchedOrder[b.watch_status];
+    const aWatched = watchedOrder[a.watchStatus];
+    const bWatched = watchedOrder[b.watchStatus];
     if (aWatched !== bWatched) {
       return aWatched - bWatched;
     }
@@ -92,8 +92,8 @@ const Movies = () => {
   const filteredMovies = sortedMovies.filter((movie) => {
     return (
       (genreFilter === '' || movie.genres.includes(genreFilter)) &&
-      (streamingServiceFilter === '' || movie.streaming_services === streamingServiceFilter) &&
-      (watchStatusFilter.length === 0 || watchStatusFilter.includes(movie.watch_status))
+      (streamingServiceFilter === '' || movie.streamingServices === streamingServiceFilter) &&
+      (watchStatusFilter.length === 0 || watchStatusFilter.includes(movie.watchStatus))
     );
   });
 
@@ -157,9 +157,9 @@ const Movies = () => {
           <Box>
             <List id="moviesList">
               {filteredMovies.map((movie) => (
-                <Fragment key={`movieListItemFragment_${movie.movie_id}`}>
+                <Fragment key={`movieListItemFragment_${movie.id}`}>
                   <MovieListItem movie={movie} />
-                  <Divider key={`movieListItemDivider_${movie.movie_id}`} variant="inset" component="li" />
+                  <Divider key={`movieListItemDivider_${movie.id}`} variant="inset" component="li" />
                 </Fragment>
               ))}
             </List>

@@ -2,15 +2,15 @@ import { useMemo } from 'react';
 
 import { Divider, Grid, Typography } from '@mui/material';
 
-import { AccountStatistics } from '../../../app/model/statistics';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import ContentBreakdownCard from './contentBreakdownCard';
 import ContentSummaryCard from './contentSummaryCard';
 import { getAccountSummaryProps } from './statisticsUtils';
 import { getTopCategory, getTopCategoryPercentage } from './useStatisticsData';
+import { AccountStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface AccountStatisticsDashboardProps {
-  statistics?: AccountStatistics | null;
+  statistics?: AccountStatisticsResponse | null;
   isLoading?: boolean;
 }
 

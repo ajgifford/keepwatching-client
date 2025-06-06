@@ -3,16 +3,15 @@ import { Link } from 'react-router-dom';
 import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { ContinueWatchingShow, ProfileEpisode } from '../../../app/model/shows';
-import { ShowWatchStatus } from '../../../app/model/watchStatus';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { EpisodeCard } from './episodeCard';
+import { BinaryWatchStatusType, KeepWatchingShow, NextEpisode } from '@ajgifford/keepwatching-types';
 
-const balanceShowsAcrossRows = (shows: ContinueWatchingShow[]): ContinueWatchingShow[] => {
+const balanceShowsAcrossRows = (shows: KeepWatchingShow[]): KeepWatchingShow[] => {
   if (!shows || shows.length <= 2) return shows;
 
-  const groupedByEpisodeCount: Record<number, ContinueWatchingShow[]> = {};
+  const groupedByEpisodeCount: Record<number, KeepWatchingShow[]> = {};
 
   shows.forEach((show) => {
     const count = show.episodes.length;
@@ -26,7 +25,7 @@ const balanceShowsAcrossRows = (shows: ContinueWatchingShow[]): ContinueWatching
     .map(Number)
     .sort((a, b) => b - a);
 
-  const result: ContinueWatchingShow[] = [];
+  const result: KeepWatchingShow[] = [];
 
   episodeCounts.forEach((count) => {
     result.push(...groupedByEpisodeCount[count]);
@@ -35,7 +34,7 @@ const balanceShowsAcrossRows = (shows: ContinueWatchingShow[]): ContinueWatching
   return result;
 };
 
-export const KeepWatchingProfileComponent = ({ profileId }: { profileId: string }) => {
+export const KeepWatchingProfileComponent = ({ profileId }: { profileId: number }) => {
   const nextUnwatchedEpisodes = useAppSelector(selectNextUnwatchedEpisodes);
   if (!nextUnwatchedEpisodes || nextUnwatchedEpisodes.length === 0) {
     return (
@@ -55,7 +54,7 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: string 
   return (
     <Grid container spacing={2}>
       {sortedShows.map((show) => (
-        <Grid item xs={12} sm={6} lg={4} key={`show-grid-${show.show_id}`}>
+        <Grid item xs={12} sm={6} lg={4} key={`show-grid-${show.showId}`}>
           <ShowWithEpisodes show={show} profileId={profileId} />
         </Grid>
       ))}
@@ -63,16 +62,16 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: string 
   );
 };
 
-const ShowWithEpisodes = ({ show, profileId }: { show: ContinueWatchingShow; profileId: string }) => {
+const ShowWithEpisodes = ({ show, profileId }: { show: KeepWatchingShow; profileId: number }) => {
   const dispatch = useAppDispatch();
 
-  const handleNextEpisodeWatchStatusChange = async (episode: ProfileEpisode, newStatus: ShowWatchStatus) => {
+  const handleNextEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: BinaryWatchStatusType) => {
     await dispatch(
       updateNextEpisodeWatchStatus({
-        profileId: episode.profile_id,
-        showId: episode.show_id,
-        seasonId: episode.season_id,
-        episodeId: episode.episode_id,
+        profileId: episode.profileId,
+        showId: episode.showId,
+        seasonId: episode.seasonId,
+        episodeId: episode.episodeId,
         episodeStatus: newStatus,
       })
     );
@@ -83,25 +82,25 @@ const ShowWithEpisodes = ({ show, profileId }: { show: ContinueWatchingShow; pro
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
         <Avatar
           variant="rounded"
-          src={buildTMDBImagePath(show.poster_image)}
-          alt={show.show_title}
+          src={buildTMDBImagePath(show.posterImage)}
+          alt={show.showTitle}
           sx={{ width: 40, height: 40 }}
         />
         <Typography
           variant="h6"
           component={Link}
-          to={`/shows/${show.show_id}/${profileId}`}
+          to={`/shows/${show.showId}/${profileId}`}
           state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
           sx={{ textDecoration: 'none', color: 'inherit' }}
         >
-          {show.show_title}
+          {show.showTitle}
         </Typography>
       </Box>
 
       <Stack spacing={2}>
         {show.episodes.map((episode) => (
           <EpisodeCard
-            key={`episode-${show.show_id}-${episode.season_number}-${episode.episode_number}`}
+            key={`episode-${show.showId}-${episode.seasonNumber}-${episode.episodeNumber}`}
             episode={episode}
             onWatchStatusChange={handleNextEpisodeWatchStatusChange}
           />

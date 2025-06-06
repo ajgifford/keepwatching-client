@@ -1,14 +1,15 @@
 import axiosInstance from '../api/axiosInstance';
-import { SystemNotification } from '../model/systemNotifications';
+import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
+import { AccountNotification, NotificationResponse } from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface SystemNotificationsState {
-  systemNotifications: SystemNotification[];
+  systemNotifications: AccountNotification[];
   loading: boolean;
-  error: string | null;
+  error: ApiErrorResponse | null;
 }
 
 const initialState: SystemNotificationsState = {
@@ -17,32 +18,41 @@ const initialState: SystemNotificationsState = {
   error: null,
 };
 
-export const fetchSystemNotifications = createAsyncThunk(
-  'systemNotifications/fetchNotifications',
-  async (accountId: string, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(`/accounts/${accountId}/notifications`);
-      return response.data.results;
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue('An unknown error occurred');
+export const fetchSystemNotifications = createAsyncThunk<
+  AccountNotification[],
+  number,
+  { rejectValue: ApiErrorResponse }
+>('systemNotifications/fetchNotifications', async (accountId: number, { rejectWithValue }) => {
+  try {
+    const response: AxiosResponse<NotificationResponse> = await axiosInstance.get(
+      `/accounts/${accountId}/notifications`
+    );
+    return response.data.notifications;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
     }
+    return rejectWithValue({ message: 'An unknown error occurred fetching system notifications' });
   }
-);
+});
 
-export const dismissSystemNotification = createAsyncThunk(
+export const dismissSystemNotification = createAsyncThunk<
+  AccountNotification[],
+  { accountId: number; notificationId: number },
+  { rejectValue: ApiErrorResponse }
+>(
   'systemNotifications/dismissNotification',
-  async ({ accountId, notificationId }: { accountId: string; notificationId: number }, { rejectWithValue }) => {
+  async ({ accountId, notificationId }: { accountId: number; notificationId: number }, { rejectWithValue }) => {
     try {
-      await axiosInstance.post(`/accounts/${accountId}/notifications/dismiss/${notificationId}`);
-      return notificationId;
+      const response: AxiosResponse<NotificationResponse> = await axiosInstance.post(
+        `/accounts/${accountId}/notifications/dismiss/${notificationId}`
+      );
+      return response.data.notifications;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      return rejectWithValue('An unknown error occurred');
+      return rejectWithValue({ message: 'An unknown error occurred' });
     }
   }
 );
@@ -67,7 +77,8 @@ const systemNotificationSlice = createSlice({
       })
       .addCase(fetchSystemNotifications.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch system notifications';
+        state.systemNotifications = [];
+        state.error = action.payload || { message: 'Failed to fetch system notifications' };
       })
       .addCase(dismissSystemNotification.pending, (state) => {
         state.loading = true;
@@ -75,12 +86,12 @@ const systemNotificationSlice = createSlice({
       })
       .addCase(dismissSystemNotification.fulfilled, (state, action) => {
         state.loading = false;
+        state.systemNotifications = action.payload;
         state.error = null;
-        state.systemNotifications = state.systemNotifications.filter((n) => n.notification_id !== action.payload);
       })
       .addCase(dismissSystemNotification.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to dismiss a system notification';
+        state.error = action.payload || { message: 'Failed to dismiss a system notification' };
       });
   },
 });

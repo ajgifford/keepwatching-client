@@ -25,11 +25,12 @@ import {
 import Grid from '@mui/material/Grid2';
 
 import axiosInstance from '../../app/api/axiosInstance';
-import { SearchResult } from '../../app/model/search';
 import SearchResults from '../common/search/searchResults';
+import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
+import { AxiosResponse } from 'axios';
 
 function Search() {
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<DiscoverAndSearchResult[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [searchType, setSearchType] = useState<string>('shows');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -68,7 +69,11 @@ function Search() {
   );
 
   const sortResults = useCallback(
-    (results: SearchResult[], localSortBy = sortBy, localSortOrder = sortOrder): SearchResult[] => {
+    (
+      results: DiscoverAndSearchResult[],
+      localSortBy = sortBy,
+      localSortOrder = sortOrder
+    ): DiscoverAndSearchResult[] => {
       if (sortBy === 'none') {
         return results;
       }
@@ -109,12 +114,14 @@ function Search() {
           page: isNewSearch ? '1' : page.toString(),
           ...(year && { year }),
         };
-        const response = await axiosInstance.get(`/search/${searchType}`, { params: searchOptions });
+        const response: AxiosResponse<DiscoverAndSearchResponse> = await axiosInstance.get(`/search/${searchType}`, {
+          params: searchOptions,
+        });
         if (response.status !== 200) throw new Error('Search failed');
 
         const newResults = response.data.results;
         if (isNewSearch) {
-          setTotalResults(response.data.total_results || 0);
+          setTotalResults(response.data.totalResults || 0);
           setResults(sortResults(newResults));
         } else {
           setResults((prev) => sortResults([...prev, ...newResults]));

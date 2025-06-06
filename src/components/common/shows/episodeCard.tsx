@@ -4,13 +4,12 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
-import { ProfileEpisode } from '../../../app/model/shows';
-import { ShowWatchStatus } from '../../../app/model/watchStatus';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
+import { BinaryWatchStatusType, NextEpisode } from '@ajgifford/keepwatching-types';
 
 interface EpisodeCardProps {
-  episode: ProfileEpisode;
-  onWatchStatusChange: (episode: ProfileEpisode, newStatus: ShowWatchStatus) => Promise<void>;
+  episode: NextEpisode;
+  onWatchStatusChange: (episode: NextEpisode, newStatus: BinaryWatchStatusType) => Promise<void>;
 }
 
 export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) => {
@@ -32,8 +31,8 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
       <Box sx={{ position: 'relative' }}>
         <Box
           component="img"
-          src={buildTMDBImagePath(episode.episode_still_image, 'original', episode.episode_title)}
-          alt={episode.episode_title}
+          src={buildTMDBImagePath(episode.episodeStillImage, 'original', episode.episodeTitle)}
+          alt={episode.episodeTitle}
           sx={{ width: '100%', height: 'auto', aspectRatio: '16/9', objectFit: 'cover' }}
         />
         <Box
@@ -49,7 +48,7 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
           }}
         >
           <Typography variant="body2" component="span">
-            S{episode.season_number} E{episode.episode_number}
+            S{episode.seasonNumber} E{episode.episodeNumber}
           </Typography>
         </Box>
       </Box>
@@ -57,7 +56,7 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="subtitle1" gutterBottom>
-            {episode.episode_title}
+            {episode.episodeTitle}
           </Typography>
           <Tooltip title={isWatched ? 'Mark Not Watched' : 'Mark Watched'}>
             <Box sx={{ position: 'relative' }}>
@@ -85,10 +84,10 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
           </Tooltip>
         </Box>
         <Typography variant="body2" color="text.secondary">
-          {episode.air_date}
+          {episode.airDate}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {episode.network || episode.streaming_services}
+          {episode.network || episode.streamingServices}
         </Typography>
       </CardContent>
     </Card>

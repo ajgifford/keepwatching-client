@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Box, Card, CardContent, Chip, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 
 import { useAppSelector } from '../../app/hooks';
-import { ProfileEpisode } from '../../app/model/shows';
 import {
   selectActiveProfile,
   selectActiveProfileError,
@@ -24,6 +23,7 @@ import { EpisodeTile } from '../common/shows/episodeTile';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { getProfileImageUrl } from '../utility/imageUtils';
+import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
 
 const Home = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -216,15 +216,10 @@ const Home = () => {
           </Divider>
 
           <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
-            {upcomingEpisodes.length > 0 ? (
+            {upcomingEpisodes && upcomingEpisodes.length > 0 ? (
               <Grid container spacing={2}>
-                {upcomingEpisodes.map((episode: ProfileEpisode) => (
-                  <Grid
-                    item
-                    xs={12}
-                    md={4}
-                    key={`upcomingEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}
-                  >
+                {upcomingEpisodes.map((episode: RecentUpcomingEpisode) => (
+                  <Grid item xs={12} md={4} key={`upcomingEpisodeInShowsTab_${episode.showId}_${episode.episodeTitle}`}>
                     <EpisodeTile episode={episode} />
                   </Grid>
                 ))}
@@ -241,10 +236,10 @@ const Home = () => {
           </Divider>
 
           <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
-            {recentEpisodes.length > 0 ? (
+            {recentEpisodes && recentEpisodes.length > 0 ? (
               <Grid container spacing={2}>
-                {recentEpisodes.map((episode: ProfileEpisode) => (
-                  <Grid item xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.show_id}_${episode.episode_title}`}>
+                {recentEpisodes.map((episode: RecentUpcomingEpisode) => (
+                  <Grid item xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.showId}_${episode.episodeTitle}`}>
                     <EpisodeTile episode={episode} />
                   </Grid>
                 ))}
@@ -304,7 +299,7 @@ const Home = () => {
             {recentMovies.length > 0 ? (
               <Grid container spacing={2}>
                 {recentMovies.map((movie) => (
-                  <Grid item xs={12} md={4} key={`recentMovie_${movie.movie_id}`}>
+                  <Grid item xs={12} md={4} key={`recentMovie_${movie.id}`}>
                     <MovieTile movie={movie} />
                   </Grid>
                 ))}
@@ -324,7 +319,7 @@ const Home = () => {
             {upcomingMovies.length > 0 ? (
               <Grid container spacing={2}>
                 {upcomingMovies.map((movie) => (
-                  <Grid item xs={12} md={4} key={`upcomingMovie_${movie.movie_id}`}>
+                  <Grid item xs={12} md={4} key={`upcomingMovie_${movie.id}`}>
                     <MovieTile movie={movie} />
                   </Grid>
                 ))}

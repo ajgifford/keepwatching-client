@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import { Grid } from '@mui/material';
 
-import { ProfileStatistics } from '../../../app/model/statistics';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import ShowProgressCard from './showProgressCard';
 import { getProfileSummaryProps } from './statisticsUtils';
+import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface ProfileStatisticsDashboardProps {
-  statistics?: ProfileStatistics | null;
+  statistics?: ProfileStatisticsResponse | null;
   isLoading?: boolean;
 }
 

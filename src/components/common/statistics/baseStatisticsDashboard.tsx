@@ -2,15 +2,15 @@ import { ReactNode } from 'react';
 
 import { Box, Card, CardContent, CircularProgress, Container, Grid, Typography } from '@mui/material';
 
-import { AccountStatistics, ProfileStatistics } from '../../../app/model/statistics';
 import DistributionBarChart from './distributionBarChart';
 import DistributionPieChart from './distributionPieChart';
 import StatisticsSummaryCard from './statisticsSummaryCard';
 import { useStatisticsData } from './useStatisticsData';
 import WatchStatusChart from './watchStatusChart';
+import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 export interface BaseStatisticsDashboardProps {
-  statistics?: AccountStatistics | ProfileStatistics | null;
+  statistics?: AccountStatisticsResponse | ProfileStatisticsResponse | null;
   isLoading?: boolean;
   dashboardTitle: string;
   summaryCardProps: {

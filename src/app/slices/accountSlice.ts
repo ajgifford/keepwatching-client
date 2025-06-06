@@ -1,13 +1,14 @@
 import axiosInstance from '../api/axiosInstance';
 import { auth, getFirebaseAuthErrorMessage } from '../firebaseConfig';
-import { ACCOUNT_KEY, Account } from '../model/account';
+import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { fetchProfiles } from './profilesSlice';
 import { fetchSystemNotifications } from './systemNotificationsSlice';
-import { PayloadAction, ThunkDispatch, UnknownAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { Account, AccountResponse } from '@ajgifford/keepwatching-types';
+import { ThunkDispatch, UnknownAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AxiosError, AxiosResponse } from 'axios';
 import { FirebaseError } from 'firebase/app';
 import {
   GoogleAuthProvider,
@@ -20,6 +21,8 @@ import {
   updateProfile,
 } from 'firebase/auth';
 
+const ACCOUNT_KEY = 'account';
+
 type LoginData = {
   email: string;
   password: string;
@@ -31,88 +34,90 @@ type NewAccountData = LoginData & {
 
 type AccountState = {
   account?: Account | null;
-  status: 'idle' | 'loading' | 'failed';
-  error: string | null;
+  loading: boolean;
+  error: ApiErrorResponse | null;
 };
 
 const initialState: AccountState = {
   account: localStorage.getItem(ACCOUNT_KEY) ? JSON.parse(localStorage.getItem(ACCOUNT_KEY) as string) : null,
-  status: 'idle',
+  loading: false,
   error: null,
 };
 
-type ErrorResponse = {
-  message: string;
-};
-
 function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownAction>, account: Account) {
-  dispatch(fetchProfiles(account.id));
+  const accountId = account.id;
+  const profileId = account.defaultProfileId;
+  dispatch(fetchProfiles(accountId));
   dispatch(
     setActiveProfile({
-      accountId: account.id,
-      profileId: account.default_profile_id,
+      accountId,
+      profileId,
     })
   );
-  dispatch(fetchSystemNotifications(account.id));
+  dispatch(fetchSystemNotifications(accountId));
 }
 
-export const login = createAsyncThunk('account/login', async (data: LoginData, { dispatch, rejectWithValue }) => {
-  let userCredential = null;
-  try {
-    userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-  } catch (error) {
-    const errorMessage = getFirebaseAuthErrorMessage(
-      error as FirebaseError,
-      'An unknown error occurred during login. Please try again.'
-    );
-    dispatch(
-      showActivityNotification({
-        message: errorMessage,
-        type: ActivityNotificationType.Error,
-      })
-    );
-    return rejectWithValue({ message: errorMessage });
-  }
-
-  try {
-    const response = await axiosInstance.post('/accounts/login', { uid: userCredential.user.uid });
-    const loginResult: Account = response.data.result;
-
-    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(loginResult));
-    dispatch(
-      showActivityNotification({
-        message: response.data.message || 'Success',
-        type: ActivityNotificationType.Success,
-      })
-    );
-
-    initializeAccount(dispatch, loginResult);
-
-    return loginResult;
-  } catch (error) {
-    if (error instanceof AxiosError && error.response) {
-      const errorResponse = error.response.data;
+export const login = createAsyncThunk<Account, LoginData, { rejectValue: ApiErrorResponse }>(
+  'account/login',
+  async (data: LoginData, { dispatch, rejectWithValue }) => {
+    let userCredential = null;
+    try {
+      userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred during login. Please try again.'
+      );
       dispatch(
         showActivityNotification({
-          message: errorResponse.message,
+          message: errorMessage,
           type: ActivityNotificationType.Error,
         })
       );
-      return rejectWithValue(errorResponse);
+      return rejectWithValue({ message: errorMessage });
     }
-    dispatch(
-      showActivityNotification({
-        message: 'An error occurred',
-        type: ActivityNotificationType.Error,
-      })
-    );
 
-    console.error(error);
-    return rejectWithValue({ message: 'Login: Unexpected Error' });
+    try {
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.post('/accounts/login', {
+        uid: userCredential.user.uid,
+      });
+      const account = response.data.result;
+
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+      dispatch(
+        showActivityNotification({
+          message: response.data.message || 'Success',
+          type: ActivityNotificationType.Success,
+        })
+      );
+
+      initializeAccount(dispatch, account);
+
+      return account;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showActivityNotification({
+            message: errorResponse.message,
+            type: ActivityNotificationType.Error,
+          })
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showActivityNotification({
+          message: 'An error occurred',
+          type: ActivityNotificationType.Error,
+        })
+      );
+
+      return rejectWithValue({ message: 'Login: Unexpected Error' });
+    }
   }
-});
+);
 
-export const register = createAsyncThunk(
+export const register = createAsyncThunk<Account, NewAccountData, { rejectValue: ApiErrorResponse }>(
   'account/register',
   async (data: NewAccountData, { dispatch, rejectWithValue }) => {
     let userCredential = null;
@@ -135,14 +140,14 @@ export const register = createAsyncThunk(
     }
 
     try {
-      const response = await axiosInstance.post('/accounts/register', {
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.post('/accounts/register', {
         email: data.email,
         uid: userCredential.user.uid,
         name: data.name,
       });
-      const registerResult: Account = response.data.result;
+      const account = response.data.result;
 
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(registerResult));
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
       dispatch(
         showActivityNotification({
           message: response.data.message || 'Success',
@@ -150,9 +155,9 @@ export const register = createAsyncThunk(
         })
       );
 
-      initializeAccount(dispatch, registerResult);
+      initializeAccount(dispatch, account);
 
-      return registerResult;
+      return account;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
@@ -171,127 +176,139 @@ export const register = createAsyncThunk(
         })
       );
 
-      console.error(error);
       return rejectWithValue({ message: 'Register: Unexpected Error' });
     }
   }
 );
 
-export const googleLogin = createAsyncThunk('account/googleLogin', async (_, { dispatch, rejectWithValue }) => {
-  let user = null;
-  try {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    user = result.user;
-  } catch (error) {
-    const errorMessage = getFirebaseAuthErrorMessage(
-      error as FirebaseError,
-      'An unknown error occurred during Google login. Please try again.'
-    );
-    dispatch(
-      showActivityNotification({
-        message: errorMessage,
-        type: ActivityNotificationType.Error,
-      })
-    );
-    return rejectWithValue({ message: errorMessage });
-  }
-
-  try {
-    const response = await axiosInstance.post('/accounts/googleLogin', {
-      email: user.email,
-      uid: user.uid,
-      name: user.displayName,
-      photoURL: user.photoURL,
-    });
-    const googleResult: Account = response.data.result;
-
-    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(googleResult));
-    dispatch(
-      showActivityNotification({
-        message: response.data.message || 'Success',
-        type: ActivityNotificationType.Success,
-      })
-    );
-
-    initializeAccount(dispatch, googleResult);
-
-    return googleResult;
-  } catch (error) {
-    if (error instanceof AxiosError && error.response) {
-      const errorResponse = error.response.data;
+export const googleLogin = createAsyncThunk<Account, void, { rejectValue: ApiErrorResponse }>(
+  'account/googleLogin',
+  async (_, { dispatch, rejectWithValue }) => {
+    let user = null;
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      user = result.user;
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred during Google login. Please try again.'
+      );
       dispatch(
         showActivityNotification({
-          message: errorResponse.message,
+          message: errorMessage,
           type: ActivityNotificationType.Error,
         })
       );
-      return rejectWithValue(errorResponse);
+      return rejectWithValue({ message: errorMessage });
     }
-    dispatch(
-      showActivityNotification({
-        message: 'An error occurred',
-        type: ActivityNotificationType.Error,
-      })
-    );
 
-    console.error(error);
-    return rejectWithValue({ message: 'Register: Unexpected Error' });
-  }
-});
-
-export const logout = createAsyncThunk('account/logout', async (_, { dispatch, getState, rejectWithValue }) => {
-  try {
-    await signOut(auth);
-    const state = getState() as RootState;
-    const accountId = state.auth.account?.id;
-    await axiosInstance.post('/accounts/logout', { accountId: accountId });
-
-    localStorage.removeItem(ACCOUNT_KEY);
-    dispatch(
-      showActivityNotification({
-        message: 'Successfully logged out',
-        type: ActivityNotificationType.Success,
-      })
-    );
-
-    return;
-  } catch (error) {
-    const errorMessage = getFirebaseAuthErrorMessage(
-      error as FirebaseError,
-      'An unknown error occurred during logout. Please try again.'
-    );
-    dispatch(
-      showActivityNotification({
-        message: errorMessage,
-        type: ActivityNotificationType.Error,
-      })
-    );
-    return rejectWithValue({ message: errorMessage });
-  }
-});
-
-export const updateAccountImage = createAsyncThunk(
-  'account/updateImage',
-  async ({ accountId, file }: { accountId: string; file: File }, { dispatch, rejectWithValue }) => {
     try {
-      const formData: FormData = new FormData();
-      formData.append('file', file);
-      const response = await axiosInstance.post(`/upload/accounts/${accountId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.post('/accounts/googleLogin', {
+        email: user.email,
+        uid: user.uid,
+        name: user.displayName,
+        photoURL: user.photoURL,
       });
-      const result = response.data.result;
+      const account = response.data.result;
 
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(result));
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
       dispatch(
         showActivityNotification({
-          message: `Account image updated successfully`,
+          message: response.data.message || 'Success',
           type: ActivityNotificationType.Success,
         })
       );
-      return result;
+
+      initializeAccount(dispatch, account);
+
+      return account;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showActivityNotification({
+            message: errorResponse.message,
+            type: ActivityNotificationType.Error,
+          })
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showActivityNotification({
+          message: 'An error occurred',
+          type: ActivityNotificationType.Error,
+        })
+      );
+
+      return rejectWithValue({ message: 'Register: Unexpected Error' });
+    }
+  }
+);
+
+export const logout = createAsyncThunk<void, void, { rejectValue: ApiErrorResponse }>(
+  'account/logout',
+  async (_, { dispatch, getState, rejectWithValue }) => {
+    try {
+      await signOut(auth);
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+      await axiosInstance.post('/accounts/logout', { accountId: accountId });
+
+      localStorage.removeItem(ACCOUNT_KEY);
+      dispatch(
+        showActivityNotification({
+          message: 'Successfully logged out',
+          type: ActivityNotificationType.Success,
+        })
+      );
+
+      return;
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred during logout. Please try again.'
+      );
+      dispatch(
+        showActivityNotification({
+          message: errorMessage,
+          type: ActivityNotificationType.Error,
+        })
+      );
+      return rejectWithValue({ message: errorMessage });
+    }
+  }
+);
+
+export const updateAccountImage = createAsyncThunk<
+  Account,
+  { accountId: number; file: File },
+  { rejectValue: ApiErrorResponse }
+>(
+  'account/updateImage',
+  async ({ accountId, file }: { accountId: number; file: File }, { dispatch, rejectWithValue }) => {
+    try {
+      const formData: FormData = new FormData();
+      formData.append('file', file);
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.post(
+        `/upload/accounts/${accountId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      const account = response.data.result;
+
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+      dispatch(
+        showActivityNotification({
+          message: response.data.message || `Account image updated successfully`,
+          type: ActivityNotificationType.Success,
+        })
+      );
+      return account;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
@@ -315,7 +332,7 @@ export const updateAccountImage = createAsyncThunk(
   }
 );
 
-export const verifyEmail = createAsyncThunk(
+export const verifyEmail = createAsyncThunk<void, User, { rejectValue: ApiErrorResponse }>(
   'account/verifyEmail',
   async (user: User, { dispatch, rejectWithValue }) => {
     try {
@@ -342,23 +359,30 @@ export const verifyEmail = createAsyncThunk(
   }
 );
 
-export const updateAccount = createAsyncThunk(
+export const updateAccount = createAsyncThunk<
+  Account,
+  { account_id: number; name: string; defaultProfileId: number },
+  { rejectValue: ApiErrorResponse }
+>(
   'account/update',
   async (
-    { account_id, name, defaultProfileId }: { account_id: string; name: string; defaultProfileId: string },
+    { account_id, name, defaultProfileId }: { account_id: number; name: string; defaultProfileId: number },
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.put(`/accounts/${account_id}/`, { name, defaultProfileId });
-      const updateResult = response.data.result;
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(updateResult));
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.put(`/accounts/${account_id}/`, {
+        name,
+        defaultProfileId,
+      });
+      const account = response.data.result;
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
       dispatch(
         showActivityNotification({
-          message: `Account edited successfully`,
+          message: response.data.message || `Account edited successfully`,
           type: ActivityNotificationType.Success,
         })
       );
-      return updateResult;
+      return account;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         const errorResponse = error.response.data;
@@ -389,104 +413,88 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.status = 'idle';
+      .addCase(login.fulfilled, (state, action) => {
+        state.loading = false;
         state.account = action.payload;
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Login Failed';
-        } else {
-          state.error = action.error.message || 'Login Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Login Failed' };
       })
       .addCase(register.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
-      .addCase(register.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.status = 'idle';
+      .addCase(register.fulfilled, (state, action) => {
+        state.loading = false;
         state.account = action.payload;
+        state.error = null;
       })
       .addCase(register.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Registration Failed';
-        } else {
-          state.error = action.error.message || 'Registration Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Registration Failed' };
       })
       .addCase(googleLogin.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
-      .addCase(googleLogin.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.status = 'idle';
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
         state.account = action.payload;
+        state.error = null;
       })
       .addCase(googleLogin.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Google Login Failed';
-        } else {
-          state.error = action.error.message || 'Google Login Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Google Login Failed' };
       })
       .addCase(logout.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
       .addCase(logout.fulfilled, (state) => {
-        state.status = 'idle';
+        state.loading = false;
         state.account = null;
+        state.error = null;
       })
       .addCase(logout.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Logout Failed';
-        } else {
-          state.error = action.error.message || 'Logout Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Logout Failed' };
       })
       .addCase(updateAccountImage.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
-      .addCase(updateAccountImage.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.status = 'idle';
+      .addCase(updateAccountImage.fulfilled, (state, action) => {
+        state.loading = false;
         state.account = action.payload;
+        state.error = null;
       })
       .addCase(updateAccountImage.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Account Image Update Failed';
-        } else {
-          state.error = action.error.message || 'Account Image Update Failed';
-        }
+        state.loading = false;
+        state.error = action.payload || { message: 'Account Image Update Failed' };
       })
       .addCase(updateAccount.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
         state.error = null;
       })
-      .addCase(updateAccount.fulfilled, (state, action: PayloadAction<Account>) => {
-        state.status = 'idle';
+      .addCase(updateAccount.fulfilled, (state, action) => {
+        state.loading = false;
         state.account = action.payload;
+        state.error = null;
       })
       .addCase(updateAccount.rejected, (state, action) => {
-        state.status = 'failed';
-        if (action.payload) {
-          state.error = (action.payload as ErrorResponse).message || 'Account Update Failed';
-        } else {
-          state.error = action.error.message || 'Account Update Failed';
-        }
+        state.loading = true;
+        state.error = action.payload || { message: 'Account Update Failed' };
       });
   },
 });
 
 export const selectCurrentAccount = (state: RootState) => state.auth.account;
+export const selectAccountLoading = (state: RootState) => state.auth.loading;
+export const selectAccountError = (state: RootState) => state.auth.error;
 
 export default authSlice.reducer;
