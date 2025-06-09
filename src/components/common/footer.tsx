@@ -21,7 +21,15 @@ export function Footer() {
       }}
     >
       <Typography variant="caption" color="common.white" gutterBottom>
-        Gifford Family Dev
+        Gifford Family Dev |{' '}
+        <a
+          style={{ color: 'white' }}
+          target="_blank"
+          rel="noreferrer"
+          href="https://ajgifford.github.io/keepwatching-doc/"
+        >
+          User's Guide
+        </a>
       </Typography>
       <br />
 
@@ -62,11 +70,16 @@ export function Footer() {
             }}
           >
             This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by{' '}
-            <a style={{ color: 'white' }} href="https://www.themoviedb.org/">
+            <a style={{ color: 'white' }} target="_blank" rel="noreferrer" href="https://www.themoviedb.org/">
               TMDB
             </a>{' '}
             | Additional information is provided by Streaming Availability API by{' '}
-            <a style={{ color: 'white' }} href="https://www.movieofthenight.com/about/api">
+            <a
+              style={{ color: 'white' }}
+              target="_blank"
+              rel="noreferrer"
+              href="https://www.movieofthenight.com/about/api"
+            >
               Movie of the Night
             </a>
           </Typography>
