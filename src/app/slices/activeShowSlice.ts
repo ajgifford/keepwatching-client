@@ -457,7 +457,8 @@ const activeShowSlice = createSlice({
         if (season) {
           season.watchStatus = seasonStatus;
           season.episodes.forEach((episode) => {
-            state.watchedEpisodes[episode.id] = seasonStatus === WatchStatus.WATCHED;
+            state.watchedEpisodes[episode.id] =
+              seasonStatus === WatchStatus.WATCHED || seasonStatus === WatchStatus.UP_TO_DATE;
           });
         }
       })
