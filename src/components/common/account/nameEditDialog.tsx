@@ -14,8 +14,10 @@ const NameEditDialog = ({ open, title, initialName, onClose, onSave }: NameEditD
   const [name, setName] = useState(initialName);
 
   useEffect(() => {
-    setName(initialName);
-  }, [initialName]);
+    if (open) {
+      setName(initialName);
+    }
+  }, [initialName, open]);
 
   const handleSave = () => {
     onSave(name);
