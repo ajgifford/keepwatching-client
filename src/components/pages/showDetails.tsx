@@ -242,7 +242,7 @@ function ShowDetails() {
             <CardMedia
               component="img"
               height={isMobile ? '380' : '320'}
-              image={`https://image.tmdb.org/t/p/w1280${show.backdropImage}`}
+              image={buildTMDBImagePath(show?.backdropImage, 'w1280')}
               alt={show.title}
               sx={{
                 filter: 'brightness(0.65)',
