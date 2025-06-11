@@ -17,6 +17,7 @@ import Discover from './pages/discover';
 import Home from './pages/home';
 import Login from './pages/login';
 import ManageAccount from './pages/manageAccount';
+import MovieDetails from './pages/movieDetails';
 import Movies from './pages/movies';
 import Register from './pages/register';
 import Search from './pages/search';
@@ -63,6 +64,7 @@ function App() {
                   <Route path="/shows" element={<Shows />} />
                   <Route path="/shows/:showId/:profileId" element={<ShowDetails />} />
                   <Route path="/movies" element={<Movies />} />
+                  <Route path="/movies/:movieId/:profileId" element={<MovieDetails />} />
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/manageAccount" element={<ManageAccount />} />

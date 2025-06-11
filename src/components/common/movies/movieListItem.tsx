@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import StarIcon from '@mui/icons-material/Star';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
@@ -22,12 +23,21 @@ import { removeMovieFavorite, updateMovieStatus } from '../../../app/slices/acti
 import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { BinaryWatchStatusType, ProfileMovie } from '@ajgifford/keepwatching-types';
 
+export type FilterProps = {
+  genre: string;
+  streamingService: string;
+  watchStatus: string[];
+  returnPath?: string;
+};
+
 export type MovieListItemProps = {
   movie: ProfileMovie;
+  getFilters: () => FilterProps;
 };
 
 export const MovieListItem = (props: MovieListItemProps) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const movie = props.movie;
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -50,6 +60,12 @@ export const MovieListItem = (props: MovieListItemProps) => {
     return 'NOT_WATCHED';
   }
 
+  const buildLinkState = () => {
+    const filterProps = props.getFilters();
+    filterProps.returnPath = `/movies?profileId=${movie.profileId}`;
+    return filterProps;
+  };
+
   const handleRemoveFavorite = () => {
     dispatch(
       removeMovieFavorite({
@@ -60,7 +76,12 @@ export const MovieListItem = (props: MovieListItemProps) => {
   };
 
   return (
-    <ListItem key={`listItem_${movie.id}`} alignItems="flex-start">
+    <ListItem
+      key={`listItem_${movie.id}`}
+      alignItems="flex-start"
+      sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center' }}
+      onClick={() => navigate(`/movies/${movie.id}/${movie.profileId}`, { state: buildLinkState() })}
+    >
       <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
         <Avatar
           alt={movie.title}

@@ -22,7 +22,7 @@ import {
 import { movieWatchStatuses } from '../../app/constants/filters';
 import { useAppSelector } from '../../app/hooks';
 import { selectMovieGenres, selectMovieStreamingServices, selectMovies } from '../../app/slices/activeProfileSlice';
-import { MovieListItem } from '../common/movies/movieListItem';
+import { FilterProps, MovieListItem } from '../common/movies/movieListItem';
 import { stripArticle } from '../utility/contentUtility';
 
 const Movies = () => {
@@ -99,6 +99,10 @@ const Movies = () => {
 
   const filtered = genreFilter !== '' || streamingServiceFilter !== '' || watchStatusFilter.length > 0;
 
+  const getFilters = (): FilterProps => {
+    return { genre: genreFilter, streamingService: streamingServiceFilter, watchStatus: watchStatusFilter };
+  };
+
   return (
     <>
       <Box
@@ -158,7 +162,7 @@ const Movies = () => {
             <List id="moviesList">
               {filteredMovies.map((movie) => (
                 <Fragment key={`movieListItemFragment_${movie.id}`}>
-                  <MovieListItem movie={movie} />
+                  <MovieListItem movie={movie} getFilters={getFilters} />
                   <Divider key={`movieListItemDivider_${movie.id}`} variant="inset" component="li" />
                 </Fragment>
               ))}
