@@ -10,7 +10,7 @@ import { Box, Card, CardContent, Grid, Typography, alpha } from '@mui/material';
 import { getProfileImageUrl } from '../../utility/imageUtils';
 import { Profile } from '@ajgifford/keepwatching-types';
 
-interface GradientProfileCardProps {
+interface DashboardProfileCardProps {
   profile: Profile;
   showWatched: number;
   showUpToDate: number;
@@ -93,7 +93,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon, value, label, to, color }) =>
   return cardContent;
 };
 
-const GradientProfileCard: React.FC<GradientProfileCardProps> = ({
+const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
   profile,
   showWatched,
   showUpToDate,
@@ -176,7 +176,7 @@ const GradientProfileCard: React.FC<GradientProfileCardProps> = ({
                 textShadow: '0 1px 2px rgba(0,0,0,0.3)',
               }}
             >
-              Keep watching your favorites
+              KeepWatching your favorites
             </Typography>
           </Box>
         </Box>
@@ -225,4 +225,4 @@ const GradientProfileCard: React.FC<GradientProfileCardProps> = ({
   );
 };
 
-export default GradientProfileCard;
+export default DashboardProfileCard;

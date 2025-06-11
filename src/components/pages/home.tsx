@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 
-import { Box, Chip, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 
 import { useAppSelector } from '../../app/hooks';
 import {
@@ -18,13 +17,12 @@ import {
 } from '../../app/slices/activeProfileSlice';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
-import { MovieTile } from '../common/movies/movieTile';
-import GradientProfileCard from '../common/profile/gradientProfileCard';
-import { EpisodeTile } from '../common/shows/episodeTile';
+import { MoviesSection } from '../common/movies/moviesSection';
+import DashboardProfileCard from '../common/profile/dashboardProfileCard';
+import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import ProfileStatisticsComponent from '../common/statistics/profileStatisticsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
-import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
 
 const Home = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -59,7 +57,7 @@ const Home = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <GradientProfileCard
+      <DashboardProfileCard
         profile={profile}
         showWatched={showWatched}
         showUpToDate={showUpToDate}
@@ -93,98 +91,14 @@ const Home = () => {
       {/* TV Shows Tab */}
       <TabPanel value={tabValue} index={1}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
-          {/* Alternative smaller stats cards for the shows tab if you want to keep them */}
-
-          <Divider sx={{ my: 2 }}>
-            <Chip
-              label="Upcoming Episodes"
-              component={Link}
-              to="/shows?watchStatus=WATCHING"
-              clickable
-              color="primary"
-            />
-          </Divider>
-
-          <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
-            {upcomingEpisodes && upcomingEpisodes.length > 0 ? (
-              <Grid container spacing={2}>
-                {upcomingEpisodes.map((episode: RecentUpcomingEpisode) => (
-                  <Grid item xs={12} md={4} key={`upcomingEpisodeInShowsTab_${episode.showId}_${episode.episodeTitle}`}>
-                    <EpisodeTile episode={episode} />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Typography variant="body1" color="text.secondary" align="center" sx={{ py: 2 }}>
-                No upcoming episodes
-              </Typography>
-            )}
-          </Box>
-
-          <Divider sx={{ my: 2 }}>
-            <Chip label="Recent Episodes" component={Link} to="/shows?watchStatus=WATCHING" clickable color="primary" />
-          </Divider>
-
-          <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
-            {recentEpisodes && recentEpisodes.length > 0 ? (
-              <Grid container spacing={2}>
-                {recentEpisodes.map((episode: RecentUpcomingEpisode) => (
-                  <Grid item xs={12} md={4} key={`recentEpisodeInShowsTab_${episode.showId}_${episode.episodeTitle}`}>
-                    <EpisodeTile episode={episode} />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Typography variant="body1" color="text.secondary" align="center" sx={{ py: 2 }}>
-                No recent episodes
-              </Typography>
-            )}
-          </Box>
+          <EpisodesSection recentEpisodes={recentEpisodes} upcomingEpisodes={upcomingEpisodes} />
         </Box>
       </TabPanel>
 
       {/* Movies Tab */}
       <TabPanel value={tabValue} index={2}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
-          <Divider sx={{ my: 2 }}>
-            <Chip label="Recent Releases" component={Link} to="/movies" clickable color="secondary" />
-          </Divider>
-
-          <Box sx={{ mb: 3, px: { xs: 1, sm: 0 } }}>
-            {recentMovies.length > 0 ? (
-              <Grid container spacing={2}>
-                {recentMovies.map((movie) => (
-                  <Grid item xs={12} md={4} key={`recentMovie_${movie.id}`}>
-                    <MovieTile movie={movie} />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Typography variant="body1" color="text.secondary" align="center" sx={{ py: 2 }}>
-                No recent movie releases
-              </Typography>
-            )}
-          </Box>
-
-          <Divider sx={{ my: 2 }}>
-            <Chip label="Upcoming Releases" component={Link} to="/movies" clickable color="secondary" />
-          </Divider>
-
-          <Box sx={{ px: { xs: 1, sm: 0 } }}>
-            {upcomingMovies.length > 0 ? (
-              <Grid container spacing={2}>
-                {upcomingMovies.map((movie) => (
-                  <Grid item xs={12} md={4} key={`upcomingMovie_${movie.id}`}>
-                    <MovieTile movie={movie} />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Typography variant="body1" color="text.secondary" align="center" sx={{ py: 2 }}>
-                No upcoming movie releases
-              </Typography>
-            )}
-          </Box>
+          <MoviesSection recentMovies={recentMovies} upcomingMovies={upcomingMovies} />
         </Box>
       </TabPanel>
 
