@@ -2,38 +2,27 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ExploreIcon from '@mui/icons-material/Explore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
 import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
+import {
+  DISCOVER_TYPE_OPTIONS,
+  FILTER_OPTIONS,
+  SERVICE_OPTIONS,
+  SegmentedControl,
+} from '../common/controls/segmentedControl';
 import SearchResults from '../common/search/searchResults';
 import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 import { AxiosError, AxiosResponse } from 'axios';
 
-type ServiceType = 'none' | 'netflix' | 'disney' | 'hbo' | 'apple' | 'prime';
-type ContentType = 'none' | 'movies' | 'series';
 type DiscoverMode = 'byService' | 'trending';
-type ContentFilterType = 'top' | 'new' | 'upcoming' | 'expiring';
 
 interface DiscoverParams {
-  showType: 'none' | 'movie' | 'series';
-  service?: ServiceType;
-  changeType?: ContentFilterType;
+  showType: string;
+  service?: string;
+  changeType?: string;
   page: number;
 }
 
@@ -68,10 +57,12 @@ function a11yProps(index: number) {
 
 function Discover() {
   const dispatch = useAppDispatch();
+  const defaultService = 'netflix';
+  const defaultType = 'series';
   const [results, setResults] = useState<DiscoverAndSearchResult[]>([]);
-  const [selectedService, setSelectedService] = useState<ServiceType>('none');
-  const [selectedType, setSelectedType] = useState<ContentType>('none');
-  const [selectedFilter, setSelectedFilter] = useState<ContentFilterType>('top');
+  const [selectedService, setSelectedService] = useState<string>(defaultService);
+  const [selectedType, setSelectedType] = useState<string>(defaultType);
+  const [selectedFilter, setSelectedFilter] = useState<string>('top');
   const [discoverMode, setDiscoverMode] = useState<DiscoverMode>('trending');
   const [tabValue, setTabValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,30 +72,6 @@ function Discover() {
   const [hasMore, setHasMore] = useState<boolean>(true);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
-
-  const services = [
-    { id: 'none', display: '---' },
-    { id: 'netflix', display: 'Netflix' },
-    { id: 'disney', display: 'Disney+' },
-    { id: 'hbo', display: 'Max' },
-    { id: 'apple', display: 'Apple TV+' },
-    { id: 'prime', display: 'Prime Video' },
-  ];
-
-  const type = [
-    { id: 'none', display: '---' },
-    { id: 'movies', display: 'Movies' },
-    { id: 'series', display: 'Shows' },
-  ];
-
-  const filters = [
-    { id: 'top', display: 'Top Rated' },
-    { id: 'new', display: 'New Releases' },
-    { id: 'upcoming', display: 'Upcoming' },
-    { id: 'expiring', display: 'Expiring Soon' },
-  ];
-
-  const sortedServices = services.sort((a, b) => a.display.localeCompare(b.display, 'en', { sensitivity: 'base' }));
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -116,28 +83,28 @@ function Discover() {
     setResults([]);
     setPage(1);
     setSearchPerformed(false);
-    setSelectedService('none');
-    setSelectedType('none');
+    setSelectedService(defaultService);
+    setSelectedType(defaultType);
     if (discoverMode !== 'trending') {
       setSelectedFilter('top');
     }
   };
 
-  const handleServiceChanged = (value: ServiceType) => {
+  const handleServiceChanged = (value: string) => {
     setSelectedService(value);
     setResults([]);
     setPage(1);
     setSearchPerformed(false);
   };
 
-  const handleTypeChanged = (value: ContentType) => {
+  const handleTypeChanged = (value: string) => {
     setSelectedType(value);
     setResults([]);
     setPage(1);
     setSearchPerformed(false);
   };
 
-  const handleFilterChanged = (value: ContentFilterType) => {
+  const handleFilterChanged = (value: string) => {
     setSelectedFilter(value);
     setResults([]);
     setPage(1);
@@ -268,27 +235,29 @@ function Discover() {
               alignItems={{ md: 'center' }}
               sx={{ p: '8px', m: '1px' }}
             >
-              <FormControl
+              <Box
                 sx={{
-                  width: { xs: '100%', md: 'auto' },
-                  minWidth: { md: '300px' },
+                  paddingLeft: 2,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
                 }}
-                id="discoverTypeControl"
               >
-                <InputLabel>Content Type</InputLabel>
-                <Select
-                  id="discoverTypeSelect"
+                <SegmentedControl
+                  options={DISCOVER_TYPE_OPTIONS}
                   value={selectedType}
-                  label="Content Type"
-                  onChange={(e) => handleTypeChanged(e.target.value as ContentType)}
-                >
-                  {type.map((type) => (
-                    <MenuItem id={`discoverTypeFilter_${type.id}`} key={type.id} value={type.id}>
-                      {type.display}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  onChange={handleTypeChanged}
+                  fullWidth={false}
+                  variant="outlined"
+                  color="primary"
+                  sx={{
+                    '& .MuiButtonGroup-root': {
+                      height: 56,
+                    },
+                  }}
+                />
+              </Box>
 
               <Button
                 id="discoverTrendingGoButton"
@@ -317,71 +286,78 @@ function Discover() {
                   flex: { md: 1 },
                 }}
               >
-                <FormControl
+                <Box
                   sx={{
-                    width: { xs: '50%', md: 'auto' },
-                    minWidth: { md: '300px' },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                   }}
-                  id="discoverServiceControl"
                 >
-                  <InputLabel>Streaming Service</InputLabel>
-                  <Select
-                    id="discoverServiceSelect"
-                    value={selectedService}
-                    label="Streaming Service"
-                    onChange={(e) => handleServiceChanged(e.target.value as ServiceType)}
-                  >
-                    {sortedServices.map((service) => (
-                      <MenuItem id={`discoverServiceFilter_${service.id}`} key={service.id} value={service.id}>
-                        {service.display}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl
-                  sx={{
-                    width: { xs: '50%', md: 'auto' },
-                    minWidth: { md: '300px' },
-                  }}
-                  id="discoverTypeControlTop"
-                >
-                  <InputLabel>Content Type</InputLabel>
-                  <Select
-                    id="discoverTypeSelectTop"
+                  <SegmentedControl
+                    options={DISCOVER_TYPE_OPTIONS}
                     value={selectedType}
-                    label="Content Type"
-                    onChange={(e) => handleTypeChanged(e.target.value as ContentType)}
-                  >
-                    {type.map((type) => (
-                      <MenuItem id={`discoverTypeFilterTop_${type.id}`} key={type.id} value={type.id}>
-                        {type.display}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                    onChange={handleTypeChanged}
+                    fullWidth={false}
+                    variant="outlined"
+                    color="primary"
+                    sx={{
+                      '& .MuiButtonGroup-root': {
+                        height: 56,
+                      },
+                    }}
+                  />
+                </Box>
 
-                <FormControl
+                <Divider orientation="vertical" flexItem sx={{ height: 56 }} />
+
+                <Box
                   sx={{
-                    width: { xs: '100%', md: 'auto' },
-                    minWidth: { md: '200px' },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                   }}
-                  id="discoverFilterControl"
                 >
-                  <InputLabel>Filter</InputLabel>
-                  <Select
-                    id="discoverFilterSelect"
+                  <SegmentedControl
+                    options={SERVICE_OPTIONS}
+                    value={selectedService}
+                    onChange={handleServiceChanged}
+                    fullWidth={false}
+                    variant="outlined"
+                    color="success"
+                    sx={{
+                      '& .MuiButtonGroup-root': {
+                        height: 56,
+                      },
+                    }}
+                  />
+                </Box>
+
+                <Divider orientation="vertical" flexItem sx={{ height: 56 }} />
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
+                  }}
+                >
+                  <SegmentedControl
+                    options={FILTER_OPTIONS}
                     value={selectedFilter}
-                    label="Filter"
-                    onChange={(e) => handleFilterChanged(e.target.value as ContentFilterType)}
-                  >
-                    {filters.map((filter) => (
-                      <MenuItem id={`discoverFilterOption_${filter.id}`} key={filter.id} value={filter.id}>
-                        {filter.display}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                    onChange={handleFilterChanged}
+                    fullWidth={false}
+                    variant="outlined"
+                    color="warning"
+                    sx={{
+                      '& .MuiButtonGroup-root': {
+                        height: 56,
+                      },
+                    }}
+                  />
+                </Box>
               </Stack>
               <Button
                 id="discoverTopGoButton"

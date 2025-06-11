@@ -10,13 +10,10 @@ import {
   Button,
   CircularProgress,
   FormControl,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Tooltip,
@@ -25,6 +22,7 @@ import {
 import Grid from '@mui/material/Grid2';
 
 import axiosInstance from '../../app/api/axiosInstance';
+import { SEARCH_TYPE_OPTIONS, SegmentedControl } from '../common/controls/segmentedControl';
 import SearchResults from '../common/search/searchResults';
 import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 import { AxiosResponse } from 'axios';
@@ -170,8 +168,8 @@ function Search() {
     }
   };
 
-  const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchType((event.target as HTMLInputElement).value);
+  const handleSearchTypeChange = (newValue: string) => {
+    setSearchType(newValue);
     handleSearchClear();
   };
 
@@ -230,35 +228,26 @@ function Search() {
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Box
             sx={{
-              border: '1px solid #ccc',
-              borderRadius: 2,
-              padding: 1,
+              padding: 0,
               display: 'flex',
               justifyContent: 'center',
+              alignItems: 'center', // Vertical center
+              height: '100%',
             }}
           >
-            <FormControl id="searchFilterContentTypeControl">
-              <RadioGroup
-                id="searchFilterContentTypeRadioGroup"
-                row
-                name="search-type-radio-buttons-group"
-                value={searchType}
-                onChange={handleSearchTypeChange}
-              >
-                <FormControlLabel
-                  id="searchFilterContentTypeShowsRadio"
-                  value="shows"
-                  control={<Radio />}
-                  label="TV Shows"
-                />
-                <FormControlLabel
-                  id="searchFilterContentTypeMoviesRadio"
-                  value="movies"
-                  control={<Radio />}
-                  label="Movies"
-                />
-              </RadioGroup>
-            </FormControl>
+            <SegmentedControl
+              options={SEARCH_TYPE_OPTIONS}
+              value={searchType}
+              onChange={handleSearchTypeChange}
+              fullWidth={false}
+              variant="outlined"
+              color="primary"
+              sx={{
+                '& .MuiButtonGroup-root': {
+                  height: 56, // Match the height of other form controls
+                },
+              }}
+            />
           </Box>
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
