@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { AccessTime, CalendarToday, ExpandMore, Star, WatchLater } from '@mui/icons-material';
+import { AccessTime, CalendarToday, Star } from '@mui/icons-material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Card,
@@ -17,6 +16,8 @@ import {
   Grid,
   IconButton,
   Rating,
+  Tab,
+  Tabs,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -38,6 +39,7 @@ import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
+import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { buildTMDBImagePath } from '../utility/contentUtility';
 import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 
@@ -45,7 +47,6 @@ function MovieDetails() {
   const { movieId, profileId } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [expanded, setExpanded] = useState<string[]>(['info']);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -60,6 +61,12 @@ function MovieDetails() {
   const genreFilter = location.state?.genre || '';
   const streamingServiceFilter = location.state?.streamingService || '';
   const watchStatusFilter = location.state?.watchStatus || '';
+
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   useEffect(() => {
     if (movieId && profileId) {
@@ -90,10 +97,6 @@ function MovieDetails() {
         status: nextStatus,
       })
     );
-  };
-
-  const handleAccordionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpanded((prev) => (isExpanded ? [...prev, panel] : prev.filter((p) => p !== panel)));
   };
 
   const buildBackButtonPath = () => {
@@ -186,7 +189,7 @@ function MovieDetails() {
 
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
-          <Box sx={{ position: 'relative' }}>
+          <Box sx={{ position: 'relative', overflow: 'hidden' }}>
             {movie?.backdropImage ? (
               <CardMedia
                 component="img"
@@ -197,6 +200,7 @@ function MovieDetails() {
                   filter: 'brightness(0.65)',
                   objectFit: 'cover',
                   objectPosition: 'center 20%',
+                  width: '100%',
                 }}
               />
             ) : (
@@ -216,7 +220,7 @@ function MovieDetails() {
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
-                width: '100%',
+                right: 0,
                 background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 100%)',
                 color: 'white',
                 pt: { xs: 3, sm: 4 },
@@ -237,6 +241,7 @@ function MovieDetails() {
                   boxShadow: 3,
                   transform: 'translateY(-30px)',
                   objectFit: 'cover',
+                  flexShrink: 0,
                 }}
                 src={buildTMDBImagePath(movie?.posterImage, 'w500')}
                 alt={movie?.title}
@@ -245,7 +250,7 @@ function MovieDetails() {
                 }}
               />
 
-              <Box sx={{ flexGrow: 1, pb: 2 }}>
+              <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
                 <Typography
                   variant={isMobile ? 'h5' : 'h4'}
                   fontWeight="bold"
@@ -270,7 +275,6 @@ function MovieDetails() {
                     display: '-webkit-box',
                     WebkitBoxOrient: 'vertical',
                     WebkitLineClamp: { xs: 3, sm: 4 },
-                    maxWidth: { xs: '90%', md: '80%' },
                   }}
                 >
                   <i>{movie?.description}</i>
@@ -294,7 +298,13 @@ function MovieDetails() {
                 <Button
                   variant="contained"
                   onClick={(event) => handleMovieWatchStatusChange(movie!, event)}
-                  startIcon={<WatchLater />}
+                  startIcon={
+                    movie?.watchStatus === WatchStatus.NOT_WATCHED ? (
+                      <WatchLaterOutlinedIcon />
+                    ) : (
+                      <WatchLaterIcon color="success" />
+                    )
+                  }
                   sx={{
                     mt: 1,
                     bgcolor: 'rgba(255,255,255,0.15)',
@@ -312,107 +322,117 @@ function MovieDetails() {
             </Box>
           </Box>
 
-          <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 1.5, md: 2 } }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Director
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      -- Coming Soon --
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      User Rating
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Rating value={movie?.userRating! / 2} precision={0.1} readOnly size="small" />
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {formatUserRating(movie?.userRating)}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Budget
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      -- Coming Soon --
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Box Office
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      -- Coming Soon --
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Genres
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {movie?.genres
-                        .split(',')
-                        .map((genre) => (
-                          <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
-                        ))}
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Streaming Services
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {movie?.streamingServices || 'Not available for streaming'}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Production Companies
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {`-- Coming Soon --`}
-                    </Typography>
-                  </Grid>
-                </Grid>
+          <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Streaming Services
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {movie?.streamingServices || 'Not available for streaming'}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Director
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  -- Coming Soon --
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Production Companies
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {`-- Coming Soon --`}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  User Rating
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Rating value={movie?.userRating! / 2} precision={0.1} readOnly size="small" />
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {formatUserRating(movie?.userRating)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Box Office
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  -- Coming Soon --
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Budget
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  -- Coming Soon --
+                </Typography>
+              </Grid>
 
-                <Accordion
-                  expanded={expanded.includes('related')}
-                  onChange={handleAccordionChange('related')}
-                  elevation={1}
-                >
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      Recommended & Similar
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box>
-                      <ScrollableMediaRow
-                        title="Recommended Movies"
-                        items={recommendedMovies}
-                        isLoading={movieDetailsLoading}
-                        emptyMessage="No recommended movies found"
-                        renderItem={(movie) => <MediaCard item={movie} searchType="movies" />}
-                      />
-                      <Divider sx={{ my: 3 }} />
-                      <ScrollableMediaRow
-                        title="Similar Movies"
-                        items={similarMovies}
-                        isLoading={movieDetailsLoading}
-                        emptyMessage="No similar movies found"
-                        renderItem={(movie) => <MediaCard item={movie} searchType="movies" />}
-                      />
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
+              <Grid item xs={12}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Genres
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {movie?.genres
+                    .split(',')
+                    .map((genre) => (
+                      <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
+                    ))}
+                </Box>
               </Grid>
             </Grid>
+
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
+                aria-label="show content tabs"
+              >
+                <Tab label="Cast & Crew" {...a11yProps(0)} />
+                <Tab label="Related Content" {...a11yProps(1)} />
+              </Tabs>
+            </Box>
+
+            <TabPanel value={tabValue} index={0}>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                -- Coming Soon --
+              </Typography>
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={1}>
+              <Box sx={{ px: 2, py: 1 }}>
+                <Box sx={{ mb: 4 }}>
+                  <ScrollableMediaRow
+                    title="Recommended Movies"
+                    items={recommendedMovies}
+                    isLoading={movieDetailsLoading}
+                    emptyMessage="No recommended movies found"
+                    renderItem={(movie) => <MediaCard item={movie} searchType="movies" />}
+                  />
+                </Box>
+                <Divider sx={{ my: 3 }} />
+                <Box>
+                  <ScrollableMediaRow
+                    title="Similar Movies"
+                    items={similarMovies}
+                    isLoading={movieDetailsLoading}
+                    emptyMessage="No similar movies found"
+                    renderItem={(movie) => <MediaCard item={movie} searchType="movies" />}
+                  />
+                </Box>
+              </Box>
+            </TabPanel>
           </CardContent>
         </Card>
       </Box>

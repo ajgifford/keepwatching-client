@@ -2,6 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
+import { updateMovieStatus } from './activeProfileSlice';
 import { MovieDetailsResponse, ProfileMovie, SimilarOrRecommendedMovie } from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -78,6 +79,13 @@ const activeMovieSlice = createSlice({
       .addCase(fetchMovieWithDetails.rejected, (state, action) => {
         state.movieDetailsLoading = false;
         state.movieDetailsError = action.payload || { message: 'Failed to load show details' };
+      })
+      .addCase(updateMovieStatus.fulfilled, (state, action) => {
+        const { status } = action.payload;
+        const movie = state.movie;
+        if (movie) {
+          movie.watchStatus = status;
+        }
       });
   },
 });
