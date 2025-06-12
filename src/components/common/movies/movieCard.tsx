@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Avatar, Box, Card, CardContent, Chip, Stack, Typography, useTheme } from '@mui/material';
 
@@ -27,12 +28,16 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
   return (
     <Card
+      component={Link}
+      to={`/movies/${movie.id}/${movie.profileId}`}
+      state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
       sx={{
         borderRadius: 2,
         boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
         transition: 'all 0.3s ease',
         cursor: 'pointer',
         overflow: 'hidden',
+        textDecoration: 'none',
         position: 'relative',
         '&:hover': {
           boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
