@@ -88,7 +88,7 @@ export const buildServicesLine = (show: ProfileShow | null) => {
       if (!filteredServices.includes(network)) {
         return (
           <>
-            <b>Network: </b> {network} | <b>Streaming Service(s): </b> {filteredServices}
+            <b>Network: </b> {network} • <b>Streaming Service(s): </b> {filteredServices}
           </>
         );
       } else {
@@ -124,7 +124,7 @@ export const buildEpisodeLine = (show: ProfileShow | null) => {
       return (
         <>
           <b>Last Episode: </b>
-          {buildEpisodeLineDetails(show.lastEpisode)} | <b>Next Episode: </b>
+          {buildEpisodeLineDetails(show.lastEpisode)} • <b>Next Episode: </b>
           {buildEpisodeLineDetails(show.nextEpisode)}
         </>
       );

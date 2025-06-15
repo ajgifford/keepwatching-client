@@ -121,15 +121,15 @@ export const ShowListItem = (props: ShowListItemProps) => {
                 >
                   <i>{show.description}</i>
                   <br />
-                  {show.type} | {show.status}
+                  {show.type} • {show.status}
                   <br />
                   <b>Genres: </b> {show.genres ?? 'unknown'}
                   <br />
                   {buildServicesLine(show)}
                   <br />
-                  <b>Premiered: </b> {show.releaseDate} | <b>Rated: </b> {show.contentRating}
+                  <b>Premiered: </b> {show.releaseDate} • <b>Rated: </b> {show.contentRating}
                   <br />
-                  <b>Seasons: </b> {show.seasonCount} | <b>Episodes: </b> {show.episodeCount}
+                  <b>Seasons: </b> {show.seasonCount} • <b>Episodes: </b> {show.episodeCount}
                   <br />
                   {buildEpisodeLine(show)}
                 </Typography>

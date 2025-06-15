@@ -145,11 +145,14 @@ function MovieDetails() {
     return 'Unknown';
   };
 
-  const formatYear = (dateString: string | undefined) => {
-    if (!dateString) return 'Unknown';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-    });
+  const formatCurrency = (amount: number | undefined) => {
+    if (amount) {
+      return amount.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
+    }
+    return 'Unknown';
   };
 
   return (
@@ -337,7 +340,7 @@ function MovieDetails() {
                   Director
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  -- Coming Soon --
+                  {movie?.director || 'Unknown'}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -345,7 +348,7 @@ function MovieDetails() {
                   Production Companies
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  {`-- Coming Soon --`}
+                  {movie?.productionCompanies || 'Unknown'}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -364,7 +367,7 @@ function MovieDetails() {
                   Box Office
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  -- Coming Soon --
+                  {formatCurrency(movie?.revenue)}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -372,7 +375,7 @@ function MovieDetails() {
                   Budget
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  -- Coming Soon --
+                  {formatCurrency(movie?.budget)}
                 </Typography>
               </Grid>
 

@@ -3,13 +3,17 @@ import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { updateMovieStatus } from './activeProfileSlice';
-import { MovieDetailsResponse, ProfileMovie, SimilarOrRecommendedMovie } from '@ajgifford/keepwatching-types';
+import {
+  MovieDetailsResponse,
+  ProfileMovieWithDetails,
+  SimilarOrRecommendedMovie,
+} from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 
 interface ActiveMovieState {
   movieDetailsLoading: boolean;
-  movie: ProfileMovie | null;
+  movie: ProfileMovieWithDetails | null;
   recommendedMovies: SimilarOrRecommendedMovie[];
   similarMovies: SimilarOrRecommendedMovie[];
   movieDetailsError: ApiErrorResponse | null;
