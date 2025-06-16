@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   Box,
@@ -13,6 +15,8 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Menu,
+  MenuItem,
   Stack,
   Tooltip,
   Typography,
@@ -20,7 +24,13 @@ import {
 import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectCurrentAccount, updateAccount, updateAccountImage, verifyEmail } from '../../app/slices/accountSlice';
+import {
+  removeAccountImage,
+  selectCurrentAccount,
+  updateAccount,
+  updateAccountImage,
+  verifyEmail,
+} from '../../app/slices/accountSlice';
 import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import {
   addProfile,
@@ -61,11 +71,15 @@ const ManageAccount = () => {
   const [accountStatsDialogOpen, setAccountStatsDialogOpen] = useState<boolean>(false);
   const [accountStatsDialogTitle, setAccountStatsDialogTitle] = useState<string>('');
 
+  // Account image management state
+  const [accountImageMenuAnchor, setAccountImageMenuAnchor] = useState<null | HTMLElement>(null);
+  const [isAccountImageHovered, setIsAccountImageHovered] = useState(false);
+  const [isRemovingAccountImage, setIsRemovingAccountImage] = useState(false);
+
   const auth = getAuth();
   const user = auth.currentUser;
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleAddProfileButton = () => {
     openNameDialog('Add Profile', '', async (newName) => {
@@ -154,9 +168,29 @@ const ManageAccount = () => {
     dispatch(updateAccountImage({ accountId: account.id, file }));
   };
 
-  const handleImageClick = () => {
+  const handleAccountImageMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setAccountImageMenuAnchor(event.currentTarget);
+  };
+
+  const handleAccountImageMenuClose = () => {
+    setAccountImageMenuAnchor(null);
+  };
+
+  const handleUploadAccountImage = () => {
+    handleAccountImageMenuClose();
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  const handleRemoveAccountImage = async () => {
+    handleAccountImageMenuClose();
+    setIsRemovingAccountImage(true);
+    try {
+      await dispatch(removeAccountImage({ accountId: account.id }));
+    } finally {
+      setIsRemovingAccountImage(false);
     }
   };
 
@@ -165,6 +199,8 @@ const ManageAccount = () => {
       dispatch(verifyEmail(user));
     }
   };
+
+  const hasCustomAccountImage = account.image && !account.image.includes('placehold.co');
 
   return (
     <>
@@ -182,9 +218,9 @@ const ManageAccount = () => {
               cursor: 'pointer',
               overflow: 'hidden',
             }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onClick={handleImageClick}
+            onMouseEnter={() => setIsAccountImageHovered(true)}
+            onMouseLeave={() => setIsAccountImageHovered(false)}
+            onClick={handleAccountImageMenuOpen}
           >
             <Box
               crossOrigin="anonymous"
@@ -199,7 +235,7 @@ const ManageAccount = () => {
                 borderRadius: 2,
               }}
             />
-            {isHovered && (
+            {(isAccountImageHovered || isRemovingAccountImage) && (
               <Box
                 sx={{
                   position: 'absolute',
@@ -217,19 +253,51 @@ const ManageAccount = () => {
                   fontSize: '1rem',
                   borderRadius: 2,
                   pointerEvents: 'none',
+                  flexDirection: 'column',
+                  gap: 1,
                 }}
               >
-                Upload Image
+                {isRemovingAccountImage ? (
+                  <>
+                    <Typography variant="body1">Removing Image...</Typography>
+                  </>
+                ) : (
+                  <>
+                    <PhotoCameraIcon />
+                    <Typography variant="body1">Manage Image</Typography>
+                  </>
+                )}
               </Box>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-            />
           </Box>
+
+          {/* Account Image Management Menu */}
+          <Menu
+            anchorEl={accountImageMenuAnchor}
+            open={Boolean(accountImageMenuAnchor)}
+            onClose={handleAccountImageMenuClose}
+            transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleUploadAccountImage}>
+              <PhotoCameraIcon sx={{ mr: 1 }} fontSize="small" />
+              {hasCustomAccountImage ? 'Change Image' : 'Upload Image'}
+            </MenuItem>
+            {hasCustomAccountImage && (
+              <MenuItem onClick={handleRemoveAccountImage} sx={{ color: 'error.main' }}>
+                <DeleteForeverIcon sx={{ mr: 1 }} fontSize="small" />
+                Remove Image
+              </MenuItem>
+            )}
+          </Menu>
+
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+          />
         </Grid>
 
         <Grid

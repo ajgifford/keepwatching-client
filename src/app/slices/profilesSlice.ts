@@ -207,6 +207,47 @@ export const updateProfileImage = createAsyncThunk<
   }
 );
 
+export const removeProfileImage = createAsyncThunk<
+  Profile,
+  { accountId: number; profileId: number },
+  { rejectValue: ApiErrorResponse }
+>(
+  'profiles/removeImage',
+  async ({ accountId, profileId }: { accountId: number; profileId: number }, { dispatch, rejectWithValue }) => {
+    try {
+      const response: AxiosResponse<ProfileResponse> = await axiosInstance.delete(
+        `/upload/accounts/${accountId}/profiles/${profileId}/image`
+      );
+
+      dispatch(
+        showActivityNotification({
+          message: `Profile image removed successfully`,
+          type: ActivityNotificationType.Success,
+        })
+      );
+      return response.data.profile;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showActivityNotification({
+            message: errorResponse.message,
+            type: ActivityNotificationType.Error,
+          })
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showActivityNotification({
+          message: 'An error occurred removing the profile image',
+          type: ActivityNotificationType.Error,
+        })
+      );
+      return rejectWithValue({ message: 'An unknown error occurred removing a profile image' });
+    }
+  }
+);
+
 const profileSlice = createSlice({
   name: 'profiles',
   initialState,
@@ -285,6 +326,20 @@ const profileSlice = createSlice({
       .addCase(updateProfileImage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Profile Image Update Failed' };
+      })
+      .addCase(removeProfileImage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeProfileImage.fulfilled, (state, action) => {
+        profilesAdapter.upsertOne(state, action.payload);
+        saveToLocalStorage(Object.values(state.entities));
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(removeProfileImage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Profile Image Removal Failed' };
       });
   },
 });

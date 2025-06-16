@@ -332,6 +332,46 @@ export const updateAccountImage = createAsyncThunk<
   }
 );
 
+export const removeAccountImage = createAsyncThunk<Account, { accountId: number }, { rejectValue: ApiErrorResponse }>(
+  'account/removeImage',
+  async ({ accountId }: { accountId: number }, { dispatch, rejectWithValue }) => {
+    try {
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.delete(
+        `/upload/accounts/${accountId}/image`
+      );
+      const account = response.data.result;
+
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+      dispatch(
+        showActivityNotification({
+          message: response.data.message || `Account image removed successfully`,
+          type: ActivityNotificationType.Success,
+        })
+      );
+      return account;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showActivityNotification({
+            message: errorResponse.message,
+            type: ActivityNotificationType.Error,
+          })
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showActivityNotification({
+          message: 'An error occurred removing the account image',
+          type: ActivityNotificationType.Error,
+        })
+      );
+      console.error(error);
+      return rejectWithValue({ message: 'RemoveAccountImage: Unexpected Error' });
+    }
+  }
+);
+
 export const verifyEmail = createAsyncThunk<void, User, { rejectValue: ApiErrorResponse }>(
   'account/verifyEmail',
   async (user: User, { dispatch, rejectWithValue }) => {
@@ -476,6 +516,19 @@ const authSlice = createSlice({
       .addCase(updateAccountImage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Account Image Update Failed' };
+      })
+      .addCase(removeAccountImage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeAccountImage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.account = action.payload;
+        state.error = null;
+      })
+      .addCase(removeAccountImage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Account Image Removal Failed' };
       })
       .addCase(updateAccount.pending, (state) => {
         state.loading = true;

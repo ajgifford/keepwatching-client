@@ -2,15 +2,17 @@ import { useRef, useState } from 'react';
 
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StarsIcon from '@mui/icons-material/Stars';
-import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Menu, MenuItem, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
-import { selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
+import { removeProfileImage, selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
 import { getProfileImageUrl } from '../../utility/imageUtils';
 import { Profile } from '@ajgifford/keepwatching-types';
 
@@ -40,6 +42,8 @@ export function ProfileCard({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [imageMenuAnchor, setImageMenuAnchor] = useState<null | HTMLElement>(null);
+  const [isRemovingImage, setIsRemovingImage] = useState(false);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -50,11 +54,33 @@ export function ProfileCard({
     dispatch(updateProfileImage({ accountId: account.id, profileId: profile.id, file }));
   };
 
-  const handleImageClick = () => {
+  const handleImageMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setImageMenuAnchor(event.currentTarget);
+  };
+
+  const handleImageMenuClose = () => {
+    setImageMenuAnchor(null);
+  };
+
+  const handleUploadImage = () => {
+    handleImageMenuClose();
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
+
+  const handleRemoveImage = async () => {
+    handleImageMenuClose();
+    setIsRemovingImage(true);
+    try {
+      await dispatch(removeProfileImage({ accountId: account.id, profileId: profile.id }));
+    } finally {
+      setIsRemovingImage(false);
+    }
+  };
+
+  const hasCustomImage = profile.image && !profile.image.includes('placehold.co');
 
   return (
     <Box
@@ -64,6 +90,7 @@ export function ProfileCard({
     >
       <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" sx={{ pb: '10px' }}>
         <Box
+          className="image-upload-area"
           sx={{
             position: 'relative',
             display: 'inline-block',
@@ -75,13 +102,14 @@ export function ProfileCard({
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          onClick={handleImageClick}
+          onClick={handleImageMenuOpen}
         >
           <Box
             crossOrigin="anonymous"
             component="img"
             src={getProfileImageUrl(profile.image)}
             alt={profile.name}
+            className={`profile-image ${isRemovingImage ? 'loading' : ''}`}
             sx={{
               width: '100%',
               height: '100%',
@@ -89,7 +117,7 @@ export function ProfileCard({
               borderRadius: 2,
             }}
           />
-          {isHovered && (
+          {(isHovered || isRemovingImage) && (
             <Box
               sx={{
                 position: 'absolute',
@@ -103,21 +131,53 @@ export function ProfileCard({
                 justifyContent: 'center',
                 color: 'white',
                 fontWeight: 'bold',
-                fontSize: 16,
+                fontSize: 14,
                 borderRadius: 2,
+                flexDirection: 'column',
+                gap: 0.5,
               }}
             >
-              Upload Image
+              {isRemovingImage ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                <>
+                  <PhotoCameraIcon fontSize="small" />
+                  <Typography variant="caption">Manage Image</Typography>
+                </>
+              )}
             </Box>
           )}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-          />
         </Box>
+
+        {/* Image Management Menu */}
+        <Menu
+          className="image-management-menu"
+          anchorEl={imageMenuAnchor}
+          open={Boolean(imageMenuAnchor)}
+          onClose={handleImageMenuClose}
+          transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+        >
+          <MenuItem onClick={handleUploadImage}>
+            <PhotoCameraIcon sx={{ mr: 1 }} fontSize="small" />
+            {hasCustomImage ? 'Change Image' : 'Upload Image'}
+          </MenuItem>
+          {hasCustomImage && (
+            <MenuItem onClick={handleRemoveImage} className="error-item" sx={{ color: 'error.main' }}>
+              <DeleteForeverIcon sx={{ mr: 1 }} fontSize="small" />
+              Remove Image
+            </MenuItem>
+          )}
+        </Menu>
+
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+        />
+
         <Typography variant="h5" color="primary">
           {profile.name}
         </Typography>

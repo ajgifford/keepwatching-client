@@ -38,3 +38,53 @@
   margin-left: 0px;
   margin-right: 0px;
 }
+
+.image-hover-overlay {
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(2px);
+}
+
+.image-upload-area {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.image-upload-area:hover {
+  transform: scale(1.02);
+}
+
+.image-management-menu {
+  min-width: 180px;
+}
+
+.image-management-menu .MuiMenuItem-root {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+}
+
+.image-management-menu .MuiMenuItem-root:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.image-management-menu .MuiMenuItem-root.error-item:hover {
+  background-color: rgba(244, 67, 54, 0.04);
+}
+
+/* Loading state for image removal */
+.image-removing {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Smooth transitions for image changes */
+.profile-image,
+.account-image {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.profile-image.loading,
+.account-image.loading {
+  opacity: 0.5;
+}

@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
-import { editProfile, updateProfileImage } from './profilesSlice';
+import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
 import {
   AddShowFavoriteResponse,
   BinaryWatchStatusType,
@@ -699,6 +699,12 @@ const activeProfileSlice = createSlice({
       .addCase(editProfile.fulfilled, (state, action) => {
         if (state.profile && state.profile.id === action.payload.id) {
           state.profile = action.payload;
+        }
+      })
+      .addCase(removeProfileImage.fulfilled, (state, action) => {
+        if (state.profile && state.profile.id === action.payload.id) {
+          state.profile.image = action.payload.image;
+          localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
         }
       });
   },
