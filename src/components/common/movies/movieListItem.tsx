@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import StarIcon from '@mui/icons-material/Star';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import {
   Avatar,
   Box,
