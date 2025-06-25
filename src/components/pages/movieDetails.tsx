@@ -318,17 +318,53 @@ function MovieDetails() {
                     loadingWatchStatus ? (
                       <CircularProgress size={20} color="inherit" />
                     ) : (
-                      <WatchStatusIcon status={movie!.watchStatus} />
+                      <WatchStatusIcon status={movie?.watchStatus || WatchStatus.NOT_WATCHED} />
                     )
                   }
                   sx={{
                     mt: 1,
-                    bgcolor: 'rgba(255,255,255,0.15)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.2)',
+                    // Enhanced styling for better visibility
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Darker, more opaque background
+                    backdropFilter: 'blur(12px)', // Increased blur
+                    border: '2px solid rgba(255, 255, 255, 0.4)', // More prominent border
                     color: 'white',
+                    fontWeight: 600,
+                    textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)', // Text shadow for readability
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)', // Drop shadow
+                    position: 'relative',
+                    overflow: 'hidden',
                     '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.25)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      border: '2px solid rgba(255, 255, 255, 0.6)',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      border: '2px solid rgba(255, 255, 255, 0.2)',
+                    },
+                    // Add a subtle gradient overlay for extra depth
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background:
+                        'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
+                      pointerEvents: 'none',
+                      zIndex: 1,
+                    },
+                    // Ensure content is above the gradient
+                    '& .MuiButton-startIcon, & .MuiButton-endIcon': {
+                      position: 'relative',
+                      zIndex: 2,
+                    },
+                    '& .MuiButton-label': {
+                      position: 'relative',
+                      zIndex: 2,
                     },
                   }}
                 >
