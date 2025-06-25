@@ -82,7 +82,7 @@ export const MoviesSection: React.FC<MoviesSectionProps> = ({ recentMovies, upco
         <SectionHeader
           icon={<MovieIcon sx={{ fontSize: 28, color: theme.palette.secondary.main }} />}
           title="Recent Movies"
-          subtitle="Released this month"
+          subtitle="Released last 30 days"
           color="secondary"
           linkTo="/movies"
         />

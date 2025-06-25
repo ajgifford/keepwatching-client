@@ -80,7 +80,7 @@ const Movies = () => {
   };
 
   const sortedMovies = [...movies].sort((a, b) => {
-    const watchedOrder = { NOT_WATCHED: 1, WATCHING: 2, WATCHED: 3 };
+    const watchedOrder = { UNAIRED: 1, NOT_WATCHED: 2, WATCHED: 3 };
     const aWatched = watchedOrder[a.watchStatus];
     const bWatched = watchedOrder[b.watchStatus];
     if (aWatched !== bWatched) {

@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
+import StarIcon from '@mui/icons-material/Star';
+import TvOutlinedIcon from '@mui/icons-material/TvOutlined';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
@@ -29,6 +34,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { updateShowWatchStatus } from '../../app/slices/activeProfileSlice';
 import {
   clearActiveShow,
   fetchShowWithDetails,
@@ -40,6 +46,7 @@ import {
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
+import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
@@ -55,12 +62,13 @@ import {
 } from '../utility/contentUtility';
 import {
   WatchStatusIcon,
-  canChangeWatchStatus,
+  canChangeEpisodeWatchStatus,
+  canChangeSeasonWatchStatus,
   determineNextSeasonWatchStatus,
-  getSeasonWatchStatusTooltip,
+  getWatchStatusAction,
   getWatchStatusDisplay,
 } from '../utility/watchStatusUtility';
-import { ProfileEpisode, ProfileSeason, WatchStatus } from '@ajgifford/keepwatching-types';
+import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, WatchStatus } from '@ajgifford/keepwatching-types';
 
 function ShowDetails() {
   const { showId, profileId } = useParams();
@@ -78,6 +86,7 @@ function ShowDetails() {
   const [tabValue, setTabValue] = useState(0);
   const [loadingSeasons, setLoadingSeasons] = useState<Record<number, boolean>>({});
   const [loadingEpisodes, setLoadingEpisodes] = useState<Record<number, boolean>>({});
+  const [loadingShowWatchStatus, setLoadingShowWatchStatus] = useState<boolean>(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -104,14 +113,34 @@ function ShowDetails() {
     return <LoadingComponent />;
   }
   if (showDetailsError) {
+    console.log(showDetailsError);
     return <ErrorComponent error={showDetailsError} />;
   }
+
+  const handleShowWatchStatusChange = async (show: ProfileShowWithSeasons, event: React.MouseEvent) => {
+    setLoadingShowWatchStatus(true);
+    try {
+      event.stopPropagation();
+
+      const nextStatus = show.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
+
+      await dispatch(
+        updateShowWatchStatus({
+          profileId: Number(profileId),
+          showId: show.id,
+          status: nextStatus,
+        })
+      );
+    } finally {
+      setLoadingShowWatchStatus(false);
+    }
+  };
 
   const handleSeasonWatchStatusChange = async (season: ProfileSeason, event: React.MouseEvent) => {
     event.stopPropagation();
 
     setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
-    const nextStatus = determineNextSeasonWatchStatus(season, show!);
+    const nextStatus = determineNextSeasonWatchStatus(season);
 
     try {
       await dispatch(
@@ -126,17 +155,16 @@ function ShowDetails() {
     }
   };
 
-  const handleEpisodeWatchStatusChange = async (season: ProfileSeason, episode: ProfileEpisode) => {
+  const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode) => {
     setLoadingEpisodes((prev) => ({ ...prev, [episode.id]: true }));
 
     try {
-      const nextStatus = watchedEpisodes[episode.id] ? 'NOT_WATCHED' : 'WATCHED';
+      const nextStatus = watchedEpisodes[episode.id] ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
 
       await dispatch(
         updateEpisodeWatchStatus({
           profileId: Number(profileId),
-          season,
-          episode,
+          episodeId: episode.id,
           episodeStatus: nextStatus,
         })
       );
@@ -183,9 +211,26 @@ function ShowDetails() {
     });
   };
 
-  const buildServicesLine = (streamingServices: string | undefined) => {
-    if (!streamingServices) {
-      return 'Not available for streaming';
+  const formatUserRating = (rating: number | undefined) => {
+    if (rating) {
+      return `${rating.toFixed(2)} / 10`;
+    }
+    return 'Unknown';
+  };
+
+  const formatSeasons = (seasons: number | undefined) => {
+    if (seasons) {
+      if (seasons === 1) {
+        return '1 season';
+      }
+      return `${seasons} seasons`;
+    }
+    return 'No seasons';
+  };
+
+  const buildServicesLine = (network: string | null | undefined, streamingServices: string | undefined) => {
+    if (!network && !streamingServices) {
+      return 'No Network or Streaming Service';
     }
 
     // Helper function to filter out 'Unknown' from streaming services
@@ -197,110 +242,114 @@ function ShowDetails() {
         .join(', ');
     };
 
-    return filterUnknown(streamingServices);
+    const services = streamingServices ? filterUnknown(streamingServices) : 'No Streaming Service';
+    return `${network || 'No Network'} • ${services}`;
   };
 
   return (
-    <Box sx={{ pb: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Back button */}
       <Box
-        display="flex"
-        alignItems="center"
-        mb={2}
-        mt={1}
         sx={{
-          position: 'relative',
+          px: 2,
+          bgcolor: 'background.paper',
+          position: 'sticky',
+          top: 0,
           zIndex: 1,
         }}
       >
-        <Tooltip title={getBackButtonTooltip()}>
-          <IconButton
-            aria-label="back"
-            onClick={() => {
-              navigate(buildBackButtonPath());
-            }}
-            sx={{ color: 'text.primary' }}
-          >
-            <ArrowBackIosIcon />
-          </IconButton>
-        </Tooltip>
+        <Box
+          display="flex"
+          alignItems="center"
+          mb={2}
+          mt={1}
+          sx={{
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          <Tooltip title={getBackButtonTooltip()}>
+            <IconButton
+              aria-label="back"
+              onClick={() => {
+                navigate(buildBackButtonPath());
+              }}
+              sx={{ color: 'text.primary' }}
+            >
+              <ArrowBackIosIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
-      {/* Show Header Card */}
-      <Card
-        sx={{
-          mb: 4,
-          position: 'relative',
-          borderRadius: { xs: 1, md: 2 },
-          overflow: 'hidden',
-          boxShadow: 2,
-        }}
-      >
-        {/* Backdrop Image Section */}
-        <Box sx={{ position: 'relative' }}>
-          {show?.backdropImage ? (
-            <CardMedia
-              component="img"
-              height={isMobile ? '380' : '320'}
-              image={buildTMDBImagePath(show?.backdropImage, 'w1280')}
-              alt={show.title}
-              sx={{
-                filter: 'brightness(0.65)',
-                objectFit: 'cover',
-                objectPosition: 'center 20%',
-              }}
-            />
-          ) : (
+      <Box sx={{ p: { xs: 2, md: 3 } }}>
+        {/* Show Details Card */}
+        <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
+          {/* Backdrop Image Section */}
+          <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+            {show?.backdropImage ? (
+              <CardMedia
+                component="img"
+                height={isMobile ? '380' : '320'}
+                image={buildTMDBImagePath(show?.backdropImage, 'w1280')}
+                alt={show.title}
+                sx={{
+                  filter: 'brightness(0.65)',
+                  objectFit: 'cover',
+                  objectPosition: 'center 20%',
+                  width: '100%',
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  height: isMobile ? '200px' : '320px',
+                  backgroundColor: 'grey.800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              />
+            )}
+
+            {/* Overlay Content */}
             <Box
               sx={{
-                height: isMobile ? '200px' : '320px',
-                backgroundColor: 'grey.300',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                bgcolor: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 100%)',
+                color: 'white',
+                pt: { xs: 3, sm: 4 },
+                pb: { xs: 1.5, sm: 2 },
+                px: { xs: 1.5, sm: 2 },
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: 'flex-end',
+                minHeight: { xs: '140px', sm: '180px' },
               }}
-            ></Box>
-          )}
+            >
+              {/* Poster */}
+              <Box
+                component="img"
+                sx={{
+                  width: { xs: 80, sm: 120, md: 140 },
+                  height: { xs: 120, sm: 180, md: 210 },
+                  mr: { xs: 2, sm: 2, md: 3 },
+                  borderRadius: 1,
+                  boxShadow: 3,
+                  transform: 'translateY(-30px)',
+                  objectFit: 'cover',
+                  flexShrink: 0,
+                }}
+                src={buildTMDBImagePath(show?.posterImage, 'w500')}
+                alt={show?.title}
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  e.currentTarget.src = 'https://placehold.co/300x450/gray/white?text=No+Image';
+                }}
+              />
 
-          {/* Overlay Content */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              width: '100%',
-              bgcolor: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 100%)',
-              color: 'white',
-              pt: { xs: 3, sm: 4 },
-              pb: { xs: 1.5, sm: 2 },
-              px: { xs: 1.5, sm: 2 },
-              display: 'flex',
-              alignItems: 'flex-end',
-              minHeight: { xs: '140px', sm: '180px' },
-            }}
-          >
-            {/* Poster */}
-            <Box
-              component="img"
-              sx={{
-                width: { xs: 80, sm: 120, md: 140 },
-                height: { xs: 120, sm: 180, md: 210 },
-                mr: { xs: 2, sm: 2, md: 3 },
-                borderRadius: 1,
-                boxShadow: 3,
-                transform: 'translateY(-30px)',
-                objectFit: 'cover',
-              }}
-              src={buildTMDBImagePath(show?.posterImage, 'w500')}
-              alt={show?.title}
-              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                e.currentTarget.src = 'https://placehold.co/300x450/gray/white?text=No+Image';
-              }}
-            />
-
-            {/* Show Details */}
-            <Box sx={{ flexGrow: 1, pb: 2 }}>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
+              {/* Show Details */}
+              <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
                 <Typography
                   variant={isMobile ? 'h5' : 'h4'}
                   fontWeight="bold"
@@ -324,358 +373,389 @@ function ShowDetails() {
                     textOverflow: 'ellipsis',
                     display: '-webkit-box',
                     WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: { xs: 5, sm: 7 }, // Adjust line count as needed
-                    maxWidth: { xs: '90%', md: '97%' },
+                    WebkitLineClamp: { xs: 5, sm: 7 },
                   }}
                 >
                   <i>{show?.description}</i>
                 </Typography>
-              </Box>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  mb: { xs: 1, md: 1.5 },
-                  opacity: 1,
-                  fontWeight: 'medium',
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
-                }}
-              >
-                {formatYear(show?.releaseDate)} • {show?.seasonCount} Seasons • {show?.episodeCount} Episodes
-              </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <CalendarTodayIcon sx={{ fontSize: 16 }} />
+                    <Typography variant="body2">{formatYear(show?.releaseDate)}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <TvOutlinedIcon sx={{ fontSize: 16 }} />
+                    <Typography variant="body2">{formatSeasons(show?.seasonCount)} </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <LocalMoviesOutlinedIcon sx={{ fontSize: 16 }} />
+                    <Typography variant="body2">{show?.episodeCount} Episodes</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <StarIcon sx={{ fontSize: 16, color: 'warning.main' }} />
+                    <Typography variant="body2">{formatUserRating(show?.userRating)}</Typography>
+                  </Box>
+                  <Chip label={show?.contentRating} size="small" color="primary" sx={{ fontWeight: 500 }} />
+                </Box>
 
-              <Box display="flex" gap={1} flexWrap="wrap">
-                {show?.network && (
-                  <Chip
-                    size="small"
-                    label={show?.network}
-                    color="primary"
-                    sx={{
-                      fontWeight: 'medium',
-                      boxShadow: 1,
-                    }}
-                  />
-                )}
-                <Chip
-                  size="small"
-                  label={show?.contentRating || 'Not Rated'}
-                  color="secondary"
-                  sx={{ fontWeight: 'medium', boxShadow: 1 }}
-                />
-                <Chip size="small" label={show?.type} color="info" sx={{ fontWeight: 'medium', boxShadow: 1 }} />
-                <Chip
-                  size="small"
-                  label={show?.status}
-                  color={show?.status === 'Ended' ? 'error' : 'success'}
-                  sx={{ fontWeight: 'medium', boxShadow: 1 }}
-                />
+                <Button
+                  variant="contained"
+                  disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
+                  onClick={(event) => handleShowWatchStatusChange(show!, event)}
+                  startIcon={
+                    loadingShowWatchStatus ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <WatchStatusIcon status={show!.watchStatus} />
+                    )
+                  }
+                  sx={{
+                    mt: 1,
+                    bgcolor: 'rgba(255,255,255,0.15)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.25)',
+                    },
+                  }}
+                >
+                  {loadingShowWatchStatus
+                    ? 'Loading...'
+                    : show?.watchStatus === WatchStatus.WATCHED
+                      ? 'Mark Unwatched'
+                      : 'Mark as Watched'}
+                </Button>
               </Box>
             </Box>
           </Box>
-        </Box>
 
-        {/* Additional Show Details */}
-        <CardContent
-          sx={{
-            px: { xs: 2, md: 3 },
-            py: { xs: 1.5, md: 2 },
-            backgroundColor: theme.palette.background.paper,
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={8}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          {/* Additional Show Details */}
+          <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
+            <Grid container spacing={2} sx={{ mb: 6 }}>
+              <Grid item xs={12} md={8}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
                       Genres
                     </Typography>
-                    <Typography variant="body2">{show?.genres || 'Not specified'}</Typography>
-                  </Box>
-                </Grid>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      {show?.genres
+                        .split(',')
+                        .map((genre) => (
+                          <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
+                        ))}
+                    </Box>
+                  </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                      Streaming On
-                    </Typography>
-                    <Typography variant="body2">{buildServicesLine(show?.streamingServices)}</Typography>
-                  </Box>
-                </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Network • Streaming On
+                      </Typography>
+                      <Typography variant="body2">
+                        {buildServicesLine(show?.network, show?.streamingServices)}
+                      </Typography>
+                    </Box>
+                  </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                      Watch Status
-                    </Typography>
-                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <WatchStatusIcon status={show?.watchStatus!} fontSize="small" />
-                      {getWatchStatusDisplay(show?.watchStatus)}
-                    </Typography>
-                  </Box>
+                  <Grid item xs={12} sm={6}>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Watch Status
+                      </Typography>
+                      <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <WatchStatusIcon status={show?.watchStatus!} fontSize="small" />
+                        {getWatchStatusDisplay(show?.watchStatus)}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Show Status
+                      </Typography>
+                      <Typography variant="body2">{`${show?.type} • ${show?.status}`}</Typography>
+                    </Box>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 2,
-                  borderRadius: 1,
-                  backgroundColor: theme.palette.background.default,
-                }}
-              >
-                <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
-                  Episodes
-                </Typography>
-
-                <Grid container sx={{ mb: 1 }}>
-                  <Grid item xs={4} sm={3}>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      Last Episode
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
-                    <Typography variant="body2" fontWeight={500}>
-                      {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode) : 'No Last Episode'}
-                    </Typography>
-                  </Grid>
-                </Grid>
-
-                <Divider sx={{ my: 1, opacity: 0.6 }} />
-
-                <Grid container>
-                  <Grid item xs={4} sm={3}>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      Next Episode
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
-                    <Typography variant="body2" fontWeight={500}>
-                      {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode) : 'No Next Episode'}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Tab Navigation */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
-          aria-label="show content tabs"
-        >
-          <Tab label="Keep Watching" {...a11yProps(0)} />
-          <Tab label="Seasons & Episodes" {...a11yProps(1)} />
-          <Tab label="Related Content" {...a11yProps(2)} />
-        </Tabs>
-      </Box>
-
-      {/* Tab Content */}
-      <TabPanel value={tabValue} index={0}>
-        {profileId && <KeepWatchingShowComponent profileId={Number(profileId)} />}
-      </TabPanel>
-
-      <TabPanel value={tabValue} index={1}>
-        {seasons ? (
-          <Box>
-            {seasons.map((season) => (
-              <Accordion
-                key={season.id}
-                sx={{
-                  mb: 1.5,
-                  '&:before': { display: 'none' },
-                  borderRadius: 1,
-                  overflow: 'hidden',
-                  boxShadow: 1,
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+              <Grid item xs={12} md={4}>
+                <Paper
+                  variant="outlined"
                   sx={{
-                    '& .MuiAccordionSummary-content': {
-                      alignItems: 'center',
-                      gap: 2,
-                    },
+                    p: 2,
+                    borderRadius: 1,
                     backgroundColor: theme.palette.background.default,
                   }}
                 >
-                  <Avatar
-                    alt={season.name}
-                    src={buildTMDBImagePath(season.posterImage)}
-                    variant="rounded"
-                    sx={{
-                      width: { xs: 70, sm: 90 },
-                      height: { xs: 105, sm: 135 },
-                    }}
-                  />
+                  <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
+                    Episodes
+                  </Typography>
 
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                      {season.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Season {season.seasonNumber} • {season.numberOfEpisodes} Episodes
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {buildSeasonAirDate(season.releaseDate)}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <Tooltip title={getSeasonWatchStatusTooltip(season, show!)}>
-                      <IconButton
-                        onClick={(event) => handleSeasonWatchStatusChange(season, event)}
-                        disabled={loadingSeasons[season.id] || !canChangeWatchStatus(season, show!)}
-                        size="medium"
-                        sx={{ my: 'auto' }}
-                      >
-                        <WatchStatusIcon status={season.watchStatus} />
-                      </IconButton>
-                    </Tooltip>
-                    {loadingSeasons[season.id] && (
-                      <CircularProgress
-                        size={24}
-                        sx={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          marginTop: '-12px',
-                          marginLeft: '-12px',
-                        }}
-                      />
-                    )}
-                  </Box>
-                </AccordionSummary>
-
-                <AccordionDetails sx={{ p: 0 }}>
-                  {season.episodes && season.episodes.length > 0 ? (
-                    <List disablePadding>
-                      {season.episodes.map((episode, index) => (
-                        <React.Fragment key={episode.id}>
-                          <ListItem
-                            sx={{
-                              display: 'flex',
-                              flexDirection: { xs: 'column', sm: 'row' },
-                              alignItems: { xs: 'center', sm: 'flex-start' },
-                              textAlign: { xs: 'center', sm: 'left' },
-                              px: { xs: 1, sm: 2 },
-                              py: 2,
-                              bgcolor: index % 2 === 0 ? 'background.default' : 'background.paper',
-                            }}
-                          >
-                            <Box sx={{ position: 'relative', mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }}>
-                              <Avatar
-                                alt={episode.title}
-                                src={buildTMDBImagePath(episode.stillImage)}
-                                variant="rounded"
-                                sx={{
-                                  width: { xs: 200, sm: 160 },
-                                  height: { xs: 120, sm: 90 },
-                                }}
-                              />
-                              <Box
-                                sx={{
-                                  position: 'absolute',
-                                  bottom: 0,
-                                  left: 0,
-                                  bgcolor: 'rgba(0,0,0,0.7)',
-                                  color: 'white',
-                                  px: 1,
-                                  py: 0.25,
-                                  fontSize: '0.75rem',
-                                  borderTopRightRadius: 4,
-                                }}
-                              >
-                                S{season.seasonNumber} E{episode.episodeNumber}
-                              </Box>
-                            </Box>
-
-                            <Box sx={{ flexGrow: 1 }}>
-                              <Typography variant="subtitle1" fontWeight="medium">
-                                {episode.title}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                  mb: 1,
-                                  opacity: 0.9,
-                                }}
-                              >
-                                <i>{episode.overview || 'No description available.'}</i>
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                {buildEpisodeAirDate(episode.airDate)} • {calculateRuntimeDisplay(episode.runtime)}
-                              </Typography>
-                            </Box>
-
-                            <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 }, ml: { xs: 0, sm: 2 } }}>
-                              <Tooltip title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}>
-                                <IconButton
-                                  color={watchedEpisodes[episode.id] ? 'success' : 'default'}
-                                  onClick={() => handleEpisodeWatchStatusChange(season, episode)}
-                                  disabled={loadingEpisodes[episode.id]}
-                                >
-                                  <WatchStatusIcon
-                                    status={watchedEpisodes[episode.id] ? WatchStatus.WATCHED : WatchStatus.NOT_WATCHED}
-                                  />
-                                </IconButton>
-                              </Tooltip>
-                              {loadingEpisodes[episode.id] && (
-                                <CircularProgress
-                                  size={24}
-                                  sx={{
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '50%',
-                                    marginTop: '-12px',
-                                    marginLeft: '-12px',
-                                  }}
-                                />
-                              )}
-                            </Box>
-                          </ListItem>
-                          {index < season.episodes.length - 1 && <Divider />}
-                        </React.Fragment>
-                      ))}
-                    </List>
-                  ) : (
-                    <Box sx={{ p: 3, textAlign: 'center' }}>
-                      <Typography variant="body1" color="text.secondary">
-                        No Episodes Available
+                  <Grid container sx={{ mb: 1 }}>
+                    <Grid item xs={4} sm={3}>
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        Last Episode
                       </Typography>
-                    </Box>
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </Box>
-        ) : (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="body1" color="text.secondary">
-              No seasons available for this show
-            </Typography>
-          </Box>
-        )}
-      </TabPanel>
+                    </Grid>
+                    <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
+                      <Typography variant="body2" fontWeight={500}>
+                        {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode) : 'No Last Episode'}
+                      </Typography>
+                    </Grid>
+                  </Grid>
 
-      <TabPanel value={tabValue} index={2}>
-        {show && <RecommendedShowsComponent showId={show.id} profileId={Number(profileId)} />}
-        {show && <SimilarShowsComponent showId={show.id} profileId={Number(profileId)} />}
-      </TabPanel>
+                  <Divider sx={{ my: 1, opacity: 0.6 }} />
+
+                  <Grid container>
+                    <Grid item xs={4} sm={3}>
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        Next Episode
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
+                      <Typography variant="body2" fontWeight={500}>
+                        {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode) : 'No Next Episode'}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+            </Grid>
+
+            {/* Tab Navigation */}
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
+                aria-label="show content tabs"
+              >
+                <Tab label="Keep Watching" {...a11yProps(0)} />
+                <Tab label="Seasons & Episodes" {...a11yProps(1)} />
+                <Tab label="Related Content" {...a11yProps(2)} />
+              </Tabs>
+            </Box>
+
+            {/* KeepWatching Component */}
+            <TabPanel value={tabValue} index={0}>
+              {profileId && <KeepWatchingShowComponent profileId={Number(profileId)} />}
+            </TabPanel>
+
+            {/* Seasons & Episodes Component */}
+            <TabPanel value={tabValue} index={1}>
+              {seasons ? (
+                <Box>
+                  {seasons.map((season) => (
+                    <Accordion
+                      key={season.id}
+                      sx={{
+                        mb: 1.5,
+                        '&:before': { display: 'none' },
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        boxShadow: 1,
+                      }}
+                    >
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        sx={{
+                          '& .MuiAccordionSummary-content': {
+                            alignItems: 'center',
+                            gap: 2,
+                          },
+                          backgroundColor: theme.palette.background.default,
+                        }}
+                      >
+                        <Avatar
+                          alt={season.name}
+                          src={buildTMDBImagePath(season.posterImage)}
+                          variant="rounded"
+                          sx={{
+                            width: { xs: 70, sm: 90 },
+                            height: { xs: 105, sm: 135 },
+                          }}
+                        />
+
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                            {season.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Season {season.seasonNumber} • {season.numberOfEpisodes} Episodes
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {buildSeasonAirDate(season.releaseDate)}
+                          </Typography>
+                        </Box>
+
+                        <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                          <OptionalTooltipControl
+                            key={`watchStatusTooltip_${show!.id}_${season.id}`}
+                            title={getWatchStatusAction(season.watchStatus)}
+                            disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
+                            children={
+                              <IconButton
+                                onClick={(event) => handleSeasonWatchStatusChange(season, event)}
+                                disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
+                                size="medium"
+                                sx={{ my: 'auto' }}
+                              >
+                                <WatchStatusIcon status={season.watchStatus} />
+                              </IconButton>
+                            }
+                          ></OptionalTooltipControl>
+                          {loadingSeasons[season.id] && (
+                            <CircularProgress
+                              size={24}
+                              sx={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                marginTop: '-12px',
+                                marginLeft: '-12px',
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </AccordionSummary>
+
+                      <AccordionDetails sx={{ p: 0 }}>
+                        {season.episodes && season.episodes.length > 0 ? (
+                          <List disablePadding>
+                            {season.episodes.map((episode, index) => (
+                              <React.Fragment key={episode.id}>
+                                <ListItem
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    alignItems: { xs: 'center', sm: 'flex-start' },
+                                    textAlign: { xs: 'center', sm: 'left' },
+                                    px: { xs: 1, sm: 2 },
+                                    py: 2,
+                                    bgcolor: index % 2 === 0 ? 'background.default' : 'background.paper',
+                                  }}
+                                >
+                                  <Box sx={{ position: 'relative', mr: { xs: 0, sm: 2 }, mb: { xs: 1, sm: 0 } }}>
+                                    <Avatar
+                                      alt={episode.title}
+                                      src={buildTMDBImagePath(episode.stillImage)}
+                                      variant="rounded"
+                                      sx={{
+                                        width: { xs: 200, sm: 160 },
+                                        height: { xs: 120, sm: 90 },
+                                      }}
+                                    />
+                                    <Box
+                                      sx={{
+                                        position: 'absolute',
+                                        bottom: 0,
+                                        left: 0,
+                                        bgcolor: 'rgba(0,0,0,0.7)',
+                                        color: 'white',
+                                        px: 1,
+                                        py: 0.25,
+                                        fontSize: '0.75rem',
+                                        borderTopRightRadius: 4,
+                                      }}
+                                    >
+                                      S{season.seasonNumber} E{episode.episodeNumber}
+                                    </Box>
+                                  </Box>
+
+                                  <Box sx={{ flexGrow: 1 }}>
+                                    <Typography variant="subtitle1" fontWeight="medium">
+                                      {episode.title}
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                      sx={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        mb: 1,
+                                        opacity: 0.9,
+                                      }}
+                                    >
+                                      <i>{episode.overview || 'No description available.'}</i>
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                      {buildEpisodeAirDate(episode.airDate)} •{' '}
+                                      {calculateRuntimeDisplay(episode.runtime)}
+                                    </Typography>
+                                  </Box>
+
+                                  <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 }, ml: { xs: 0, sm: 2 } }}>
+                                    <OptionalTooltipControl
+                                      key={`watchStatusTooltip_${show!.id}_${season.id}_${episode.id}`}
+                                      title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}
+                                      disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
+                                      children={
+                                        <IconButton
+                                          color={watchedEpisodes[episode.id] ? 'success' : 'default'}
+                                          onClick={() => handleEpisodeWatchStatusChange(episode)}
+                                          disabled={
+                                            loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)
+                                          }
+                                        >
+                                          <WatchStatusIcon status={episode.watchStatus} />
+                                        </IconButton>
+                                      }
+                                    ></OptionalTooltipControl>
+                                    {loadingEpisodes[episode.id] && (
+                                      <CircularProgress
+                                        size={24}
+                                        sx={{
+                                          position: 'absolute',
+                                          top: '50%',
+                                          left: '50%',
+                                          marginTop: '-12px',
+                                          marginLeft: '-12px',
+                                        }}
+                                      />
+                                    )}
+                                  </Box>
+                                </ListItem>
+                                {index < season.episodes.length - 1 && <Divider />}
+                              </React.Fragment>
+                            ))}
+                          </List>
+                        ) : (
+                          <Box sx={{ p: 3, textAlign: 'center' }}>
+                            <Typography variant="body1" color="text.secondary">
+                              No Episodes Available
+                            </Typography>
+                          </Box>
+                        )}
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                </Box>
+              ) : (
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="body1" color="text.secondary">
+                    No seasons available for this show
+                  </Typography>
+                </Box>
+              )}
+            </TabPanel>
+
+            {/* Related Content Component */}
+            <TabPanel value={tabValue} index={2}>
+              {show && <RecommendedShowsComponent showId={show.id} profileId={Number(profileId)} />}
+              {show && <SimilarShowsComponent showId={show.id} profileId={Number(profileId)} />}
+            </TabPanel>
+          </CardContent>
+        </Card>
+      </Box>
     </Box>
   );
 }

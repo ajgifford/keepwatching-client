@@ -1,5 +1,6 @@
 export const showWatchStatuses = [
   { value: '', display: '--All--' },
+  { value: 'UNAIRED', display: 'Unaired' },
   { value: 'NOT_WATCHED', display: 'Not Watched' },
   { value: 'WATCHING', display: 'Watching' },
   { value: 'UP_TO_DATE', display: 'Up To Date' },
@@ -8,8 +9,8 @@ export const showWatchStatuses = [
 
 export const movieWatchStatuses = [
   { value: '', display: '--All--' },
+  { value: 'UNAIRED', display: 'Unaired' },
   { value: 'NOT_WATCHED', display: 'Not Watched' },
-  { value: 'WATCHING', display: 'Watching' },
   { value: 'WATCHED', display: 'Watched' },
 ];
 

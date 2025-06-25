@@ -16,8 +16,10 @@ interface DashboardProfileCardProps {
   showUpToDate: number;
   showWatching: number;
   showNotWatched: number;
+  showUnaired: number;
   movieWatched: number;
   movieNotWatched: number;
+  movieUnaired: number;
 }
 
 interface StatCardProps {
@@ -99,8 +101,10 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
   showUpToDate,
   showWatching,
   showNotWatched,
+  showUnaired,
   movieWatched,
   movieNotWatched,
+  movieUnaired,
 }) => {
   const buildTitle = (name: string) => {
     return `${name}'s Dashboard`;
@@ -186,9 +190,9 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
           <Grid item xs={6} sm={3}>
             <StatCard
               icon={<TvIcon />}
-              value={showNotWatched + showWatching}
+              value={showNotWatched + showWatching + showUnaired}
               label="Shows to Watch"
-              to="/shows?watchStatus=NOT_WATCHED%2CWATCHING"
+              to="/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING"
               color="#FFE082"
             />
           </Grid>
@@ -204,9 +208,9 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
           <Grid item xs={6} sm={3}>
             <StatCard
               icon={<MovieIcon />}
-              value={movieNotWatched}
+              value={movieNotWatched + movieUnaired}
               label="Movies to Watch"
-              to="/movies?watchStatus=NOT_WATCHED"
+              to="/movies?watchStatus=UNAIRED%2CNOT_WATCHED"
               color="#FFAB91"
             />
           </Grid>

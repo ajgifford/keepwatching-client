@@ -22,14 +22,11 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
-import { removeShowFavorite, updateShowStatus } from '../../../app/slices/activeProfileSlice';
+import { removeShowFavorite, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../../utility/contentUtility';
-import {
-  WatchStatusIcon,
-  determineNextShowWatchStatus,
-  getShowWatchStatusTooltip,
-} from '../../utility/watchStatusUtility';
-import { ProfileShow } from '@ajgifford/keepwatching-types';
+import { WatchStatusIcon, determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
+import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
+import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 
 export type FilterProps = {
   genre: string;
@@ -61,7 +58,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
   const handleWatchStatusChangeConfirmed = () => {
     setConfirmChangeWatchStatusDialogOpen(false);
     dispatch(
-      updateShowStatus({
+      updateShowWatchStatus({
         profileId: show.profileId,
         showId: show.id,
         status: nextWatchStatus,
@@ -159,17 +156,23 @@ export const ShowListItem = (props: ShowListItemProps) => {
             <StarIcon color="primary" />
           </IconButton>
         </Tooltip>
-        <Tooltip key={`watchStatusTooltip_${show.id}`} title={getShowWatchStatusTooltip(show)}>
-          <IconButton
-            key={`watchStatusIconButton_${show.id}`}
-            onClick={(event) => {
-              handleWatchStatusChange();
-              event.stopPropagation();
-            }}
-          >
-            <WatchStatusIcon status={show.watchStatus} />
-          </IconButton>
-        </Tooltip>
+        <OptionalTooltipControl
+          key={`watchStatusTooltip_${show.id}`}
+          title={getWatchStatusAction(show.watchStatus)}
+          disabled={show.watchStatus === WatchStatus.UNAIRED}
+          children={
+            <IconButton
+              key={`watchStatusIconButton_${show.id}`}
+              disabled={show.watchStatus === WatchStatus.UNAIRED}
+              onClick={(event) => {
+                handleWatchStatusChange();
+                event.stopPropagation();
+              }}
+            >
+              <WatchStatusIcon status={show.watchStatus} />
+            </IconButton>
+          }
+        />
       </ListItem>
       <Dialog
         open={confirmChangeWatchStatusDialogOpen}
@@ -178,25 +181,13 @@ export const ShowListItem = (props: ShowListItemProps) => {
         aria-describedby="confirm-watch-status-change-dialog-description"
       >
         <DialogTitle id="confirm-watch-status-change-dialog-title">
-          {`Mark '${show.title}' ${
-            nextWatchStatus === 'NOT_WATCHED'
-              ? 'Not Watched'
-              : nextWatchStatus === 'WATCHING'
-                ? 'Watching'
-                : nextWatchStatus === 'UP_TO_DATE'
-                  ? 'Up To Date'
-                  : 'Watched'
-          }?`}
+          {`Mark '${show.title}' ${nextWatchStatus === 'NOT_WATCHED' ? 'Not Watched' : 'Watched'}?`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="confirm-watch-status-change-dialog-description">
             {nextWatchStatus === 'NOT_WATCHED'
               ? `Marking '${show.title}' not watched will mark all seasons and episodes not watched as well. Do you want to proceed?`
-              : nextWatchStatus === 'WATCHED'
-                ? `Marking '${show.title}' watched will mark all seasons and episodes watched as well. Do you want to proceed?`
-                : nextWatchStatus === 'UP_TO_DATE'
-                  ? `Marking '${show.title}' up to date will mark all aired episodes as watched. Do you want to proceed?`
-                  : `Marking '${show.title}' as watching will not change any episode status. Do you want to proceed?`}
+              : `Marking '${show.title}' watched will mark all seasons and episodes watched as well. Do you want to proceed?`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

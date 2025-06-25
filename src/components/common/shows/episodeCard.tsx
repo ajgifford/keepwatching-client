@@ -5,11 +5,11 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
-import { BinaryWatchStatusType, NextEpisode } from '@ajgifford/keepwatching-types';
+import { NextEpisode, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
 
 interface EpisodeCardProps {
   episode: NextEpisode;
-  onWatchStatusChange: (episode: NextEpisode, newStatus: BinaryWatchStatusType) => Promise<void>;
+  onWatchStatusChange: (episode: NextEpisode, newStatus: UserWatchStatus) => Promise<void>;
 }
 
 export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) => {
@@ -20,7 +20,7 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
     setIsWatched(!isWatched);
     setIsLoading(true);
     try {
-      await onWatchStatusChange(episode, 'WATCHED');
+      await onWatchStatusChange(episode, WatchStatus.WATCHED);
     } finally {
       setIsLoading(false);
     }

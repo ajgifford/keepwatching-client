@@ -3,27 +3,20 @@ import { Box, Grid, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
 import { EpisodeCard } from './episodeCard';
-import { BinaryWatchStatusType, NextEpisode, ProfileEpisode, ProfileSeason } from '@ajgifford/keepwatching-types';
+import { NextEpisode, ProfileEpisode, ProfileSeason, UserWatchStatus } from '@ajgifford/keepwatching-types';
 
 export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) => {
   const dispatch = useAppDispatch();
   const show = useAppSelector(selectShow);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
 
-  const handleEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: BinaryWatchStatusType) => {
+  const handleEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: UserWatchStatus) => {
     if (!show) return;
-
-    const season = show.seasons?.find((s) => s.id === episode.seasonId);
-    if (!season) return;
-
-    const episodeObj = season.episodes.find((e) => e.id === episode.episodeId);
-    if (!episodeObj) return;
 
     await dispatch(
       updateEpisodeWatchStatus({
         profileId,
-        season,
-        episode: episodeObj,
+        episodeId: episode.episodeId,
         episodeStatus: newStatus,
       })
     );
@@ -90,9 +83,6 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Next Episodes to Watch
-      </Typography>
       <Grid container spacing={2}>
         {nextEpisodes.map((episode) => (
           <Grid item xs={12} sm={6} md={4} key={`next-episode-${episode.episodeId}`}>

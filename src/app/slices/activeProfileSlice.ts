@@ -8,20 +8,24 @@ import { ActivityNotificationType, showActivityNotification } from './activityNo
 import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
 import {
   AddShowFavoriteResponse,
-  BinaryWatchStatusType,
   EpisodesForProfile,
   EpisodesForProfileResponse,
   FavoriteMovieResponse,
-  FullWatchStatusType,
+  KeepWatchingShow,
+  MovieReference,
   Profile,
   ProfileContentResponse,
+  ProfileMovie,
   ProfileShow,
+  ProfileShowWithSeasons,
   ProfileWithContent,
   RecentUpcomingEpisode,
   RemoveMovieResponse,
   RemoveShowFavoriteResponse,
+  UpdateWatchStatusResponse,
+  UserWatchStatus,
+  WatchStatus,
 } from '@ajgifford/keepwatching-types';
-import { KeepWatchingShow, MovieReference, ProfileMovie } from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 
@@ -62,6 +66,12 @@ const blankState: ActiveProfileState = {
   loading: false,
   error: null,
 };
+
+interface UpdateWatchStatus {
+  show: ProfileShow;
+  showWithSeasons: ProfileShowWithSeasons;
+  nextUnwatchedEpisodes: KeepWatchingShow[];
+}
 
 const determineInitialState = () => {
   const data = localStorage.getItem(ACTIVE_PROFILE_KEY);
@@ -232,14 +242,14 @@ export const removeShowFavorite = createAsyncThunk<
   }
 );
 
-export const updateShowStatus = createAsyncThunk<
-  { showId: number; status: FullWatchStatusType },
-  { profileId: number; showId: number; status: FullWatchStatusType },
+export const updateShowWatchStatus = createAsyncThunk<
+  UpdateWatchStatus,
+  { profileId: number; showId: number; status: UserWatchStatus },
   { rejectValue: ApiErrorResponse }
 >(
-  'activeProfile/updateShowStatus',
+  'activeProfile/updateShowWatchStatus',
   async (
-    { profileId, showId, status }: { profileId: number; showId: number; status: FullWatchStatusType },
+    { profileId, showId, status }: { profileId: number; showId: number; status: UserWatchStatus },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -250,16 +260,24 @@ export const updateShowStatus = createAsyncThunk<
         return rejectWithValue({ message: 'No account found' });
       }
 
-      await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`, {
-        showId: showId,
-        status: status,
-        recursive: true,
-      });
-      return { showId, status };
+      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}/shows/watchStatus`,
+        {
+          showId: showId,
+          status: status,
+        }
+      );
+
+      const showWithSeasons = response.data.statusData.showWithSeasons;
+      const show = toProfileShow(showWithSeasons);
+      const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
+
+      return { show, showWithSeasons, nextUnwatchedEpisodes };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
+      console.log('Error in updateShowWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred' });
     }
   }
@@ -344,14 +362,14 @@ export const removeMovieFavorite = createAsyncThunk<
   }
 );
 
-export const updateMovieStatus = createAsyncThunk<
-  { movieId: number; status: BinaryWatchStatusType },
-  { profileId: number; movieId: number; status: BinaryWatchStatusType },
+export const updateMovieWatchStatus = createAsyncThunk<
+  { movieId: number; status: UserWatchStatus },
+  { profileId: number; movieId: number; status: UserWatchStatus },
   { rejectValue: ApiErrorResponse }
 >(
-  'activeProfile/updateMovieStatus',
+  'activeProfile/updateMovieWatchStatus',
   async (
-    { profileId, movieId, status }: { profileId: number; movieId: number; status: BinaryWatchStatusType },
+    { profileId, movieId, status }: { profileId: number; movieId: number; status: UserWatchStatus },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -371,25 +389,20 @@ export const updateMovieStatus = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
+      console.log('Error in updateMovieWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred updating movie watch status' });
     }
   }
 );
 
 export const updateNextEpisodeWatchStatus = createAsyncThunk<
-  KeepWatchingShow[],
-  { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: BinaryWatchStatusType },
+  UpdateWatchStatus,
+  { profileId: number; episodeId: number; episodeStatus: UserWatchStatus },
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/updateNextEpisodeWatchState',
   async (
-    {
-      profileId,
-      showId,
-      seasonId,
-      episodeId,
-      episodeStatus,
-    }: { profileId: number; showId: number; seasonId: number; episodeId: number; episodeStatus: BinaryWatchStatusType },
+    { profileId, episodeId, episodeStatus }: { profileId: number; episodeId: number; episodeStatus: UserWatchStatus },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -400,25 +413,80 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk<
         return rejectWithValue({ message: 'No account found' });
       }
 
-      const response = await axiosInstance.put(
-        `/accounts/${accountId}/profiles/${profileId}/episodes/nextWatchStatus`,
+      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}/episodes/watchStatus`,
         {
-          showId: showId,
-          seasonId: seasonId,
           episodeId: episodeId,
           status: episodeStatus,
         }
       );
 
-      return response.data.nextUnwatchedEpisodes;
+      const showWithSeasons = response.data.statusData.showWithSeasons;
+      const show = toProfileShow(showWithSeasons);
+      const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
+
+      return { show, showWithSeasons, nextUnwatchedEpisodes };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
+      console.log('Error in updateNextEpisodeWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred updating the next episode watch status' });
     }
   }
 );
+
+function toProfileShow(show: ProfileShowWithSeasons): ProfileShow {
+  const {
+    id,
+    tmdbId,
+    title,
+    description,
+    releaseDate,
+    posterImage,
+    backdropImage,
+    userRating,
+    contentRating,
+    streamingServices,
+    genres,
+    seasonCount,
+    episodeCount,
+    status,
+    type,
+    inProduction,
+    lastAirDate,
+    network,
+    profileId,
+    watchStatus,
+    lastEpisode,
+    nextEpisode,
+  } = show;
+
+  return {
+    id,
+    tmdbId,
+    title,
+    description,
+    releaseDate,
+    posterImage,
+    backdropImage,
+    userRating,
+    contentRating,
+    streamingServices,
+    genres,
+    seasonCount,
+    episodeCount,
+    status,
+    type,
+    inProduction,
+    lastAirDate,
+    network,
+    profileId,
+    watchStatus,
+    lastEpisode,
+    nextEpisode,
+  };
+}
 
 const activeProfileSlice = createSlice({
   name: 'activeProfile',
@@ -579,53 +647,58 @@ const activeProfileSlice = createSlice({
         state.loading = false;
         state.error = action.payload || { message: 'Failed to remove a show favorite' };
       })
-      .addCase(updateShowStatus.pending, (state) => {
+      .addCase(updateShowWatchStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateShowStatus.fulfilled, (state, action) => {
-        const { showId, status } = action.payload;
+      .addCase(updateShowWatchStatus.fulfilled, (state, action) => {
+        const { show, nextUnwatchedEpisodes } = action.payload;
         const shows = state.shows;
         if (shows) {
-          const show = shows.find((m) => m.id === showId);
-          if (show) {
-            show.watchStatus = status;
-          }
-        }
-        state.lastUpdated = new Date().toLocaleString();
-        state.loading = false;
-        state.error = null;
-        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
-      })
-      .addCase(updateShowStatus.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || { message: 'Failed to update show status' };
-      })
-      .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
-        const { showId, showStatus, nextUnwatchedEpisodes } = action.payload;
-
-        const shows = state.shows;
-        if (shows) {
-          const show = shows.find((m) => m.id === showId);
-          if (show) {
-            show.watchStatus = showStatus;
+          const index = shows.findIndex((m) => m.id === show.id);
+          if (index !== -1) {
+            shows[index] = show;
           }
         }
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
+        state.loading = false;
+        state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
+      .addCase(updateShowWatchStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to update show status' };
+      })
       .addCase(updateSeasonWatchStatus.fulfilled, (state, action) => {
-        const showId = action.payload.showId;
-        const status = action.payload.showStatus;
+        const { showWithSeasons: show, nextUnwatchedEpisodes } = action.payload;
+
+        const profileShow = toProfileShow(show);
         const shows = state.shows;
         if (shows) {
-          const show = shows.find((m) => m.id === showId);
-          if (show) {
-            show.watchStatus = status;
+          const index = shows.findIndex((m) => m.id === show.id);
+          if (index !== -1) {
+            shows[index] = profileShow;
           }
         }
-        state.nextUnwatchedEpisodes = action.payload.nextUnwatchedEpisodes;
+
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
+        state.lastUpdated = new Date().toLocaleString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
+        const { showWithSeasons, nextUnwatchedEpisodes } = action.payload;
+
+        const show = toProfileShow(showWithSeasons);
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((s) => s.id === showWithSeasons.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
+        }
+
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
@@ -669,11 +742,11 @@ const activeProfileSlice = createSlice({
         state.loading = false;
         state.error = action.payload || { message: 'Failed to remove a movie favorite' };
       })
-      .addCase(updateMovieStatus.pending, (state) => {
+      .addCase(updateMovieWatchStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateMovieStatus.fulfilled, (state, action) => {
+      .addCase(updateMovieWatchStatus.fulfilled, (state, action) => {
         const { movieId, status } = action.payload;
         const movies = state.movies;
         if (movies) {
@@ -686,12 +759,21 @@ const activeProfileSlice = createSlice({
         state.lastUpdated = new Date().toLocaleString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
-      .addCase(updateMovieStatus.rejected, (state, action) => {
+      .addCase(updateMovieWatchStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Failed to update movie status' };
       })
       .addCase(updateNextEpisodeWatchStatus.fulfilled, (state, action) => {
-        const nextUnwatchedEpisodes = action.payload;
+        const { show, nextUnwatchedEpisodes } = action.payload;
+
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((s) => s.id === show.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
+        }
+
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
         state.lastUpdated = new Date().toLocaleString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -755,17 +837,19 @@ export const selectMoviesByIds = createSelector(
 );
 
 export const selectShowWatchCounts = createSelector([selectShows], (shows = []) => {
-  const watched = shows.filter((show) => show.watchStatus === 'WATCHED').length;
-  const notWatched = shows.filter((show) => show.watchStatus === 'NOT_WATCHED').length;
-  const watching = shows.filter((show) => show.watchStatus === 'WATCHING').length;
-  const upToDate = shows.filter((show) => show.watchStatus === 'UP_TO_DATE').length;
-  return { watched, upToDate, watching, notWatched };
+  const watched = shows.filter((show) => show.watchStatus === WatchStatus.WATCHED).length;
+  const notWatched = shows.filter((show) => show.watchStatus === WatchStatus.NOT_WATCHED).length;
+  const watching = shows.filter((show) => show.watchStatus === WatchStatus.WATCHING).length;
+  const upToDate = shows.filter((show) => show.watchStatus === WatchStatus.UP_TO_DATE).length;
+  const unaired = shows.filter((show) => show.watchStatus === WatchStatus.UNAIRED).length;
+  return { watched, upToDate, watching, notWatched, unaired };
 });
 
 export const selectMovieWatchCounts = createSelector([selectMovies], (movies = []) => {
-  const watched = movies.filter((movie) => movie.watchStatus === 'WATCHED').length;
-  const notWatched = movies.filter((movie) => movie.watchStatus === 'NOT_WATCHED').length;
-  return { watched, notWatched };
+  const watched = movies.filter((movie) => movie.watchStatus === WatchStatus.WATCHED).length;
+  const notWatched = movies.filter((movie) => movie.watchStatus === WatchStatus.NOT_WATCHED).length;
+  const unaired = movies.filter((movie) => movie.watchStatus === WatchStatus.UNAIRED).length;
+  return { watched, notWatched, unaired };
 });
 
 export default activeProfileSlice.reducer;

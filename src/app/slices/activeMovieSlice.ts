@@ -2,7 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
-import { updateMovieStatus } from './activeProfileSlice';
+import { updateMovieWatchStatus } from './activeProfileSlice';
 import {
   MovieDetailsResponse,
   ProfileMovieWithDetails,
@@ -84,10 +84,10 @@ const activeMovieSlice = createSlice({
         state.movieDetailsLoading = false;
         state.movieDetailsError = action.payload || { message: 'Failed to load show details' };
       })
-      .addCase(updateMovieStatus.fulfilled, (state, action) => {
-        const { status } = action.payload;
+      .addCase(updateMovieWatchStatus.fulfilled, (state, action) => {
+        const { movieId, status } = action.payload;
         const movie = state.movie;
-        if (movie) {
+        if (movie && movie.id === movieId) {
           movie.watchStatus = status;
         }
       });

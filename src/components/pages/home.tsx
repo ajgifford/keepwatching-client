@@ -40,8 +40,13 @@ const Home = () => {
     upToDate: showUpToDate,
     watching: showWatching,
     notWatched: showNotWatched,
+    unaired: showUnaired,
   } = useAppSelector(selectShowWatchCounts);
-  const { watched: movieWatched, notWatched: movieNotWatched } = useAppSelector(selectMovieWatchCounts);
+  const {
+    watched: movieWatched,
+    notWatched: movieNotWatched,
+    unaired: movieUnaired,
+  } = useAppSelector(selectMovieWatchCounts);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -63,8 +68,10 @@ const Home = () => {
         showUpToDate={showUpToDate}
         showWatching={showWatching}
         showNotWatched={showNotWatched}
+        showUnaired={showUnaired}
         movieWatched={movieWatched}
         movieNotWatched={movieNotWatched}
+        movieUnaired={movieUnaired}
       />
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

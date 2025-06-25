@@ -100,7 +100,7 @@ export const EpisodesSection: React.FC<EpisodesSectionProps> = ({ recentEpisodes
         <SectionHeader
           icon={<TvIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
           title="Recent Episodes"
-          subtitle="Aired this week"
+          subtitle="Aired last 7 days"
           color="primary"
           linkTo="/shows?watchStatus=WATCHING"
         />
@@ -119,7 +119,7 @@ export const EpisodesSection: React.FC<EpisodesSectionProps> = ({ recentEpisodes
         <SectionHeader
           icon={<ScheduleIcon sx={{ fontSize: 28, color: theme.palette.info.main }} />}
           title="Upcoming Episodes"
-          subtitle="Airing next week"
+          subtitle="Airing next 7 days"
           color="info"
           linkTo="/shows?watchStatus=WATCHING"
         />

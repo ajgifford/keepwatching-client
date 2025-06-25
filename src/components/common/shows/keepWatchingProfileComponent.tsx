@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { EpisodeCard } from './episodeCard';
-import { BinaryWatchStatusType, KeepWatchingShow, NextEpisode } from '@ajgifford/keepwatching-types';
+import { KeepWatchingShow, NextEpisode, UserWatchStatus } from '@ajgifford/keepwatching-types';
 
 const balanceShowsAcrossRows = (shows: KeepWatchingShow[]): KeepWatchingShow[] => {
   if (!shows || shows.length <= 2) return shows;
@@ -65,12 +65,10 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: number 
 const ShowWithEpisodes = ({ show, profileId }: { show: KeepWatchingShow; profileId: number }) => {
   const dispatch = useAppDispatch();
 
-  const handleNextEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: BinaryWatchStatusType) => {
+  const handleNextEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: UserWatchStatus) => {
     await dispatch(
       updateNextEpisodeWatchStatus({
         profileId: episode.profileId,
-        showId: episode.showId,
-        seasonId: episode.seasonId,
         episodeId: episode.episodeId,
         episodeStatus: newStatus,
       })

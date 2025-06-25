@@ -3,8 +3,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AccessTime, CalendarToday, Star } from '@mui/icons-material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import {
   Box,
   Button,
@@ -12,10 +10,10 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  CircularProgress,
   Divider,
   Grid,
   IconButton,
-  Rating,
   Tab,
   Tabs,
   Tooltip,
@@ -34,13 +32,14 @@ import {
   selectRecommendedMovies,
   selectSimilarMovies,
 } from '../../app/slices/activeMovieSlice';
-import { updateMovieStatus } from '../../app/slices/activeProfileSlice';
+import { updateMovieWatchStatus } from '../../app/slices/activeProfileSlice';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { buildTMDBImagePath } from '../utility/contentUtility';
+import { WatchStatusIcon } from '../utility/watchStatusUtility';
 import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 
 function MovieDetails() {
@@ -63,6 +62,7 @@ function MovieDetails() {
   const watchStatusFilter = location.state?.watchStatus || '';
 
   const [tabValue, setTabValue] = useState(0);
+  const [loadingWatchStatus, setLoadingWatchStatus] = useState<boolean>(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -86,17 +86,22 @@ function MovieDetails() {
   }
 
   const handleMovieWatchStatusChange = async (movie: ProfileMovie, event: React.MouseEvent) => {
-    event.stopPropagation();
+    setLoadingWatchStatus(true);
+    try {
+      event.stopPropagation();
 
-    const nextStatus = movie.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
+      const nextStatus = movie.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
 
-    await dispatch(
-      updateMovieStatus({
-        profileId: Number(profileId),
-        movieId: movie.id,
-        status: nextStatus,
-      })
-    );
+      await dispatch(
+        updateMovieWatchStatus({
+          profileId: Number(profileId),
+          movieId: movie.id,
+          status: nextStatus,
+        })
+      );
+    } finally {
+      setLoadingWatchStatus(false);
+    }
   };
 
   const buildBackButtonPath = () => {
@@ -157,6 +162,7 @@ function MovieDetails() {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
+      {/* Back button */}
       <Box
         sx={{
           px: 2,
@@ -191,7 +197,9 @@ function MovieDetails() {
       </Box>
 
       <Box sx={{ p: { xs: 2, md: 3 } }}>
+        {/* Movie Details Card */}
         <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
+          {/* Backdrop Image Section */}
           <Box sx={{ position: 'relative', overflow: 'hidden' }}>
             {movie?.backdropImage ? (
               <CardMedia
@@ -210,7 +218,7 @@ function MovieDetails() {
               <Box
                 sx={{
                   height: isMobile ? '200px' : '320px',
-                  backgroundColor: 'grey.300',
+                  backgroundColor: 'grey.800',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -218,6 +226,7 @@ function MovieDetails() {
               />
             )}
 
+            {/* Overlay Content */}
             <Box
               sx={{
                 position: 'absolute',
@@ -234,6 +243,7 @@ function MovieDetails() {
                 minHeight: { xs: '140px', sm: '180px' },
               }}
             >
+              {/* Poster */}
               <Box
                 component="img"
                 sx={{
@@ -253,6 +263,7 @@ function MovieDetails() {
                 }}
               />
 
+              {/* Movie Details */}
               <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
                 <Typography
                   variant={isMobile ? 'h5' : 'h4'}
@@ -282,6 +293,7 @@ function MovieDetails() {
                 >
                   <i>{movie?.description}</i>
                 </Typography>
+
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <CalendarToday sx={{ fontSize: 16 }} />
@@ -300,12 +312,13 @@ function MovieDetails() {
 
                 <Button
                   variant="contained"
+                  disabled={loadingWatchStatus || movie?.watchStatus === WatchStatus.UNAIRED}
                   onClick={(event) => handleMovieWatchStatusChange(movie!, event)}
                   startIcon={
-                    movie?.watchStatus === WatchStatus.NOT_WATCHED ? (
-                      <WatchLaterOutlinedIcon />
+                    loadingWatchStatus ? (
+                      <CircularProgress size={20} color="inherit" />
                     ) : (
-                      <WatchLaterIcon color="success" />
+                      <WatchStatusIcon status={movie!.watchStatus} />
                     )
                   }
                   sx={{
@@ -319,17 +332,22 @@ function MovieDetails() {
                     },
                   }}
                 >
-                  {movie?.watchStatus === 'WATCHED' ? 'Mark Unwatched' : 'Mark as Watched'}
+                  {loadingWatchStatus
+                    ? 'Loading...'
+                    : movie?.watchStatus === WatchStatus.WATCHED
+                      ? 'Mark Unwatched'
+                      : 'Mark as Watched'}
                 </Button>
               </Box>
             </Box>
           </Box>
 
+          {/* Additional Movie Details */}
           <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid container spacing={3} sx={{ mb: 6 }}>
               <Grid item xs={12} sm={4}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Streaming Services
+                  Streaming On
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
                   {movie?.streamingServices || 'Not available for streaming'}
@@ -353,13 +371,14 @@ function MovieDetails() {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  User Rating
+                  Genres
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Rating value={movie?.userRating! / 2} precision={0.1} readOnly size="small" />
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {formatUserRating(movie?.userRating)}
-                  </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {movie?.genres
+                    .split(',')
+                    .map((genre) => (
+                      <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
+                    ))}
                 </Box>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -378,21 +397,9 @@ function MovieDetails() {
                   {formatCurrency(movie?.budget)}
                 </Typography>
               </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Genres
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {movie?.genres
-                    .split(',')
-                    .map((genre) => (
-                      <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
-                    ))}
-                </Box>
-              </Grid>
             </Grid>
 
+            {/* Tab Navigation */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
               <Tabs
                 value={tabValue}
@@ -407,12 +414,14 @@ function MovieDetails() {
               </Tabs>
             </Box>
 
+            {/* Cast & Crew Component */}
             <TabPanel value={tabValue} index={0}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
                 -- Coming Soon --
               </Typography>
             </TabPanel>
 
+            {/* Related Content Component */}
             <TabPanel value={tabValue} index={1}>
               <Box sx={{ px: 2, py: 1 }}>
                 <Box sx={{ mb: 4 }}>

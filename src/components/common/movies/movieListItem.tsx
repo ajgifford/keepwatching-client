@@ -19,9 +19,11 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
-import { removeMovieFavorite, updateMovieStatus } from '../../../app/slices/activeProfileSlice';
+import { removeMovieFavorite, updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
-import { BinaryWatchStatusType, ProfileMovie } from '@ajgifford/keepwatching-types';
+import { WatchStatusIcon, getWatchStatusAction } from '../../utility/watchStatusUtility';
+import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
+import { ProfileMovie, SimpleWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
 
 export type FilterProps = {
   genre: string;
@@ -43,22 +45,15 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  const handleWatchStatusChange = (currentStatus: BinaryWatchStatusType) => {
+  const handleWatchStatusChange = (currentStatus: SimpleWatchStatus) => {
     dispatch(
-      updateMovieStatus({
+      updateMovieWatchStatus({
         profileId: movie.profileId,
         movieId: movie.id,
-        status: determineNewWatchStatus(currentStatus),
+        status: currentStatus === WatchStatus.NOT_WATCHED ? WatchStatus.WATCHED : WatchStatus.NOT_WATCHED,
       })
     );
   };
-
-  function determineNewWatchStatus(currentStatus: BinaryWatchStatusType): BinaryWatchStatusType {
-    if (currentStatus === 'NOT_WATCHED') {
-      return 'WATCHED';
-    }
-    return 'NOT_WATCHED';
-  }
 
   const buildLinkState = () => {
     const filterProps = props.getFilters();
@@ -143,18 +138,23 @@ export const MovieListItem = (props: MovieListItemProps) => {
           <StarIcon color="primary" />
         </IconButton>
       </Tooltip>
-      <Tooltip key={movie.profileId} title={movie.watchStatus === 'WATCHED' ? `Mark Not Watched` : `Mark Watched`}>
-        <IconButton
-          key={movie.profileId}
-          onClick={(event) => {
-            handleWatchStatusChange(movie.watchStatus);
-            event.stopPropagation();
-          }}
-        >
-          {movie.watchStatus === 'NOT_WATCHED' && <WatchLaterOutlinedIcon />}
-          {movie.watchStatus === 'WATCHED' && <WatchLaterIcon color="success" />}
-        </IconButton>
-      </Tooltip>
+      <OptionalTooltipControl
+        key={`watchStatusTooltip_${movie.id}`}
+        title={getWatchStatusAction(movie.watchStatus)}
+        disabled={movie.watchStatus === WatchStatus.UNAIRED}
+        children={
+          <IconButton
+            key={`watchStatusIconButton_${movie.id}`}
+            disabled={movie.watchStatus === WatchStatus.UNAIRED}
+            onClick={(event) => {
+              handleWatchStatusChange(movie.watchStatus);
+              event.stopPropagation();
+            }}
+          >
+            <WatchStatusIcon status={movie.watchStatus} />
+          </IconButton>
+        }
+      />
     </ListItem>
   );
 };
