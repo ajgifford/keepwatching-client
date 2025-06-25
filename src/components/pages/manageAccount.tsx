@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
@@ -415,7 +416,13 @@ const ManageAccount = () => {
           <Button onClick={handleCloseDeleteProfileDialog} variant="outlined" color="primary">
             Cancel
           </Button>
-          <Button onClick={handleConfirmDeleteProfile} variant="contained" color="error" autoFocus>
+          <Button
+            startIcon={<DeleteIcon />}
+            onClick={handleConfirmDeleteProfile}
+            variant="contained"
+            color="error"
+            autoFocus
+          >
             Delete
           </Button>
         </DialogActions>
