@@ -5,6 +5,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   AppBar,
+  Avatar,
   Box,
   Button,
   Container,
@@ -12,6 +13,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -19,15 +21,35 @@ import {
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout, selectCurrentAccount } from '../../app/slices/accountSlice';
+import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
+import { selectAllProfiles } from '../../app/slices/profilesSlice';
+import { getProfileImageUrl } from '../utility/imageUtils';
 
 function Navigation() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const account = useAppSelector(selectCurrentAccount);
+  const profile = useAppSelector(selectActiveProfile);
+  const profiles = useAppSelector(selectAllProfiles);
   const location = useLocation();
   const theme = useTheme();
-  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfileSwitch = (accountId: number, profileId: number) => {
+    dispatch(setActiveProfile({ accountId, profileId }));
+    handleProfileMenuClose();
+  };
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setMobileMenuAnchor(event.currentTarget);
@@ -101,6 +123,64 @@ function Navigation() {
         Login
       </Button>
     );
+  };
+
+  const renderActiveProfileControl = () => {
+    if (profile) {
+      return (
+        <>
+          <Tooltip title={`Active Profile: ${profile.name}`} arrow>
+            <IconButton onClick={handleProfileMenuOpen} sx={{ ml: 2 }}>
+              <Avatar
+                src={getProfileImageUrl(profile.image)}
+                alt={profile.name}
+                slotProps={{
+                  img: {
+                    crossOrigin: 'anonymous',
+                  },
+                }}
+                sx={{ width: 32, height: 32 }}
+              />
+            </IconButton>
+          </Tooltip>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleProfileMenuClose}
+            slotProps={{
+              paper: {
+                elevation: 3,
+                sx: {
+                  mt: 1.5,
+                },
+              },
+            }}
+          >
+            {profiles.map((p) => (
+              <MenuItem
+                key={p.id}
+                selected={p.id === profile.id}
+                onClick={() => handleProfileSwitch(p.accountId, p.id)}
+              >
+                <Avatar
+                  src={getProfileImageUrl(p.image)}
+                  alt={p.name}
+                  slotProps={{
+                    img: {
+                      crossOrigin: 'anonymous',
+                    },
+                  }}
+                  sx={{ width: 24, height: 24, mr: 1 }}
+                />
+                {p.name}
+              </MenuItem>
+            ))}
+          </Menu>
+        </>
+      );
+    }
+    return <></>;
   };
 
   const navigationItems = [
@@ -204,9 +284,17 @@ function Navigation() {
                 >
                   KeepWatching
                 </Typography>
+                {renderActiveProfileControl()}
               </>
             ) : (
-              <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
                 <Typography
                   variant="h6"
                   noWrap
@@ -224,6 +312,7 @@ function Navigation() {
                 </Typography>
                 {renderNavigationButtons()}
                 {buildLoginLogoutButton()}
+                {renderActiveProfileControl()}
               </Box>
             )}
           </Toolbar>
