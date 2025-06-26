@@ -180,7 +180,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
                 textShadow: '0 1px 2px rgba(0,0,0,0.3)',
               }}
             >
-              KeepWatching your favorites
+              KeepWatching Your Favorites!
             </Typography>
           </Box>
         </Box>

@@ -215,46 +215,41 @@ function Navigation() {
     return <></>;
   };
 
-  const renderMobileMenu = () => {
-    if (account) {
-      return (
-        <Menu
-          anchorEl={mobileMenuAnchor}
-          open={Boolean(mobileMenuAnchor)}
-          onClose={handleMobileMenuClose}
-          slotProps={{
-            paper: {
-              elevation: 0,
-              sx: {
-                overflow: 'visible',
-                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                mt: 1.5,
-              },
+  const renderMobileMenu = () => (
+    <Menu
+      anchorEl={mobileMenuAnchor}
+      open={Boolean(mobileMenuAnchor)}
+      onClose={handleMobileMenuClose}
+      slotProps={{
+        paper: {
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+          },
+        },
+      }}
+    >
+      {navigationItems.map((item) => (
+        <MenuItem
+          key={item.id}
+          onClick={() => handleMenuPageChange(item.id, item.to)}
+          selected={location.pathname === item.to}
+          sx={{
+            '&.Mui-selected': {
+              backgroundColor: 'primary.light',
+              color: 'primary.contrastText',
             },
           }}
         >
-          {navigationItems.map((item) => (
-            <MenuItem
-              key={item.id}
-              onClick={() => handleMenuPageChange(item.id, item.to)}
-              selected={location.pathname === item.to}
-              sx={{
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.light',
-                  color: 'primary.contrastText',
-                },
-              }}
-            >
-              {item.icon}
-              <Box sx={{ ml: 2 }}>{item.label}</Box>
-            </MenuItem>
-          ))}
-          {buildLoginLogoutMenu()}
-        </Menu>
-      );
-    }
-    return <></>;
-  };
+          {item.icon}
+          <Box sx={{ ml: 2 }}>{item.label}</Box>
+        </MenuItem>
+      ))}
+      {buildLoginLogoutMenu()}
+    </Menu>
+  );
 
   return (
     <header className="header">
@@ -263,11 +258,16 @@ function Navigation() {
           <Toolbar>
             {isMobile ? (
               <>
-                {account && (
-                  <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMobileMenuOpen}>
-                    <FaBars />
-                  </IconButton>
-                )}
+                <IconButton
+                  disabled={!account}
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={handleMobileMenuOpen}
+                >
+                  <FaBars />
+                </IconButton>
+
                 {renderMobileMenu()}
                 <Typography
                   variant="h6"
