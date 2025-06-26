@@ -181,11 +181,11 @@ export const ShowListItem = (props: ShowListItemProps) => {
         aria-describedby="confirm-watch-status-change-dialog-description"
       >
         <DialogTitle id="confirm-watch-status-change-dialog-title">
-          {`Mark '${show.title}' ${nextWatchStatus === 'NOT_WATCHED' ? 'Not Watched' : 'Watched'}?`}
+          {`Mark '${show.title}' ${nextWatchStatus === WatchStatus.NOT_WATCHED ? 'Not Watched' : 'Watched'}?`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="confirm-watch-status-change-dialog-description">
-            {nextWatchStatus === 'NOT_WATCHED'
+            {nextWatchStatus === WatchStatus.NOT_WATCHED
               ? `Marking '${show.title}' not watched will mark all seasons and episodes not watched as well. Do you want to proceed?`
               : `Marking '${show.title}' watched will mark all seasons and episodes watched as well. Do you want to proceed?`}
           </DialogContentText>

@@ -1,17 +1,19 @@
+import { WatchStatus } from '@ajgifford/keepwatching-types';
+
 export const showWatchStatuses = [
   { value: '', display: '--All--' },
-  { value: 'UNAIRED', display: 'Unaired' },
-  { value: 'NOT_WATCHED', display: 'Not Watched' },
-  { value: 'WATCHING', display: 'Watching' },
-  { value: 'UP_TO_DATE', display: 'Up To Date' },
-  { value: 'WATCHED', display: 'Watched' },
+  { value: WatchStatus.UNAIRED, display: 'Unaired' },
+  { value: WatchStatus.NOT_WATCHED, display: 'Not Watched' },
+  { value: WatchStatus.WATCHING, display: 'Watching' },
+  { value: WatchStatus.UP_TO_DATE, display: 'Up To Date' },
+  { value: WatchStatus.WATCHED, display: 'Watched' },
 ];
 
 export const movieWatchStatuses = [
   { value: '', display: '--All--' },
-  { value: 'UNAIRED', display: 'Unaired' },
-  { value: 'NOT_WATCHED', display: 'Not Watched' },
-  { value: 'WATCHED', display: 'Watched' },
+  { value: WatchStatus.UNAIRED, display: 'Unaired' },
+  { value: WatchStatus.NOT_WATCHED, display: 'Not Watched' },
+  { value: WatchStatus.WATCHED, display: 'Watched' },
 ];
 
 interface ContentItem {
