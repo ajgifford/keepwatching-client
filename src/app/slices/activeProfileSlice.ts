@@ -3,7 +3,7 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { logout } from './accountSlice';
-import { updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
+import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
 import {
@@ -502,6 +502,16 @@ const activeProfileSlice = createSlice({
         if (state.profile) {
           state.profile.image = action.payload.image;
           localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+        }
+      })
+      .addCase(fetchShowWithDetails.fulfilled, (state, action) => {
+        const show = toProfileShow(action.payload.showWithSeasons);
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((s) => s.id === show.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
         }
       })
       .addCase(setActiveProfile.pending, (state) => {
