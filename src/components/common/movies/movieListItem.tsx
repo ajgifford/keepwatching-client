@@ -137,7 +137,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
         </IconButton>
       </Tooltip>
       <OptionalTooltipControl
-        key={`watchStatusTooltip_${movie.id}`}
+        identifier={`watchStatusTooltip_${movie.id}`}
         title={getWatchStatusAction(movie.watchStatus)}
         disabled={movie.watchStatus === WatchStatus.UNAIRED}
         children={

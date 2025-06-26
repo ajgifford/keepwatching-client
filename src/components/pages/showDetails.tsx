@@ -636,7 +636,7 @@ function ShowDetails() {
 
                         <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                           <OptionalTooltipControl
-                            key={`watchStatusTooltip_${show!.id}_${season.id}`}
+                            identifier={`watchStatusTooltip_${show!.id}_${season.id}`}
                             title={getWatchStatusAction(season.watchStatus)}
                             disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
                             children={
@@ -734,7 +734,7 @@ function ShowDetails() {
 
                                   <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 }, ml: { xs: 0, sm: 2 } }}>
                                     <OptionalTooltipControl
-                                      key={`watchStatusTooltip_${show!.id}_${season.id}_${episode.id}`}
+                                      identifier={`watchStatusTooltip_${show!.id}_${season.id}_${episode.id}`}
                                       title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}
                                       disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
                                       children={

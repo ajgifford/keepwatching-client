@@ -157,7 +157,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
           </IconButton>
         </Tooltip>
         <OptionalTooltipControl
-          key={`watchStatusTooltip_${show.id}`}
+          identifier={`watchStatusTooltip_${show.id}`}
           title={getWatchStatusAction(show.watchStatus)}
           disabled={show.watchStatus === WatchStatus.UNAIRED}
           children={

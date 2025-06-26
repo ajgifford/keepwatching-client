@@ -1,17 +1,17 @@
 import { Tooltip } from '@mui/material';
 
-interface MaybeTooltipProps {
-  key: string;
+interface OptionalTooltipProps {
+  identifier: string;
   title: string;
   disabled: boolean;
   children: React.ReactElement;
 }
 
-export const OptionalTooltipControl: React.FC<MaybeTooltipProps> = ({ key, title, disabled, children }) =>
+export const OptionalTooltipControl: React.FC<OptionalTooltipProps> = ({ identifier, title, disabled, children }) =>
   disabled ? (
     children
   ) : (
-    <Tooltip key={key} title={title}>
+    <Tooltip key={identifier} title={title}>
       {children}
     </Tooltip>
   );
