@@ -112,17 +112,7 @@ function Navigation() {
         </Button>
       );
     }
-    return (
-      <Button
-        color={'inherit'}
-        key="navigationLoginButton"
-        startIcon={<LuLogIn />}
-        onClick={() => handleLogin()}
-        aria-label="Login"
-      >
-        Login
-      </Button>
-    );
+    return <></>;
   };
 
   const renderActiveProfileControl = () => {
@@ -202,24 +192,28 @@ function Navigation() {
     { id: 'manageAccount', label: 'Manage Account', icon: <FaUser className="icon" />, to: '/manageAccount' },
   ];
 
-  const renderNavigationButtons = () =>
-    navigationItems.map((item) => (
-      <Button
-        color="inherit"
-        key={item.id}
-        component={NavLink}
-        to={item.to}
-        aria-label={item.label}
-        startIcon={item.icon}
-        sx={{
-          '&.active': {
-            color: theme.palette.warning.main,
-          },
-        }}
-      >
-        {item.label}
-      </Button>
-    ));
+  const renderNavigationButtons = () => {
+    if (account) {
+      return navigationItems.map((item) => (
+        <Button
+          color="inherit"
+          key={item.id}
+          component={NavLink}
+          to={item.to}
+          aria-label={item.label}
+          startIcon={item.icon}
+          sx={{
+            '&.active': {
+              color: theme.palette.warning.main,
+            },
+          }}
+        >
+          {item.label}
+        </Button>
+      ));
+    }
+    return <></>;
+  };
 
   const renderMobileMenu = () => (
     <Menu
@@ -291,7 +285,7 @@ function Navigation() {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  justifyContent: 'center',
                   width: '100%',
                 }}
               >
