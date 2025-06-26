@@ -20,12 +20,13 @@ export function useStatisticsData(
         watching: showCounts.watching || 0,
         notWatched: showCounts.notWatched || 0,
         upToDate: showCounts.upToDate || 0,
+        unaired: showCounts.unaired || 0,
       },
       {
         name: 'Movies',
         watched: movieCounts.watched || 0,
-        watching: 0,
         notWatched: movieCounts.notWatched || 0,
+        unaired: movieCounts.unaired || 0,
       },
     ];
   }, [statistics]);

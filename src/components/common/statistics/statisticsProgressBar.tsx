@@ -1,5 +1,7 @@
 import { Box, LinearProgress, Typography } from '@mui/material';
 
+import { getProgressBarColor } from '../../utility/watchStatusColors';
+
 interface StatisticsProgressBarProps {
   value: number;
   current: number;
@@ -17,6 +19,7 @@ const StatisticsProgressBar = ({
   color = 'primary',
   height = 10,
 }: StatisticsProgressBarProps) => {
+  const progressColor = color || getProgressBarColor(value);
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -30,7 +33,7 @@ const StatisticsProgressBar = ({
           <LinearProgress
             variant="determinate"
             value={value}
-            color={color}
+            color={progressColor}
             sx={{ height: height, borderRadius: height / 2 }}
           />
         </Box>

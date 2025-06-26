@@ -1,27 +1,41 @@
+import { useMemo } from 'react';
+
 import { Box, Divider, LinearProgress, Typography } from '@mui/material';
 
-import { ShowProgress } from '@ajgifford/keepwatching-types';
+import { getProgressBarColor } from '../../utility/watchStatusColors';
+import { ShowProgress, WatchStatus } from '@ajgifford/keepwatching-types';
 
 interface ShowProgressListProps {
   shows: ShowProgress[];
   maxHeight?: number | string;
-  filter?: 'WATCHED' | 'WATCHING' | 'NOT_WATCHED' | null;
+  filter?: WatchStatus | null;
 }
 
-const ShowProgressList = ({ shows, maxHeight = 300, filter = 'WATCHING' }: ShowProgressListProps) => {
+const ShowProgressList = ({ shows, maxHeight = 300, filter = WatchStatus.WATCHING }: ShowProgressListProps) => {
   const filteredShows = filter ? shows.filter((show) => show.status === filter) : shows;
   const sortedShows = [...filteredShows].sort((a, b) => b.percentComplete - a.percentComplete);
+
+  const defaultEmptyMessage = useMemo(() => {
+    switch (filter) {
+      case WatchStatus.NOT_WATCHED:
+        return 'No unwatched shows';
+      case WatchStatus.WATCHED:
+        return 'No shows completed yet';
+      case WatchStatus.WATCHING:
+        return 'No shows currently being watched';
+      case WatchStatus.UP_TO_DATE:
+        return 'No shows are up to date';
+      case WatchStatus.UNAIRED:
+        return 'No unaired shows';
+      default:
+        return 'No shows available';
+    }
+  }, [filter]);
 
   if (sortedShows.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-        {filter === 'WATCHING'
-          ? 'No shows currently being watched'
-          : filter === 'WATCHED'
-            ? 'No shows completed yet'
-            : filter === 'NOT_WATCHED'
-              ? 'No unwatched shows'
-              : 'No shows available'}
+        {defaultEmptyMessage}
       </Typography>
     );
   }
@@ -39,7 +53,7 @@ const ShowProgressList = ({ shows, maxHeight = 300, filter = 'WATCHING' }: ShowP
           <LinearProgress
             variant="determinate"
             value={show.percentComplete}
-            color={show.percentComplete > 75 ? 'success' : show.percentComplete > 25 ? 'warning' : 'error'}
+            color={getProgressBarColor(show.percentComplete)}
             sx={{ height: 8, borderRadius: 4 }}
           />
           {index < sortedShows.length - 1 && <Divider sx={{ mt: 1 }} />}

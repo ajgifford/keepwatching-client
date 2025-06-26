@@ -5,7 +5,7 @@ import { Grid } from '@mui/material';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import ShowProgressCard from './showProgressCard';
 import { getProfileSummaryProps } from './statisticsUtils';
-import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
+import { ProfileStatisticsResponse, WatchStatus } from '@ajgifford/keepwatching-types';
 
 interface ProfileStatisticsDashboardProps {
   statistics?: ProfileStatisticsResponse | null;
@@ -23,10 +23,11 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
     return (
       <Grid item xs={12} md={6}>
         <ShowProgressCard
-          title="Currently Watching Progress"
+          title="Active Shows Progress"
           shows={statistics.episodeWatchProgress.showsProgress}
-          filter="WATCHING"
+          filters={[WatchStatus.WATCHING, WatchStatus.UP_TO_DATE]}
           maxHeight={300}
+          maxItems={10}
         />
       </Grid>
     );

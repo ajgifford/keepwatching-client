@@ -1,11 +1,13 @@
+import { WATCH_STATUS_COLORS } from '../../utility/watchStatusColors';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 export interface WatchStatusDataItem {
   name: string;
   watched: number;
-  watching: number;
+  watching?: number;
   notWatched: number;
   upToDate?: number;
+  unaired: number;
   [key: string]: string | number | undefined;
 }
 
@@ -13,13 +15,6 @@ interface WatchStatusChartProps {
   data: WatchStatusDataItem[];
   height?: number;
 }
-
-const WATCH_STATUS_COLORS = {
-  watched: '#4CAF50',
-  watching: '#FFC107',
-  notWatched: '#F44336',
-  upToDate: '#2196F3',
-};
 
 const WatchStatusChart = ({ data, height = 300 }: WatchStatusChartProps) => {
   return (
@@ -34,6 +29,7 @@ const WatchStatusChart = ({ data, height = 300 }: WatchStatusChartProps) => {
         <Bar dataKey="upToDate" stackId="a" fill={WATCH_STATUS_COLORS.upToDate} name="Up To Date" />
         <Bar dataKey="watching" stackId="a" fill={WATCH_STATUS_COLORS.watching} name="Watching" />
         <Bar dataKey="notWatched" stackId="a" fill={WATCH_STATUS_COLORS.notWatched} name="Not Watched" />
+        <Bar dataKey="unaired" stackId="a" fill={WATCH_STATUS_COLORS.unaired} name="Unaired" />
       </BarChart>
     </ResponsiveContainer>
   );
