@@ -23,7 +23,12 @@ import {
 
 import { useAppDispatch } from '../../../app/hooks';
 import { removeShowFavorite, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
-import { buildEpisodeLine, buildServicesLine, buildTMDBImagePath } from '../../utility/contentUtility';
+import {
+  buildEpisodeLine,
+  buildServicesLine,
+  buildShowAirDate,
+  buildTMDBImagePath,
+} from '../../utility/contentUtility';
 import { WatchStatusIcon, determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
@@ -124,7 +129,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
                   <br />
                   {buildServicesLine(show)}
                   <br />
-                  <b>Premiered: </b> {show.releaseDate} • <b>Rated: </b> {show.contentRating}
+                  {buildShowAirDate(show.releaseDate)} • <b>Rated: </b> {show.contentRating}
                   <br />
                   <b>Seasons: </b> {show.seasonCount} • <b>Episodes: </b> {show.episodeCount}
                   <br />

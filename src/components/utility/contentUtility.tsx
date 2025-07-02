@@ -66,6 +66,30 @@ export const buildSeasonAirDate = (airDate: string) => {
   return `Premiering On: TBD`;
 };
 
+export const buildShowAirDate = (airDate: string) => {
+  if (airDate) {
+    const airDateDate = new Date(airDate);
+    const now = new Date();
+    if (airDateDate < now) {
+      return (
+        <>
+          <b>Premiered: </b> {airDate}
+        </>
+      );
+    }
+    return (
+      <>
+        <b>Premiering On: </b> {airDate}
+      </>
+    );
+  }
+  return (
+    <>
+      <b>Premiering On: </b> TBD
+    </>
+  );
+};
+
 export const buildServicesLine = (show: ProfileShow | null) => {
   if (!show) {
     return <></>;
