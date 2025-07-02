@@ -160,6 +160,22 @@ function MovieDetails() {
     return 'Unknown';
   };
 
+  function formatReleaseDate(releaseDate: string | undefined): string {
+    if (!releaseDate) {
+      return 'TBD';
+    }
+    const inputDate = new Date(releaseDate);
+    const today = new Date();
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(today.getDate() - 90);
+
+    if (inputDate > today || inputDate >= ninetyDaysAgo) {
+      return releaseDate;
+    }
+
+    return inputDate.getFullYear().toString();
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Back button */}
@@ -297,7 +313,7 @@ function MovieDetails() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <CalendarToday sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{new Date(movie?.releaseDate!).getFullYear()}</Typography>
+                    <Typography variant="body2">{formatReleaseDate(movie?.releaseDate)}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <AccessTime sx={{ fontSize: 16 }} />
