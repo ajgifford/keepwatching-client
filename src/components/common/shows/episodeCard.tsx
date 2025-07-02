@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
+import { WatchStatusIcon } from '../../utility/watchStatusUtility';
 import { NextEpisode, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
 
 interface EpisodeCardProps {
@@ -24,6 +23,18 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const determineWatchStatus = () => {
+    if (isWatched) {
+      return WatchStatus.WATCHED;
+    }
+    const now = new Date();
+    const airDate = new Date(episode.airDate);
+    if (!episode.airDate || now < airDate) {
+      return WatchStatus.UNAIRED;
+    }
+    return WatchStatus.NOT_WATCHED;
   };
 
   return (
@@ -58,15 +69,19 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
           <Typography variant="subtitle1" gutterBottom>
             {episode.episodeTitle}
           </Typography>
-          <Tooltip title={isWatched ? 'Mark Not Watched' : 'Mark Watched'}>
+          <Tooltip
+            title={
+              isWatched ? 'Mark Not Watched' : determineWatchStatus() === WatchStatus.UNAIRED ? '' : 'Mark Watched'
+            }
+          >
             <Box sx={{ position: 'relative' }}>
               <IconButton
                 color={isWatched ? 'success' : 'default'}
                 onClick={handleWatchStatusChange}
                 size="small"
-                disabled={isLoading}
+                disabled={isLoading || determineWatchStatus() === WatchStatus.UNAIRED}
               >
-                {isWatched ? <WatchLaterIcon /> : <WatchLaterOutlinedIcon />}
+                <WatchStatusIcon status={determineWatchStatus()} />
               </IconButton>
               {isLoading && (
                 <CircularProgress
