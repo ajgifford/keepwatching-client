@@ -595,7 +595,12 @@ const activeProfileSlice = createSlice({
       })
       .addCase(addShowFavorite.fulfilled, (state, action) => {
         const { addedShow, episodes } = action.payload;
-        state.shows.push(addedShow);
+        const existingShowIndex = state.shows.findIndex((show) => show.id === addedShow.id);
+        if (existingShowIndex === -1) {
+          state.shows.push(addedShow);
+        } else {
+          state.shows[existingShowIndex] = addedShow;
+        }
         if (episodes) {
           if (episodes.upcomingEpisodes) {
             state.upcomingEpisodes = episodes.upcomingEpisodes;
@@ -718,7 +723,12 @@ const activeProfileSlice = createSlice({
       })
       .addCase(addMovieFavorite.fulfilled, (state, action) => {
         const { favoritedMovie, recentUpcomingMovies } = action.payload;
-        state.movies.push(favoritedMovie);
+        const existingMovieIndex = state.movies.findIndex((show) => show.id === favoritedMovie.id);
+        if (existingMovieIndex === -1) {
+          state.movies.push(favoritedMovie);
+        } else {
+          state.movies[existingMovieIndex] = favoritedMovie;
+        }
         state.movieGenres = generateGenreFilterValues(state.movies);
         state.movieStreamingServices = generateStreamingServiceFilterValues(state.movies);
         state.recentMovies = recentUpcomingMovies.recentMovies;
