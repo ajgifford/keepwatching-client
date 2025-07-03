@@ -6,6 +6,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   IconButton,
   ListItem,
   ListItemAvatar,
@@ -42,15 +43,22 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
+  const [isUpdatingWatchStatus, setIsUpdatingWatchStatus] = useState<boolean>(false);
 
-  const handleWatchStatusChange = (currentStatus: SimpleWatchStatus) => {
-    dispatch(
-      updateMovieWatchStatus({
-        profileId: movie.profileId,
-        movieId: movie.id,
-        status: currentStatus === WatchStatus.NOT_WATCHED ? WatchStatus.WATCHED : WatchStatus.NOT_WATCHED,
-      })
-    );
+  const handleWatchStatusChange = async (currentStatus: SimpleWatchStatus) => {
+    setIsUpdatingWatchStatus(true);
+
+    try {
+      await dispatch(
+        updateMovieWatchStatus({
+          profileId: movie.profileId,
+          movieId: movie.id,
+          status: currentStatus === WatchStatus.NOT_WATCHED ? WatchStatus.WATCHED : WatchStatus.NOT_WATCHED,
+        })
+      );
+    } finally {
+      setIsUpdatingWatchStatus(false);
+    }
   };
 
   const buildLinkState = () => {
@@ -136,23 +144,37 @@ export const MovieListItem = (props: MovieListItemProps) => {
           <StarIcon color="primary" />
         </IconButton>
       </Tooltip>
-      <OptionalTooltipControl
-        identifier={`watchStatusTooltip_${movie.id}`}
-        title={getWatchStatusAction(movie.watchStatus)}
-        disabled={movie.watchStatus === WatchStatus.UNAIRED}
-        children={
-          <IconButton
-            key={`watchStatusIconButton_${movie.id}`}
-            disabled={movie.watchStatus === WatchStatus.UNAIRED}
-            onClick={(event) => {
-              handleWatchStatusChange(movie.watchStatus);
-              event.stopPropagation();
+      <Box sx={{ position: 'relative' }}>
+        <OptionalTooltipControl
+          identifier={`watchStatusTooltip_${movie.id}`}
+          title={getWatchStatusAction(movie.watchStatus)}
+          disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+          children={
+            <IconButton
+              key={`watchStatusIconButton_${movie.id}`}
+              disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+              onClick={(event) => {
+                handleWatchStatusChange(movie.watchStatus);
+                event.stopPropagation();
+              }}
+            >
+              <WatchStatusIcon status={movie.watchStatus} />
+            </IconButton>
+          }
+        />
+        {isUpdatingWatchStatus && (
+          <CircularProgress
+            size={24}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              marginTop: '-12px',
+              marginLeft: '-12px',
             }}
-          >
-            <WatchStatusIcon status={movie.watchStatus} />
-          </IconButton>
-        }
-      />
+          />
+        )}
+      </Box>
     </ListItem>
   );
 };

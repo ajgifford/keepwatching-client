@@ -6,6 +6,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -53,6 +54,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
   const [confirmChangeWatchStatusDialogOpen, setConfirmChangeWatchStatusDialogOpen] = useState<boolean>(false);
+  const [isUpdatingWatchStatus, setIsUpdatingWatchStatus] = useState<boolean>(false);
 
   const nextWatchStatus = determineNextShowWatchStatus(show);
 
@@ -60,15 +62,21 @@ export const ShowListItem = (props: ShowListItemProps) => {
     setConfirmChangeWatchStatusDialogOpen(false);
   };
 
-  const handleWatchStatusChangeConfirmed = () => {
+  const handleWatchStatusChangeConfirmed = async () => {
     setConfirmChangeWatchStatusDialogOpen(false);
-    dispatch(
-      updateShowWatchStatus({
-        profileId: show.profileId,
-        showId: show.id,
-        status: nextWatchStatus,
-      })
-    );
+    setIsUpdatingWatchStatus(true);
+
+    try {
+      await dispatch(
+        updateShowWatchStatus({
+          profileId: show.profileId,
+          showId: show.id,
+          status: nextWatchStatus,
+        })
+      );
+    } finally {
+      setIsUpdatingWatchStatus(false);
+    }
   };
 
   const handleWatchStatusChange = () => {
@@ -161,23 +169,37 @@ export const ShowListItem = (props: ShowListItemProps) => {
             <StarIcon color="primary" />
           </IconButton>
         </Tooltip>
-        <OptionalTooltipControl
-          identifier={`watchStatusTooltip_${show.id}`}
-          title={getWatchStatusAction(show.watchStatus)}
-          disabled={show.watchStatus === WatchStatus.UNAIRED}
-          children={
-            <IconButton
-              key={`watchStatusIconButton_${show.id}`}
-              disabled={show.watchStatus === WatchStatus.UNAIRED}
-              onClick={(event) => {
-                handleWatchStatusChange();
-                event.stopPropagation();
+        <Box sx={{ position: 'relative' }}>
+          <OptionalTooltipControl
+            identifier={`watchStatusTooltip_${show.id}`}
+            title={getWatchStatusAction(show.watchStatus)}
+            disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+            children={
+              <IconButton
+                key={`watchStatusIconButton_${show.id}`}
+                disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+                onClick={(event) => {
+                  handleWatchStatusChange();
+                  event.stopPropagation();
+                }}
+              >
+                <WatchStatusIcon status={show.watchStatus} />
+              </IconButton>
+            }
+          />
+          {isUpdatingWatchStatus && (
+            <CircularProgress
+              size={24}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-12px',
+                marginLeft: '-12px',
               }}
-            >
-              <WatchStatusIcon status={show.watchStatus} />
-            </IconButton>
-          }
-        />
+            />
+          )}
+        </Box>
       </ListItem>
       <Dialog
         open={confirmChangeWatchStatusDialogOpen}
