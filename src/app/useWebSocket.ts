@@ -51,8 +51,6 @@ export const useWebSocket = () => {
           return; // Socket is already connected for the same user
         }
 
-        console.log('Setting up WebSocket connection...');
-
         // Clear any pending reconnection timeout
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
@@ -61,7 +59,6 @@ export const useWebSocket = () => {
 
         // Disconnect existing socket if any
         if (socketRef.current) {
-          console.log('Disconnecting existing socket...');
           socketRef.current.disconnect();
           socketRef.current = null;
         }
@@ -69,7 +66,6 @@ export const useWebSocket = () => {
         const token = await user.getIdToken(forceReconnect);
         currentUserRef.current = user;
 
-        console.log('Creating new WebSocket connection...');
         socketRef.current = io(BACKEND_WEBSOCKET_URL, {
           auth: { token: token, account_id: accountId },
           reconnectionAttempts: 5,
@@ -77,19 +73,11 @@ export const useWebSocket = () => {
           forceNew: true,
         });
 
-        // Set up event listeners
-        socketRef.current.on('connect', () => {
-          console.log('WebSocket connected successfully');
-        });
-
         socketRef.current.on('disconnect', (reason) => {
-          console.log('WebSocket disconnected:', reason);
-
           // Only attempt to reconnect for certain disconnect reasons
           if (reason === 'io server disconnect' || reason === 'transport close') {
             reconnectTimeoutRef.current = setTimeout(() => {
               if (currentUserRef.current && accountId) {
-                console.log('Attempting to reconnect with fresh token...');
                 setupSocket(currentUserRef.current, true);
               }
             }, 3000);
@@ -112,7 +100,6 @@ export const useWebSocket = () => {
 
   useEffect(() => {
     if (!accountId) {
-      console.log('No account ID, cleaning up socket...');
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
@@ -121,18 +108,13 @@ export const useWebSocket = () => {
       return;
     }
 
-    console.log('Setting up auth state listener...');
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && accountId) {
-        console.log('Auth state changed: user authenticated');
         // Only setup socket if we don't have one or the user changed
         if (!currentUserRef.current || currentUserRef.current.uid !== user.uid) {
-          console.log('User changed or no existing connection, setting up socket...');
           setupSocket(user);
         }
       } else if (!user) {
-        console.log('Auth state changed: user logged out');
         if (socketRef.current) {
           socketRef.current.disconnect();
           socketRef.current = null;
@@ -144,12 +126,10 @@ export const useWebSocket = () => {
     // Initial setup if user is already authenticated
     const currentUser = auth.currentUser;
     if (currentUser && accountId && !socketRef.current) {
-      console.log('Initial setup for already authenticated user...');
       setupSocket(currentUser);
     }
 
     return () => {
-      console.log('Cleaning up auth listener...');
       unsubscribe();
 
       if (reconnectTimeoutRef.current) {
@@ -161,7 +141,6 @@ export const useWebSocket = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      console.log('Component unmounting, cleaning up socket...');
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
