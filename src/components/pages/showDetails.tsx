@@ -40,6 +40,7 @@ import {
   fetchShowWithDetails,
   selectSeasons,
   selectShow,
+  selectShowCast,
   selectShowError,
   selectShowLoading,
   selectWatchedEpisodes,
@@ -51,6 +52,7 @@ import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
+import { ShowCastSection } from '../common/shows/showCast';
 import { SimilarShowsComponent } from '../common/shows/similarShowsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import {
@@ -80,6 +82,7 @@ function ShowDetails() {
   const show = useAppSelector(selectShow);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
   const seasons = useAppSelector(selectSeasons);
+  const cast = useAppSelector(selectShowCast);
   const showDetailsLoading = useAppSelector(selectShowLoading);
   const showDetailsError = useAppSelector(selectShowError);
 
@@ -578,7 +581,8 @@ function ShowDetails() {
               >
                 <Tab label="Keep Watching" {...a11yProps(0)} />
                 <Tab label="Seasons & Episodes" {...a11yProps(1)} />
-                <Tab label="Related Content" {...a11yProps(2)} />
+                <Tab label="Cast" {...a11yProps(2)} />
+                <Tab label="Related Content" {...a11yProps(3)} />
               </Tabs>
             </Box>
 
@@ -787,8 +791,13 @@ function ShowDetails() {
               )}
             </TabPanel>
 
-            {/* Related Content Component */}
+            {/* Cast Component */}
             <TabPanel value={tabValue} index={2}>
+              <ShowCastSection cast={cast} profileId={profileId!} />
+            </TabPanel>
+
+            {/* Related Content Component */}
+            <TabPanel value={tabValue} index={3}>
               {show && <RecommendedShowsComponent showId={show.id} profileId={Number(profileId)} />}
               {show && <SimilarShowsComponent showId={show.id} profileId={Number(profileId)} />}
             </TabPanel>

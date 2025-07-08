@@ -4,6 +4,7 @@ import { RootState } from '../store';
 import { logout } from './accountSlice';
 import { updateMovieWatchStatus } from './activeProfileSlice';
 import {
+  CastMember,
   MovieDetailsResponse,
   ProfileMovieWithDetails,
   SimilarOrRecommendedMovie,
@@ -16,6 +17,7 @@ interface ActiveMovieState {
   movie: ProfileMovieWithDetails | null;
   recommendedMovies: SimilarOrRecommendedMovie[];
   similarMovies: SimilarOrRecommendedMovie[];
+  castMembers: CastMember[];
   movieDetailsError: ApiErrorResponse | null;
 }
 
@@ -23,6 +25,7 @@ const initialState: ActiveMovieState = {
   movie: null,
   similarMovies: [],
   recommendedMovies: [],
+  castMembers: [],
   movieDetailsLoading: false,
   movieDetailsError: null,
 };
@@ -77,6 +80,7 @@ const activeMovieSlice = createSlice({
         state.movie = action.payload.movie;
         state.recommendedMovies = action.payload.recommendedMovies;
         state.similarMovies = action.payload.similarMovies;
+        state.castMembers = action.payload.castMembers;
         state.movieDetailsLoading = false;
         state.movieDetailsError = null;
       })
@@ -100,6 +104,7 @@ export const selectMovie = (state: RootState) => state.activeMovie.movie;
 export const selectMovieLoading = (state: RootState) => state.activeMovie.movieDetailsLoading;
 export const selectMovieError = (state: RootState) => state.activeMovie.movieDetailsError;
 export const selectSimilarMovies = (state: RootState) => state.activeMovie.similarMovies;
+export const selectCastMembers = (state: RootState) => state.activeMovie.castMembers;
 export const selectRecommendedMovies = (state: RootState) => state.activeMovie.recommendedMovies;
 
 export default activeMovieSlice.reducer;

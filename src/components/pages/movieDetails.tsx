@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   clearActiveMovie,
   fetchMovieWithDetails,
+  selectCastMembers,
   selectMovie,
   selectMovieError,
   selectMovieLoading,
@@ -37,6 +38,7 @@ import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
+import { MovieCastSection } from '../common/movies/movieCast';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { buildTMDBImagePath } from '../utility/contentUtility';
 import { WatchStatusIcon } from '../utility/watchStatusUtility';
@@ -52,6 +54,7 @@ function MovieDetails() {
   const movie = useAppSelector(selectMovie);
   const recommendedMovies = useAppSelector(selectRecommendedMovies);
   const similarMovies = useAppSelector(selectSimilarMovies);
+  const castMembers = useAppSelector(selectCastMembers);
   const movieDetailsLoading = useAppSelector(selectMovieLoading);
   const movieDetailsError = useAppSelector(selectMovieError);
 
@@ -461,16 +464,14 @@ function MovieDetails() {
                 allowScrollButtonsMobile
                 aria-label="show content tabs"
               >
-                <Tab label="Cast & Crew" {...a11yProps(0)} />
+                <Tab label="Cast" {...a11yProps(0)} />
                 <Tab label="Related Content" {...a11yProps(1)} />
               </Tabs>
             </Box>
 
-            {/* Cast & Crew Component */}
+            {/* Cast Component */}
             <TabPanel value={tabValue} index={0}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                -- Coming Soon --
-              </Typography>
+              <MovieCastSection castMembers={castMembers} profileId={profileId!} />
             </TabPanel>
 
             {/* Related Content Component */}

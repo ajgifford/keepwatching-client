@@ -7,6 +7,7 @@ import {
   KeepWatchingShow,
   ProfileSeason,
   ProfileShowWithSeasons,
+  ShowCast,
   ShowDetailsResponse,
   SimilarOrRecommendedShow,
   SimilarOrRecommendedShowsResponse,
@@ -20,6 +21,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 interface ActiveShowState {
   showDetailsLoading: boolean;
   showWithSeasons: ProfileShowWithSeasons | null;
+  showCast: ShowCast;
   watchedEpisodes: Record<number, boolean>;
   showDetailsError: ApiErrorResponse | null;
   recommendedShowsLoading: boolean;
@@ -32,6 +34,7 @@ interface ActiveShowState {
 
 const initialState: ActiveShowState = {
   showWithSeasons: null,
+  showCast: { activeCast: [], priorCast: [] },
   watchedEpisodes: {},
   similarShows: [],
   recommendedShows: [],
@@ -50,7 +53,7 @@ interface WatchStatusUpdate {
 }
 
 export const fetchShowWithDetails = createAsyncThunk<
-  { showWithSeasons: ProfileShowWithSeasons; watchedEpisodesMap: Record<number, boolean> },
+  { showWithSeasons: ProfileShowWithSeasons; showCast: ShowCast; watchedEpisodesMap: Record<number, boolean> },
   { profileId: number; showId: number },
   { rejectValue: ApiErrorResponse }
 >(
@@ -69,9 +72,10 @@ export const fetchShowWithDetails = createAsyncThunk<
       );
 
       const showWithSeasons = response.data.showWithSeasons;
+      const showCast = response.data.showCast;
       const watchedEpisodesMap: Record<number, boolean> = buildWatchedEpisodesMap(showWithSeasons);
 
-      return { showWithSeasons, watchedEpisodesMap };
+      return { showWithSeasons, showCast, watchedEpisodesMap };
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
@@ -253,6 +257,7 @@ const activeShowSlice = createSlice({
       .addCase(fetchShowWithDetails.fulfilled, (state, action) => {
         state.showWithSeasons = action.payload.showWithSeasons;
         state.watchedEpisodes = action.payload.watchedEpisodesMap;
+        state.showCast = action.payload.showCast;
         state.showDetailsLoading = false;
       })
       .addCase(fetchShowWithDetails.rejected, (state, action) => {
@@ -339,6 +344,7 @@ export const { clearActiveShow, toggleSeasonWatched } = activeShowSlice.actions;
 
 export const selectShow = (state: RootState) => state.activeShow.showWithSeasons;
 export const selectSeasons = (state: RootState) => state.activeShow.showWithSeasons?.seasons;
+export const selectShowCast = (state: RootState) => state.activeShow.showCast;
 export const selectWatchedEpisodes = (state: RootState) => state.activeShow.watchedEpisodes;
 export const selectShowLoading = (state: RootState) => state.activeShow.showDetailsLoading;
 export const selectShowError = (state: RootState) => state.activeShow.showDetailsError;
