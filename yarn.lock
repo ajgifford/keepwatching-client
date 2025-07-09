@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.4.1.tgz#2447a230bfe072c1659e6815129c03cf170710e3"
   integrity sha512-12WGKBQzjUAI4ayyF4IAtfw2QR/IDoqk6jTddXDhtYTJF9ASmoE1zst7cVtP0aL/F1jUJL5r+JxKXKEgHNbEUQ==
 
-"@ajgifford/keepwatching-types@^0.2.0":
-  version "0.2.0"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.2.0/3fa13a09fd4d979e22546cfbb6d647b0809a4bda#3fa13a09fd4d979e22546cfbb6d647b0809a4bda"
-  integrity sha512-W5KJ1k6tT+8IX+tng5CAshC2QtlvmBP4ueUewKkeDarMWfyHF0SRueqbPZvkEcwYQL/t+r45U7iHZ7VoPvs3Tw==
+"@ajgifford/keepwatching-types@^0.3.0":
+  version "0.3.0"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.3.0/6cfafa73ca86e41036dd1b63bf477cac9ef537df#6cfafa73ca86e41036dd1b63bf477cac9ef537df"
+  integrity sha512-4G3rvWstogRTnv0xxVW6vZaglDGolbfNGyrH2GO6Ln7gfpH3gYbeJSKgftY2tF8ThXrL8NV+1WjU9McExGLMvA==
 
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
