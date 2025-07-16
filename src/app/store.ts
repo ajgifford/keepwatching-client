@@ -3,6 +3,7 @@ import activeMovieReducer from './slices/activeMovieSlice';
 import activeProfileReducer from './slices/activeProfileSlice';
 import activeShowReducer from './slices/activeShowSlice';
 import activityNotificationReducer from './slices/activityNotificationSlice';
+import personSearchReducer from './slices/personSearchSlice';
 import profilesReducer from './slices/profilesSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
 import { configureStore } from '@reduxjs/toolkit';
@@ -16,7 +17,14 @@ const store = configureStore({
     activeMovie: activeMovieReducer,
     activityNotification: activityNotificationReducer,
     systemNotification: systemNotificationsReducer,
+    personSearch: personSearchReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['personSearch/searchPeople/fulfilled', 'personSearch/fetchPersonDetails/fulfilled'],
+      },
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
