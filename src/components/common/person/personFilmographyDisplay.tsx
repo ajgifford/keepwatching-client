@@ -85,7 +85,7 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
       tmdbId: credit.tmdbId,
       image: credit.posterImage,
       premiered: credit.releaseDate,
-      summary: credit.character || credit.job || '',
+      summary: credit.job || '',
       genres: [],
       country: '',
       rating: 0,

@@ -81,6 +81,7 @@ export const fetchPersonDetails = createAsyncThunk(
       if (!profileId) {
         return rejectWithValue({ message: 'No active profile found' });
       }
+
       // Fetch person details
       const personResponse = await axiosInstance.get<SearchPersonResponse>(
         `/accounts/${accountId}/profiles/${profileId}/tmdbPerson/${personId}`
@@ -93,41 +94,86 @@ export const fetchPersonDetails = createAsyncThunk(
       );
       const credits = creditsResponse.data.credits;
 
-      // Combine and deduplicate credits
       const castCredits = credits.cast.map((credit) => ({
         ...credit,
-        job: credit.character || 'Actor',
         isCast: true,
       }));
+
       const crewCredits = credits.crew.map((credit) => ({
         ...credit,
         isCast: false,
       }));
+
       const creditMap = new Map<string, SearchPersonCredit>();
 
+      // Process all credits
       [...castCredits, ...crewCredits].forEach((credit) => {
         const key = `${credit.tmdbId}-${credit.mediaType}`;
 
         if (creditMap.has(key)) {
           // Merge roles for the same movie/show
           const existing = creditMap.get(key)!;
-          const existingJobs = existing.job ? existing.job.split(', ') : [];
-          const newJob = credit.job || '';
 
-          if (newJob && !existingJobs.includes(newJob)) {
-            existingJobs.push(newJob);
+          // Collect all crew jobs (excluding character names)
+          const existingJobs: string[] = [];
+          if (existing.job && existing.job.trim() && !existing.isCast) {
+            existingJobs.push(
+              ...existing.job
+                .split(', ')
+                .map((j) => j.trim())
+                .filter(Boolean)
+            );
           }
 
-          // Prefer cast over crew for character info and sorting
+          // Add new crew job if this is a crew credit
+          if (credit.job && credit.job.trim() && !credit.isCast) {
+            const newJob = credit.job.trim();
+            if (!existingJobs.includes(newJob)) {
+              existingJobs.push(newJob);
+            }
+          }
+
+          // Handle character information - prefer cast character
+          let finalCharacter = existing.character;
+          if (credit.isCast && credit.character) {
+            finalCharacter = credit.character;
+          } else if (!finalCharacter && credit.character) {
+            finalCharacter = credit.character;
+          }
+
+          // Create final job field that combines character and crew roles appropriately
+          let finalJob = '';
+          if (finalCharacter && existingJobs.length > 0) {
+            // Both character and crew jobs exist - combine them
+            finalJob = `${finalCharacter}, ${existingJobs.join(', ')}`;
+          } else if (finalCharacter) {
+            // Only character exists (cast only)
+            finalJob = finalCharacter;
+          } else if (existingJobs.length > 0) {
+            // Only crew jobs exist
+            finalJob = existingJobs.join(', ');
+          }
+
           creditMap.set(key, {
             ...existing,
-            job: existingJobs.join(', '),
-            character: existing.character || credit.character, // Keep cast character if available
-            // Keep cast role priority for sorting
+            job: finalJob,
+            character: finalCharacter,
+            // Prefer cast over crew for priority
             isCast: existing.isCast || credit.isCast,
           });
         } else {
-          creditMap.set(key, credit);
+          // First time seeing this credit - set up job field for display
+          let displayJob = '';
+          if (credit.character) {
+            displayJob = credit.character;
+          } else if (credit.job) {
+            displayJob = credit.job;
+          }
+
+          creditMap.set(key, {
+            ...credit,
+            job: displayJob, // This will be used by convertCreditToMediaItem
+          });
         }
       });
 
