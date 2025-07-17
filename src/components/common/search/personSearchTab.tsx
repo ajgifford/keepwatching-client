@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Alert, Box, Button, TextField } from '@mui/material';
 
@@ -9,10 +9,10 @@ import {
   fetchPersonDetails,
   searchPeople,
   selectPersonSearchError,
-  selectPersonSearchHasMore,
   selectPersonSearchLoading,
-  selectPersonSearchPage,
+  selectPersonSearchResults,
   selectSelectedPerson,
+  selectShowDisambiguation,
 } from '../../../app/slices/personSearchSlice';
 import { LoadingComponent } from '../loadingComponent';
 import { PersonConfidenceBanner } from '../person/personConfidenceBanner';
@@ -22,65 +22,31 @@ import { SearchEmptyState } from './searchEmptyState';
 
 export const PersonSearchTab: React.FC = () => {
   const dispatch = useAppDispatch();
+  const [searchText, setSearchText] = useState('');
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
-  // Component's own state
-  const [searchText, setSearchText] = useState<string>('');
-  const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
-
-  // Redux state
+  // Redux selectors
+  const personResults = useAppSelector(selectPersonSearchResults);
   const selectedPerson = useAppSelector(selectSelectedPerson);
+  const showDisambiguation = useAppSelector(selectShowDisambiguation);
   const personLoading = useAppSelector(selectPersonSearchLoading);
   const personError = useAppSelector(selectPersonSearchError);
-  const personHasMore = useAppSelector(selectPersonSearchHasMore);
-  const personPage = useAppSelector(selectPersonSearchPage);
 
-  // Ref for infinite scroll
-  const personObserverRef = useRef<IntersectionObserver | null>(null);
-
-  // Reset state when component mounts
+  // Setup infinite scroll for person results
   useEffect(() => {
-    setSearchText('');
-    setSearchPerformed(false);
-    dispatch(clearPersonSearch());
-  }, [dispatch]);
+    if (selectedPerson && selectedPerson.id) {
+      // Check if this is a PersonSearchResult (missing credits) or incomplete PersonDetails
+      const needsDetails =
+        !selectedPerson.movieCredits || !selectedPerson.tvCredits || selectedPerson.totalCredits === undefined;
 
-  // Auto-fetch person details when a person is selected (from auto-selection or manual selection)
-  useEffect(() => {
-    console.log('useEffect - selectedPerson');
-    if (selectedPerson && selectedPerson.id && !selectedPerson.movieCredits) {
-      console.log('useEffect - selectedPerson - conditions met, dispatching', selectedPerson);
-      dispatch(fetchPersonDetails(selectedPerson.id));
+      if (needsDetails) {
+        console.log('useEffect - selectedPerson - fetching details for ID:', selectedPerson.id);
+        dispatch(fetchPersonDetails(selectedPerson.id));
+      }
     }
   }, [selectedPerson, dispatch]);
 
-  // Infinite scroll for person search
-  useEffect(() => {
-    if (personHasMore && !personLoading && searchText.trim()) {
-      const lastPersonElement = document.querySelector('.person-credit-item:last-child');
-      if (lastPersonElement) {
-        if (personObserverRef.current) personObserverRef.current.disconnect();
-
-        personObserverRef.current = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting && !personLoading) {
-              dispatch(searchPeople({ searchString: searchText, page: personPage + 1 }));
-            }
-          },
-          { threshold: 1.0 }
-        );
-
-        personObserverRef.current.observe(lastPersonElement);
-      }
-    }
-
-    return () => {
-      if (personObserverRef.current) {
-        personObserverRef.current.disconnect();
-      }
-    };
-  }, [personHasMore, personLoading, dispatch, searchText, personPage]);
-
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (!searchText.trim()) return;
 
     dispatch(clearPersonSearch());
@@ -94,12 +60,44 @@ export const PersonSearchTab: React.FC = () => {
         })
       );
     });
-  };
+  }, [dispatch, searchText]);
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const renderSearchResults = () => {
+    // Show loading for initial search
+    if (personLoading && !selectedPerson && personResults.length === 0) {
+      return <LoadingComponent />;
+    }
+
+    // Show selected person with confidence banner and filmography
+    if (selectedPerson) {
+      return (
+        <>
+          <PersonConfidenceBanner />
+          <PersonFilmographyDisplay person={selectedPerson} />
+          <PersonDisambiguationModal />
+        </>
+      );
+    }
+
+    // Show disambiguation modal if we have results but no selected person
+    if (showDisambiguation || (personResults.length > 0 && searchPerformed && !selectedPerson)) {
+      return <PersonDisambiguationModal />;
+    }
+
+    // Show empty state for no results or initial state
+    return (
+      <SearchEmptyState
+        searchType="people"
+        isNoResults={searchPerformed && searchText.trim() !== '' && !personLoading && personResults.length === 0}
+        searchQuery={searchText}
+      />
+    );
   };
 
   return (
@@ -128,21 +126,7 @@ export const PersonSearchTab: React.FC = () => {
         </Alert>
       )}
 
-      {personLoading && !selectedPerson ? (
-        <LoadingComponent />
-      ) : selectedPerson ? (
-        <>
-          <PersonConfidenceBanner />
-          <PersonFilmographyDisplay person={selectedPerson} />
-          <PersonDisambiguationModal />
-        </>
-      ) : (
-        <SearchEmptyState
-          searchType="people"
-          isNoResults={searchPerformed && searchText.trim() !== '' && !personLoading}
-          searchQuery={searchText}
-        />
-      )}
+      {renderSearchResults()}
     </>
   );
 };

@@ -1,4 +1,3 @@
-// src/components/common/person/PersonDisambiguationModal.tsx
 import React from 'react';
 
 import { Close as CloseIcon, Person as PersonIcon } from '@mui/icons-material';
@@ -24,7 +23,7 @@ import {
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
-  selectPerson,
+  fetchPersonDetails,
   selectPersonSearchResults,
   selectSelectedPerson,
   selectShowDisambiguation,
@@ -47,18 +46,15 @@ export const PersonDisambiguationModal: React.FC = () => {
   };
 
   const handleSelectPerson = async (person: PersonSearchResult) => {
-    dispatch(selectPerson(person.id));
+    // Close the modal first
     handleClose();
+    // Fetch the person details directly - this will set the selectedPerson when complete
+    dispatch(fetchPersonDetails(person.id));
   };
 
   const formatKnownFor = (knownFor: string[]) => {
     if (knownFor.length === 0) return 'No known works';
     return knownFor.slice(0, 3).join(', ');
-  };
-
-  const getPersonSubtitle = (person: PersonSearchResult) => {
-    const knownFor = formatKnownFor(person.knownFor);
-    return `${person.department} • ${knownFor}`;
   };
 
   const getDepartmentColor = (department: string) => {
@@ -173,10 +169,6 @@ export const PersonDisambiguationModal: React.FC = () => {
                           Popularity: {person.popularity.toFixed(1)}
                         </Typography>
                       </Box>
-
-                      <Typography variant="body2" color="text.secondary">
-                        {getPersonSubtitle(person)}
-                      </Typography>
 
                       {person.knownFor.length > 0 && (
                         <Typography

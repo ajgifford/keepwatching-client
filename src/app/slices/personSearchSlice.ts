@@ -241,18 +241,20 @@ const personSearchSlice = createSlice({
 
           const { selectedPerson, confidence, alternatives } = calculateSearchConfidence(results, searchString);
 
+          state.autoSelectedConfidence = confidence;
+          state.alternativePersons = alternatives;
+
           if (selectedPerson) {
+            // Auto-select the person
             state.selectedPerson = selectedPerson as PersonDetails;
-            state.autoSelectedConfidence = confidence;
-            state.alternativePersons = alternatives;
-            state.showDisambiguation = confidence === 'low';
+            state.showDisambiguation = false;
           } else {
+            // No auto-selection - show disambiguation if we have results
             state.selectedPerson = null;
-            state.autoSelectedConfidence = confidence;
-            state.alternativePersons = alternatives;
-            state.showDisambiguation = confidence === 'low';
+            state.showDisambiguation = results.length > 0; // Show modal if any results exist
           }
         } else {
+          // Pagination: just append results
           state.results = [...state.results, ...results];
         }
 

@@ -1,24 +1,16 @@
 // src/components/common/person/PersonConfidenceBanner.tsx
-
 import React from 'react';
-import { 
-  Alert, 
-  AlertTitle, 
-  Button, 
-  Box, 
-  Chip, 
-  IconButton,
-  Typography,
-  useTheme
-} from '@mui/material';
+
 import { Close as CloseIcon, Person as PersonIcon } from '@mui/icons-material';
+import { Alert, AlertTitle, Box, Button, Chip, IconButton, Typography, useTheme } from '@mui/material';
+
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { 
-  dismissConfidenceBanner, 
-  toggleDisambiguation,
-  selectSelectedPerson,
+import {
+  dismissConfidenceBanner,
   selectAlternativePersons,
-  selectAutoSelectedConfidence 
+  selectAutoSelectedConfidence,
+  selectSelectedPerson,
+  toggleDisambiguation,
 } from '../../../app/slices/personSearchSlice';
 
 interface PersonConfidenceBannerProps {
@@ -45,52 +37,44 @@ export const PersonConfidenceBanner: React.FC<PersonConfidenceBannerProps> = ({ 
     onDismiss?.();
   };
 
-  const getBirthYear = (birthday?: string) => {
-    if (!birthday) return null;
-    return new Date(birthday).getFullYear();
-  };
-
   const getSeverity = () => {
     switch (confidence) {
-      case 'high': return 'info';
-      case 'medium': return 'warning';
-      case 'low': return 'error';
-      default: return 'info';
+      case 'high':
+        return 'success';
+      case 'medium':
+        return 'info';
+      case 'low':
+        return 'warning';
+      default:
+        return 'success';
     }
   };
 
   const getBannerMessage = () => {
-    const birthYear = getBirthYear(selectedPerson.birthday);
-    const ageInfo = birthYear ? ` (born ${birthYear})` : '';
-    const knownForText = selectedPerson.knownFor.slice(0, 3).join(', ');
-    
+    const knownForText = selectedPerson.knownFor ? selectedPerson.knownFor.slice(0, 3).join(', ') : '';
+
     return {
       title: `Showing content for ${selectedPerson.name}`,
-      subtitle: `${selectedPerson.department}${ageInfo} • Known for: ${knownForText}`,
+      subtitle: `${selectedPerson.department} • Known for: ${knownForText}`,
     };
   };
 
   const { title, subtitle } = getBannerMessage();
 
   return (
-    <Alert 
+    <Alert
       severity={getSeverity()}
-      sx={{ 
+      sx={{
         mb: 3,
-        '& .MuiAlert-message': { 
+        '& .MuiAlert-message': {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          gap: 1
-        }
+          gap: 1,
+        },
       }}
       action={
-        <IconButton
-          aria-label="close"
-          color="inherit"
-          size="small"
-          onClick={handleDismiss}
-        >
+        <IconButton aria-label="close" color="inherit" size="small" onClick={handleDismiss}>
           <CloseIcon fontSize="inherit" />
         </IconButton>
       }
@@ -99,24 +83,24 @@ export const PersonConfidenceBanner: React.FC<PersonConfidenceBannerProps> = ({ 
         <PersonIcon fontSize="small" />
         {title}
       </AlertTitle>
-      
+
       <Typography variant="body2" sx={{ mb: 2 }}>
         {subtitle}
       </Typography>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-        <Button 
-          variant="outlined" 
+        <Button
+          variant="outlined"
           size="small"
           onClick={handleSeeOthers}
-          sx={{ 
+          sx={{
             textTransform: 'none',
             borderColor: theme.palette.divider,
             color: theme.palette.text.secondary,
             '&:hover': {
               borderColor: theme.palette.primary.main,
               color: theme.palette.primary.main,
-            }
+            },
           }}
         >
           Not who you're looking for? See other {selectedPerson.name.split(' ')[0]}s
@@ -128,14 +112,7 @@ export const PersonConfidenceBanner: React.FC<PersonConfidenceBannerProps> = ({ 
           </Typography>
         )}
 
-        {confidence === 'medium' && (
-          <Chip 
-            label="Uncertain match" 
-            size="small" 
-            variant="outlined"
-            color="warning"
-          />
-        )}
+        {confidence === 'medium' && <Chip label="Uncertain match" size="small" variant="outlined" color="warning" />}
       </Box>
     </Alert>
   );
