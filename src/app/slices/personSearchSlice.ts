@@ -7,6 +7,7 @@ import {
   PersonSearchResult,
   SearchPersonCredit,
   SearchPersonCreditsResponse,
+  SearchPersonResponse,
 } from '@ajgifford/keepwatching-types';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -42,16 +43,29 @@ const initialState: PersonSearchState = {
 // Thunk to search for people
 export const searchPeople = createAsyncThunk(
   'personSearch/searchPeople',
-  async (params: { searchString: string; page?: number }) => {
-    const { searchString, page = 1 } = params;
-    const response = await axiosInstance.get<PersonSearchResponse>('/search/people', {
-      params: { searchString, page },
-    });
-    return { ...response.data, searchString, page };
+  async (params: { searchString: string; page?: number }, { rejectWithValue }) => {
+    try {
+      const { searchString, page = 1 } = params;
+      const response = await axiosInstance.get<PersonSearchResponse>('/search/people', {
+        params: { searchString, page },
+      });
+
+      return {
+        results: response.data.results,
+        totalResults: response.data.totalResults,
+        page: params.page || 1,
+        searchString: params.searchString,
+      };
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || { message: error.message });
+      }
+      return rejectWithValue({ message: 'An unknown error occurred' });
+    }
   }
 );
 
-// Thunk to get person details and credits
+// Thunk to fetch detailed person information
 export const fetchPersonDetails = createAsyncThunk(
   'personSearch/fetchPersonDetails',
   async (personId: number, { getState, rejectWithValue }) => {
@@ -67,18 +81,19 @@ export const fetchPersonDetails = createAsyncThunk(
       if (!profileId) {
         return rejectWithValue({ message: 'No active profile found' });
       }
+      // Fetch person details
+      const personResponse = await axiosInstance.get<SearchPersonResponse>(
+        `/accounts/${accountId}/profiles/${profileId}/tmdbPerson/${personId}`
+      );
+      const person = personResponse.data.person;
 
-      const [detailsResponse, creditsResponse] = await Promise.all([
-        axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/tmdbPerson/${personId}`),
-        axiosInstance.get<SearchPersonCreditsResponse>(
-          `/accounts/${accountId}/profiles/${profileId}/tmdbPerson/${personId}/credits`
-        ),
-      ]);
-
-      const person = detailsResponse.data.person;
+      // Fetch credits
+      const creditsResponse = await axiosInstance.get<SearchPersonCreditsResponse>(
+        `/accounts/${accountId}/profiles/${profileId}/tmdbPerson/${personId}/credits`
+      );
       const credits = creditsResponse.data.credits;
 
-      // Combine cast and crew credits
+      // Combine and deduplicate credits
       const castCredits = credits.cast.map((credit) => ({
         ...credit,
         job: credit.character || 'Actor',
@@ -88,16 +103,14 @@ export const fetchPersonDetails = createAsyncThunk(
         ...credit,
         isCast: false,
       }));
-
-      // Deduplicate by tmdbId and mediaType, combining roles
       const creditMap = new Map<string, SearchPersonCredit>();
 
       [...castCredits, ...crewCredits].forEach((credit) => {
         const key = `${credit.tmdbId}-${credit.mediaType}`;
-        const existing = creditMap.get(key);
 
-        if (existing) {
-          // Combine roles for the same movie/show
+        if (creditMap.has(key)) {
+          // Merge roles for the same movie/show
+          const existing = creditMap.get(key)!;
           const existingJobs = existing.job ? existing.job.split(', ') : [];
           const newJob = credit.job || '';
 
@@ -144,7 +157,6 @@ export const fetchPersonDetails = createAsyncThunk(
   }
 );
 
-// Helper function to determine search confidence
 const calculateSearchConfidence = (
   results: PersonSearchResult[],
   query: string
@@ -158,35 +170,33 @@ const calculateSearchConfidence = (
   }
 
   const topResult = results[0];
-  const isExactMatch = topResult.name.toLowerCase() === query.toLowerCase();
+  const normalizedQuery = query.replace(/\+/g, ' ').toLowerCase().trim();
+  const normalizedName = topResult.name.toLowerCase().trim();
+  const isExactMatch = normalizedName === normalizedQuery;
   const isActor = topResult.department.toLowerCase() === 'acting';
 
-  // Calculate confidence score
   let confidenceScore = topResult.popularity;
   if (isExactMatch) confidenceScore *= PERSON_SEARCH_CONFIG.EXACT_MATCH_BOOST;
   if (isActor) confidenceScore *= PERSON_SEARCH_CONFIG.ACTOR_DEPARTMENT_BOOST;
 
   let confidence: 'high' | 'medium' | 'low';
-  if (confidenceScore >= PERSON_SEARCH_CONFIG.HIGH_CONFIDENCE_POPULARITY && results.length > 1) {
-    // High confidence: clear winner
+  if (results.length === 1) {
+    confidence = 'high';
+  } else if (confidenceScore >= PERSON_SEARCH_CONFIG.HIGH_CONFIDENCE_POPULARITY) {
     confidence = 'high';
   } else if (confidenceScore >= PERSON_SEARCH_CONFIG.MEDIUM_CONFIDENCE_POPULARITY) {
-    // Medium confidence: somewhat confident
     confidence = 'medium';
   } else {
-    // Low confidence: show disambiguation
     confidence = 'low';
   }
 
-  // If low confidence or multiple highly popular results, show alternatives
-  const shouldShowAlternatives =
-    confidence === 'low' ||
-    (results.length > 1 && results[1].popularity > PERSON_SEARCH_CONFIG.MEDIUM_CONFIDENCE_POPULARITY);
+  const alternatives = results.length > 1 ? results : [];
+  const selectedPerson = confidence !== 'low' ? topResult : null;
 
   return {
-    selectedPerson: confidence !== 'low' ? topResult : null,
+    selectedPerson,
     confidence,
-    alternatives: shouldShowAlternatives ? results.slice(1, 6) : [], // Show up to 5 alternatives
+    alternatives,
   };
 };
 
@@ -202,14 +212,14 @@ const personSearchSlice = createSlice({
       if (person) {
         state.selectedPerson = person as PersonDetails;
         state.showDisambiguation = false;
+
+        const allResults = state.results;
+        const otherResults = allResults.filter((p) => p.id !== action.payload);
+        state.alternativePersons = otherResults;
       }
     },
     toggleDisambiguation: (state) => {
       state.showDisambiguation = !state.showDisambiguation;
-    },
-    dismissConfidenceBanner: (state) => {
-      // User acknowledged the auto-selection, hide alternatives
-      state.alternativePersons = [];
     },
     clearPersonSearch: (state) => {
       return { ...initialState };
@@ -281,8 +291,7 @@ const personSearchSlice = createSlice({
   },
 });
 
-export const { setQuery, selectPerson, toggleDisambiguation, dismissConfidenceBanner, clearPersonSearch, resetPage } =
-  personSearchSlice.actions;
+export const { setQuery, selectPerson, toggleDisambiguation, clearPersonSearch, resetPage } = personSearchSlice.actions;
 
 // Selectors
 export const selectPersonSearchQuery = (state: RootState) => state.personSearch.query;

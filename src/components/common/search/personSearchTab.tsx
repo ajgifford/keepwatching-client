@@ -40,7 +40,6 @@ export const PersonSearchTab: React.FC = () => {
         !selectedPerson.movieCredits || !selectedPerson.tvCredits || selectedPerson.totalCredits === undefined;
 
       if (needsDetails) {
-        console.log('useEffect - selectedPerson - fetching details for ID:', selectedPerson.id);
         dispatch(fetchPersonDetails(selectedPerson.id));
       }
     }
@@ -74,7 +73,6 @@ export const PersonSearchTab: React.FC = () => {
       return <LoadingComponent />;
     }
 
-    // Show selected person with confidence banner and filmography
     if (selectedPerson) {
       return (
         <>
