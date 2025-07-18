@@ -185,6 +185,13 @@ export const PersonDisambiguationModal: React.FC = () => {
                       )}
                     </Box>
                   }
+                  slotProps={{
+                    secondary: {
+                      component: 'div',
+                      variant: 'body2',
+                      color: 'text.secondary',
+                    },
+                  }}
                 />
               </ListItemButton>
             </ListItem>
