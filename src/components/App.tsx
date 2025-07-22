@@ -11,7 +11,6 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import ActivityNotificationBar from './notification/activityNotificationBar';
-import SystemNotificationTray from './notification/systemNotificationTray';
 import Default from './pages/default';
 import Discover from './pages/discover';
 import Home from './pages/home';
@@ -52,7 +51,6 @@ function App() {
           <Navigation />
           <ActivityNotificationBar />
           <div className="content">
-            <SystemNotificationTray />
             <Container maxWidth="xl" sx={{ p: 1 }}>
               <Routes>
                 <Route element={<DefaultLayout />}>

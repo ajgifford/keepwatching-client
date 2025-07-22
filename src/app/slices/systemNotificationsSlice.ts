@@ -57,6 +57,35 @@ export const dismissSystemNotification = createAsyncThunk<
   }
 );
 
+export const dismissAllSystemNotifications = createAsyncThunk<
+  AccountNotification[],
+  { accountId: number },
+  { rejectValue: ApiErrorResponse }
+>('systemNotifications/dismissAll', async ({ accountId }: { accountId: number }, { rejectWithValue }) => {
+  try {
+    const response: AxiosResponse<NotificationResponse> = await axiosInstance.post(
+      `/accounts/${accountId}/notifications/dismiss`
+    );
+    return response.data.notifications;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred dismissing all notifications' });
+  }
+});
+
+export const updateNotifications = createAsyncThunk<
+  AccountNotification[],
+  AccountNotification[],
+  { rejectValue: ApiErrorResponse }
+>('systemNotifications/updateNotifications', async (notifications: AccountNotification[], { rejectWithValue }) => {
+  if (notifications) {
+    return notifications;
+  }
+  return rejectWithValue({ message: 'Error while updating notifications' });
+});
+
 const systemNotificationSlice = createSlice({
   name: 'systemNotifications',
   initialState,
@@ -92,6 +121,32 @@ const systemNotificationSlice = createSlice({
       .addCase(dismissSystemNotification.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Failed to dismiss a system notification' };
+      })
+      .addCase(dismissAllSystemNotifications.fulfilled, (state, action) => {
+        state.systemNotifications = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(dismissAllSystemNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(dismissAllSystemNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to dismiss all notifications' };
+      })
+      .addCase(updateNotifications.fulfilled, (state, action) => {
+        state.systemNotifications = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to update notifications' };
       });
   },
 });

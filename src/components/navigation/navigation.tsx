@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout, selectCurrentAccount } from '../../app/slices/accountSlice';
 import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
+import NotificationIconDropdown from '../notification/notificationIconDropdown';
 import { getProfileImageUrl } from '../utility/imageUtils';
 
 function Navigation() {
@@ -285,6 +286,7 @@ function Navigation() {
                 >
                   KeepWatching
                 </Typography>
+                <NotificationIconDropdown />
                 {renderActiveProfileControl()}
               </>
             ) : (
@@ -313,6 +315,7 @@ function Navigation() {
                 </Typography>
                 {renderNavigationButtons()}
                 {buildLoginLogoutButton()}
+                <NotificationIconDropdown />
                 {renderActiveProfileControl()}
               </Box>
             )}

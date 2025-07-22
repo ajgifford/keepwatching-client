@@ -4,6 +4,7 @@ import { BACKEND_WEBSOCKET_URL } from './constants/constants';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { selectCurrentAccount } from './slices/accountSlice';
 import { reloadActiveProfile, reloadProfileEpisodes, updateAfterAddShowFavorite } from './slices/activeProfileSlice';
+import { updateNotifications } from './slices/systemNotificationsSlice';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Socket, io } from 'socket.io-client';
 
@@ -32,6 +33,13 @@ export const useWebSocket = () => {
     async (data: any) => {
       await dispatch(updateAfterAddShowFavorite(data.show));
       await dispatch(reloadProfileEpisodes());
+    },
+    [dispatch]
+  );
+
+  const handleUpdateNotifications = useCallback(
+    async (data: any) => {
+      await dispatch(updateNotifications(data.notifications));
     },
     [dispatch]
   );
@@ -91,11 +99,13 @@ export const useWebSocket = () => {
         socketRef.current.on('showsUpdate', handleShowsUpdate);
         socketRef.current.on('moviesUpdate', handleMoviesUpdate);
         socketRef.current.on('updateShowFavorite', handleUpdateShowFavorite);
+        socketRef.current.on('newNotifications', handleUpdateNotifications);
+        socketRef.current.on('updateNotifications', handleUpdateNotifications);
       } catch (error) {
         console.error('Error setting up WebSocket:', error);
       }
     },
-    [accountId, handleShowsUpdate, handleMoviesUpdate, handleUpdateShowFavorite]
+    [accountId, handleShowsUpdate, handleMoviesUpdate, handleUpdateShowFavorite, handleUpdateNotifications]
   );
 
   useEffect(() => {
