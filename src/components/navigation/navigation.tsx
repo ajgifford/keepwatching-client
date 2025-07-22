@@ -116,6 +116,12 @@ function Navigation() {
     return <></>;
   };
 
+  const renderNotificationControl = () => {
+    if (profile) {
+      return <NotificationIconDropdown />;
+    }
+    return <></>;
+  };
   const renderActiveProfileControl = () => {
     if (profile) {
       return (
@@ -286,7 +292,7 @@ function Navigation() {
                 >
                   KeepWatching
                 </Typography>
-                <NotificationIconDropdown />
+                {renderNotificationControl()}
                 {renderActiveProfileControl()}
               </>
             ) : (
@@ -315,7 +321,7 @@ function Navigation() {
                 </Typography>
                 {renderNavigationButtons()}
                 {buildLoginLogoutButton()}
-                <NotificationIconDropdown />
+                {renderNotificationControl()}
                 {renderActiveProfileControl()}
               </Box>
             )}
