@@ -4,6 +4,7 @@ import activeProfileReducer from './slices/activeProfileSlice';
 import activeShowReducer from './slices/activeShowSlice';
 import activityNotificationReducer from './slices/activityNotificationSlice';
 import personSearchReducer from './slices/personSearchSlice';
+import preferencesReducer from './slices/preferencesSlice';
 import profilesReducer from './slices/profilesSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
 import { configureStore } from '@reduxjs/toolkit';
@@ -18,6 +19,7 @@ const store = configureStore({
     activityNotification: activityNotificationReducer,
     systemNotification: systemNotificationsReducer,
     personSearch: personSearchReducer,
+    preferences: preferencesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

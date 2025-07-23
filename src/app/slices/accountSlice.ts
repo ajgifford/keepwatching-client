@@ -4,6 +4,7 @@ import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
+import { fetchAccountPreferences } from './preferencesSlice';
 import { fetchProfiles } from './profilesSlice';
 import { fetchSystemNotifications } from './systemNotificationsSlice';
 import { Account, AccountResponse } from '@ajgifford/keepwatching-types';
@@ -47,6 +48,7 @@ const initialState: AccountState = {
 function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownAction>, account: Account) {
   const accountId = account.id;
   const profileId = account.defaultProfileId;
+  dispatch(fetchAccountPreferences(accountId));
   dispatch(fetchProfiles(accountId));
   dispatch(
     setActiveProfile({

@@ -15,10 +15,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControlLabel,
   IconButton,
   Menu,
   MenuItem,
   Stack,
+  Switch,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -33,6 +35,7 @@ import {
   verifyEmail,
 } from '../../app/slices/accountSlice';
 import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../app/slices/activeProfileSlice';
+import { selectPreferences, updateEmailPreferences } from '../../app/slices/preferencesSlice';
 import {
   addProfile,
   deleteProfile,
@@ -51,6 +54,7 @@ import { getAuth } from 'firebase/auth';
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
+  const preferences = useAppSelector(selectPreferences);
   const profiles = useAppSelector(selectAllProfiles);
   const activeProfile = useAppSelector(selectActiveProfile)!;
   const lastUpdated = useAppSelector(selectLastUpdated);
@@ -62,17 +66,15 @@ const ManageAccount = () => {
   const [nameDialogTitle, setNameDialogTitle] = useState('');
   const [currentName, setCurrentName] = useState('');
   const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
-
+  const [emailPreferences, setEmailPreferences] = useState({
+    weeklyDigest: preferences.email?.weeklyDigest ?? true,
+  });
   const [changingActiveProfile, setChangingActiveProfile] = useState<number | null>(null);
-
   const [profileStatsDialogOpen, setProfileStatsDialogOpen] = useState<boolean>(false);
   const [profileStatsDialogTitle, setProfileStatsDialogTitle] = useState<string>('');
   const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<number>(0);
-
   const [accountStatsDialogOpen, setAccountStatsDialogOpen] = useState<boolean>(false);
   const [accountStatsDialogTitle, setAccountStatsDialogTitle] = useState<string>('');
-
-  // Account image management state
   const [accountImageMenuAnchor, setAccountImageMenuAnchor] = useState<null | HTMLElement>(null);
   const [isAccountImageHovered, setIsAccountImageHovered] = useState(false);
   const [isRemovingAccountImage, setIsRemovingAccountImage] = useState(false);
@@ -113,6 +115,18 @@ const ManageAccount = () => {
         })
       );
     });
+  };
+
+  const handleEmailPreferenceChange = async (preference: keyof typeof emailPreferences, value: boolean) => {
+    const newPreferences = { ...emailPreferences, [preference]: value };
+    setEmailPreferences(newPreferences);
+
+    await dispatch(
+      updateEmailPreferences({
+        accountId: account.id,
+        emailPreferences: newPreferences,
+      })
+    );
   };
 
   const handleViewAccountStatistics = () => {
@@ -332,6 +346,28 @@ const ManageAccount = () => {
               {user?.emailVerified ? '(Email Verified)' : '(Verify Email)'}
             </Button>
           </Typography>
+          <Typography variant="subtitle1" color="primary" gutterBottom>
+            Email Preferences:
+          </Typography>
+          <Box sx={{ ml: 2, mb: 1 }}>
+            <FormControlLabel
+              disabled={!user?.emailVerified}
+              control={
+                <Switch
+                  checked={emailPreferences.weeklyDigest}
+                  onChange={(e) => handleEmailPreferenceChange('weeklyDigest', e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Receive weekly digest emails"
+              sx={{
+                '& .MuiFormControlLabel-label': {
+                  color: 'primary.main',
+                  fontWeight: 500,
+                },
+              }}
+            />
+          </Box>
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Default Profile: <i>{defaultProfile.name}</i>
           </Typography>
