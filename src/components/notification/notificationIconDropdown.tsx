@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import MovieIcon from '@mui/icons-material/Movie';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -38,6 +37,7 @@ import {
   dismissSystemNotification,
   selectSystemNotifications,
 } from '../../app/slices/systemNotificationsSlice';
+import { AccountNotification } from '@ajgifford/keepwatching-types';
 
 interface NotificationTypeConfig {
   icon: React.ComponentType;
@@ -45,10 +45,8 @@ interface NotificationTypeConfig {
   bgColor: string;
 }
 
-const getNotificationConfig = (message: string): NotificationTypeConfig => {
-  const lowerMessage = message.toLowerCase();
-
-  if (lowerMessage.includes('episode') || lowerMessage.includes('season')) {
+const getNotificationConfig = (notification: AccountNotification): NotificationTypeConfig => {
+  if (notification.type === 'tv') {
     return {
       icon: TvIcon,
       color: '#1976d2',
@@ -56,7 +54,7 @@ const getNotificationConfig = (message: string): NotificationTypeConfig => {
     };
   }
 
-  if (lowerMessage.includes('movie')) {
+  if (notification.type === 'movie') {
     return {
       icon: MovieIcon,
       color: '#7b1fa2',
@@ -64,27 +62,19 @@ const getNotificationConfig = (message: string): NotificationTypeConfig => {
     };
   }
 
-  if (lowerMessage.includes('welcome') || lowerMessage.includes('back')) {
-    return {
-      icon: CheckCircleIcon,
-      color: '#388e3c',
-      bgColor: 'linear-gradient(135deg, #388e3c 0%, #66bb6a 100%)',
-    };
-  }
-
-  if (lowerMessage.includes('error') || lowerMessage.includes('failed')) {
-    return {
-      icon: ErrorIcon,
-      color: '#d32f2f',
-      bgColor: 'linear-gradient(135deg, #d32f2f 0%, #f44336 100%)',
-    };
-  }
-
-  if (lowerMessage.includes('warning') || lowerMessage.includes('issue')) {
+  if (notification.type === 'issue') {
     return {
       icon: WarningIcon,
       color: '#f57c00',
       bgColor: 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)',
+    };
+  }
+
+  if (notification.type === 'feature') {
+    return {
+      icon: AutoAwesomeIcon,
+      color: '#388e3c',
+      bgColor: 'linear-gradient(135deg, #388e3c 0%, #66bb6a 100%)',
     };
   }
 
@@ -318,7 +308,7 @@ function NotificationIconDropdown() {
                 }}
               >
                 {notifications.slice(0, 10).map((notification, index) => {
-                  const config = getNotificationConfig(notification.message);
+                  const config = getNotificationConfig(notification);
                   const IconComponent = config.icon;
                   const parsedMessage = parseMessage(notification.message);
 
