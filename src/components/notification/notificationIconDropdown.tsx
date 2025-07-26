@@ -22,7 +22,6 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
   Paper,
   Popper,
@@ -314,6 +313,66 @@ function NotificationIconDropdown() {
                             background: alpha(config.color, 0.1),
                           },
                         }}
+                        secondaryAction={
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleMarkRead(notification.id, isUnread, e)}
+                                sx={{
+                                  background: alpha('#ffffff', 0.3),
+                                  backdropFilter: 'blur(8px)',
+                                  WebkitBackdropFilter: 'blur(8px)',
+                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
+                                  width: 28,
+                                  height: 28,
+                                  transition: 'all 0.2s ease',
+                                  color: isUnread ? theme.palette.success.main : theme.palette.text.secondary,
+                                  '&:hover': {
+                                    background: alpha(
+                                      isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                      0.2
+                                    ),
+                                    border: `1px solid ${alpha(
+                                      isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                      0.3
+                                    )}`,
+                                    color: isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                  },
+                                }}
+                              >
+                                {isUnread ? (
+                                  <MarkEmailReadIcon sx={{ fontSize: 14 }} />
+                                ) : (
+                                  <MarkEmailUnreadIcon sx={{ fontSize: 14 }} />
+                                )}
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Dismiss notification">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleDismiss(notification.id, e)}
+                                sx={{
+                                  background: alpha('#ffffff', 0.3),
+                                  backdropFilter: 'blur(8px)',
+                                  WebkitBackdropFilter: 'blur(8px)',
+                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
+                                  width: 28,
+                                  height: 28,
+                                  transition: 'all 0.2s ease',
+                                  color: theme.palette.text.secondary,
+                                  '&:hover': {
+                                    background: alpha(theme.palette.error.main, 0.2),
+                                    border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
+                                    color: theme.palette.error.main,
+                                  },
+                                }}
+                              >
+                                <CloseIcon sx={{ fontSize: 14 }} />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        }
                       >
                         <ListItemIcon sx={{ minWidth: 48 }}>
                           <Box
@@ -390,73 +449,6 @@ function NotificationIconDropdown() {
                             </Box>
                           }
                         />
-
-                        <ListItemSecondaryAction
-                          sx={{
-                            right: 8,
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                          }}
-                        >
-                          <Box sx={{ display: 'flex', gap: 0.5 }}>
-                            <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
-                              <IconButton
-                                size="small"
-                                onClick={(e) => handleMarkRead(notification.id, isUnread, e)}
-                                sx={{
-                                  background: alpha('#ffffff', 0.3),
-                                  backdropFilter: 'blur(8px)',
-                                  WebkitBackdropFilter: 'blur(8px)',
-                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
-                                  width: 28,
-                                  height: 28,
-                                  transition: 'all 0.2s ease',
-                                  color: isUnread ? theme.palette.success.main : theme.palette.text.secondary,
-                                  '&:hover': {
-                                    background: alpha(
-                                      isUnread ? theme.palette.success.main : theme.palette.info.main,
-                                      0.2
-                                    ),
-                                    border: `1px solid ${alpha(
-                                      isUnread ? theme.palette.success.main : theme.palette.info.main,
-                                      0.3
-                                    )}`,
-                                    color: isUnread ? theme.palette.success.main : theme.palette.info.main,
-                                  },
-                                }}
-                              >
-                                {isUnread ? (
-                                  <MarkEmailReadIcon sx={{ fontSize: 14 }} />
-                                ) : (
-                                  <MarkEmailUnreadIcon sx={{ fontSize: 14 }} />
-                                )}
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Dismiss">
-                              <IconButton
-                                size="small"
-                                onClick={(e) => handleDismiss(notification.id, e)}
-                                sx={{
-                                  background: alpha('#ffffff', 0.3),
-                                  backdropFilter: 'blur(8px)',
-                                  WebkitBackdropFilter: 'blur(8px)',
-                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
-                                  width: 28,
-                                  height: 28,
-                                  transition: 'all 0.2s ease',
-                                  color: theme.palette.text.secondary,
-                                  '&:hover': {
-                                    background: alpha(theme.palette.error.main, 0.2),
-                                    border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
-                                    color: theme.palette.error.main,
-                                  },
-                                }}
-                              >
-                                <CloseIcon sx={{ fontSize: 14 }} />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        </ListItemSecondaryAction>
                       </ListItem>
                       {index < Math.min(notifications.length, 10) - 1 && (
                         <Divider
