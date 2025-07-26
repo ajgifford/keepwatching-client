@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -74,44 +75,17 @@ function Navigation() {
         console.error(error);
       }
     }
+    handleProfileMenuClose();
   };
 
-  const handleLogin = async () => {
-    if (!account) {
-      navigate('/login');
-    }
-  };
-
-  const buildLoginLogoutMenu = () => {
-    if (account) {
-      return (
-        <MenuItem key="navigationLogoutMenuItem" onClick={() => handleLogout()}>
-          {<LuLogOut />}
-          <Box sx={{ ml: 2 }}>Logout</Box>
-        </MenuItem>
-      );
-    }
-    return (
-      <MenuItem key="navigationLogoutMenuItem" onClick={() => handleLogin()}>
-        {<LuLogIn />}
-        <Box sx={{ ml: 2 }}>Login</Box>
-      </MenuItem>
-    );
+  const handleManageAccount = () => {
+    navigate('/manageAccount');
+    handleProfileMenuClose();
   };
 
   const buildLoginLogoutButton = () => {
     if (account) {
-      return (
-        <Button
-          color={'inherit'}
-          key="navigationLogoutButton"
-          startIcon={<LuLogOut />}
-          onClick={() => handleLogout()}
-          aria-label="Logout"
-        >
-          Logout
-        </Button>
-      );
+      return <></>; // Removed since logout is now in profile menu
     }
     return <></>;
   };
@@ -122,6 +96,7 @@ function Navigation() {
     }
     return <></>;
   };
+
   const renderActiveProfileControl = () => {
     if (profile) {
       return (
@@ -150,15 +125,21 @@ function Navigation() {
                 elevation: 3,
                 sx: {
                   mt: 1.5,
+                  minWidth: 200,
                 },
               },
             }}
           >
+            {/* Profile switching section */}
+            <Typography variant="subtitle2" sx={{ px: 2, pt: 1, pb: 0.5, color: 'text.secondary' }}>
+              Switch Profile
+            </Typography>
             {profiles.map((p) => (
               <MenuItem
                 key={p.id}
                 selected={p.id === profile.id}
                 onClick={() => handleProfileSwitch(p.accountId, p.id)}
+                sx={{ pl: 2 }}
               >
                 <Avatar
                   src={getProfileImageUrl(p.image)}
@@ -173,6 +154,19 @@ function Navigation() {
                 {p.name}
               </MenuItem>
             ))}
+
+            <Divider sx={{ my: 1 }} />
+
+            {/* Account management section */}
+            <MenuItem onClick={handleManageAccount}>
+              <FaUser style={{ marginRight: 8, fontSize: '16px' }} />
+              Manage Account
+            </MenuItem>
+
+            <MenuItem onClick={handleLogout}>
+              <LuLogOut style={{ marginRight: 8, fontSize: '16px' }} />
+              Logout
+            </MenuItem>
           </Menu>
         </>
       );
@@ -180,6 +174,7 @@ function Navigation() {
     return <></>;
   };
 
+  // Updated navigation items - removed 'manageAccount' since it's now in profile menu
   const navigationItems = [
     { id: 'home', label: 'Home', icon: <FaHome className="icon" />, to: '/home' },
     {
@@ -196,7 +191,6 @@ function Navigation() {
     },
     { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
     { id: 'search', label: 'Search', icon: <FaSearch className="icon" />, to: '/search' },
-    { id: 'manageAccount', label: 'Manage Account', icon: <FaUser className="icon" />, to: '/manageAccount' },
   ];
 
   const renderNavigationButtons = () => {
@@ -254,7 +248,6 @@ function Navigation() {
           <Box sx={{ ml: 2 }}>{item.label}</Box>
         </MenuItem>
       ))}
-      {buildLoginLogoutMenu()}
     </Menu>
   );
 
