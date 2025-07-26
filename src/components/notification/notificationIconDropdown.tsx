@@ -4,6 +4,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
 import MovieIcon from '@mui/icons-material/Movie';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
@@ -35,6 +37,8 @@ import { selectCurrentAccount } from '../../app/slices/accountSlice';
 import {
   dismissAllSystemNotifications,
   dismissSystemNotification,
+  markAllSystemNotificationsRead,
+  markSystemNotificationRead,
   selectSystemNotifications,
 } from '../../app/slices/systemNotificationsSlice';
 import { AccountNotification } from '@ajgifford/keepwatching-types';
@@ -113,7 +117,7 @@ function NotificationIconDropdown() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const iconRef = useRef<HTMLButtonElement>(null);
 
-  const notificationCount = notifications.length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
   const hasNotifications = notifications.length > 0;
 
   const handleToggle = () => {
@@ -126,6 +130,25 @@ function NotificationIconDropdown() {
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
+  };
+
+  const handleMarkRead = (notificationId: number, hasBeenRead: boolean, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (account) {
+      dispatch(
+        markSystemNotificationRead({
+          accountId: account.id,
+          notificationId,
+          hasBeenRead,
+        })
+      );
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    if (account) {
+      dispatch(markAllSystemNotificationsRead({ accountId: account.id, hasBeenRead: true }));
+    }
   };
 
   const handleDismiss = (notificationId: number, event: React.MouseEvent) => {
@@ -178,13 +201,13 @@ function NotificationIconDropdown() {
           }}
         >
           <Badge
-            badgeContent={notificationCount}
+            badgeContent={unreadCount}
             color="error"
-            variant={notificationCount > 0 ? 'standard' : 'dot'}
+            variant={unreadCount > 0 ? 'standard' : 'dot'}
             invisible={!hasNotifications}
             sx={{
               '& .MuiBadge-badge': {
-                animation: notificationCount > 0 ? 'pulse 2s infinite' : 'none',
+                animation: unreadCount > 0 ? 'pulse 2s infinite' : 'none',
                 '@keyframes pulse': {
                   '0%': { transform: 'scale(1)' },
                   '50%': { transform: 'scale(1.2)' },
@@ -216,7 +239,7 @@ function NotificationIconDropdown() {
           <Paper
             elevation={0}
             sx={{
-              width: 400,
+              width: 450,
               maxHeight: 500,
               background: alpha('#ffffff', 0.9),
               backdropFilter: 'blur(20px)',
@@ -262,12 +285,30 @@ function NotificationIconDropdown() {
                 }}
               >
                 Notifications
-                {notificationCount > 0 && (
-                  <Chip label={notificationCount} size="small" color="error" sx={{ ml: 1, height: 20 }} />
-                )}
+                {unreadCount > 0 && <Chip label={unreadCount} size="small" color="error" sx={{ ml: 1, height: 20 }} />}
               </Typography>
 
-              {hasNotifications && notificationCount > 0 && (
+              {hasNotifications && unreadCount > 0 && (
+                <Button
+                  size="small"
+                  onClick={handleMarkAllRead}
+                  startIcon={<MarkEmailReadIcon />}
+                  sx={{
+                    fontSize: '0.75rem',
+                    textTransform: 'none',
+                    background: alpha(theme.palette.primary.main, 0.1),
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                    '&:hover': {
+                      background: alpha(theme.palette.primary.main, 0.2),
+                    },
+                  }}
+                >
+                  Mark All Read
+                </Button>
+              )}
+              {hasNotifications && (
                 <Button
                   size="small"
                   onClick={handleDismissAll}
@@ -309,8 +350,9 @@ function NotificationIconDropdown() {
               >
                 {notifications.slice(0, 10).map((notification, index) => {
                   const config = getNotificationConfig(notification);
-                  const IconComponent = config.icon;
                   const parsedMessage = parseMessage(notification.message);
+                  const IconComponent = config.icon;
+                  const isUnread = !notification.read;
 
                   return (
                     <React.Fragment key={notification.id}>
@@ -318,10 +360,10 @@ function NotificationIconDropdown() {
                         sx={{
                           py: 1.5,
                           px: 2,
-                          background: alpha(theme.palette.primary.main, 0.08),
+                          background: isUnread ? alpha(theme.palette.primary.main, 0.08) : alpha('#ffffff', 0.3),
                           backdropFilter: 'blur(8px)',
                           WebkitBackdropFilter: 'blur(8px)',
-                          borderLeft: `3px solid ${config.color}`,
+                          borderLeft: isUnread ? `3px solid ${config.color}` : 'none',
                           transition: 'all 0.2s ease',
                           cursor: 'pointer',
                           '&:hover': {
@@ -357,7 +399,7 @@ function NotificationIconDropdown() {
                             <Typography
                               variant="body2"
                               sx={{
-                                fontWeight: 600,
+                                fontWeight: isUnread ? 600 : 400,
                                 color: theme.palette.text.primary,
                                 lineHeight: 1.4,
                                 textShadow: `0 1px 1px ${alpha('#ffffff', 0.6)}`,
@@ -382,6 +424,40 @@ function NotificationIconDropdown() {
 
                         <ListItemSecondaryAction>
                           <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            {/* Mark Read Button */}
+                            <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleMarkRead(notification.id, isUnread, e)}
+                                sx={{
+                                  background: alpha('#ffffff', 0.3),
+                                  backdropFilter: 'blur(8px)',
+                                  WebkitBackdropFilter: 'blur(8px)',
+                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
+                                  width: 28,
+                                  height: 28,
+                                  transition: 'all 0.2s ease',
+                                  color: isUnread ? theme.palette.success.main : theme.palette.text.secondary,
+                                  '&:hover': {
+                                    background: alpha(
+                                      isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                      0.2
+                                    ),
+                                    border: `1px solid ${alpha(
+                                      isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                      0.3
+                                    )}`,
+                                    color: isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                  },
+                                }}
+                              >
+                                {isUnread ? (
+                                  <MarkEmailReadIcon sx={{ fontSize: 16 }} />
+                                ) : (
+                                  <MarkEmailUnreadIcon sx={{ fontSize: 16 }} />
+                                )}
+                              </IconButton>
+                            </Tooltip>
                             {/* Dismiss Button */}
                             <Tooltip title="Dismiss notification">
                               <IconButton

@@ -36,12 +36,57 @@ export const fetchSystemNotifications = createAsyncThunk<
   }
 });
 
+export const markSystemNotificationRead = createAsyncThunk<
+  AccountNotification[],
+  { accountId: number; notificationId: number; hasBeenRead: boolean },
+  { rejectValue: ApiErrorResponse }
+>(
+  'systemNotifications/markRead',
+  async (
+    { accountId, notificationId, hasBeenRead }: { accountId: number; notificationId: number; hasBeenRead: boolean },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response: AxiosResponse<NotificationResponse> = await axiosInstance.post(
+        `/accounts/${accountId}/notifications/read/${notificationId}?hasBeenRead=${hasBeenRead}`
+      );
+      return response.data.notifications;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred marking a notification read/unread' });
+    }
+  }
+);
+
+export const markAllSystemNotificationsRead = createAsyncThunk<
+  AccountNotification[],
+  { accountId: number; hasBeenRead: boolean },
+  { rejectValue: ApiErrorResponse }
+>(
+  'systemNotifications/markAllRead',
+  async ({ accountId, hasBeenRead }: { accountId: number; hasBeenRead: boolean }, { rejectWithValue }) => {
+    try {
+      const response: AxiosResponse<NotificationResponse> = await axiosInstance.post(
+        `/accounts/${accountId}/notifications/read?hasBeenRead=${hasBeenRead}`
+      );
+      return response.data.notifications;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred marking all notifications read/unread' });
+    }
+  }
+);
+
 export const dismissSystemNotification = createAsyncThunk<
   AccountNotification[],
   { accountId: number; notificationId: number },
   { rejectValue: ApiErrorResponse }
 >(
-  'systemNotifications/dismissNotification',
+  'systemNotifications/dismiss',
   async ({ accountId, notificationId }: { accountId: number; notificationId: number }, { rejectWithValue }) => {
     try {
       const response: AxiosResponse<NotificationResponse> = await axiosInstance.post(
@@ -52,7 +97,7 @@ export const dismissSystemNotification = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      return rejectWithValue({ message: 'An unknown error occurred' });
+      return rejectWithValue({ message: 'An unknown error occurred dismissing a notification' });
     }
   }
 );
@@ -108,6 +153,32 @@ const systemNotificationSlice = createSlice({
         state.loading = false;
         state.systemNotifications = [];
         state.error = action.payload || { message: 'Failed to fetch system notifications' };
+      })
+      .addCase(markSystemNotificationRead.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(markSystemNotificationRead.fulfilled, (state, action) => {
+        state.loading = false;
+        state.systemNotifications = action.payload;
+        state.error = null;
+      })
+      .addCase(markSystemNotificationRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to mark read/unread a system notification' };
+      })
+      .addCase(markAllSystemNotificationsRead.fulfilled, (state, action) => {
+        state.systemNotifications = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(markAllSystemNotificationsRead.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(markAllSystemNotificationsRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to mark read/unread all notifications' };
       })
       .addCase(dismissSystemNotification.pending, (state) => {
         state.loading = true;
