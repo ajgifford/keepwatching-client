@@ -109,7 +109,6 @@ const formatTimestamp = (createdAt: Date): string => {
 };
 
 const parseMessage = (message: string): string => {
-  // Simple parsing to remove any HTML tags if present
   const div = document.createElement('div');
   div.innerHTML = message;
   return div.textContent || div.innerText || '';
@@ -234,7 +233,6 @@ function NotificationIconDropdown() {
               overflow: 'hidden',
             }}
           >
-            {/* Header */}
             <Box
               sx={{
                 p: 2,
@@ -276,7 +274,6 @@ function NotificationIconDropdown() {
               )}
             </Box>
 
-            {/* Notifications List */}
             {notifications.length > 0 ? (
               <List
                 sx={{
@@ -312,11 +309,9 @@ function NotificationIconDropdown() {
                           borderLeft: isUnread ? `3px solid ${config.color}` : 'none',
                           transition: 'all 0.2s ease',
                           cursor: 'pointer',
-                          position: 'relative', // Added for proper positioning
-                          // Removed transform to prevent horizontal scrollbar
+                          position: 'relative',
                           '&:hover': {
                             background: alpha(config.color, 0.1),
-                            // Removed transform: 'translateX(2px)'
                           },
                         }}
                       >
@@ -344,10 +339,9 @@ function NotificationIconDropdown() {
 
                         <ListItemText
                           sx={{
-                            // Add proper width constraint to prevent text from overlapping action buttons
-                            pr: 8, // Padding right to account for action buttons (2 buttons * 28px + spacing)
-                            mr: 0, // Remove any default margin
-                            width: 'calc(100% - 120px)', // Explicit width calculation
+                            pr: 8,
+                            mr: 0,
+                            width: 'calc(100% - 120px)',
                           }}
                           primary={
                             <Typography
@@ -355,39 +349,56 @@ function NotificationIconDropdown() {
                               sx={{
                                 fontWeight: isUnread ? 600 : 400,
                                 color: theme.palette.text.primary,
-                                lineHeight: 1.4,
+                                lineHeight: 1.3,
                                 textShadow: `0 1px 1px ${alpha('#ffffff', 0.6)}`,
-                                wordWrap: 'break-word', // Ensure long words break properly
-                                overflowWrap: 'break-word', // Additional word wrapping
+                                wordWrap: 'break-word',
+                                overflowWrap: 'break-word',
+                                fontSize: '0.875rem',
                               }}
                             >
-                              {parsedMessage.length > 80 ? `${parsedMessage.substring(0, 80)}...` : parsedMessage}
+                              {notification.title ||
+                                (parsedMessage.length > 60 ? `${parsedMessage.substring(0, 60)}...` : parsedMessage)}
                             </Typography>
                           }
                           secondary={
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: theme.palette.text.secondary,
-                                fontSize: '0.7rem',
-                                mt: 0.5,
-                              }}
-                            >
-                              {formatTimestamp(notification.startDate)}
-                            </Typography>
+                            <Box sx={{ mt: 0.25 }}>
+                              {notification.title && (
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    color: theme.palette.text.secondary,
+                                    fontSize: '0.7rem',
+                                    lineHeight: 1.2,
+                                    display: 'block',
+                                    mb: 0.25,
+                                    wordWrap: 'break-word',
+                                    overflowWrap: 'break-word',
+                                  }}
+                                >
+                                  {parsedMessage.length > 50 ? `${parsedMessage.substring(0, 50)}...` : parsedMessage}
+                                </Typography>
+                              )}
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  fontSize: '0.65rem',
+                                }}
+                              >
+                                {formatTimestamp(notification.startDate)}
+                              </Typography>
+                            </Box>
                           }
                         />
 
                         <ListItemSecondaryAction
                           sx={{
-                            // Ensure action buttons are properly positioned
-                            right: 8, // Consistent right margin
+                            right: 8,
                             top: '50%',
                             transform: 'translateY(-50%)',
                           }}
                         >
                           <Box sx={{ display: 'flex', gap: 0.5 }}>
-                            {/* Mark Read Button */}
                             <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
                               <IconButton
                                 size="small"
@@ -421,8 +432,6 @@ function NotificationIconDropdown() {
                                 )}
                               </IconButton>
                             </Tooltip>
-
-                            {/* Dismiss Button */}
                             <Tooltip title="Dismiss">
                               <IconButton
                                 size="small"
@@ -461,7 +470,6 @@ function NotificationIconDropdown() {
                   );
                 })}
 
-                {/* Show more indicator */}
                 {notifications.length > 10 && (
                   <ListItem
                     sx={{
