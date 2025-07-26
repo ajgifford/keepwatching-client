@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaBars, FaCompass, FaFilm, FaHome, FaSearch, FaTv, FaUser } from 'react-icons/fa';
-import { LuLogIn, LuLogOut } from 'react-icons/lu';
+import { LuLogOut } from 'react-icons/lu';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import {
