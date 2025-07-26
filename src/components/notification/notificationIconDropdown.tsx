@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
@@ -116,6 +117,7 @@ const parseMessage = (message: string): string => {
 
 function NotificationIconDropdown() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const notifications = useAppSelector(selectSystemNotifications);
   const currentAccount = useAppSelector(selectCurrentAccount);
@@ -130,6 +132,11 @@ function NotificationIconDropdown() {
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleViewAll = (): void => {
+    navigate('/notifications');
+    setOpen(false);
   };
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
@@ -261,6 +268,9 @@ function NotificationIconDropdown() {
                     sx={{ fontSize: '0.75rem' }}
                   >
                     Dismiss All
+                  </Button>
+                  <Button size="small" variant="text" onClick={handleViewAll} sx={{ fontSize: '0.75rem' }}>
+                    View All
                   </Button>
                 </Box>
               )}

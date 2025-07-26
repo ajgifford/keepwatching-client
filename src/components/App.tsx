@@ -18,6 +18,7 @@ import Login from './pages/login';
 import ManageAccount from './pages/manageAccount';
 import MovieDetails from './pages/movieDetails';
 import Movies from './pages/movies';
+import Notifications from './pages/notifications';
 import PersonDetails from './pages/personDetails';
 import Register from './pages/register';
 import Search from './pages/search';
@@ -66,6 +67,7 @@ function App() {
                   <Route path="/movies/:movieId/:profileId" element={<MovieDetails />} />
                   <Route path="/discover" element={<Discover />} />
                   <Route path="/search" element={<Search />} />
+                  <Route path="/notifications" element={<Notifications />} />
                   <Route path="/manageAccount" element={<ManageAccount />} />
                   <Route path="/person/:personId" element={<PersonDetails />} />
                 </Route>
