@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
@@ -89,55 +88,63 @@ const getNotificationConfig = (notification: AccountNotification): NotificationT
   };
 };
 
-const formatTimestamp = (createdAt?: Date): string => {
-  if (!createdAt) return 'Just now';
-
+const formatTimestamp = (createdAt: Date): string => {
+  const date = new Date(createdAt);
   const now = new Date();
-  const created = new Date(createdAt);
-  const diffMs = now.getTime() - created.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes}m ago`;
+  } else if (diffInHours < 24) {
+    return `${diffInHours}h ago`;
+  } else if (diffInDays < 7) {
+    return `${diffInDays}d ago`;
+  } else {
+    return date.toLocaleDateString();
+  }
+};
 
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}d ago`;
+const parseMessage = (message: string): string => {
+  // Simple parsing to remove any HTML tags if present
+  const div = document.createElement('div');
+  div.innerHTML = message;
+  return div.textContent || div.innerText || '';
 };
 
 function NotificationIconDropdown() {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const notifications = useAppSelector(selectSystemNotifications);
-  const account = useAppSelector(selectCurrentAccount);
-
+  const currentAccount = useAppSelector(selectCurrentAccount);
   const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const iconRef = useRef<HTMLButtonElement>(null);
+  const anchorRef = useRef<HTMLButtonElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const hasNotifications = notifications.length > 0;
+
+  useEffect(() => {
+    if (!currentAccount?.id) return;
+  }, [currentAccount?.id]);
 
   const handleToggle = () => {
-    if (iconRef.current) {
-      setAnchorEl(iconRef.current);
-      setOpen(!open);
-    }
+    setOpen((prevOpen) => !prevOpen);
   };
 
-  const handleClose = () => {
+  const handleClose = (event: Event | React.SyntheticEvent) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+      return;
+    }
     setOpen(false);
-    setAnchorEl(null);
   };
 
   const handleMarkRead = (notificationId: number, hasBeenRead: boolean, event: React.MouseEvent) => {
     event.stopPropagation();
-    if (account) {
+    if (currentAccount) {
       dispatch(
         markSystemNotificationRead({
-          accountId: account.id,
+          accountId: currentAccount.id,
           notificationId,
           hasBeenRead,
         })
@@ -145,193 +152,122 @@ function NotificationIconDropdown() {
     }
   };
 
-  const handleMarkAllRead = () => {
-    if (account) {
-      dispatch(markAllSystemNotificationsRead({ accountId: account.id, hasBeenRead: true }));
-    }
-  };
-
   const handleDismiss = (notificationId: number, event: React.MouseEvent) => {
     event.stopPropagation();
-    if (account) {
+    if (currentAccount) {
       dispatch(
         dismissSystemNotification({
-          accountId: account.id,
+          accountId: currentAccount.id,
           notificationId,
         })
       );
     }
   };
 
-  const handleDismissAll = () => {
-    if (account) {
-      dispatch(dismissAllSystemNotifications({ accountId: account.id }));
+  const handleMarkAllRead = () => {
+    if (currentAccount) {
+      dispatch(markAllSystemNotificationsRead({ accountId: currentAccount.id, hasBeenRead: true }));
     }
   };
 
-  const parseMessage = (message: string) => {
-    return message.replace(/{{account_name}}/g, account?.name || '');
+  const handleMarkAllUnread = () => {
+    if (currentAccount) {
+      dispatch(markAllSystemNotificationsRead({ accountId: currentAccount.id, hasBeenRead: false }));
+    }
   };
 
-  // Close on escape key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && open) {
-        handleClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [open]);
+  const handleDismissAll = () => {
+    if (currentAccount) {
+      dispatch(dismissAllSystemNotifications({ accountId: currentAccount.id }));
+    }
+  };
 
   return (
     <>
-      <Tooltip title="Notifications">
-        <IconButton
-          ref={iconRef}
-          onClick={handleToggle}
-          sx={{
-            color: 'inherit',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': {
-              backgroundColor: alpha(theme.palette.common.white, 0.1),
-              transform: 'scale(1.05)',
-            },
-          }}
-        >
-          <Badge
-            badgeContent={unreadCount}
-            color="error"
-            variant={unreadCount > 0 ? 'standard' : 'dot'}
-            invisible={!hasNotifications}
-            sx={{
-              '& .MuiBadge-badge': {
-                animation: unreadCount > 0 ? 'pulse 2s infinite' : 'none',
-                '@keyframes pulse': {
-                  '0%': { transform: 'scale(1)' },
-                  '50%': { transform: 'scale(1.2)' },
-                  '100%': { transform: 'scale(1)' },
-                },
-              },
-            }}
-          >
-            {hasNotifications ? <NotificationsActiveIcon /> : <NotificationsIcon />}
-          </Badge>
-        </IconButton>
-      </Tooltip>
+      <IconButton
+        ref={anchorRef}
+        onClick={handleToggle}
+        sx={{
+          background: alpha('#ffffff', 0.1),
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: `1px solid ${alpha('#ffffff', 0.2)}`,
+          color: theme.palette.primary.contrastText,
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: alpha('#ffffff', 0.2),
+            border: `1px solid ${alpha('#ffffff', 0.3)}`,
+          },
+        }}
+      >
+        <Badge badgeContent={unreadCount} color="error">
+          {unreadCount > 0 ? <NotificationsActiveIcon /> : <NotificationsIcon />}
+        </Badge>
+      </IconButton>
 
       <Popper
         open={open}
-        anchorEl={anchorEl}
+        anchorEl={anchorRef.current}
+        role={undefined}
         placement="bottom-end"
-        style={{ zIndex: theme.zIndex.modal }}
-        modifiers={[
-          {
-            name: 'offset',
-            options: {
-              offset: [0, 8],
-            },
-          },
-        ]}
+        disablePortal
+        sx={{ zIndex: theme.zIndex.modal }}
       >
         <ClickAwayListener onClickAway={handleClose}>
           <Paper
-            elevation={0}
             sx={{
-              width: 450,
+              width: 400,
               maxHeight: 500,
-              background: alpha('#ffffff', 0.9),
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: `1px solid ${alpha('#ffffff', 0.2)}`,
-              borderRadius: 3,
-              boxShadow: `
-                    0 8px 32px ${alpha('#000000', 0.12)},
-                    inset 0 1px 0 ${alpha('#ffffff', 0.3)}
-                  `,
+              background: alpha('#ffffff', 0.95),
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: `1px solid ${alpha('#ffffff', 0.3)}`,
+              borderRadius: 2,
+              boxShadow: `0 8px 32px ${alpha('#000000', 0.12)}`,
               overflow: 'hidden',
-              position: 'relative',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 1,
-                background: `linear-gradient(90deg, transparent, ${alpha(theme.palette.primary.main, 0.6)}, transparent)`,
-              },
             }}
           >
             {/* Header */}
             <Box
               sx={{
                 p: 2,
-                background: alpha('#ffffff', 0.4),
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                borderBottom: `1px solid ${alpha('#ffffff', 0.3)}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                background: alpha(theme.palette.primary.main, 0.05),
               }}
             >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  color: theme.palette.primary.main,
-                  textShadow: `0 1px 2px ${alpha('#ffffff', 0.8)}`,
-                }}
-              >
-                Notifications
-                {unreadCount > 0 && <Chip label={unreadCount} size="small" color="error" sx={{ ml: 1, height: 20 }} />}
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="h6" fontWeight={600}>
+                  Notifications
+                </Typography>
+                <Chip label={`${notifications.length} total`} size="small" color="primary" variant="outlined" />
+              </Box>
 
-              {hasNotifications && unreadCount > 0 && (
-                <Button
-                  size="small"
-                  onClick={handleMarkAllRead}
-                  startIcon={<MarkEmailReadIcon />}
-                  sx={{
-                    fontSize: '0.75rem',
-                    textTransform: 'none',
-                    background: alpha(theme.palette.primary.main, 0.1),
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                    '&:hover': {
-                      background: alpha(theme.palette.primary.main, 0.2),
-                    },
-                  }}
-                >
-                  Mark All Read
-                </Button>
-              )}
-              {hasNotifications && (
-                <Button
-                  size="small"
-                  onClick={handleDismissAll}
-                  startIcon={<DeleteIcon />}
-                  sx={{
-                    fontSize: '0.75rem',
-                    textTransform: 'none',
-                    background: alpha(theme.palette.primary.main, 0.1),
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                    '&:hover': {
-                      background: alpha(theme.palette.primary.main, 0.2),
-                    },
-                  }}
-                >
-                  Dismiss All
-                </Button>
+              {notifications.length > 0 && (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  {unreadCount === 0 ? (
+                    <Button size="small" variant="text" onClick={handleMarkAllUnread} sx={{ fontSize: '0.75rem' }}>
+                      Mark All Unread
+                    </Button>
+                  ) : (
+                    <Button size="small" variant="text" onClick={handleMarkAllRead} sx={{ fontSize: '0.75rem' }}>
+                      Mark All Read
+                    </Button>
+                  )}
+                  <Button
+                    size="small"
+                    variant="text"
+                    color="error"
+                    onClick={handleDismissAll}
+                    sx={{ fontSize: '0.75rem' }}
+                  >
+                    Dismiss All
+                  </Button>
+                </Box>
               )}
             </Box>
 
-            {/* Notification List */}
-            {hasNotifications ? (
+            {/* Notifications List */}
+            {notifications.length > 0 ? (
               <List
                 sx={{
                   maxHeight: 400,
@@ -366,9 +302,11 @@ function NotificationIconDropdown() {
                           borderLeft: isUnread ? `3px solid ${config.color}` : 'none',
                           transition: 'all 0.2s ease',
                           cursor: 'pointer',
+                          position: 'relative', // Added for proper positioning
+                          // Removed transform to prevent horizontal scrollbar
                           '&:hover': {
                             background: alpha(config.color, 0.1),
-                            transform: 'translateX(2px)',
+                            // Removed transform: 'translateX(2px)'
                           },
                         }}
                       >
@@ -384,9 +322,9 @@ function NotificationIconDropdown() {
                               justifyContent: 'center',
                               color: 'white',
                               boxShadow: `0 4px 12px ${alpha(config.color, 0.3)}`,
-                              fontSize: 20, // Move fontSize here instead of on the icon
+                              fontSize: 20,
                               '& > *': {
-                                fontSize: 'inherit', // Make child inherit the fontSize
+                                fontSize: 'inherit',
                               },
                             }}
                           >
@@ -395,6 +333,12 @@ function NotificationIconDropdown() {
                         </ListItemIcon>
 
                         <ListItemText
+                          sx={{
+                            // Add proper width constraint to prevent text from overlapping action buttons
+                            pr: 8, // Padding right to account for action buttons (2 buttons * 28px + spacing)
+                            mr: 0, // Remove any default margin
+                            width: 'calc(100% - 120px)', // Explicit width calculation
+                          }}
                           primary={
                             <Typography
                               variant="body2"
@@ -403,6 +347,8 @@ function NotificationIconDropdown() {
                                 color: theme.palette.text.primary,
                                 lineHeight: 1.4,
                                 textShadow: `0 1px 1px ${alpha('#ffffff', 0.6)}`,
+                                wordWrap: 'break-word', // Ensure long words break properly
+                                overflowWrap: 'break-word', // Additional word wrapping
                               }}
                             >
                               {parsedMessage.length > 80 ? `${parsedMessage.substring(0, 80)}...` : parsedMessage}
@@ -422,7 +368,14 @@ function NotificationIconDropdown() {
                           }
                         />
 
-                        <ListItemSecondaryAction>
+                        <ListItemSecondaryAction
+                          sx={{
+                            // Ensure action buttons are properly positioned
+                            right: 8, // Consistent right margin
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                          }}
+                        >
                           <Box sx={{ display: 'flex', gap: 0.5 }}>
                             {/* Mark Read Button */}
                             <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
@@ -452,14 +405,15 @@ function NotificationIconDropdown() {
                                 }}
                               >
                                 {isUnread ? (
-                                  <MarkEmailReadIcon sx={{ fontSize: 16 }} />
+                                  <MarkEmailReadIcon sx={{ fontSize: 14 }} />
                                 ) : (
-                                  <MarkEmailUnreadIcon sx={{ fontSize: 16 }} />
+                                  <MarkEmailUnreadIcon sx={{ fontSize: 14 }} />
                                 )}
                               </IconButton>
                             </Tooltip>
+
                             {/* Dismiss Button */}
-                            <Tooltip title="Dismiss notification">
+                            <Tooltip title="Dismiss">
                               <IconButton
                                 size="small"
                                 onClick={(e) => handleDismiss(notification.id, e)}
@@ -471,6 +425,7 @@ function NotificationIconDropdown() {
                                   width: 28,
                                   height: 28,
                                   transition: 'all 0.2s ease',
+                                  color: theme.palette.text.secondary,
                                   '&:hover': {
                                     background: alpha(theme.palette.error.main, 0.2),
                                     border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
@@ -478,23 +433,32 @@ function NotificationIconDropdown() {
                                   },
                                 }}
                               >
-                                <CloseIcon sx={{ fontSize: 16 }} />
+                                <CloseIcon sx={{ fontSize: 14 }} />
                               </IconButton>
                             </Tooltip>
                           </Box>
                         </ListItemSecondaryAction>
                       </ListItem>
-                      {index < notifications.length - 1 && <Divider sx={{ opacity: 0.3 }} />}
+                      {index < Math.min(notifications.length, 10) - 1 && (
+                        <Divider
+                          sx={{
+                            background: alpha(theme.palette.divider, 0.1),
+                            mx: 2,
+                          }}
+                        />
+                      )}
                     </React.Fragment>
                   );
                 })}
 
+                {/* Show more indicator */}
                 {notifications.length > 10 && (
                   <ListItem
                     sx={{
-                      justifyContent: 'center',
-                      py: 2,
-                      background: alpha('#ffffff', 0.2),
+                      py: 1,
+                      px: 2,
+                      background: alpha(theme.palette.primary.main, 0.05),
+                      borderTop: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
                     }}
                   >
                     <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
