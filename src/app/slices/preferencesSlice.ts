@@ -1,23 +1,52 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
+import { logout } from './accountSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import {
   AccountPreferences,
   AccountPreferencesResponse,
   DEFAULT_PREFERENCES,
+  DisplayPreferences,
   EmailPreferences,
+  NotificationPreferences,
   PreferenceType,
-  TypedPreferenceUpdate,
+  PrivacyPreferences,
 } from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
+
+const PREFERENCES_KEY = 'preferences';
 
 interface PreferencesState {
   preferences: AccountPreferences;
   loading: boolean;
   error: ApiErrorResponse | null;
 }
+
+const saveToLocalStorage = (prefs: AccountPreferences) => {
+  try {
+    localStorage.setItem(PREFERENCES_KEY, JSON.stringify(prefs));
+  } catch (error) {
+    console.error('Failed to save preferences to localStorage:', error);
+  }
+};
+
+const loadFromLocalStorage = (): PreferencesState => {
+  try {
+    const data = localStorage.getItem(PREFERENCES_KEY);
+    if (data) {
+      return {
+        preferences: data ? JSON.parse(data) : [],
+        loading: false,
+        error: null,
+      };
+    }
+  } catch (error) {
+    console.error('Failed to load preferences from localStorage:', error);
+  }
+  return initialState;
+};
 
 const initialState: PreferencesState = {
   preferences: {},
@@ -44,7 +73,11 @@ export const fetchAccountPreferences = createAsyncThunk<AccountPreferences, numb
 
 export const updatePreferences = createAsyncThunk<
   AccountPreferences,
-  { accountId: number; preferenceType: PreferenceType; updates: any },
+  {
+    accountId: number;
+    preferenceType: PreferenceType;
+    updates: Partial<EmailPreferences | DisplayPreferences | NotificationPreferences | PrivacyPreferences>;
+  },
   { rejectValue: ApiErrorResponse }
 >('preferences/updatePreferences', async ({ accountId, preferenceType, updates }, { dispatch, rejectWithValue }) => {
   try {
@@ -78,13 +111,16 @@ export const updatePreferences = createAsyncThunk<
 
 export const updateMultiplePreferences = createAsyncThunk<
   AccountPreferences,
-  { accountId: number; updates: Partial<TypedPreferenceUpdate> },
+  {
+    accountId: number;
+    preferences: Partial<AccountPreferences>;
+  },
   { rejectValue: ApiErrorResponse }
->('preferences/updateMultiplePreferences', async ({ accountId, updates }, { dispatch, rejectWithValue }) => {
+>('preferences/updateMultiplePreferences', async ({ accountId, preferences }, { dispatch, rejectWithValue }) => {
   try {
     const response: AxiosResponse<AccountPreferencesResponse> = await axiosInstance.put(
       `/accounts/${accountId}/preferences`,
-      updates
+      preferences
     );
 
     dispatch(
@@ -126,14 +162,14 @@ export const updateEmailPreferences = createAsyncThunk<
 
 const preferencesSlice = createSlice({
   name: 'preferences',
-  initialState,
-  reducers: {
-    clearPreferencesError: (state) => {
-      state.error = null;
-    },
-  },
+  initialState: loadFromLocalStorage(),
+  reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(logout.fulfilled, () => {
+        localStorage.removeItem(PREFERENCES_KEY);
+        return initialState;
+      })
       .addCase(fetchAccountPreferences.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -142,6 +178,7 @@ const preferencesSlice = createSlice({
         state.loading = false;
         state.preferences = action.payload;
         state.error = null;
+        saveToLocalStorage(state.preferences);
       })
       .addCase(fetchAccountPreferences.rejected, (state, action) => {
         state.loading = false;
@@ -155,6 +192,7 @@ const preferencesSlice = createSlice({
         state.loading = false;
         state.preferences = action.payload;
         state.error = null;
+        saveToLocalStorage(state.preferences);
       })
       .addCase(updatePreferences.rejected, (state, action) => {
         state.loading = false;
@@ -168,15 +206,28 @@ const preferencesSlice = createSlice({
         state.loading = false;
         state.preferences = action.payload;
         state.error = null;
+        saveToLocalStorage(state.preferences);
       })
       .addCase(updateMultiplePreferences.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Failed to update preferences' };
+      })
+      .addCase(updateEmailPreferences.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateEmailPreferences.fulfilled, (state, action) => {
+        state.loading = false;
+        state.preferences = action.payload;
+        state.error = null;
+        saveToLocalStorage(state.preferences);
+      })
+      .addCase(updateEmailPreferences.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to update email preferences' };
       });
   },
 });
-
-export const { clearPreferencesError } = preferencesSlice.actions;
 
 export const selectPreferences = (state: RootState) => state.preferences.preferences;
 export const selectEmailPreferences = (state: RootState) =>
