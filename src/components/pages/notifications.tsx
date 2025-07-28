@@ -27,7 +27,6 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
   MenuItem,
   Select,
@@ -350,6 +349,65 @@ const Notifications: React.FC = () => {
                       },
                       transition: 'background-color 0.2s ease',
                     }}
+                    secondaryAction={
+                      <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleMarkAsRead(notification.id, isUnread)}
+                            sx={{
+                              background: alpha('#ffffff', 0.3),
+                              backdropFilter: 'blur(8px)',
+                              WebkitBackdropFilter: 'blur(8px)',
+                              border: `1px solid ${alpha('#ffffff', 0.2)}`,
+                              width: 32,
+                              height: 32,
+                              transition: 'all 0.2s ease',
+                              color: isUnread ? theme.palette.success.main : theme.palette.text.secondary,
+                              '&:hover': {
+                                background: alpha(isUnread ? theme.palette.success.main : theme.palette.info.main, 0.2),
+                                border: `1px solid ${alpha(
+                                  isUnread ? theme.palette.success.main : theme.palette.info.main,
+                                  0.3
+                                )}`,
+                                transform: 'scale(1.05)',
+                              },
+                            }}
+                          >
+                            {isUnread ? (
+                              <MarkEmailReadIcon sx={{ fontSize: 16 }} />
+                            ) : (
+                              <MarkEmailUnreadIcon sx={{ fontSize: 16 }} />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Dismiss notification">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDismiss(notification.id)}
+                            sx={{
+                              background: alpha('#ffffff', 0.3),
+                              backdropFilter: 'blur(8px)',
+                              WebkitBackdropFilter: 'blur(8px)',
+                              border: `1px solid ${alpha('#ffffff', 0.2)}`,
+                              width: 32,
+                              height: 32,
+                              transition: 'all 0.2s ease',
+                              color: theme.palette.text.secondary,
+                              '&:hover': {
+                                background: alpha(theme.palette.error.main, 0.2),
+                                border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
+                                color: theme.palette.error.main,
+                                transform: 'scale(1.05)',
+                              },
+                            }}
+                          >
+                            <CloseIcon sx={{ fontSize: 16 }} />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    }
                   >
                     <ListItemIcon sx={{ minWidth: 56 }}>
                       <Box
@@ -408,7 +466,7 @@ const Notifications: React.FC = () => {
                               overflowWrap: 'break-word',
                             }}
                           >
-                            {parsedMessage.length > 120 ? `${parsedMessage.substring(0, 120)}...` : parsedMessage}
+                            {parsedMessage}
                           </Typography>
                           <Typography
                             variant="caption"
@@ -422,66 +480,6 @@ const Notifications: React.FC = () => {
                         </Box>
                       }
                     />
-
-                    <ListItemSecondaryAction>
-                      <Stack direction="row" spacing={1}>
-                        <Tooltip title={isUnread ? 'Mark as read' : 'Mark as unread'}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleMarkAsRead(notification.id, isUnread)}
-                            sx={{
-                              background: alpha('#ffffff', 0.3),
-                              backdropFilter: 'blur(8px)',
-                              WebkitBackdropFilter: 'blur(8px)',
-                              border: `1px solid ${alpha('#ffffff', 0.2)}`,
-                              width: 32,
-                              height: 32,
-                              transition: 'all 0.2s ease',
-                              color: isUnread ? theme.palette.success.main : theme.palette.text.secondary,
-                              '&:hover': {
-                                background: alpha(isUnread ? theme.palette.success.main : theme.palette.info.main, 0.2),
-                                border: `1px solid ${alpha(
-                                  isUnread ? theme.palette.success.main : theme.palette.info.main,
-                                  0.3
-                                )}`,
-                                transform: 'scale(1.05)',
-                              },
-                            }}
-                          >
-                            {isUnread ? (
-                              <MarkEmailReadIcon sx={{ fontSize: 16 }} />
-                            ) : (
-                              <MarkEmailUnreadIcon sx={{ fontSize: 16 }} />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-
-                        <Tooltip title="Dismiss notification">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDismiss(notification.id)}
-                            sx={{
-                              background: alpha('#ffffff', 0.3),
-                              backdropFilter: 'blur(8px)',
-                              WebkitBackdropFilter: 'blur(8px)',
-                              border: `1px solid ${alpha('#ffffff', 0.2)}`,
-                              width: 32,
-                              height: 32,
-                              transition: 'all 0.2s ease',
-                              color: theme.palette.text.secondary,
-                              '&:hover': {
-                                background: alpha(theme.palette.error.main, 0.2),
-                                border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
-                                color: theme.palette.error.main,
-                                transform: 'scale(1.05)',
-                              },
-                            }}
-                          >
-                            <CloseIcon sx={{ fontSize: 16 }} />
-                          </IconButton>
-                        </Tooltip>
-                      </Stack>
-                    </ListItemSecondaryAction>
                   </ListItem>
 
                   {index < filteredNotifications.length - 1 && (
