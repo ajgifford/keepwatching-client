@@ -344,10 +344,15 @@ const Notifications: React.FC = () => {
                       py: 2,
                       px: 3,
                       backgroundColor: isUnread ? alpha(theme.palette.primary.main, 0.05) : 'transparent',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      borderLeft: isUnread ? `3px solid ${config.color}` : 'none',
+                      transition: 'all 0.2s ease',
+                      cursor: 'pointer',
+                      position: 'relative',
                       '&:hover': {
-                        backgroundColor: alpha(theme.palette.action.hover, 0.1),
+                        background: alpha(config.color, 0.1),
                       },
-                      transition: 'background-color 0.2s ease',
                     }}
                     secondaryAction={
                       <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -431,6 +436,11 @@ const Notifications: React.FC = () => {
                     </ListItemIcon>
 
                     <ListItemText
+                      sx={{
+                        pr: 8,
+                        mr: 0,
+                        width: 'calc(100% - 120px)',
+                      }}
                       primary={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                           <Typography
