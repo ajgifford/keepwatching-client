@@ -37,7 +37,7 @@ import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
 import { CreditCard } from '../common/person/creditCard';
 import { buildTMDBImagePath } from '../utility/contentUtility';
-import { Person } from '@ajgifford/keepwatching-types';
+import { PersonDetails as PersonDetailsType } from '@ajgifford/keepwatching-types';
 
 const getGenderIcon = (gender: number) => {
   return gender === 1 ? <Female /> : gender === 2 ? <Male /> : <PersonIcon />;
@@ -116,7 +116,7 @@ export default function PersonDetails() {
 
   const profile = useAppSelector(selectActiveProfile);
 
-  const [person, setPerson] = useState<Person | null>(null);
+  const [person, setPerson] = useState<PersonDetailsType | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
