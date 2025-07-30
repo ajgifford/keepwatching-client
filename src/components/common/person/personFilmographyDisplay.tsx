@@ -17,14 +17,14 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { PersonDetails } from '../../../app/model/personSearchTypes';
+import { PersonSearchDetails } from '../../../app/model/personSearchTypes';
 import { LoadingComponent } from '../loadingComponent';
 import { MediaCard } from '../media/mediaCard';
 import { TabPanel, a11yProps } from '../tabs/tabPanel';
 import { SearchPersonCredit } from '@ajgifford/keepwatching-types';
 
 interface PersonFilmographyDisplayProps {
-  person: PersonDetails;
+  person: PersonSearchDetails;
 }
 
 type SortOption = 'release_date_desc' | 'release_date_asc' | 'popularity' | 'title';

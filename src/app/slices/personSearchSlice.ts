@@ -1,6 +1,6 @@
 // src/app/slices/personSearchSlice.ts
 import axiosInstance from '../api/axiosInstance';
-import { PERSON_SEARCH_CONFIG, PersonDetails } from '../model/personSearchTypes';
+import { PERSON_SEARCH_CONFIG, PersonSearchDetails } from '../model/personSearchTypes';
 import { RootState } from '../store';
 import {
   PersonSearchResponse,
@@ -15,7 +15,7 @@ import { AxiosError } from 'axios';
 interface PersonSearchState {
   query: string;
   results: PersonSearchResult[];
-  selectedPerson: PersonDetails | null;
+  selectedPerson: PersonSearchDetails | null;
   alternativePersons: PersonSearchResult[];
   showDisambiguation: boolean;
   autoSelectedConfidence: 'high' | 'medium' | 'low';
@@ -193,7 +193,7 @@ export const fetchPersonDetails = createAsyncThunk(
         movieCredits,
         tvCredits,
         totalCredits: allCredits.length,
-      } as PersonDetails;
+      } as PersonSearchDetails;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
@@ -256,7 +256,7 @@ const personSearchSlice = createSlice({
     selectPerson: (state, action: PayloadAction<number>) => {
       const person = [...state.results, ...state.alternativePersons].find((p) => p.id === action.payload);
       if (person) {
-        state.selectedPerson = person as PersonDetails;
+        state.selectedPerson = person as PersonSearchDetails;
         state.showDisambiguation = false;
 
         const allResults = state.results;
@@ -302,7 +302,7 @@ const personSearchSlice = createSlice({
 
           if (selectedPerson) {
             // Auto-select the person
-            state.selectedPerson = selectedPerson as PersonDetails;
+            state.selectedPerson = selectedPerson as PersonSearchDetails;
             state.showDisambiguation = false;
           } else {
             // No auto-selection - show disambiguation if we have results

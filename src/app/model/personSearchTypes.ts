@@ -1,6 +1,6 @@
 import { SearchPersonCredit } from '@ajgifford/keepwatching-types';
 
-export interface PersonDetails {
+export interface PersonSearchDetails {
   id: number;
   name: string;
   profileImage: string;
