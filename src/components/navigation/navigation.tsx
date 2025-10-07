@@ -50,6 +50,7 @@ function Navigation() {
 
   const handleProfileSwitch = (accountId: number, profileId: number) => {
     dispatch(setActiveProfile({ accountId, profileId }));
+    navigate('/home');
     handleProfileMenuClose();
   };
 
