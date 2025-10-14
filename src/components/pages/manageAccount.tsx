@@ -6,6 +6,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Box,
   Button,
@@ -15,12 +16,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControlLabel,
   IconButton,
   Menu,
   MenuItem,
   Stack,
-  Switch,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -35,7 +34,6 @@ import {
   verifyEmail,
 } from '../../app/slices/accountSlice';
 import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../app/slices/activeProfileSlice';
-import { selectPreferences, updateEmailPreferences } from '../../app/slices/preferencesSlice';
 import {
   addProfile,
   deleteProfile,
@@ -44,8 +42,8 @@ import {
   selectProfileById,
 } from '../../app/slices/profilesSlice';
 import NameEditDialog from '../common/account/nameEditDialog';
+import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
-import { ThemeToggle } from '../common/account/themeToggle';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { getAccountImageUrl } from '../utility/imageUtils';
@@ -55,7 +53,6 @@ import { getAuth } from 'firebase/auth';
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount)!;
-  const preferences = useAppSelector(selectPreferences);
   const profiles = useAppSelector(selectAllProfiles);
   const activeProfile = useAppSelector(selectActiveProfile)!;
   const lastUpdated = useAppSelector(selectLastUpdated);
@@ -67,10 +64,8 @@ const ManageAccount = () => {
   const [nameDialogTitle, setNameDialogTitle] = useState('');
   const [currentName, setCurrentName] = useState('');
   const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
-  const [emailPreferences, setEmailPreferences] = useState({
-    weeklyDigest: preferences.email?.weeklyDigest ?? true,
-  });
   const [changingActiveProfile, setChangingActiveProfile] = useState<number | null>(null);
+  const [preferencesDialogOpen, setPreferencesDialogOpen] = useState<boolean>(false);
   const [profileStatsDialogOpen, setProfileStatsDialogOpen] = useState<boolean>(false);
   const [profileStatsDialogTitle, setProfileStatsDialogTitle] = useState<string>('');
   const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<number>(0);
@@ -116,18 +111,6 @@ const ManageAccount = () => {
         })
       );
     });
-  };
-
-  const handleEmailPreferenceChange = async (preference: keyof typeof emailPreferences, value: boolean) => {
-    const newPreferences = { ...emailPreferences, [preference]: value };
-    setEmailPreferences(newPreferences);
-
-    await dispatch(
-      updateEmailPreferences({
-        accountId: account.id,
-        emailPreferences: newPreferences,
-      })
-    );
   };
 
   const handleViewAccountStatistics = () => {
@@ -334,6 +317,11 @@ const ManageAccount = () => {
                 <QueryStatsIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
+            <Tooltip title="Preferences" placement="top">
+              <IconButton size="small" onClick={() => setPreferencesDialogOpen(true)} color="primary">
+                <SettingsIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Email: <i>{account.email}</i>{' '}
@@ -347,29 +335,6 @@ const ManageAccount = () => {
               {user?.emailVerified ? '(Email Verified)' : '(Verify Email)'}
             </Button>
           </Typography>
-          <Typography variant="subtitle1" color="primary" gutterBottom>
-            Email Preferences:
-          </Typography>
-          <Box sx={{ ml: 2, mb: 1 }}>
-            <FormControlLabel
-              disabled={!user?.emailVerified}
-              control={
-                <Switch
-                  checked={emailPreferences.weeklyDigest}
-                  onChange={(e) => handleEmailPreferenceChange('weeklyDigest', e.target.checked)}
-                  color="primary"
-                />
-              }
-              label="Receive weekly digest emails"
-              sx={{
-                '& .MuiFormControlLabel-label': {
-                  color: 'primary.main',
-                  fontWeight: 500,
-                },
-              }}
-            />
-          </Box>
-          <ThemeToggle />
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Default Profile: <i>{defaultProfile.name}</i>
           </Typography>
@@ -424,6 +389,7 @@ const ManageAccount = () => {
         onClose={() => setNameDialogOpen(false)}
         onSave={onSaveCallback}
       />
+      <PreferencesDialog open={preferencesDialogOpen} onClose={() => setPreferencesDialogOpen(false)} />
       <ProfileStatisticsDialog
         open={profileStatsDialogOpen}
         title={profileStatsDialogTitle}
