@@ -193,16 +193,10 @@ function NotificationIconDropdown() {
         ref={anchorRef}
         onClick={handleToggle}
         sx={{
-          background: alpha('#ffffff', 0.1),
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
-          border: `1px solid ${alpha('#ffffff', 0.2)}`,
           color: theme.palette.primary.contrastText,
           transition: 'all 0.3s ease',
-          '&:hover': {
-            background: alpha('#ffffff', 0.2),
-            border: `1px solid ${alpha('#ffffff', 0.3)}`,
-          },
         }}
       >
         <Badge badgeContent={unreadCount} color="error">
@@ -223,12 +217,9 @@ function NotificationIconDropdown() {
             sx={{
               width: 400,
               maxHeight: 500,
-              background: alpha('#ffffff', 0.95),
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
-              border: `1px solid ${alpha('#ffffff', 0.3)}`,
               borderRadius: 2,
-              boxShadow: `0 8px 32px ${alpha('#000000', 0.12)}`,
               overflow: 'hidden',
             }}
           >
@@ -282,7 +273,7 @@ function NotificationIconDropdown() {
                     width: 6,
                   },
                   '&::-webkit-scrollbar-track': {
-                    background: alpha('#000000', 0.05),
+                    background: alpha(theme.palette.divider, 0.2),
                   },
                   '&::-webkit-scrollbar-thumb': {
                     background: alpha(theme.palette.primary.main, 0.3),
@@ -302,7 +293,7 @@ function NotificationIconDropdown() {
                         sx={{
                           py: 1.5,
                           px: 2,
-                          background: isUnread ? alpha(theme.palette.primary.main, 0.08) : alpha('#ffffff', 0.3),
+                          background: isUnread ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
                           backdropFilter: 'blur(8px)',
                           WebkitBackdropFilter: 'blur(8px)',
                           borderLeft: isUnread ? `3px solid ${config.color}` : 'none',
@@ -320,10 +311,8 @@ function NotificationIconDropdown() {
                                 size="small"
                                 onClick={(e) => handleMarkRead(notification.id, isUnread, e)}
                                 sx={{
-                                  background: alpha('#ffffff', 0.3),
                                   backdropFilter: 'blur(8px)',
                                   WebkitBackdropFilter: 'blur(8px)',
-                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
                                   width: 28,
                                   height: 28,
                                   transition: 'all 0.2s ease',
@@ -353,10 +342,8 @@ function NotificationIconDropdown() {
                                 size="small"
                                 onClick={(e) => handleDismiss(notification.id, e)}
                                 sx={{
-                                  background: alpha('#ffffff', 0.3),
                                   backdropFilter: 'blur(8px)',
                                   WebkitBackdropFilter: 'blur(8px)',
-                                  border: `1px solid ${alpha('#ffffff', 0.2)}`,
                                   width: 28,
                                   height: 28,
                                   transition: 'all 0.2s ease',
@@ -482,7 +469,6 @@ function NotificationIconDropdown() {
                 sx={{
                   p: 4,
                   textAlign: 'center',
-                  background: alpha('#ffffff', 0.2),
                 }}
               >
                 <NotificationsIcon

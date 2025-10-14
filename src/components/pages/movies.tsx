@@ -110,9 +110,10 @@ const Movies = () => {
           position: 'sticky',
           top: 0,
           zIndex: 999,
-          backgroundColor: 'white',
+          backgroundColor: 'background.paper',
           padding: 2,
-          borderBottom: '1px solid #ddd',
+          borderBottom: 1,
+          borderColor: 'divider',
         }}
       >
         <Typography variant="h4" align="left">

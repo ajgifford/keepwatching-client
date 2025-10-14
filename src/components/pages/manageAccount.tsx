@@ -45,6 +45,7 @@ import {
 } from '../../app/slices/profilesSlice';
 import NameEditDialog from '../common/account/nameEditDialog';
 import { ProfileCard } from '../common/account/profileCard';
+import { ThemeToggle } from '../common/account/themeToggle';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { getAccountImageUrl } from '../utility/imageUtils';
@@ -368,6 +369,7 @@ const ManageAccount = () => {
               }}
             />
           </Box>
+          <ThemeToggle />
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Default Profile: <i>{defaultProfile.name}</i>
           </Typography>

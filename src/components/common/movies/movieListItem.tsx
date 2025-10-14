@@ -80,10 +80,10 @@ export const MovieListItem = (props: MovieListItemProps) => {
     <ListItem
       key={`listItem_${movie.id}`}
       alignItems="flex-start"
-      sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center' }}
+      sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center', gap: 2 }}
       onClick={() => navigate(`/movies/${movie.id}/${movie.profileId}`, { state: buildLinkState() })}
     >
-      <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
+      <ListItemAvatar sx={{ minWidth: 96, width: 96, height: 140, p: 0, m: 0 }}>
         <Avatar
           alt={movie.title}
           src={buildTMDBImagePath(movie.posterImage)}
@@ -91,7 +91,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
           sx={{ width: 96, height: 140 }}
         />
       </ListItemAvatar>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
         <ListItemText
           primary={movie.title}
           slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}

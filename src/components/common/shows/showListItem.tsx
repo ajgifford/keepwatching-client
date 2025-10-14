@@ -103,10 +103,10 @@ export const ShowListItem = (props: ShowListItemProps) => {
       <ListItem
         id={`showListItem_${show.id}`}
         alignItems="flex-start"
-        sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center' }}
+        sx={{ cursor: 'pointer', flexDirection: 'row', alignItems: 'center', gap: 2 }}
         onClick={() => navigate(`/shows/${show.id}/${show.profileId}`, { state: buildLinkState() })}
       >
-        <ListItemAvatar sx={{ width: 96, height: 140, p: 1 }}>
+        <ListItemAvatar sx={{ minWidth: 96, width: 96, height: 140, p: 0, m: 0 }}>
           <Avatar
             alt={show.title}
             src={buildTMDBImagePath(show.posterImage)}
@@ -114,7 +114,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
             sx={{ width: 96, height: 140 }}
           />
         </ListItemAvatar>
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
           <ListItemText
             primary={show.title}
             slotProps={{ primary: { variant: 'subtitle1' }, secondary: { variant: 'caption' } }}

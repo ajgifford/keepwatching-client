@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Container } from '@mui/material';
 
 import store from '../app/store';
+import { AppThemeProvider } from '../theme/ThemeProvider';
 import { Footer } from './common/footer';
 import { WebSocketProvider } from './common/webSocketProvider';
 import DefaultLayout from './navigation/defaultLayout';
@@ -46,39 +47,41 @@ function App() {
 
   return (
     <Provider store={store}>
-      <WebSocketProvider />
-      <div className="app-container">
-        <BrowserRouter>
-          <Navigation />
-          <ActivityNotificationBar />
-          <div className="content">
-            <Container maxWidth="xl" sx={{ p: 1 }}>
-              <Routes>
-                <Route element={<DefaultLayout />}>
-                  <Route path="/" element={<Default />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                </Route>
-                <Route element={<ProtectedLayout />}>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/shows" element={<Shows />} />
-                  <Route path="/shows/:showId/:profileId" element={<ShowDetails />} />
-                  <Route path="/movies" element={<Movies />} />
-                  <Route path="/movies/:movieId/:profileId" element={<MovieDetails />} />
-                  <Route path="/discover" element={<Discover />} />
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/manageAccount" element={<ManageAccount />} />
-                  <Route path="/person/:personId" element={<PersonDetails />} />
-                </Route>
-              </Routes>
-            </Container>
-          </div>
-        </BrowserRouter>
-        <footer className="footer">
-          <Footer />
-        </footer>
-      </div>
+      <AppThemeProvider>
+        <WebSocketProvider />
+        <div className="app-container">
+          <BrowserRouter>
+            <Navigation />
+            <ActivityNotificationBar />
+            <div className="content">
+              <Container maxWidth="xl" sx={{ p: 1 }}>
+                <Routes>
+                  <Route element={<DefaultLayout />}>
+                    <Route path="/" element={<Default />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                  </Route>
+                  <Route element={<ProtectedLayout />}>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/shows" element={<Shows />} />
+                    <Route path="/shows/:showId/:profileId" element={<ShowDetails />} />
+                    <Route path="/movies" element={<Movies />} />
+                    <Route path="/movies/:movieId/:profileId" element={<MovieDetails />} />
+                    <Route path="/discover" element={<Discover />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/manageAccount" element={<ManageAccount />} />
+                    <Route path="/person/:personId" element={<PersonDetails />} />
+                  </Route>
+                </Routes>
+              </Container>
+            </div>
+          </BrowserRouter>
+          <footer className="footer">
+            <Footer />
+          </footer>
+        </div>
+      </AppThemeProvider>
     </Provider>
   );
 }

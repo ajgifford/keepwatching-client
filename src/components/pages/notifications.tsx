@@ -241,11 +241,8 @@ const Notifications: React.FC = () => {
         sx={{
           mb: 3,
           p: 2,
-          background: alpha('#ffffff', 0.95),
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          border: `1px solid ${alpha('#ffffff', 0.3)}`,
-          boxShadow: `0 8px 32px ${alpha('#000000', 0.12)}`,
         }}
       >
         <Grid container spacing={2} alignItems="center">
@@ -265,7 +262,7 @@ const Notifications: React.FC = () => {
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  background: alpha('#ffffff', 0.8),
+                  backgroundColor: 'background.paper',
                 },
               }}
             />
@@ -278,7 +275,7 @@ const Notifications: React.FC = () => {
                 label="Filter"
                 onChange={(e) => setFilter(e.target.value as FilterType)}
                 sx={{
-                  background: alpha('#ffffff', 0.8),
+                  backgroundColor: 'background.paper',
                 }}
               >
                 <MenuItem value="all">All Notifications</MenuItem>
@@ -321,11 +318,8 @@ const Notifications: React.FC = () => {
       {/* Notifications List */}
       <Card
         sx={{
-          background: alpha('#ffffff', 0.95),
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          border: `1px solid ${alpha('#ffffff', 0.3)}`,
-          boxShadow: `0 8px 32px ${alpha('#000000', 0.12)}`,
           overflow: 'hidden',
         }}
       >
@@ -361,10 +355,8 @@ const Notifications: React.FC = () => {
                             size="small"
                             onClick={() => handleMarkAsRead(notification.id, isUnread)}
                             sx={{
-                              background: alpha('#ffffff', 0.3),
                               backdropFilter: 'blur(8px)',
                               WebkitBackdropFilter: 'blur(8px)',
-                              border: `1px solid ${alpha('#ffffff', 0.2)}`,
                               width: 32,
                               height: 32,
                               transition: 'all 0.2s ease',
@@ -392,10 +384,8 @@ const Notifications: React.FC = () => {
                             size="small"
                             onClick={() => handleDismiss(notification.id)}
                             sx={{
-                              background: alpha('#ffffff', 0.3),
                               backdropFilter: 'blur(8px)',
                               WebkitBackdropFilter: 'blur(8px)',
-                              border: `1px solid ${alpha('#ffffff', 0.2)}`,
                               width: 32,
                               height: 32,
                               transition: 'all 0.2s ease',
@@ -509,7 +499,6 @@ const Notifications: React.FC = () => {
             sx={{
               p: 6,
               textAlign: 'center',
-              background: alpha('#ffffff', 0.2),
             }}
           >
             <NotificationsIcon

@@ -60,13 +60,15 @@ export function SearchResultItem(props: SearchResultProps) {
   return (
     <ListItem
       key={searchResult.id}
-      alignItems="flex-start"
+      alignItems="center"
+      sx={{ gap: 2 }}
       secondaryAction={<FavoritesButton id={searchResult.id} searchType={props.searchType} />}
     >
-      <ListItemAvatar sx={{ width: 94, height: 140, p: 1 }}>
+      <ListItemAvatar sx={{ minWidth: 94, width: 94, height: 140, p: 0, m: 0, display: 'flex', alignItems: 'center' }}>
         <Avatar alt={searchResult.title} src={imageSrc} variant="rounded" sx={{ width: 94, height: 140 }} />
       </ListItemAvatar>
       <ListItemText
+        sx={{ minWidth: 0 }}
         primary={searchResult.title}
         secondary={
           <>
