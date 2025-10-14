@@ -1,4 +1,5 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { PersonCard } from '../person/personCard';
 import { ShowCast, ShowCastMember } from '@ajgifford/keepwatching-types';
@@ -17,7 +18,7 @@ interface ShowCastGridProps {
 const ShowCastGrid: React.FC<ShowCastGridProps> = ({ castMembers, emptyMessage, profileId }) => {
   if (!castMembers || castMembers.length === 0) {
     return (
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body1" color="text.secondary">
             {emptyMessage}
@@ -30,7 +31,7 @@ const ShowCastGrid: React.FC<ShowCastGridProps> = ({ castMembers, emptyMessage, 
   return (
     <>
       {castMembers.map((castMember) => (
-        <Grid item xs={12} md={6} key={castMember.personId}>
+        <Grid size={{ xs: 12, md: 6 }} key={castMember.personId}>
           <PersonCard person={castMember} returnPath={`/shows/${castMember.contentId}/${profileId}`} />
         </Grid>
       ))}

@@ -5,7 +5,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
-import { Box, Card, CardContent, Grid, Typography, alpha } from '@mui/material';
+import { Box, Card, CardContent, Typography, alpha } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { getProfileImageUrl } from '../../utility/imageUtils';
 import { Profile } from '@ajgifford/keepwatching-types';
@@ -187,7 +188,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
 
         {/* Stats Grid */}
         <Grid container spacing={2}>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <StatCard
               icon={<TvIcon />}
               value={showNotWatched + showWatching + showUnaired}
@@ -196,7 +197,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
               color="#FFE082"
             />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <StatCard
               icon={<CheckCircleIcon />}
               value={showWatched + showUpToDate}
@@ -205,7 +206,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
               color="#A5D6A7"
             />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <StatCard
               icon={<MovieIcon />}
               value={movieNotWatched + movieUnaired}
@@ -214,7 +215,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
               color="#FFAB91"
             />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <StatCard
               icon={<EmojiEventsIcon />}
               value={movieWatched}

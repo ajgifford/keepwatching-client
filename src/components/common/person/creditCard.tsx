@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Avatar, Card, CardContent, Chip, Grid, Rating, Stack, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, Chip, Rating, Stack, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { Credit, ShowCredit } from '@ajgifford/keepwatching-types';
@@ -21,7 +22,7 @@ export const CreditCard = <T extends Credit = Credit>({ credit }: CreditCardProp
     <Card variant="outlined" sx={{ height: '100%' }}>
       <CardContent sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-          <Grid item xs={4} md={2}>
+          <Grid size={{ xs: 4, md: 2 }}>
             <Avatar
               src={buildTMDBImagePath(credit.poster, 'w92')}
               alt={credit.name}
@@ -35,7 +36,7 @@ export const CreditCard = <T extends Credit = Credit>({ credit }: CreditCardProp
               }}
             />
           </Grid>
-          <Grid item xs={8} md={10}>
+          <Grid size={{ xs: 8, md: 10 }}>
             <Stack spacing={1} sx={{ height: '100%' }}>
               <Typography
                 variant="subtitle1"

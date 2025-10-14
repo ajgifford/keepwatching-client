@@ -1,4 +1,5 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
@@ -85,7 +86,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
     <Box sx={{ mt: 2 }}>
       <Grid container spacing={2}>
         {nextEpisodes.map((episode) => (
-          <Grid item xs={12} sm={6} md={4} key={`next-episode-${episode.episodeId}`}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={`next-episode-${episode.episodeId}`}>
             <EpisodeCard
               key={`episode-${show.id}-${episode.seasonNumber}-${episode.episodeNumber}`}
               episode={episode}

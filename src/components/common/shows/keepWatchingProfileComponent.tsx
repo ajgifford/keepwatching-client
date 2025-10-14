@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Stack, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
@@ -54,7 +55,7 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: number 
   return (
     <Grid container spacing={2}>
       {sortedShows.map((show) => (
-        <Grid item xs={12} sm={6} lg={4} key={`show-grid-${show.showId}`}>
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={`show-grid-${show.showId}`}>
           <ShowWithEpisodes show={show} profileId={profileId} />
         </Grid>
       ))}

@@ -1,4 +1,5 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import StatisticsProgressBar from './statisticsProgressBar';
 
@@ -26,7 +27,7 @@ const StatisticsSummaryCard = ({
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
       <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>
             {progressLabel}
           </Typography>
@@ -38,7 +39,7 @@ const StatisticsSummaryCard = ({
             height={10}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
             {stats.map((stat, index) => (
               <Box key={index} sx={{ textAlign: 'center' }}>

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
-import { Box, Card, CardContent, CircularProgress, Container, Grid, Typography } from '@mui/material';
+import { Box, Card, CardContent, CircularProgress, Container, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import DistributionBarChart from './distributionBarChart';
 import DistributionPieChart from './distributionPieChart';
@@ -63,7 +64,7 @@ export default function BaseStatisticsDashboard({
       {summaryCardProps && <StatisticsSummaryCard {...summaryCardProps} />}
 
       <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -74,7 +75,7 @@ export default function BaseStatisticsDashboard({
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -91,7 +92,7 @@ export default function BaseStatisticsDashboard({
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>

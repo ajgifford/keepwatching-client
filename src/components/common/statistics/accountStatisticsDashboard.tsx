@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
-import { Divider, Grid, Typography } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import ContentBreakdownCard from './contentBreakdownCard';
@@ -24,7 +25,7 @@ export default function AccountStatisticsDashboard({ statistics, isLoading = fal
 
     return (
       <>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <ContentBreakdownCard
             title="Content Breakdown"
             items={[
@@ -50,7 +51,7 @@ export default function AccountStatisticsDashboard({ statistics, isLoading = fal
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <ContentSummaryCard title="Content Distribution Across Profiles">
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               {statistics.profileCount} active profiles with {statistics.uniqueContent.showCount} unique shows and{' '}

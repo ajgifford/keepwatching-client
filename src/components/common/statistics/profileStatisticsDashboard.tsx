@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import ShowProgressCard from './showProgressCard';
@@ -21,7 +21,7 @@ export default function ProfileStatisticsDashboard({ statistics, isLoading = fal
     if (!statistics) return null;
 
     return (
-      <Grid item xs={12} md={6}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <ShowProgressCard
           title="Active Shows Progress"
           shows={statistics.episodeWatchProgress.showsProgress}

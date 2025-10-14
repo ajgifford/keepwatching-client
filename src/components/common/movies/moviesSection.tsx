@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 
 import MovieIcon from '@mui/icons-material/Movie';
 import UpcomingIcon from '@mui/icons-material/Upcoming';
-import { Box, Chip, Grid, Typography, useTheme } from '@mui/material';
+import { Box, Chip, Typography, useTheme } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { MovieCard } from './movieCard';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';
@@ -51,7 +52,7 @@ interface MovieGridProps {
 const MovieGrid: React.FC<MovieGridProps> = ({ movies, emptyMessage }) => {
   if (!movies || movies.length === 0) {
     return (
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body1" color="text.secondary">
             {emptyMessage}
@@ -64,7 +65,7 @@ const MovieGrid: React.FC<MovieGridProps> = ({ movies, emptyMessage }) => {
   return (
     <>
       {movies.map((movie) => (
-        <Grid item xs={12} md={6} key={movie.id}>
+        <Grid size={{ xs: 12, md: 6 }} key={movie.id}>
           <MovieCard movie={movie} />
         </Grid>
       ))}
