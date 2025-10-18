@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ajgifford/keepwatching-types": "^0.5.0",
+    "@ajgifford/keepwatching-types": "^0.6.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^6.2.0",
