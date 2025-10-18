@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
-import { logout } from './accountSlice';
+import { deleteAccount, logout } from './accountSlice';
 import { updateMovieWatchStatus } from './activeProfileSlice';
 import {
   CastMember,
@@ -70,6 +70,9 @@ const activeMovieSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
+        return initialState;
+      })
+      .addCase(deleteAccount.fulfilled, () => {
         return initialState;
       })
       .addCase(fetchMovieWithDetails.pending, (state) => {

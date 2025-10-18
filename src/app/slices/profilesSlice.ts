@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
-import { logout } from './accountSlice';
+import { deleteAccount, logout } from './accountSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { Profile, ProfileResponse, ProfilesResponse } from '@ajgifford/keepwatching-types';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
@@ -255,6 +255,10 @@ const profileSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
+        localStorage.removeItem(PROFILE_KEY);
+        return profilesAdapter.getInitialState(calculateInitialState());
+      })
+      .addCase(deleteAccount.fulfilled, () => {
         localStorage.removeItem(PROFILE_KEY);
         return profilesAdapter.getInitialState(calculateInitialState());
       })

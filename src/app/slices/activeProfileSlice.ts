@@ -2,7 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { generateGenreFilterValues, generateStreamingServiceFilterValues } from '../constants/filters';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
-import { logout } from './accountSlice';
+import { deleteAccount, logout } from './accountSlice';
 import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
@@ -495,6 +495,10 @@ const activeProfileSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
+        localStorage.removeItem(ACTIVE_PROFILE_KEY);
+        return blankState;
+      })
+      .addCase(deleteAccount.fulfilled, () => {
         localStorage.removeItem(ACTIVE_PROFILE_KEY);
         return blankState;
       })

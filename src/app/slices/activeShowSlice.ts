@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
-import { logout } from './accountSlice';
+import { deleteAccount, logout } from './accountSlice';
 import { updateNextEpisodeWatchStatus, updateShowWatchStatus } from './activeProfileSlice';
 import {
   KeepWatchingShow,
@@ -248,6 +248,9 @@ const activeShowSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
+        return initialState;
+      })
+      .addCase(deleteAccount.fulfilled, () => {
         return initialState;
       })
       .addCase(fetchShowWithDetails.pending, (state) => {

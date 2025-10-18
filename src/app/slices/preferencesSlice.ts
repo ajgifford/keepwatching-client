@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
-import { logout } from './accountSlice';
+import { deleteAccount, logout } from './accountSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import {
   AccountPreferences,
@@ -167,6 +167,10 @@ const preferencesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
+        localStorage.removeItem(PREFERENCES_KEY);
+        return initialState;
+      })
+      .addCase(deleteAccount.fulfilled, () => {
         localStorage.removeItem(PREFERENCES_KEY);
         return initialState;
       })

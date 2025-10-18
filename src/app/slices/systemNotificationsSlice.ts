@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
-import { logout } from './accountSlice';
+import { deleteAccount, logout } from './accountSlice';
 import { AccountNotification, NotificationResponse } from '@ajgifford/keepwatching-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -152,6 +152,10 @@ const systemNotificationSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
+        localStorage.removeItem(SYSTEM_NOTIFICATIONS_KEY);
+        return initialState;
+      })
+      .addCase(deleteAccount.fulfilled, () => {
         localStorage.removeItem(SYSTEM_NOTIFICATIONS_KEY);
         return initialState;
       })
