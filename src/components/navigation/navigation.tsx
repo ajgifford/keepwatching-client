@@ -1,8 +1,14 @@
 import { useState } from 'react';
-import { FaBars, FaCompass, FaFilm, FaHome, FaSearch, FaTv, FaUser } from 'react-icons/fa';
-import { LuLogOut } from 'react-icons/lu';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
+import ExploreIcon from '@mui/icons-material/Explore';
+import HomeIcon from '@mui/icons-material/Home';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import MovieIcon from '@mui/icons-material/Movie';
+import PersonIcon from '@mui/icons-material/Person';
+import SearchIcon from '@mui/icons-material/Search';
+import TvIcon from '@mui/icons-material/Tv';
 import {
   AppBar,
   Avatar,
@@ -160,12 +166,12 @@ function Navigation() {
 
             {/* Account management section */}
             <MenuItem onClick={handleManageAccount}>
-              <FaUser style={{ marginRight: 8, fontSize: '16px' }} />
+              <PersonIcon style={{ marginRight: 8, fontSize: '16px' }} />
               Manage Account
             </MenuItem>
 
             <MenuItem onClick={handleLogout}>
-              <LuLogOut style={{ marginRight: 8, fontSize: '16px' }} />
+              <LogoutIcon style={{ marginRight: 8, fontSize: '16px' }} />
               Logout
             </MenuItem>
           </Menu>
@@ -177,21 +183,21 @@ function Navigation() {
 
   // Updated navigation items - removed 'manageAccount' since it's now in profile menu
   const navigationItems = [
-    { id: 'home', label: 'Home', icon: <FaHome className="icon" />, to: '/home' },
+    { id: 'home', label: 'Home', icon: <HomeIcon className="icon" />, to: '/home' },
     {
       id: 'shows',
       label: 'Shows',
-      icon: <FaTv className="icon" />,
+      icon: <TvIcon className="icon" />,
       to: '/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING',
     },
     {
       id: 'movies',
       label: 'Movies',
-      icon: <FaFilm className="icon" />,
+      icon: <MovieIcon className="icon" />,
       to: '/movies?watchStatus=UNAIRED%2CNOT_WATCHED',
     },
-    { id: 'discover', label: 'Discover', icon: <FaCompass className="icon" />, to: '/discover' },
-    { id: 'search', label: 'Search', icon: <FaSearch className="icon" />, to: '/search' },
+    { id: 'discover', label: 'Discover', icon: <ExploreIcon className="icon" />, to: '/discover' },
+    { id: 'search', label: 'Search', icon: <SearchIcon className="icon" />, to: '/search' },
   ];
 
   const renderNavigationButtons = () => {
@@ -266,7 +272,7 @@ function Navigation() {
                   aria-label="menu"
                   onClick={handleMobileMenuOpen}
                 >
-                  <FaBars />
+                  <MenuIcon />
                 </IconButton>
 
                 {renderMobileMenu()}

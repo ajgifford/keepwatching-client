@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
@@ -267,7 +268,7 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
                     onClick={() => handleSortChange(undefined, sortOrder === 'asc' ? 'desc' : 'asc')}
                     color="primary"
                   >
-                    {sortOrder === 'asc' ? <FaSortAmountUp /> : <FaSortAmountDown />}
+                    {sortOrder === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
                   </IconButton>
                 </Tooltip>
               )}

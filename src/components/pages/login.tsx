@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { FaGoogle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
+import GoogleIcon from '@mui/icons-material/Google';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import {
   Avatar,
@@ -111,7 +111,7 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
-              id="logisPasswordText"
+              id="loginPasswordText"
               name="password"
               label="Password"
               type="password"
@@ -130,7 +130,7 @@ const Login = () => {
               <Button variant="outlined" startIcon={<HowToRegIcon />} component={Link} to={`/register`}>
                 No Account? Register
               </Button>
-              <Button variant="outlined" startIcon={<FaGoogle />} onClick={handleGoogleSignIn}>
+              <Button variant="outlined" startIcon={<GoogleIcon />} onClick={handleGoogleSignIn}>
                 Sign In/Register with Google
               </Button>
             </Grid>
