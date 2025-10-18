@@ -22,7 +22,7 @@ module.exports = {
       typescript: {},
     },
   },
-  extends: ['react-app', 'react-app/jest', 'plugin:@typescript-eslint/recommended', 'prettier'],
+  extends: ['react-app', 'react-app/jest', 'prettier'],
   rules: {
     // General rules
     'no-console': ['warn', { allow: ['error', 'warn', 'info'] }],
