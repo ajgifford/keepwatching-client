@@ -448,6 +448,49 @@ export const updateAccount = createAsyncThunk<
   }
 );
 
+export const deleteAccount = createAsyncThunk<void, { accountId: number }, { rejectValue: ApiErrorResponse }>(
+  'account/delete',
+  async ({ accountId }: { accountId: number }, { dispatch, rejectWithValue }) => {
+    try {
+      const response: AxiosResponse<AccountResponse> = await axiosInstance.delete(`/accounts/${accountId}`);
+
+      // Sign out from Firebase
+      await signOut(auth);
+
+      // Clear local storage
+      localStorage.removeItem(ACCOUNT_KEY);
+
+      dispatch(
+        showActivityNotification({
+          message: response.data.message || 'Account deleted successfully',
+          type: ActivityNotificationType.Success,
+        })
+      );
+
+      return;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const errorResponse = error.response.data;
+        dispatch(
+          showActivityNotification({
+            message: errorResponse.message,
+            type: ActivityNotificationType.Error,
+          })
+        );
+        return rejectWithValue(errorResponse);
+      }
+      dispatch(
+        showActivityNotification({
+          message: 'An error occurred deleting the account',
+          type: ActivityNotificationType.Error,
+        })
+      );
+      console.error(error);
+      return rejectWithValue({ message: 'Delete Account: Unexpected Error' });
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -544,6 +587,19 @@ const authSlice = createSlice({
       .addCase(updateAccount.rejected, (state, action) => {
         state.loading = true;
         state.error = action.payload || { message: 'Account Update Failed' };
+      })
+      .addCase(deleteAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAccount.fulfilled, (state) => {
+        state.loading = false;
+        state.account = null;
+        state.error = null;
+      })
+      .addCase(deleteAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Account Deletion Failed' };
       });
   },
 });

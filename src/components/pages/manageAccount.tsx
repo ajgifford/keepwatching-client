@@ -20,6 +20,7 @@ import {
   Menu,
   MenuItem,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -27,6 +28,7 @@ import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
+  deleteAccount,
   removeAccountImage,
   selectCurrentAccount,
   updateAccount,
@@ -74,6 +76,8 @@ const ManageAccount = () => {
   const [accountImageMenuAnchor, setAccountImageMenuAnchor] = useState<null | HTMLElement>(null);
   const [isAccountImageHovered, setIsAccountImageHovered] = useState(false);
   const [isRemovingAccountImage, setIsRemovingAccountImage] = useState(false);
+  const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState<boolean>(false);
+  const [deleteAccountConfirmationText, setDeleteAccountConfirmationText] = useState<string>('');
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -199,6 +203,25 @@ const ManageAccount = () => {
     }
   };
 
+  const handleDeleteAccountButton = () => {
+    setDeleteAccountDialogOpen(true);
+    setDeleteAccountConfirmationText('');
+  };
+
+  const handleCloseDeleteAccountDialog = () => {
+    setDeleteAccountDialogOpen(false);
+    setDeleteAccountConfirmationText('');
+  };
+
+  const handleConfirmDeleteAccount = async () => {
+    if (deleteAccountConfirmationText === account.name) {
+      await dispatch(deleteAccount({ accountId: account.id }));
+      handleCloseDeleteAccountDialog();
+    }
+  };
+
+  const isDeleteConfirmationValid = deleteAccountConfirmationText === account.name;
+
   const hasCustomAccountImage = account.image && !account.image.includes('placehold.co');
 
   return (
@@ -322,6 +345,11 @@ const ManageAccount = () => {
                 <SettingsIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
+            <Tooltip title="Delete Account" placement="top">
+              <IconButton size="small" onClick={handleDeleteAccountButton} color="error">
+                <DeleteForeverIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Email: <i>{account.email}</i>{' '}
@@ -428,6 +456,55 @@ const ManageAccount = () => {
             autoFocus
           >
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Confirm Account Delete Dialog */}
+      <Dialog
+        open={deleteAccountDialogOpen}
+        onClose={handleCloseDeleteAccountDialog}
+        aria-labelledby="delete-account-dialog-title"
+        aria-describedby="delete-account-dialog-description"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="delete-account-dialog-title">Delete Account - {account.name}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-account-dialog-description" sx={{ mb: 2 }}>
+            Deleting your account will permanently remove all data, including all profiles and watch history. This
+            action cannot be undone.
+          </DialogContentText>
+          <DialogContentText sx={{ mb: 2 }}>
+            To confirm deletion, please type your account name: <strong>{account.name}</strong>
+          </DialogContentText>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Account Name"
+            value={deleteAccountConfirmationText}
+            onChange={(e) => setDeleteAccountConfirmationText(e.target.value)}
+            placeholder={account.name}
+            error={deleteAccountConfirmationText.length > 0 && !isDeleteConfirmationValid}
+            helperText={
+              deleteAccountConfirmationText.length > 0 && !isDeleteConfirmationValid
+                ? 'Account name does not match'
+                : ''
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteAccountDialog} variant="outlined" color="primary">
+            Cancel
+          </Button>
+          <Button
+            startIcon={<DeleteForeverIcon />}
+            onClick={handleConfirmDeleteAccount}
+            variant="contained"
+            color="error"
+            disabled={!isDeleteConfirmationValid}
+          >
+            Delete Account
           </Button>
         </DialogActions>
       </Dialog>
