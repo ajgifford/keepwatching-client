@@ -188,7 +188,7 @@ function Navigation() {
       id: 'shows',
       label: 'Shows',
       icon: <TvIcon className="icon" />,
-      to: '/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING',
+      to: '/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING%2CUP_TO_DATE',
     },
     {
       id: 'movies',

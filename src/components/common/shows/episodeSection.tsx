@@ -102,7 +102,7 @@ export const EpisodesSection: React.FC<EpisodesSectionProps> = ({ recentEpisodes
           title="Recent Episodes"
           subtitle="Aired last 7 days"
           color="primary"
-          linkTo="/shows?watchStatus=WATCHING"
+          linkTo="/shows?watchStatus=WATCHING%2CUP_TO_DATE"
         />
         <ScrollableRow emptyMessage="No recent episodes">
           {recentEpisodes.map((episode) => (
@@ -121,7 +121,7 @@ export const EpisodesSection: React.FC<EpisodesSectionProps> = ({ recentEpisodes
           title="Upcoming Episodes"
           subtitle="Airing next 7 days"
           color="info"
-          linkTo="/shows?watchStatus=WATCHING"
+          linkTo="/shows?watchStatus=WATCHING%2CUP_TO_DATE"
         />
         <ScrollableRow emptyMessage="No upcoming episodes">
           {upcomingEpisodes.map((episode) => (
