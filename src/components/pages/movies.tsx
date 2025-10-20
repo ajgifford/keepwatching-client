@@ -178,87 +178,85 @@ const Movies = () => {
         )}
       </Box>
       <Drawer id="moviesFilterDrawer" open={filterDrawerOpen} onClose={toggleDrawer(false)}>
-        {
-          <>
-            <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap sx={{ flexWrap: 'wrap', p: 2, width: 300 }}>
-              <Typography variant="h6" color="primary">
-                Movie Filters
-              </Typography>
-              <FormControl id="moviesFilterGenreControl" fullWidth>
-                <InputLabel id="moviesFilterGenreLabel" htmlFor="moviesFilterGenreSelect">
-                  Genre
-                </InputLabel>
-                <Select
-                  id="moviesFilterGenreSelect"
-                  value={genreFilter}
-                  onChange={(e) => {
-                    handleGenreChange(e.target.value);
-                  }}
-                >
-                  <MenuItem id="moviesFilterGenre_all" key="genresFilter_all" value="">
-                    --All--
+        <>
+          <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap sx={{ flexWrap: 'wrap', p: 2, width: 300 }}>
+            <Typography variant="h6" color="primary">
+              Movie Filters
+            </Typography>
+            <FormControl id="moviesFilterGenreControl" fullWidth>
+              <InputLabel id="moviesFilterGenreLabel" htmlFor="moviesFilterGenreSelect">
+                Genre
+              </InputLabel>
+              <Select
+                id="moviesFilterGenreSelect"
+                value={genreFilter}
+                onChange={(e) => {
+                  handleGenreChange(e.target.value);
+                }}
+              >
+                <MenuItem id="moviesFilterGenre_all" key="genresFilter_all" value="">
+                  --All--
+                </MenuItem>
+                {genreFilterValues.map((genre) => (
+                  <MenuItem id={`moviesFilterGenre_${genre}`} key={genre} value={genre}>
+                    {genre}
                   </MenuItem>
-                  {genreFilterValues.map((genre) => (
-                    <MenuItem id={`moviesFilterGenre_${genre}`} key={genre} value={genre}>
-                      {genre}
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl id="moviesFilterStreamingServiceControl" fullWidth>
+              <InputLabel id="moviesFilterStreamingServiceLabel" htmlFor="moviesFilterStreamingServiceSelect">
+                Streaming Service
+              </InputLabel>
+              <Select
+                id="moviesFilterStreamingServiceSelect"
+                value={streamingServiceFilter}
+                onChange={(e) => handleStreamingServiceChange(e.target.value)}
+              >
+                <MenuItem id="moviesFilterStreamingService_all" key="streamingServicesFilter_all" value="">
+                  --All--
+                </MenuItem>
+                {streamingServiceFilterValues.map((service) => (
+                  <MenuItem id={`moviesFilterStreamingService_${service}`} key={service} value={service}>
+                    {service}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl id="moviesFilterWatchStatusControl" fullWidth>
+              <InputLabel id="moviesFilterWatchStatusLabel" htmlFor="moviesFilterWatchStatusSelect">
+                Watch Status
+              </InputLabel>
+              <Select
+                id="moviesFilterWatchStatusSelect"
+                multiple
+                value={watchStatusFilter}
+                onChange={(e) => handleWatchStatusChange(e.target.value as string[])}
+                renderValue={(selected) =>
+                  selected.map((s) => movieWatchStatuses.find((w) => w.value === s)?.display).join(', ')
+                }
+              >
+                {movieWatchStatuses
+                  .filter((status) => status.value !== '')
+                  .map((status) => (
+                    <MenuItem
+                      id={`moviesFilterWatchStatus_${status.value}`}
+                      key={`watchStatusFilter_${status.value}`}
+                      value={status.value}
+                    >
+                      <Checkbox checked={watchStatusFilter.includes(status.value)} />
+                      <ListItemText primary={status.display} />
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-              <FormControl id="moviesFilterStreamingServiceControl" fullWidth>
-                <InputLabel id="moviesFilterStreamingServiceLabel" htmlFor="moviesFilterStreamingServiceSelect">
-                  Streaming Service
-                </InputLabel>
-                <Select
-                  id="moviesFilterStreamingServiceSelect"
-                  value={streamingServiceFilter}
-                  onChange={(e) => handleStreamingServiceChange(e.target.value)}
-                >
-                  <MenuItem id="moviesFilterStreamingService_all" key="streamingServicesFilter_all" value="">
-                    --All--
-                  </MenuItem>
-                  {streamingServiceFilterValues.map((service) => (
-                    <MenuItem id={`moviesFilterStreamingService_${service}`} key={service} value={service}>
-                      {service}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl id="moviesFilterWatchStatusControl" fullWidth>
-                <InputLabel id="moviesFilterWatchStatusLabel" htmlFor="moviesFilterWatchStatusSelect">
-                  Watch Status
-                </InputLabel>
-                <Select
-                  id="moviesFilterWatchStatusSelect"
-                  multiple
-                  value={watchStatusFilter}
-                  onChange={(e) => handleWatchStatusChange(e.target.value as string[])}
-                  renderValue={(selected) =>
-                    selected.map((s) => movieWatchStatuses.find((w) => w.value === s)?.display).join(', ')
-                  }
-                >
-                  {movieWatchStatuses
-                    .filter((status) => status.value !== '')
-                    .map((status) => (
-                      <MenuItem
-                        id={`moviesFilterWatchStatus_${status.value}`}
-                        key={`watchStatusFilter_${status.value}`}
-                        value={status.value}
-                      >
-                        <Checkbox checked={watchStatusFilter.includes(status.value)} />
-                        <ListItemText primary={status.display} />
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-              <FormControl id="moviesFilterClearFilterControl">
-                <Button id="moviesFilterClearFiltersButton" key="clearFilterButton" onClick={() => clearFilters()}>
-                  Clear Filters
-                </Button>
-              </FormControl>
-            </Stack>
-          </>
-        }
+              </Select>
+            </FormControl>
+            <FormControl id="moviesFilterClearFilterControl">
+              <Button id="moviesFilterClearFiltersButton" key="clearFilterButton" onClick={() => clearFilters()}>
+                Clear Filters
+              </Button>
+            </FormControl>
+          </Stack>
+        </>
       </Drawer>
     </>
   );
