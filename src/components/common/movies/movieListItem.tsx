@@ -113,7 +113,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
                 <b>Streaming Service: </b> {movie.streamingServices}
                 <br />
                 <b>Release Date: </b>
-                {movie.releaseDate} • <b>Rated: </b> {movie.mpaRating}
+                {movie.releaseDate || 'TBD'} • <b>Rated: </b> {movie.mpaRating}
                 <br />
                 <b>Runtime: </b>
                 {calculateRuntimeDisplay(movie.runtime)}
