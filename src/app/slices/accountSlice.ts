@@ -126,7 +126,13 @@ export const register = createAsyncThunk<Account, NewAccountData, { rejectValue:
     try {
       userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.name });
-      await sendEmailVerification(userCredential.user);
+
+      // Send verification email with action code settings
+      const actionCodeSettings = {
+        url: window.location.origin + '/home', // Redirect to home after verification
+        handleCodeInApp: false,
+      };
+      await sendEmailVerification(userCredential.user, actionCodeSettings);
     } catch (error) {
       const errorMessage = getFirebaseAuthErrorMessage(
         error as FirebaseError,
@@ -378,7 +384,11 @@ export const verifyEmail = createAsyncThunk<void, User, { rejectValue: ApiErrorR
   'account/verifyEmail',
   async (user: User, { dispatch, rejectWithValue }) => {
     try {
-      await sendEmailVerification(user);
+      const actionCodeSettings = {
+        url: window.location.origin + '/home', // Redirect to home after verification
+        handleCodeInApp: false,
+      };
+      await sendEmailVerification(user, actionCodeSettings);
       dispatch(
         showActivityNotification({
           message: `Verification email sent`,
