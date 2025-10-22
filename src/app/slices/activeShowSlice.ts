@@ -123,7 +123,6 @@ export const updateEpisodeWatchStatus = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
       }
-      console.log('Error in updateEpisodeWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred updating an episode watch status' });
     }
   }
@@ -168,7 +167,6 @@ export const updateSeasonWatchStatus = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || { message: error.message });
       }
-      console.log('Error in updateSeasonWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred while updating a season watch status' });
     }
   }

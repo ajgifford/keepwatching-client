@@ -116,7 +116,6 @@ function ShowDetails() {
     return <LoadingComponent />;
   }
   if (showDetailsError) {
-    console.log(showDetailsError);
     return <ErrorComponent error={showDetailsError} />;
   }
 
@@ -483,11 +482,9 @@ function ShowDetails() {
                       Genres
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {show?.genres
-                        .split(',')
-                        .map((genre) => (
-                          <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
-                        ))}
+                      {show?.genres.split(',').map((genre) => (
+                        <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
+                      ))}
                     </Box>
                   </Grid>
 

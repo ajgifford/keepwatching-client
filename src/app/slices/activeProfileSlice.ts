@@ -277,7 +277,6 @@ export const updateShowWatchStatus = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      console.log('Error in updateShowWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred' });
     }
   }
@@ -389,7 +388,6 @@ export const updateMovieWatchStatus = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      console.log('Error in updateMovieWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred updating movie watch status' });
     }
   }
@@ -430,7 +428,6 @@ export const updateNextEpisodeWatchStatus = createAsyncThunk<
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
       }
-      console.log('Error in updateNextEpisodeWatchStatus', error);
       return rejectWithValue({ message: 'An unknown error occurred updating the next episode watch status' });
     }
   }
