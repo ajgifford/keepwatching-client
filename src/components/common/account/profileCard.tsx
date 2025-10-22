@@ -4,10 +4,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StarsIcon from '@mui/icons-material/Stars';
-import { Box, Button, CircularProgress, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Menu, MenuItem, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
@@ -36,14 +37,26 @@ export function ProfileCard({
   isLoading = false,
 }: PropTypes) {
   const dispatch = useAppDispatch();
-  const account = useAppSelector(selectCurrentAccount)!;
-  const activeProfile = useAppSelector(selectActiveProfile)!;
-  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.defaultProfileId));
+  const account = useAppSelector(selectCurrentAccount);
+  const activeProfile = useAppSelector(selectActiveProfile);
+  const defaultProfile = useAppSelector((state) =>
+    account ? selectProfileById(state, account.defaultProfileId) : undefined
+  );
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [imageMenuAnchor, setImageMenuAnchor] = useState<null | HTMLElement>(null);
   const [isRemovingImage, setIsRemovingImage] = useState(false);
+
+  if (!account || !activeProfile) {
+    return (
+      <Box sx={{ p: 2, border: '1px solid #f44336', minWidth: '250px', maxWidth: '300px', textAlign: 'center' }}>
+        <Alert severity="error" icon={<ErrorOutlineIcon />}>
+          Unable to load profile data
+        </Alert>
+      </Box>
+    );
+  }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -200,7 +213,7 @@ export function ProfileCard({
           onClick={() => {
             handleSetDefault(profile);
           }}
-          disabled={profile.id === defaultProfile.id}
+          disabled={profile.id === defaultProfile?.id}
         >
           Set Default
         </Button>
@@ -228,7 +241,7 @@ export function ProfileCard({
           onClick={() => {
             handleDelete(profile);
           }}
-          disabled={profile.id === defaultProfile.id}
+          disabled={profile.id === defaultProfile?.id}
         >
           Delete
         </Button>

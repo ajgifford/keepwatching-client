@@ -109,10 +109,10 @@ export const fetchPersonDetails = createAsyncThunk(
       // Process all credits
       [...castCredits, ...crewCredits].forEach((credit) => {
         const key = `${credit.tmdbId}-${credit.mediaType}`;
+        const existing = creditMap.get(key);
 
-        if (creditMap.has(key)) {
+        if (existing) {
           // Merge roles for the same movie/show
-          const existing = creditMap.get(key)!;
 
           // Collect all crew jobs (excluding character names)
           const existingJobs: string[] = [];
@@ -267,7 +267,7 @@ const personSearchSlice = createSlice({
     toggleDisambiguation: (state) => {
       state.showDisambiguation = !state.showDisambiguation;
     },
-    clearPersonSearch: (state) => {
+    clearPersonSearch: () => {
       return { ...initialState };
     },
     resetPage: (state) => {

@@ -28,7 +28,7 @@ const Home = () => {
   const [tabValue, setTabValue] = useState(0);
   const activeProfileLoading = useAppSelector(selectActiveProfileLoading);
   const activeProfileError = useAppSelector(selectActiveProfileError);
-  const profile = useAppSelector(selectActiveProfile)!;
+  const profile = useAppSelector(selectActiveProfile);
   const upcomingEpisodes = useAppSelector(selectUpcomingEpisodes);
   const recentEpisodes = useAppSelector(selectRecentEpisodes);
   const recentMovieIds = useAppSelector(selectRecentMovies);
@@ -58,6 +58,10 @@ const Home = () => {
 
   if (activeProfileError) {
     return <ErrorComponent error={activeProfileError} />;
+  }
+
+  if (!profile) {
+    return <LoadingComponent />;
   }
 
   return (

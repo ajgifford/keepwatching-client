@@ -174,19 +174,18 @@ export const ShowListItem = (props: ShowListItemProps) => {
             identifier={`watchStatusTooltip_${show.id}`}
             title={getWatchStatusAction(show.watchStatus)}
             disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-            children={
-              <IconButton
-                key={`watchStatusIconButton_${show.id}`}
-                disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-                onClick={(event) => {
-                  handleWatchStatusChange();
-                  event.stopPropagation();
-                }}
-              >
-                <WatchStatusIcon status={show.watchStatus} />
-              </IconButton>
-            }
-          />
+          >
+            <IconButton
+              key={`watchStatusIconButton_${show.id}`}
+              disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+              onClick={(event) => {
+                handleWatchStatusChange();
+                event.stopPropagation();
+              }}
+            >
+              <WatchStatusIcon status={show.watchStatus} />
+            </IconButton>
+          </OptionalTooltipControl>
           {isUpdatingWatchStatus && (
             <CircularProgress
               size={24}

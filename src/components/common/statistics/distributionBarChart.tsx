@@ -19,7 +19,7 @@ const DistributionBarChart = ({ data, height = 300, color }: DistributionBarChar
   const leftMargin = Math.min(Math.max(30, maxLabelLength * 6), 120);
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={height}>
       <BarChart data={validData} layout="vertical" margin={{ top: 20, right: 30, left: leftMargin, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" />

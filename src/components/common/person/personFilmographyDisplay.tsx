@@ -179,7 +179,7 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
             <Typography variant="h6" gutterBottom>
               No movie credits found
             </Typography>
-            <Typography variant="body2">This person doesn't have any movie credits in our database.</Typography>
+            <Typography variant="body2">{`This person doesn't have any movie credits in our database.`}</Typography>
           </Box>
         )}
       </TabPanel>
@@ -226,7 +226,7 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
             <Typography variant="h6" gutterBottom>
               No TV credits found
             </Typography>
-            <Typography variant="body2">This person doesn't have any TV show credits in our database.</Typography>
+            <Typography variant="body2">{`This person doesn't have any TV show credits in our database.`}</Typography>
           </Box>
         )}
       </TabPanel>

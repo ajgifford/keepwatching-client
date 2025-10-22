@@ -46,6 +46,7 @@ import {
 import NameEditDialog from '../common/account/nameEditDialog';
 import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
+import { ErrorComponent } from '../common/errorComponent';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { getAccountImageUrl } from '../utility/imageUtils';
@@ -54,11 +55,13 @@ import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
-  const account = useAppSelector(selectCurrentAccount)!;
+  const account = useAppSelector(selectCurrentAccount);
   const profiles = useAppSelector(selectAllProfiles);
-  const activeProfile = useAppSelector(selectActiveProfile)!;
+  const activeProfile = useAppSelector(selectActiveProfile);
   const lastUpdated = useAppSelector(selectLastUpdated);
-  const defaultProfile = useAppSelector((state) => selectProfileById(state, account.defaultProfileId));
+  const defaultProfile = useAppSelector((state) =>
+    account ? selectProfileById(state, account.defaultProfileId) : null
+  );
 
   const [deleteProfileDialogOpen, setDeleteProfileDialogOpen] = useState<boolean>(false);
   const [managedProfile, setManagedProfile] = useState<Profile | null>();
@@ -84,9 +87,18 @@ const ManageAccount = () => {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Handle case where account or activeProfile is not loaded
+  if (!account || !activeProfile) {
+    return <ErrorComponent error="Account or profile data could not be loaded. Please try refreshing the page." />;
+  }
+
+  // Create non-null references for use in closures
+  const safeAccount = account;
+  const safeActiveProfile = activeProfile;
+
   const handleAddProfileButton = () => {
     openNameDialog('Add Profile', '', async (newName) => {
-      await dispatch(addProfile({ accountId: account.id, newProfileName: newName }));
+      await dispatch(addProfile({ accountId: safeAccount.id, newProfileName: newName }));
     });
   };
 
@@ -101,24 +113,24 @@ const ManageAccount = () => {
 
   const handleEditProfileButton = (profile: Profile) => {
     openNameDialog('Edit Profile', profile.name, (newName) => {
-      dispatch(editProfile({ accountId: account.id, profileId: profile.id, name: newName }));
+      dispatch(editProfile({ accountId: safeAccount.id, profileId: profile.id, name: newName }));
     });
   };
 
   const handleEditAccountName = () => {
-    openNameDialog('Edit Account Name', account.name, (newName) => {
+    openNameDialog('Edit Account Name', safeAccount.name, (newName) => {
       dispatch(
         updateAccount({
-          account_id: account.id,
+          account_id: safeAccount.id,
           name: newName,
-          defaultProfileId: account.defaultProfileId,
+          defaultProfileId: safeAccount.defaultProfileId,
         })
       );
     });
   };
 
   const handleViewAccountStatistics = () => {
-    setAccountStatsDialogTitle(`${account.name}`);
+    setAccountStatsDialogTitle(`${safeAccount.name}`);
     setAccountStatsDialogOpen(true);
   };
 
@@ -132,7 +144,7 @@ const ManageAccount = () => {
   async function handleConfirmDeleteProfile() {
     if (managedProfile) {
       setDeleteProfileDialogOpen(false);
-      await dispatch(deleteProfile({ accountId: account.id, profileId: managedProfile.id }));
+      await dispatch(deleteProfile({ accountId: safeAccount.id, profileId: managedProfile.id }));
       setManagedProfile(null);
     }
   }
@@ -140,8 +152,8 @@ const ManageAccount = () => {
   async function handleSetDefaultProfile(profile: Profile) {
     await dispatch(
       updateAccount({
-        account_id: account.id,
-        name: account.name,
+        account_id: safeAccount.id,
+        name: safeAccount.name,
         defaultProfileId: profile.id,
       })
     );
@@ -150,7 +162,7 @@ const ManageAccount = () => {
   async function handleSetActiveProfile(profile: Profile) {
     setChangingActiveProfile(profile.id);
     try {
-      await dispatch(setActiveProfile({ accountId: account.id, profileId: profile.id }));
+      await dispatch(setActiveProfile({ accountId: safeAccount.id, profileId: profile.id }));
     } finally {
       setChangingActiveProfile(null);
     }
@@ -168,7 +180,7 @@ const ManageAccount = () => {
       return;
     }
     const file = files[0];
-    dispatch(updateAccountImage({ accountId: account.id, file }));
+    dispatch(updateAccountImage({ accountId: safeAccount.id, file }));
   };
 
   const handleAccountImageMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -191,7 +203,7 @@ const ManageAccount = () => {
     handleAccountImageMenuClose();
     setIsRemovingAccountImage(true);
     try {
-      await dispatch(removeAccountImage({ accountId: account.id }));
+      await dispatch(removeAccountImage({ accountId: safeAccount.id }));
     } finally {
       setIsRemovingAccountImage(false);
     }
@@ -214,15 +226,15 @@ const ManageAccount = () => {
   };
 
   const handleConfirmDeleteAccount = async () => {
-    if (deleteAccountConfirmationText === account.name) {
-      await dispatch(deleteAccount({ accountId: account.id }));
+    if (deleteAccountConfirmationText === safeAccount.name) {
+      await dispatch(deleteAccount({ accountId: safeAccount.id }));
       handleCloseDeleteAccountDialog();
     }
   };
 
-  const isDeleteConfirmationValid = deleteAccountConfirmationText === account.name;
+  const isDeleteConfirmationValid = deleteAccountConfirmationText === safeAccount.name;
 
-  const hasCustomAccountImage = account.image && !account.image.includes('placehold.co');
+  const hasCustomAccountImage = safeAccount.image && !safeAccount.image.includes('placehold.co');
 
   return (
     <>
@@ -247,8 +259,8 @@ const ManageAccount = () => {
             <Box
               crossOrigin="anonymous"
               component="img"
-              src={getAccountImageUrl(account.image)}
-              alt={account.name}
+              src={getAccountImageUrl(safeAccount.image)}
+              alt={safeAccount.name}
               referrerPolicy="no-referrer"
               sx={{
                 width: '100%',
@@ -329,7 +341,7 @@ const ManageAccount = () => {
           }}
         >
           <Typography variant="h3" gutterBottom sx={{ mb: '5px', display: 'flex', alignItems: 'center', gap: 1 }}>
-            {account.name}
+            {safeAccount.name}
             <Tooltip title="Edit Account Name" placement="top">
               <IconButton size="small" onClick={handleEditAccountName} color="primary">
                 <EditIcon fontSize="inherit" />
@@ -352,7 +364,7 @@ const ManageAccount = () => {
             </Tooltip>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Email: <i>{account.email}</i>{' '}
+            Email: <i>{safeAccount.email}</i>{' '}
             <Button
               color="primary"
               size="small"
@@ -364,10 +376,10 @@ const ManageAccount = () => {
             </Button>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Default Profile: <i>{defaultProfile.name}</i>
+            Default Profile: <i>{defaultProfile?.name}</i>
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
-            Active Profile: <i>{activeProfile.name}</i>{' '}
+            Active Profile: <i>{safeActiveProfile.name}</i>{' '}
           </Typography>
           {lastUpdated && (
             <Typography variant="subtitle1" color="primary" gutterBottom>
@@ -421,14 +433,14 @@ const ManageAccount = () => {
       <ProfileStatisticsDialog
         open={profileStatsDialogOpen}
         title={profileStatsDialogTitle}
-        accountId={account.id}
+        accountId={safeAccount.id}
         profileId={profileStatsDialogProfileId}
         onClose={() => setProfileStatsDialogOpen(false)}
       />
       <AccountStatisticsDialog
         open={accountStatsDialogOpen}
         title={accountStatsDialogTitle}
-        accountId={account.id}
+        accountId={safeAccount.id}
         onClose={() => setAccountStatsDialogOpen(false)}
       />
       {/* Confirm Profile Delete Dialog */}
@@ -469,14 +481,14 @@ const ManageAccount = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle id="delete-account-dialog-title">Delete Account - {account.name}</DialogTitle>
+        <DialogTitle id="delete-account-dialog-title">Delete Account - {safeAccount.name}</DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-account-dialog-description" sx={{ mb: 2 }}>
             Deleting your account will permanently remove all data, including all profiles and watch history. This
             action cannot be undone.
           </DialogContentText>
           <DialogContentText sx={{ mb: 2 }}>
-            To confirm deletion, please type your account name: <strong>{account.name}</strong>
+            To confirm deletion, please type your account name: <strong>{safeAccount.name}</strong>
           </DialogContentText>
           <TextField
             autoFocus
@@ -484,7 +496,7 @@ const ManageAccount = () => {
             label="Account Name"
             value={deleteAccountConfirmationText}
             onChange={(e) => setDeleteAccountConfirmationText(e.target.value)}
-            placeholder={account.name}
+            placeholder={safeAccount.name}
             error={deleteAccountConfirmationText.length > 0 && !isDeleteConfirmationValid}
             helperText={
               deleteAccountConfirmationText.length > 0 && !isDeleteConfirmationValid

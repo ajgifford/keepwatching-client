@@ -407,7 +407,7 @@ function ShowDetails() {
                 <Button
                   variant="contained"
                   disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
-                  onClick={(event) => handleShowWatchStatusChange(show!, event)}
+                  onClick={(event) => show && handleShowWatchStatusChange(show, event)}
                   startIcon={
                     loadingShowWatchStatus ? (
                       <CircularProgress size={20} color="inherit" />
@@ -505,7 +505,7 @@ function ShowDetails() {
                         Watch Status
                       </Typography>
                       <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <WatchStatusIcon status={show?.watchStatus!} fontSize="small" />
+                        <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} fontSize="small" />
                         {getWatchStatusDisplay(show?.watchStatus)}
                       </Typography>
                     </Box>
@@ -637,20 +637,19 @@ function ShowDetails() {
 
                         <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                           <OptionalTooltipControl
-                            identifier={`watchStatusTooltip_${show!.id}_${season.id}`}
+                            identifier={`watchStatusTooltip_${show?.id || 0}_${season.id}`}
                             title={getWatchStatusAction(season.watchStatus)}
                             disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
-                            children={
-                              <IconButton
-                                onClick={(event) => handleSeasonWatchStatusChange(season, event)}
-                                disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
-                                size="medium"
-                                sx={{ my: 'auto' }}
-                              >
-                                <WatchStatusIcon status={season.watchStatus} />
-                              </IconButton>
-                            }
-                          ></OptionalTooltipControl>
+                          >
+                            <IconButton
+                              onClick={(event) => handleSeasonWatchStatusChange(season, event)}
+                              disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
+                              size="medium"
+                              sx={{ my: 'auto' }}
+                            >
+                              <WatchStatusIcon status={season.watchStatus} />
+                            </IconButton>
+                          </OptionalTooltipControl>
                           {loadingSeasons[season.id] && (
                             <CircularProgress
                               size={24}
@@ -735,21 +734,18 @@ function ShowDetails() {
 
                                   <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 }, ml: { xs: 0, sm: 2 } }}>
                                     <OptionalTooltipControl
-                                      identifier={`watchStatusTooltip_${show!.id}_${season.id}_${episode.id}`}
+                                      identifier={`watchStatusTooltip_${show?.id || 0}_${season.id}_${episode.id}`}
                                       title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}
                                       disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
-                                      children={
-                                        <IconButton
-                                          color={watchedEpisodes[episode.id] ? 'success' : 'default'}
-                                          onClick={() => handleEpisodeWatchStatusChange(episode)}
-                                          disabled={
-                                            loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)
-                                          }
-                                        >
-                                          <WatchStatusIcon status={episode.watchStatus} />
-                                        </IconButton>
-                                      }
-                                    ></OptionalTooltipControl>
+                                    >
+                                      <IconButton
+                                        color={watchedEpisodes[episode.id] ? 'success' : 'default'}
+                                        onClick={() => handleEpisodeWatchStatusChange(episode)}
+                                        disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
+                                      >
+                                        <WatchStatusIcon status={episode.watchStatus} />
+                                      </IconButton>
+                                    </OptionalTooltipControl>
                                     {loadingEpisodes[episode.id] && (
                                       <CircularProgress
                                         size={24}
@@ -790,7 +786,7 @@ function ShowDetails() {
 
             {/* Cast Component */}
             <TabPanel value={tabValue} index={2}>
-              <ShowCastSection cast={cast} profileId={profileId!} />
+              {profileId && <ShowCastSection cast={cast} profileId={profileId} />}
             </TabPanel>
 
             {/* Related Content Component */}

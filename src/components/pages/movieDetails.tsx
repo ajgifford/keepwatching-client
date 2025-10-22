@@ -332,7 +332,7 @@ function MovieDetails() {
                 <Button
                   variant="contained"
                   disabled={loadingWatchStatus || movie?.watchStatus === WatchStatus.UNAIRED}
-                  onClick={(event) => handleMovieWatchStatusChange(movie!, event)}
+                  onClick={(event) => movie && handleMovieWatchStatusChange(movie, event)}
                   startIcon={
                     loadingWatchStatus ? (
                       <CircularProgress size={20} color="inherit" />
@@ -429,11 +429,9 @@ function MovieDetails() {
                   Genres
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {movie?.genres
-                    .split(',')
-                    .map((genre) => (
-                      <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
-                    ))}
+                  {movie?.genres.split(',').map((genre) => (
+                    <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
+                  ))}
                 </Box>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -471,7 +469,7 @@ function MovieDetails() {
 
             {/* Cast Component */}
             <TabPanel value={tabValue} index={0}>
-              <MovieCastSection castMembers={castMembers} profileId={profileId!} />
+              {profileId && <MovieCastSection castMembers={castMembers} profileId={profileId} />}
             </TabPanel>
 
             {/* Related Content Component */}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Button, ButtonGroup, useTheme } from '@mui/material';
+import { Box, Button, ButtonGroup, SxProps, Theme, useTheme } from '@mui/material';
 
 export interface SegmentedControlOption {
   value: string;
@@ -16,7 +16,7 @@ interface SegmentedControlProps {
   size?: 'small' | 'medium' | 'large';
   variant?: 'outlined' | 'contained';
   color?: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error';
-  sx?: any;
+  sx?: SxProps<Theme>;
 }
 
 export const SegmentedControl: React.FC<SegmentedControlProps> = ({

@@ -171,7 +171,7 @@ export default function PersonDetails() {
               zIndex: 1,
             }}
           >
-            <Tooltip title={'Back'}>
+            <Tooltip title="Back">
               <IconButton
                 aria-label="back"
                 onClick={() => {

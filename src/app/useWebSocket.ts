@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from './hooks';
 import { selectCurrentAccount } from './slices/accountSlice';
 import { reloadActiveProfile, reloadProfileEpisodes, updateAfterAddShowFavorite } from './slices/activeProfileSlice';
 import { updateNotifications } from './slices/systemNotificationsSlice';
+import { AccountNotification, ProfileShow } from '@ajgifford/keepwatching-types';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Socket, io } from 'socket.io-client';
 
@@ -30,7 +31,7 @@ export const useWebSocket = () => {
   }, [dispatch]);
 
   const handleUpdateShowFavorite = useCallback(
-    async (data: any) => {
+    async (data: { show: ProfileShow }) => {
       await dispatch(updateAfterAddShowFavorite(data.show));
       await dispatch(reloadProfileEpisodes());
     },
@@ -38,7 +39,7 @@ export const useWebSocket = () => {
   );
 
   const handleUpdateNotifications = useCallback(
-    async (data: any) => {
+    async (data: { notifications: AccountNotification[] }) => {
       await dispatch(updateNotifications(data.notifications));
     },
     [dispatch]

@@ -79,6 +79,7 @@ axiosInstance.interceptors.response.use(
       const retryDelay = delay + jitter;
 
       // Log retry information (consider using a proper logging system in production)
+      // eslint-disable-next-line no-console
       console.log(
         `Retrying request to ${config.url} (Attempt ${config._retryCount}/${retryConfig.retries}) after ${Math.round(retryDelay)}ms`
       );

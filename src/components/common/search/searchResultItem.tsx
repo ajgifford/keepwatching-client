@@ -33,7 +33,7 @@ export function SearchResultItem(props: SearchResultProps) {
       return (
         <>
           <b>{'Premieres: '}</b>
-          {'TBD'}
+          TBD
         </>
       );
     }

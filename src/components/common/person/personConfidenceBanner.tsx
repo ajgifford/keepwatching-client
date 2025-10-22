@@ -13,11 +13,7 @@ import {
 } from '../../../app/slices/personSearchSlice';
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 
-interface PersonConfidenceBannerProps {
-  onDismiss?: () => void;
-}
-
-export const PersonConfidenceBanner: React.FC<PersonConfidenceBannerProps> = ({ onDismiss }) => {
+export const PersonConfidenceBanner: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const query = useAppSelector(selectPersonSearchQuery);
@@ -164,7 +160,7 @@ export const PersonConfidenceBanner: React.FC<PersonConfidenceBannerProps> = ({ 
                   },
                 }}
               >
-                Not who you're looking for? See other {query}s
+                {`Not who you're looking for? See other ${query}s`}
               </Button>
 
               <Typography variant="caption" color="text.secondary">

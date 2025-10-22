@@ -28,7 +28,7 @@ export function Footer() {
           rel="noreferrer"
           href="https://ajgifford.github.io/keepwatching-doc/"
         >
-          User's Guide
+          {`User's Guide`}
         </a>
       </Typography>
       <br />

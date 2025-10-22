@@ -68,10 +68,10 @@ export function useStatisticsData(
 
 // Helper functions for statistics processing
 export function getTopCategory(statusCounts: Record<string, number | undefined>): string {
-  const entries = Object.entries(statusCounts).filter(([_, count]) => count !== undefined);
+  const entries = Object.entries(statusCounts).filter(([_, count]) => count !== undefined) as [string, number][];
   if (entries.length === 0) return 'not categorized';
 
-  const topEntry = entries.reduce((max, current) => (current[1]! > (max[1] || 0) ? current : max), ['', undefined]);
+  const topEntry = entries.reduce((max, current) => (current[1] > (max[1] || 0) ? current : max), ['', 0]);
 
   // Convert key to display name
   return topEntry[0] === 'watched'
@@ -86,10 +86,10 @@ export function getTopCategory(statusCounts: Record<string, number | undefined>)
 export function getTopCategoryPercentage(statusCounts: Record<string, number | undefined>, total: number): number {
   if (total === 0) return 0;
 
-  const entries = Object.entries(statusCounts).filter(([_, count]) => count !== undefined);
+  const entries = Object.entries(statusCounts).filter(([_, count]) => count !== undefined) as [string, number][];
   if (entries.length === 0) return 0;
 
-  const topEntry = entries.reduce((max, current) => (current[1]! > (max[1] || 0) ? current : max), ['', undefined]);
+  const topEntry = entries.reduce((max, current) => (current[1] > (max[1] || 0) ? current : max), ['', 0]);
 
   return Math.round(((topEntry[1] || 0) / total) * 100);
 }

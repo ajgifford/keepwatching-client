@@ -149,19 +149,18 @@ export const MovieListItem = (props: MovieListItemProps) => {
           identifier={`watchStatusTooltip_${movie.id}`}
           title={getWatchStatusAction(movie.watchStatus)}
           disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-          children={
-            <IconButton
-              key={`watchStatusIconButton_${movie.id}`}
-              disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-              onClick={(event) => {
-                handleWatchStatusChange(movie.watchStatus);
-                event.stopPropagation();
-              }}
-            >
-              <WatchStatusIcon status={movie.watchStatus} />
-            </IconButton>
-          }
-        />
+        >
+          <IconButton
+            key={`watchStatusIconButton_${movie.id}`}
+            disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+            onClick={(event) => {
+              handleWatchStatusChange(movie.watchStatus);
+              event.stopPropagation();
+            }}
+          >
+            <WatchStatusIcon status={movie.watchStatus} />
+          </IconButton>
+        </OptionalTooltipControl>
         {isUpdatingWatchStatus && (
           <CircularProgress
             size={24}

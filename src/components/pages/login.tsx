@@ -70,7 +70,7 @@ const Login = () => {
     try {
       await dispatch(googleLogin());
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -127,7 +127,7 @@ const Login = () => {
               Login
             </Button>
             <Grid container justifyContent="center" sx={{ gap: 2 }}>
-              <Button variant="outlined" startIcon={<HowToRegIcon />} component={Link} to={`/register`}>
+              <Button variant="outlined" startIcon={<HowToRegIcon />} component={Link} to="/register">
                 No Account? Register
               </Button>
               <Button variant="outlined" startIcon={<GoogleIcon />} onClick={handleGoogleSignIn}>

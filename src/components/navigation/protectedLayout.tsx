@@ -8,7 +8,7 @@ const ProtectedLayout = () => {
   const account = useAppSelector(selectCurrentAccount);
 
   if (!account) {
-    return <Navigate replace to={'/login'} />;
+    return <Navigate replace to="/login" />;
   }
 
   return (
