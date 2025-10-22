@@ -6,6 +6,7 @@ import { Container } from '@mui/material';
 
 import store from '../app/store';
 import { AppThemeProvider } from '../theme/ThemeProvider';
+import ErrorBoundary from './common/errorBoundary';
 import { Footer } from './common/footer';
 import { WebSocketProvider } from './common/webSocketProvider';
 import DefaultLayout from './navigation/defaultLayout';
@@ -46,43 +47,117 @@ function App() {
   useFooterHeight();
 
   return (
-    <Provider store={store}>
-      <AppThemeProvider>
-        <WebSocketProvider />
-        <div className="app-container">
-          <BrowserRouter>
-            <Navigation />
-            <ActivityNotificationBar />
-            <div className="content">
-              <Container maxWidth="xl" sx={{ p: 1 }}>
-                <Routes>
-                  <Route element={<DefaultLayout />}>
-                    <Route path="/" element={<Default />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                  </Route>
-                  <Route element={<ProtectedLayout />}>
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/shows" element={<Shows />} />
-                    <Route path="/shows/:showId/:profileId" element={<ShowDetails />} />
-                    <Route path="/movies" element={<Movies />} />
-                    <Route path="/movies/:movieId/:profileId" element={<MovieDetails />} />
-                    <Route path="/discover" element={<Discover />} />
-                    <Route path="/search" element={<Search />} />
-                    <Route path="/notifications" element={<Notifications />} />
-                    <Route path="/manageAccount" element={<ManageAccount />} />
-                    <Route path="/person/:personId" element={<PersonDetails />} />
-                  </Route>
-                </Routes>
-              </Container>
-            </div>
-          </BrowserRouter>
-          <footer className="footer">
-            <Footer />
-          </footer>
-        </div>
-      </AppThemeProvider>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <AppThemeProvider>
+          <WebSocketProvider />
+          <div className="app-container">
+            <BrowserRouter>
+              <ErrorBoundary>
+                <Navigation />
+                <ActivityNotificationBar />
+                <div className="content">
+                  <Container maxWidth="xl" sx={{ p: 1 }}>
+                    <Routes>
+                      <Route element={<DefaultLayout />}>
+                        <Route path="/" element={<Default />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                      </Route>
+                      <Route element={<ProtectedLayout />}>
+                        <Route
+                          path="/home"
+                          element={
+                            <ErrorBoundary>
+                              <Home />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/shows"
+                          element={
+                            <ErrorBoundary>
+                              <Shows />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/shows/:showId/:profileId"
+                          element={
+                            <ErrorBoundary>
+                              <ShowDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/movies"
+                          element={
+                            <ErrorBoundary>
+                              <Movies />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/movies/:movieId/:profileId"
+                          element={
+                            <ErrorBoundary>
+                              <MovieDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/discover"
+                          element={
+                            <ErrorBoundary>
+                              <Discover />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/search"
+                          element={
+                            <ErrorBoundary>
+                              <Search />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/notifications"
+                          element={
+                            <ErrorBoundary>
+                              <Notifications />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/manageAccount"
+                          element={
+                            <ErrorBoundary>
+                              <ManageAccount />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/person/:personId"
+                          element={
+                            <ErrorBoundary>
+                              <PersonDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                      </Route>
+                    </Routes>
+                  </Container>
+                </div>
+              </ErrorBoundary>
+            </BrowserRouter>
+            <footer className="footer">
+              <Footer />
+            </footer>
+          </div>
+        </AppThemeProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 
