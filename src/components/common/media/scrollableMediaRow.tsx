@@ -5,7 +5,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, CircularProgress, IconButton, Typography } from '@mui/material';
 
 interface ScrollableMediaRowProps<T> {
-  title: string;
+  title: string | ReactNode;
   items: T[];
   isLoading: boolean;
   renderItem: (item: T) => ReactNode;

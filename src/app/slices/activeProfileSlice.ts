@@ -873,4 +873,98 @@ export const selectMovieWatchCounts = createSelector([selectMovies], (movies = [
   return { watched, notWatched, unaired };
 });
 
+export interface StreamingServiceContent {
+  service: string;
+  shows: ProfileShow[];
+  movies: ProfileMovie[];
+  totalCount: number;
+}
+
+export const selectContentByStreamingService = createSelector(
+  [selectShows, selectMovies],
+  (shows = [], movies = []) => {
+    // Create a map to group content by service
+    const serviceMap = new Map<string, StreamingServiceContent>();
+
+    // Services to exclude from the display
+    const excludedServices = ['Coming Soon'];
+
+    // Services to group together under "Unavailable"
+    const unavailableServices = ['Unavailable', 'Unknown'];
+
+    // Helper function to normalize service names
+    const normalizeServiceName = (service: string): string => {
+      if (unavailableServices.includes(service)) {
+        return 'Unavailable';
+      }
+      return service;
+    };
+
+    // Add shows to the map
+    shows.forEach((show) => {
+      if (show.streamingServices) {
+        const serviceArray = show.streamingServices.split(',').map((service: string) => service.trim());
+        serviceArray.forEach((service: string) => {
+          // Skip excluded services
+          if (excludedServices.includes(service)) {
+            return;
+          }
+
+          const normalizedService = normalizeServiceName(service);
+
+          if (!serviceMap.has(normalizedService)) {
+            serviceMap.set(normalizedService, {
+              service: normalizedService,
+              shows: [],
+              movies: [],
+              totalCount: 0,
+            });
+          }
+          const content = serviceMap.get(normalizedService);
+          if (content) {
+            content.shows.push(show);
+          }
+        });
+      }
+    });
+
+    // Add movies to the map
+    movies.forEach((movie) => {
+      if (movie.streamingServices) {
+        const serviceArray = movie.streamingServices.split(',').map((service: string) => service.trim());
+        serviceArray.forEach((service: string) => {
+          // Skip excluded services
+          if (excludedServices.includes(service)) {
+            return;
+          }
+
+          const normalizedService = normalizeServiceName(service);
+
+          if (!serviceMap.has(normalizedService)) {
+            serviceMap.set(normalizedService, {
+              service: normalizedService,
+              shows: [],
+              movies: [],
+              totalCount: 0,
+            });
+          }
+          const content = serviceMap.get(normalizedService);
+          if (content) {
+            content.movies.push(movie);
+          }
+        });
+      }
+    });
+
+    // Convert map to array and calculate total counts
+    const servicesArray = Array.from(serviceMap.values()).map((content) => ({
+      ...content,
+      totalCount: content.shows.length + content.movies.length,
+    }));
+
+    // Sort by total content count (descending) and filter out services with no content
+    return servicesArray.filter((service) => service.totalCount > 0).sort((a, b) => b.totalCount - a.totalCount);
+  }
+);
+
 export default activeProfileSlice.reducer;

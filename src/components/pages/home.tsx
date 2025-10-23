@@ -17,6 +17,7 @@ import {
 } from '../../app/slices/activeProfileSlice';
 import { ErrorComponent } from '../common/errorComponent';
 import { LoadingComponent } from '../common/loadingComponent';
+import StreamingServiceSection from '../common/media/streamingServiceSection';
 import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
 import { EpisodesSection } from '../common/shows/episodeSection';
@@ -90,7 +91,8 @@ const Home = () => {
           <Tab label="Keep Watching" {...a11yProps(0)} />
           <Tab label="TV Shows" {...a11yProps(1)} />
           <Tab label="Movies" {...a11yProps(2)} />
-          <Tab label="Statistics" {...a11yProps(3)} />
+          <Tab label="By Service" {...a11yProps(3)} />
+          <Tab label="Statistics" {...a11yProps(4)} />
         </Tabs>
       </Box>
 
@@ -113,7 +115,13 @@ const Home = () => {
         </Box>
       </TabPanel>
 
+      {/* By Service Tab */}
       <TabPanel value={tabValue} index={3}>
+        <StreamingServiceSection />
+      </TabPanel>
+
+      {/* Statistics Tab */}
+      <TabPanel value={tabValue} index={4}>
         <ProfileStatisticsComponent accountId={profile.accountId} profileId={profile.id} />
       </TabPanel>
     </Box>
