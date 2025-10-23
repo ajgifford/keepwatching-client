@@ -16,7 +16,6 @@ const SERVICE_NAME_MAPPING: Record<string, string> = {
   Disney: 'Disney+',
   'Apple TV': 'Apple TV+',
   Paramount: 'Paramount+',
-  'Paramount+ With Showtime': 'Paramount+',
   Fox: 'Fox',
   FOX: 'Fox',
 };

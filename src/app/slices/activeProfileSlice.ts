@@ -892,10 +892,16 @@ export const selectContentByStreamingService = createSelector(
     // Services to group together under "Unavailable"
     const unavailableServices = ['Unavailable', 'Unknown'];
 
+    // Services to group together under "Paramount+"
+    const paramountServices = ['Paramount+', 'Paramount+ With Showtime'];
+
     // Helper function to normalize service names
     const normalizeServiceName = (service: string): string => {
       if (unavailableServices.includes(service)) {
         return 'Unavailable';
+      }
+      if (paramountServices.includes(service)) {
+        return 'Paramount+';
       }
       return service;
     };
