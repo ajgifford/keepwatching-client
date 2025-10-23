@@ -928,7 +928,10 @@ export const selectContentByStreamingService = createSelector(
           }
           const content = serviceMap.get(normalizedService);
           if (content) {
-            content.shows.push(show);
+            // Only add if not already present (prevents duplicates from merged services)
+            if (!content.shows.some((s) => s.id === show.id)) {
+              content.shows.push(show);
+            }
           }
         });
       }
@@ -956,7 +959,10 @@ export const selectContentByStreamingService = createSelector(
           }
           const content = serviceMap.get(normalizedService);
           if (content) {
-            content.movies.push(movie);
+            // Only add if not already present (prevents duplicates from merged services)
+            if (!content.movies.some((m) => m.id === movie.id)) {
+              content.movies.push(movie);
+            }
           }
         });
       }
