@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
-import ProfileStatisticsDashboard from './profileStatisticsDashboard';
+import EnhancedProfileStatisticsDashboard from './enhancedProfileStatisticsDashboard';
 import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface ProfileStatisticsDialogProps {
@@ -53,7 +53,12 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent dividers>
-        <ProfileStatisticsDashboard statistics={statistics} isLoading={loading} />
+        <EnhancedProfileStatisticsDashboard
+          accountId={accountId}
+          profileId={profileId}
+          statistics={statistics}
+          isLoading={loading}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} variant="outlined">

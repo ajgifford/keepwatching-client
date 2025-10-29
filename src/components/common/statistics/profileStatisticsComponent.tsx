@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import axiosInstance from '../../../app/api/axiosInstance';
-import ProfileStatisticsDashboard from './profileStatisticsDashboard';
+import EnhancedProfileStatisticsDashboard from './enhancedProfileStatisticsDashboard';
 import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface ProfileStatisticsComponentProps {
@@ -31,7 +31,14 @@ const ProfileStatisticsDialog = ({ accountId, profileId }: ProfileStatisticsComp
     }
   }, [accountId, profileId]);
 
-  return <ProfileStatisticsDashboard statistics={statistics} isLoading={loading} />;
+  return (
+    <EnhancedProfileStatisticsDashboard
+      accountId={accountId}
+      profileId={profileId}
+      statistics={statistics}
+      isLoading={loading}
+    />
+  );
 };
 
 export default ProfileStatisticsDialog;
