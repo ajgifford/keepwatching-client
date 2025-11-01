@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box, Tab, Tabs } from '@mui/material';
 
-import { useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
+  fetchMilestoneStats,
   selectActiveProfile,
   selectActiveProfileError,
   selectActiveProfileLoading,
+  selectMilestoneStats,
   selectMovieWatchCounts,
   selectMoviesByIds,
   selectRecentEpisodes,
@@ -26,10 +28,12 @@ import ProfileStatisticsComponent from '../common/statistics/profileStatisticsCo
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 
 const Home = () => {
+  const dispatch = useAppDispatch();
   const [tabValue, setTabValue] = useState(0);
   const activeProfileLoading = useAppSelector(selectActiveProfileLoading);
   const activeProfileError = useAppSelector(selectActiveProfileError);
   const profile = useAppSelector(selectActiveProfile);
+  const milestoneStats = useAppSelector(selectMilestoneStats);
   const upcomingEpisodes = useAppSelector(selectUpcomingEpisodes);
   const recentEpisodes = useAppSelector(selectRecentEpisodes);
   const recentMovieIds = useAppSelector(selectRecentMovies);
@@ -52,6 +56,16 @@ const Home = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
+
+  const handleNavigateToStats = () => {
+    setTabValue(4); // Navigate to Statistics tab
+  };
+
+  useEffect(() => {
+    if (profile) {
+      dispatch(fetchMilestoneStats());
+    }
+  }, [dispatch, profile]);
 
   if (activeProfileLoading) {
     return <LoadingComponent />;
@@ -77,6 +91,8 @@ const Home = () => {
         movieWatched={movieWatched}
         movieNotWatched={movieNotWatched}
         movieUnaired={movieUnaired}
+        milestoneStats={milestoneStats}
+        onNavigateToStats={handleNavigateToStats}
       />
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

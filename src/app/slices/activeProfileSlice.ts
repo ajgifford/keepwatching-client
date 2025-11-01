@@ -12,6 +12,7 @@ import {
   EpisodesForProfileResponse,
   FavoriteMovieResponse,
   KeepWatchingShow,
+  MilestoneStats,
   MovieReference,
   Profile,
   ProfileContentResponse,
@@ -44,6 +45,7 @@ interface ActiveProfileState {
   movieStreamingServices: string[];
   recentMovies: MovieReference[];
   upcomingMovies: MovieReference[];
+  milestoneStats: MilestoneStats | null;
   lastUpdated: string | null;
   loading: boolean;
   error: ApiErrorResponse | null;
@@ -62,6 +64,7 @@ const blankState: ActiveProfileState = {
   movieStreamingServices: [],
   recentMovies: [],
   upcomingMovies: [],
+  milestoneStats: null,
   lastUpdated: null,
   loading: false,
   error: null,
@@ -149,6 +152,29 @@ export const reloadProfileEpisodes = createAsyncThunk<EpisodesForProfile, void, 
         return rejectWithValue(error.response?.data || error.message);
       }
       return rejectWithValue({ message: 'An unknown error occurred reloading profile episodes' });
+    }
+  }
+);
+
+export const fetchMilestoneStats = createAsyncThunk<MilestoneStats, void, { rejectValue: ApiErrorResponse }>(
+  'activeProfile/fetchMilestoneStats',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+      const profileId = state.activeProfile.profile?.id;
+
+      if (!accountId || !profileId) {
+        return rejectWithValue({ message: 'No account or active profile found' });
+      }
+
+      const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`);
+      return response.data.results;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred fetching milestone stats' });
     }
   }
 );
@@ -809,6 +835,20 @@ const activeProfileSlice = createSlice({
           state.profile.image = action.payload.image;
           localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
         }
+      })
+      .addCase(fetchMilestoneStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMilestoneStats.fulfilled, (state, action) => {
+        state.milestoneStats = action.payload;
+        state.loading = false;
+        state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(fetchMilestoneStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Failed to fetch milestone stats' };
       });
   },
 });
@@ -826,6 +866,7 @@ export const selectRecentEpisodes = (state: RootState) => state.activeProfile.re
 export const selectNextUnwatchedEpisodes = (state: RootState) => state.activeProfile.nextUnwatchedEpisodes;
 export const selectRecentMovies = (state: RootState) => state.activeProfile.recentMovies;
 export const selectUpcomingMovies = (state: RootState) => state.activeProfile.upcomingMovies;
+export const selectMilestoneStats = (state: RootState) => state.activeProfile.milestoneStats;
 export const selectActiveProfileLoading = (state: RootState) => state.activeProfile.loading;
 export const selectActiveProfileError = (state: RootState) => state.activeProfile.error;
 

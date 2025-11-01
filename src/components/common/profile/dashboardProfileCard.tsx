@@ -5,11 +5,13 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
-import { Box, Card, CardContent, Typography, alpha } from '@mui/material';
+import { Box, Card, CardContent, Stack, Typography, alpha } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { getProfileImageUrl } from '../../utility/imageUtils';
-import { Profile } from '@ajgifford/keepwatching-types';
+import MilestoneBadge from '../statistics/milestoneBadge';
+import { getLastAchievedMilestone, getNextMilestone } from '../statistics/milestoneUtils';
+import { MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
 
 interface DashboardProfileCardProps {
   profile: Profile;
@@ -21,6 +23,8 @@ interface DashboardProfileCardProps {
   movieWatched: number;
   movieNotWatched: number;
   movieUnaired: number;
+  milestoneStats: MilestoneStats | null;
+  onNavigateToStats: () => void;
 }
 
 interface StatCardProps {
@@ -106,9 +110,27 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
   movieWatched,
   movieNotWatched,
   movieUnaired,
+  milestoneStats,
+  onNavigateToStats,
 }) => {
   const buildTitle = (name: string) => {
     return `${name}'s Dashboard`;
+  };
+
+  const lastAchieved = getLastAchievedMilestone(milestoneStats);
+  const nextMilestone = getNextMilestone(milestoneStats);
+
+  // Get current progress for tooltip
+  const getCurrentProgress = (type: 'episodes' | 'movies' | 'hours'): number | undefined => {
+    if (!milestoneStats) return undefined;
+    switch (type) {
+      case 'episodes':
+        return milestoneStats.totalEpisodesWatched;
+      case 'movies':
+        return milestoneStats.totalMoviesWatched;
+      case 'hours':
+        return milestoneStats.totalHoursWatched;
+    }
   };
 
   return (
@@ -134,6 +156,38 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
         },
       }}
     >
+      {/* Milestone Badges - Top Right */}
+      {(lastAchieved || nextMilestone) && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            zIndex: 2,
+          }}
+        >
+          <Stack direction="row" spacing={1}>
+            {lastAchieved && (
+              <MilestoneBadge
+                type={lastAchieved.type}
+                threshold={lastAchieved.threshold}
+                achieved={true}
+                onClick={onNavigateToStats}
+                currentProgress={getCurrentProgress(lastAchieved.type)}
+              />
+            )}
+            {nextMilestone && (
+              <MilestoneBadge
+                type={nextMilestone.type}
+                threshold={nextMilestone.threshold}
+                achieved={false}
+                onClick={onNavigateToStats}
+                currentProgress={getCurrentProgress(nextMilestone.type)}
+              />
+            )}
+          </Stack>
+        </Box>
+      )}
       <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
         {/* Profile Header */}
         <Box

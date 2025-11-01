@@ -5,8 +5,11 @@ import Grid from '@mui/material/Grid2';
 
 import axiosInstance from '../../../app/api/axiosInstance';
 import ActivityTimelineChart from './activityTimelineChart';
+import AnniversaryCard from './anniversaryCard';
+import BacklogAgingCard from './backlogAgingCard';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import BingeWatchingCard from './bingeWatchingCard';
+import MilestonesCard from './milestonesCard';
 import { SeasonalViewingCard } from './seasonalViewingCard';
 import ShowProgressCard from './showProgressCard';
 import { getProfileSummaryProps } from './statisticsUtils';
@@ -15,6 +18,7 @@ import WatchStreakCard from './watchStreakCard';
 import WatchVelocityCard from './watchVelocityCard';
 import {
   BingeWatchingStats,
+  MilestoneStats,
   ProfileStatisticsResponse,
   SeasonalViewingStats,
   TimeToWatchStats,
@@ -43,6 +47,7 @@ export default function EnhancedProfileStatisticsDashboard({
   const [streakData, setStreakData] = useState<WatchStreakStats | null>(null);
   const [timeToWatchData, setTimeToWatchData] = useState<TimeToWatchStats | null>(null);
   const [seasonalData, setSeasonalData] = useState<SeasonalViewingStats | null>(null);
+  const [milestoneData, setMilestoneData] = useState<MilestoneStats | null>(null);
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
 
   // Fetch all enhanced statistics data
@@ -54,16 +59,18 @@ export default function EnhancedProfileStatisticsDashboard({
 
       try {
         // Fetch all statistics in parallel
-        const [velocityRes, timelineRes, bingeRes, streakRes, timeToWatchRes, seasonalRes] = await Promise.allSettled([
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
-            params: { days: 30 },
-          }),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
-        ]);
+        const [velocityRes, timelineRes, bingeRes, streakRes, timeToWatchRes, seasonalRes, milestoneRes] =
+          await Promise.allSettled([
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
+              params: { days: 30 },
+            }),
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
+            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`),
+          ]);
 
         // Set velocity data
         if (velocityRes.status === 'fulfilled') {
@@ -112,6 +119,14 @@ export default function EnhancedProfileStatisticsDashboard({
           console.error('Failed to fetch seasonal data:', seasonalRes.reason);
           setSeasonalData(null);
         }
+
+        // Set milestone data
+        if (milestoneRes.status === 'fulfilled') {
+          setMilestoneData(milestoneRes.value.data.results);
+        } else {
+          console.error('Failed to fetch milestone data:', milestoneRes.reason);
+          setMilestoneData(null);
+        }
       } finally {
         setIsLoadingEnhancedStats(false);
       }
@@ -138,6 +153,27 @@ export default function EnhancedProfileStatisticsDashboard({
             maxHeight={300}
             maxItems={10}
           />
+        </Grid>
+
+        {/* Milestones & Achievements Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <MilestonesCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
+        </Grid>
+
+        {/* Anniversary Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <AnniversaryCard
+            profileCreatedAt={milestoneData?.profileCreatedAt}
+            firstEpisodeWatchedAt={milestoneData?.firstEpisodeWatchedAt}
+            firstMovieWatchedAt={milestoneData?.firstMovieWatchedAt}
+            totalEpisodesWatched={statistics.episodeWatchProgress.watchedEpisodes}
+            totalMoviesWatched={statistics.movieStatistics.watchStatusCounts.watched}
+          />
+        </Grid>
+
+        {/* Backlog Aging Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <BacklogAgingCard stats={timeToWatchData} />
         </Grid>
 
         {/* Watching Velocity Card */}
@@ -191,6 +227,7 @@ export default function EnhancedProfileStatisticsDashboard({
     streakData,
     timeToWatchData,
     seasonalData,
+    milestoneData,
     isLoadingEnhancedStats,
   ]);
 
