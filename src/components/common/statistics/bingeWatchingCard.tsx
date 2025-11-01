@@ -25,12 +25,12 @@ const BingeWatchingCard = ({ bingeData, isLoading = false }: BingeWatchingCardPr
 
   if (isLoading) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Binge-Watching Stats
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             Loading...
           </Typography>
         </CardContent>
@@ -40,12 +40,12 @@ const BingeWatchingCard = ({ bingeData, isLoading = false }: BingeWatchingCardPr
 
   if (!bingeData || bingeData.bingeSessionCount === 0) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Binge-Watching Stats
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             No binge sessions detected yet. Watch 3+ episodes of a show within 24 hours to start tracking!
           </Typography>
         </CardContent>
@@ -54,7 +54,7 @@ const BingeWatchingCard = ({ bingeData, isLoading = false }: BingeWatchingCardPr
   }
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6">Binge-Watching Stats</Typography>

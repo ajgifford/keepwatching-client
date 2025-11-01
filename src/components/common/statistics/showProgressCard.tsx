@@ -95,7 +95,7 @@ export default function ShowProgressCard({
   }, [filters, emptyMessage]);
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
           {title}

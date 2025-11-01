@@ -62,12 +62,12 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
 
   if (isLoading) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Activity Timeline
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             Loading...
           </Typography>
         </CardContent>
@@ -77,12 +77,12 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
 
   if (!timeline) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Activity Timeline
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             No activity data available
           </Typography>
         </CardContent>
@@ -91,7 +91,7 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
   }
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Activity Timeline

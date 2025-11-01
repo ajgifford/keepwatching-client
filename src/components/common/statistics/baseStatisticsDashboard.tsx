@@ -65,7 +65,7 @@ export default function BaseStatisticsDashboard({
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Watch Status
@@ -76,7 +76,7 @@ export default function BaseStatisticsDashboard({
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Top Genres
@@ -93,7 +93,7 @@ export default function BaseStatisticsDashboard({
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Streaming Services

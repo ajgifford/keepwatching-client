@@ -60,7 +60,7 @@ export const SeasonalViewingCard: React.FC<SeasonalViewingCardProps> = ({ stats 
   const hasMonthlyData = monthlyData.length > 0;
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Stack spacing={2}>
           <Box display="flex" alignItems="center" gap={1}>

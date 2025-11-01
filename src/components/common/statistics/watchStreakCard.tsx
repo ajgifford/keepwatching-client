@@ -15,12 +15,12 @@ const WatchStreakCard = ({ streakData, isLoading = false }: WatchStreakCardProps
 
   if (isLoading) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Watch Streaks
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             Loading...
           </Typography>
         </CardContent>
@@ -30,12 +30,12 @@ const WatchStreakCard = ({ streakData, isLoading = false }: WatchStreakCardProps
 
   if (!streakData || streakData.longestStreak === 0) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Watch Streaks
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             No streaks detected yet. Watch episodes on consecutive days to start building your streak!
           </Typography>
         </CardContent>
@@ -46,7 +46,7 @@ const WatchStreakCard = ({ streakData, isLoading = false }: WatchStreakCardProps
   const hasCurrentStreak = streakData.currentStreak > 0;
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6">Watch Streaks</Typography>

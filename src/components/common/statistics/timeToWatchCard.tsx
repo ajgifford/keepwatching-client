@@ -22,7 +22,7 @@ export const TimeToWatchCard: React.FC<TimeToWatchCardProps> = ({ stats }) => {
     stats.backlogAging.unwatchedOver365Days > 0;
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Stack spacing={2}>
           <Box display="flex" alignItems="center" gap={1}>

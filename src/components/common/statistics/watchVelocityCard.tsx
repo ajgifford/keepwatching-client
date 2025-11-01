@@ -48,12 +48,12 @@ const WatchVelocityCard = ({ velocityData, isLoading = false }: WatchVelocityCar
 
   if (isLoading) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Watching Velocity
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             Loading...
           </Typography>
         </CardContent>
@@ -63,12 +63,12 @@ const WatchVelocityCard = ({ velocityData, isLoading = false }: WatchVelocityCar
 
   if (!velocityData) {
     return (
-      <Card>
+      <Card sx={{ height: '100%' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Watching Velocity
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
             No velocity data available
           </Typography>
         </CardContent>
@@ -77,7 +77,7 @@ const WatchVelocityCard = ({ velocityData, isLoading = false }: WatchVelocityCar
   }
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6">Watching Velocity</Typography>
