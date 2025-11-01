@@ -6,12 +6,16 @@ import Grid from '@mui/material/Grid2';
 import axiosInstance from '../../../app/api/axiosInstance';
 import ActivityTimelineChart from './activityTimelineChart';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
+import BingeWatchingCard from './bingeWatchingCard';
 import ShowProgressCard from './showProgressCard';
 import { getProfileSummaryProps } from './statisticsUtils';
+import WatchStreakCard from './watchStreakCard';
 import WatchVelocityCard from './watchVelocityCard';
 import {
+  BingeWatchingStats,
   ProfileStatisticsResponse,
   WatchStatus,
+  WatchStreakStats,
   WatchingActivityTimeline,
   WatchingVelocityStats,
 } from '@ajgifford/keepwatching-types';
@@ -31,8 +35,12 @@ export default function EnhancedProfileStatisticsDashboard({
 }: EnhancedProfileStatisticsDashboardProps) {
   const [velocityData, setVelocityData] = useState<WatchingVelocityStats | null>(null);
   const [timelineData, setTimelineData] = useState<WatchingActivityTimeline | null>(null);
+  const [bingeData, setBingeData] = useState<BingeWatchingStats | null>(null);
+  const [streakData, setStreakData] = useState<WatchStreakStats | null>(null);
   const [isLoadingVelocity, setIsLoadingVelocity] = useState(false);
   const [isLoadingTimeline, setIsLoadingTimeline] = useState(false);
+  const [isLoadingBinge, setIsLoadingBinge] = useState(false);
+  const [isLoadingStreak, setIsLoadingStreak] = useState(false);
 
   // Fetch velocity data
   useEffect(() => {
@@ -78,6 +86,46 @@ export default function EnhancedProfileStatisticsDashboard({
     fetchTimeline();
   }, [profileId, accountId]);
 
+  // Fetch binge-watching data
+  useEffect(() => {
+    const fetchBinge = async () => {
+      if (!profileId || !accountId) return;
+
+      setIsLoadingBinge(true);
+      try {
+        const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`);
+        setBingeData(response.data.results);
+      } catch (error) {
+        console.error('Failed to fetch binge data:', error);
+        setBingeData(null);
+      } finally {
+        setIsLoadingBinge(false);
+      }
+    };
+
+    fetchBinge();
+  }, [profileId, accountId]);
+
+  // Fetch watch streak data
+  useEffect(() => {
+    const fetchStreak = async () => {
+      if (!profileId || !accountId) return;
+
+      setIsLoadingStreak(true);
+      try {
+        const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`);
+        setStreakData(response.data.results);
+      } catch (error) {
+        console.error('Failed to fetch streak data:', error);
+        setStreakData(null);
+      } finally {
+        setIsLoadingStreak(false);
+      }
+    };
+
+    fetchStreak();
+  }, [profileId, accountId]);
+
   const summaryCardProps = useMemo(() => {
     return getProfileSummaryProps(statistics);
   }, [statistics]);
@@ -107,9 +155,29 @@ export default function EnhancedProfileStatisticsDashboard({
         <Grid size={{ xs: 12, lg: 6 }}>
           <ActivityTimelineChart timeline={timelineData} isLoading={isLoadingTimeline} />
         </Grid>
+
+        {/* Binge-Watching Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <BingeWatchingCard bingeData={bingeData} isLoading={isLoadingBinge} />
+        </Grid>
+
+        {/* Watch Streak Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <WatchStreakCard streakData={streakData} isLoading={isLoadingStreak} />
+        </Grid>
       </>
     );
-  }, [statistics, velocityData, timelineData, isLoadingVelocity, isLoadingTimeline]);
+  }, [
+    statistics,
+    velocityData,
+    timelineData,
+    bingeData,
+    streakData,
+    isLoadingVelocity,
+    isLoadingTimeline,
+    isLoadingBinge,
+    isLoadingStreak,
+  ]);
 
   if (isLoading) {
     return (
