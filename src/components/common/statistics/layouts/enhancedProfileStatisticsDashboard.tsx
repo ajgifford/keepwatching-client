@@ -1,6 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Box, CircularProgress, Container, Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Chip,
+  CircularProgress,
+  Container,
+  Stack,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
@@ -43,6 +54,15 @@ interface EnhancedProfileStatisticsDashboardProps {
   isLoading?: boolean;
 }
 
+// Define section categories
+const SECTION_CATEGORIES = [
+  { id: 'milestones', label: 'Milestones & Achievements', icon: '🏆' },
+  { id: 'progress', label: 'Progress & Activity', icon: '📊' },
+  { id: 'patterns', label: 'Viewing Patterns', icon: '📺' },
+  { id: 'insights', label: 'Content Insights', icon: '💡' },
+  { id: 'management', label: 'Content Management', icon: '📋' },
+] as const;
+
 export default function EnhancedProfileStatisticsDashboard({
   profileId,
   accountId,
@@ -61,6 +81,14 @@ export default function EnhancedProfileStatisticsDashboard({
   const [abandonmentRiskData, setAbandonmentRiskData] = useState<AbandonmentRiskStats | null>(null);
   const [unairedContentData, setUnairedContentData] = useState<UnairedContentStats | null>(null);
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
+
+  // Refs for scrolling to sections
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Scroll to section handler
+  const scrollToSection = (sectionId: string) => {
+    sectionRefs.current[sectionId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // Fetch all enhanced statistics data
   useEffect(() => {
@@ -203,122 +231,192 @@ export default function EnhancedProfileStatisticsDashboard({
 
     return (
       <>
-        {/* Active Shows Progress */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <ShowProgressCard
-            title="Active Shows Progress"
-            shows={statistics.episodeWatchProgress.showsProgress}
-            filters={[WatchStatus.WATCHING, WatchStatus.UP_TO_DATE]}
-            maxHeight={300}
-            maxItems={10}
-          />
+        {/* Quick Navigation */}
+        <Grid size={12}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              flexWrap: 'wrap',
+              gap: 1,
+              mb: 2,
+              p: 2,
+              backgroundColor: 'background.paper',
+              borderRadius: 1,
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              boxShadow: 1,
+            }}
+          >
+            <Typography variant="body2" sx={{ alignSelf: 'center', mr: 1, fontWeight: 'medium' }}>
+              Jump to:
+            </Typography>
+            {SECTION_CATEGORIES.map((section) => (
+              <Chip
+                key={section.id}
+                label={`${section.icon} ${section.label}`}
+                onClick={() => scrollToSection(section.id)}
+                size="small"
+                sx={{ cursor: 'pointer' }}
+              />
+            ))}
+          </Stack>
         </Grid>
 
-        {/* Milestones & Achievements Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <MilestonesCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
+        {/* Milestones & Achievements Section */}
+        <Grid size={12}>
+          <Accordion defaultExpanded ref={(el) => (sectionRefs.current['milestones'] = el)} sx={{ mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">🏆 Milestones & Achievements</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <MilestonesCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <AnniversaryCard
+                    profileCreatedAt={milestoneData?.profileCreatedAt}
+                    firstEpisodeWatchedAt={milestoneData?.firstEpisodeWatchedAt}
+                    firstMovieWatchedAt={milestoneData?.firstMovieWatchedAt}
+                    totalEpisodesWatched={statistics.episodeWatchProgress.watchedEpisodes}
+                    totalMoviesWatched={statistics.movieStatistics.watchStatusCounts.watched}
+                  />
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
 
-        {/* Anniversary Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <AnniversaryCard
-            profileCreatedAt={milestoneData?.profileCreatedAt}
-            firstEpisodeWatchedAt={milestoneData?.firstEpisodeWatchedAt}
-            firstMovieWatchedAt={milestoneData?.firstMovieWatchedAt}
-            totalEpisodesWatched={statistics.episodeWatchProgress.watchedEpisodes}
-            totalMoviesWatched={statistics.movieStatistics.watchStatusCounts.watched}
-          />
+        {/* Progress & Activity Section */}
+        <Grid size={12}>
+          <Accordion defaultExpanded ref={(el) => (sectionRefs.current['progress'] = el)} sx={{ mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">📊 Progress & Activity</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <ShowProgressCard
+                    title="Active Shows Progress"
+                    shows={statistics.episodeWatchProgress.showsProgress}
+                    filters={[WatchStatus.WATCHING, WatchStatus.UP_TO_DATE]}
+                    maxHeight={300}
+                    maxItems={10}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <WatchVelocityCard velocityData={velocityData} isLoading={isLoadingEnhancedStats} />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <ActivityTimelineChart timeline={timelineData} isLoading={isLoadingEnhancedStats} />
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
 
-        {/* Backlog Aging Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <BacklogAgingCard stats={timeToWatchData} />
+        {/* Viewing Patterns Section */}
+        <Grid size={12}>
+          <Accordion ref={(el) => (sectionRefs.current['patterns'] = el)} sx={{ mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">📺 Viewing Patterns</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <BingeWatchingCard bingeData={bingeData} isLoading={isLoadingEnhancedStats} />
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <WatchStreakCard streakData={streakData} isLoading={isLoadingEnhancedStats} />
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  {isLoadingEnhancedStats ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <SeasonalViewingCard stats={seasonalData} />
+                  )}
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
 
-        {/* Watching Velocity Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <WatchVelocityCard velocityData={velocityData} isLoading={isLoadingEnhancedStats} />
+        {/* Content Insights Section */}
+        <Grid size={12}>
+          <Accordion ref={(el) => (sectionRefs.current['insights'] = el)} sx={{ mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">💡 Content Insights</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  {isLoadingEnhancedStats ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <ContentDepthCard stats={contentDepthData} />
+                  )}
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  {isLoadingEnhancedStats ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <ContentDiscoveryCard stats={contentDiscoveryData} />
+                  )}
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  {isLoadingEnhancedStats ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <TimeToWatchCard stats={timeToWatchData} />
+                  )}
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <BacklogAgingCard stats={timeToWatchData} />
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
 
-        {/* Activity Timeline Chart */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <ActivityTimelineChart timeline={timelineData} isLoading={isLoadingEnhancedStats} />
-        </Grid>
-
-        {/* Binge-Watching Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <BingeWatchingCard bingeData={bingeData} isLoading={isLoadingEnhancedStats} />
-        </Grid>
-
-        {/* Watch Streak Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <WatchStreakCard streakData={streakData} isLoading={isLoadingEnhancedStats} />
-        </Grid>
-
-        {/* Time to Watch Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          {isLoadingEnhancedStats ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <TimeToWatchCard stats={timeToWatchData} />
-          )}
-        </Grid>
-
-        {/* Seasonal Viewing Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          {isLoadingEnhancedStats ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <SeasonalViewingCard stats={seasonalData} />
-          )}
-        </Grid>
-
-        {/* Content Depth Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          {isLoadingEnhancedStats ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <ContentDepthCard stats={contentDepthData} />
-          )}
-        </Grid>
-
-        {/* Content Discovery Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          {isLoadingEnhancedStats ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <ContentDiscoveryCard stats={contentDiscoveryData} />
-          )}
-        </Grid>
-
-        {/* Abandonment Risk Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          {isLoadingEnhancedStats ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <AbandonmentRiskCard stats={abandonmentRiskData} />
-          )}
-        </Grid>
-
-        {/* Unaired Content Card */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          {isLoadingEnhancedStats ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <UnairedContentCard stats={unairedContentData} />
-          )}
+        {/* Content Management Section */}
+        <Grid size={12}>
+          <Accordion ref={(el) => (sectionRefs.current['management'] = el)} sx={{ mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">📋 Content Management</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  {isLoadingEnhancedStats ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <AbandonmentRiskCard stats={abandonmentRiskData} />
+                  )}
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  {isLoadingEnhancedStats ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <UnairedContentCard stats={unairedContentData} />
+                  )}
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
       </>
     );

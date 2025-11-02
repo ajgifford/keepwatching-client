@@ -9,7 +9,7 @@ interface ProfileStatisticsComponentProps {
   profileId: number;
 }
 
-const ProfileStatisticsDialog = ({ accountId, profileId }: ProfileStatisticsComponentProps) => {
+const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsComponentProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
 
@@ -41,4 +41,4 @@ const ProfileStatisticsDialog = ({ accountId, profileId }: ProfileStatisticsComp
   );
 };
 
-export default ProfileStatisticsDialog;
+export default ProfileStatisticsComponent;
