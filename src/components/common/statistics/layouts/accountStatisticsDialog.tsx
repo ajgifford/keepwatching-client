@@ -2,29 +2,28 @@ import { useEffect, useState } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-import axiosInstance from '../../../app/api/axiosInstance';
-import EnhancedProfileStatisticsDashboard from './enhancedProfileStatisticsDashboard';
-import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
+import axiosInstance from '../../../../app/api/axiosInstance';
+import AccountStatisticsDashboard from './accountStatisticsDashboard';
+import { AccountStatisticsResponse } from '@ajgifford/keepwatching-types';
 
-interface ProfileStatisticsDialogProps {
+interface AccountStatisticsDialogProps {
   open: boolean;
   title: string;
   accountId: number;
-  profileId: number;
   onClose: () => void;
 }
 
-const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }: ProfileStatisticsDialogProps) => {
+const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountStatisticsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
+  const [statistics, setStatistics] = useState<AccountStatisticsResponse | null>(null);
 
   useEffect(() => {
-    const fetchProfileStats = async () => {
+    const fetchAccountStats = async () => {
       if (!open) return;
 
       setLoading(true);
       try {
-        const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics`);
+        const response = await axiosInstance.get(`/accounts/${accountId}/statistics`);
         setStatistics(response.data.results);
       } catch (error) {
         console.error('Error fetching statistics:', error);
@@ -33,10 +32,10 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
       }
     };
 
-    if (accountId && profileId && open) {
-      fetchProfileStats();
+    if (accountId && open) {
+      fetchAccountStats();
     }
-  }, [accountId, profileId, open]);
+  }, [accountId, open]);
 
   return (
     <Dialog
@@ -53,12 +52,7 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent dividers>
-        <EnhancedProfileStatisticsDashboard
-          accountId={accountId}
-          profileId={profileId}
-          statistics={statistics}
-          isLoading={loading}
-        />
+        <AccountStatisticsDashboard statistics={statistics} isLoading={loading} />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} variant="outlined">
@@ -69,4 +63,4 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
   );
 };
 
-export default ProfileStatisticsDialog;
+export default AccountStatisticsDialog;

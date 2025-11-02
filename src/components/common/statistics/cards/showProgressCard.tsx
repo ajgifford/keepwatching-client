@@ -2,8 +2,8 @@ import { ReactNode, useMemo } from 'react';
 
 import { Box, Card, CardContent, Divider, LinearProgress, Typography } from '@mui/material';
 
-import { getProgressBarColor } from '../../utility/watchStatusColors';
-import { getWatchStatusDisplay } from '../../utility/watchStatusUtility';
+import { getProgressBarColor } from '../../../utility/watchStatusColors';
+import { getWatchStatusDisplay } from '../../../utility/watchStatusUtility';
 import { ShowProgress, WatchStatus } from '@ajgifford/keepwatching-types';
 
 export interface ShowProgressCardProps {

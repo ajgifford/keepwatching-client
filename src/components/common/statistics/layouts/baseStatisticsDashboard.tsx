@@ -3,11 +3,11 @@ import { ReactNode } from 'react';
 import { Box, Card, CardContent, CircularProgress, Container, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import DistributionBarChart from './distributionBarChart';
-import DistributionPieChart from './distributionPieChart';
-import StatisticsSummaryCard from './statisticsSummaryCard';
-import { useStatisticsData } from './useStatisticsData';
-import WatchStatusChart from './watchStatusChart';
+import StatisticsSummaryCard from '../cards/statisticsSummaryCard';
+import DistributionBarChart from '../elements/distributionBarChart';
+import DistributionPieChart from '../elements/distributionPieChart';
+import WatchStatusChart from '../elements/watchStatusChart';
+import { useStatisticsData } from '../utils/useStatisticsData';
 import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 export interface BaseStatisticsDashboardProps {

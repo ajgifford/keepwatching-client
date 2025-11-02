@@ -1,7 +1,7 @@
 import { Box, Paper, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import StatisticsProgressBar from './statisticsProgressBar';
+import StatisticsProgressBar from '../elements/statisticsProgressBar';
 
 interface StatItem {
   value: number;

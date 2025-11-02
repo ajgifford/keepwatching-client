@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
+import ContentBreakdownCard from '../cards/contentBreakdownCard';
+import ContentSummaryCard from '../cards/contentSummaryCard';
+import { getAccountSummaryProps } from '../utils/statisticsUtils';
+import { getTopCategory, getTopCategoryPercentage } from '../utils/useStatisticsData';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
-import ContentBreakdownCard from './contentBreakdownCard';
-import ContentSummaryCard from './contentSummaryCard';
-import { getAccountSummaryProps } from './statisticsUtils';
-import { getTopCategory, getTopCategoryPercentage } from './useStatisticsData';
 import { AccountStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 interface AccountStatisticsDashboardProps {

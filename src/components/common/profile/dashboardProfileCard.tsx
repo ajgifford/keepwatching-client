@@ -9,8 +9,8 @@ import { Box, Card, CardContent, Stack, Typography, alpha } from '@mui/material'
 import Grid from '@mui/material/Grid2';
 
 import { getProfileImageUrl } from '../../utility/imageUtils';
-import MilestoneBadge from '../statistics/milestoneBadge';
-import { getLastAchievedMilestone, getNextMilestone } from '../statistics/milestoneUtils';
+import MilestoneBadge from '../statistics/elements/milestoneBadge';
+import { getLastAchievedMilestone, getNextMilestone } from '../statistics/utils/milestoneUtils';
 import { MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
 
 interface DashboardProfileCardProps {

@@ -1,6 +1,6 @@
 import { useTheme } from '@mui/material';
 
-import { ChartDataItem } from './distributionTypes';
+import { ChartDataItem } from '../utils/distributionTypes';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface DistributionBarChartProps {

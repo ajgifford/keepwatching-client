@@ -1,4 +1,4 @@
-import { WATCH_STATUS_COLORS } from '../../utility/watchStatusColors';
+import { WATCH_STATUS_COLORS } from '../../../utility/watchStatusColors';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 export interface WatchStatusDataItem {

@@ -24,7 +24,7 @@ import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
 import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
-import ProfileStatisticsComponent from '../common/statistics/profileStatisticsComponent';
+import ProfileStatisticsComponent from '../common/statistics/layouts/profileStatisticsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 
 const Home = () => {

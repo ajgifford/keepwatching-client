@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import { ChartDataItem, convertToChartData } from './distributionTypes';
-import { WatchStatusDataItem } from './watchStatusChart';
+import { WatchStatusDataItem } from '../elements/watchStatusChart';
+import { ChartDataItem, convertToChartData } from '../utils/distributionTypes';
 import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 
 export function useStatisticsData(

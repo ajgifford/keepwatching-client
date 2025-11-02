@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import axiosInstance from '../../../app/api/axiosInstance';
+import axiosInstance from '../../../../app/api/axiosInstance';
 import EnhancedProfileStatisticsDashboard from './enhancedProfileStatisticsDashboard';
 import { ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 

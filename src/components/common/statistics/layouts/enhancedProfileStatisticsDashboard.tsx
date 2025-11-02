@@ -3,25 +3,33 @@ import { useEffect, useMemo, useState } from 'react';
 import { Box, CircularProgress, Container, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import axiosInstance from '../../../app/api/axiosInstance';
-import ActivityTimelineChart from './activityTimelineChart';
-import AnniversaryCard from './anniversaryCard';
-import BacklogAgingCard from './backlogAgingCard';
+import axiosInstance from '../../../../app/api/axiosInstance';
+import { AbandonmentRiskCard } from '../cards/abandonmentRiskCard';
+import ActivityTimelineChart from '../cards/activityTimelineChart';
+import AnniversaryCard from '../cards/anniversaryCard';
+import BacklogAgingCard from '../cards/backlogAgingCard';
+import BingeWatchingCard from '../cards/bingeWatchingCard';
+import { ContentDepthCard } from '../cards/contentDepthCard';
+import { ContentDiscoveryCard } from '../cards/contentDiscoveryCard';
+import MilestonesCard from '../cards/milestonesCard';
+import { SeasonalViewingCard } from '../cards/seasonalViewingCard';
+import ShowProgressCard from '../cards/showProgressCard';
+import { TimeToWatchCard } from '../cards/timeToWatchCard';
+import { UnairedContentCard } from '../cards/unairedContentCard';
+import WatchStreakCard from '../cards/watchStreakCard';
+import WatchVelocityCard from '../cards/watchVelocityCard';
+import { getProfileSummaryProps } from '../utils/statisticsUtils';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
-import BingeWatchingCard from './bingeWatchingCard';
-import MilestonesCard from './milestonesCard';
-import { SeasonalViewingCard } from './seasonalViewingCard';
-import ShowProgressCard from './showProgressCard';
-import { getProfileSummaryProps } from './statisticsUtils';
-import { TimeToWatchCard } from './timeToWatchCard';
-import WatchStreakCard from './watchStreakCard';
-import WatchVelocityCard from './watchVelocityCard';
 import {
+  AbandonmentRiskStats,
   BingeWatchingStats,
+  ContentDepthStats,
+  ContentDiscoveryStats,
   MilestoneStats,
   ProfileStatisticsResponse,
   SeasonalViewingStats,
   TimeToWatchStats,
+  UnairedContentStats,
   WatchStatus,
   WatchStreakStats,
   WatchingActivityTimeline,
@@ -48,6 +56,10 @@ export default function EnhancedProfileStatisticsDashboard({
   const [timeToWatchData, setTimeToWatchData] = useState<TimeToWatchStats | null>(null);
   const [seasonalData, setSeasonalData] = useState<SeasonalViewingStats | null>(null);
   const [milestoneData, setMilestoneData] = useState<MilestoneStats | null>(null);
+  const [contentDepthData, setContentDepthData] = useState<ContentDepthStats | null>(null);
+  const [contentDiscoveryData, setContentDiscoveryData] = useState<ContentDiscoveryStats | null>(null);
+  const [abandonmentRiskData, setAbandonmentRiskData] = useState<AbandonmentRiskStats | null>(null);
+  const [unairedContentData, setUnairedContentData] = useState<UnairedContentStats | null>(null);
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
 
   // Fetch all enhanced statistics data
@@ -59,18 +71,33 @@ export default function EnhancedProfileStatisticsDashboard({
 
       try {
         // Fetch all statistics in parallel
-        const [velocityRes, timelineRes, bingeRes, streakRes, timeToWatchRes, seasonalRes, milestoneRes] =
-          await Promise.allSettled([
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
-              params: { days: 30 },
-            }),
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
-            axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`),
-          ]);
+        const [
+          velocityRes,
+          timelineRes,
+          bingeRes,
+          streakRes,
+          timeToWatchRes,
+          seasonalRes,
+          milestoneRes,
+          contentDepthRes,
+          contentDiscoveryRes,
+          abandonmentRiskRes,
+          unairedContentRes,
+        ] = await Promise.allSettled([
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
+            params: { days: 30 },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-depth`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-discovery`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/abandonment-risk`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/unaired-content`),
+        ]);
 
         // Set velocity data
         if (velocityRes.status === 'fulfilled') {
@@ -126,6 +153,38 @@ export default function EnhancedProfileStatisticsDashboard({
         } else {
           console.error('Failed to fetch milestone data:', milestoneRes.reason);
           setMilestoneData(null);
+        }
+
+        // Set content depth data
+        if (contentDepthRes.status === 'fulfilled') {
+          setContentDepthData(contentDepthRes.value.data.results);
+        } else {
+          console.error('Failed to fetch content depth data:', contentDepthRes.reason);
+          setContentDepthData(null);
+        }
+
+        // Set content discovery data
+        if (contentDiscoveryRes.status === 'fulfilled') {
+          setContentDiscoveryData(contentDiscoveryRes.value.data.results);
+        } else {
+          console.error('Failed to fetch content discovery data:', contentDiscoveryRes.reason);
+          setContentDiscoveryData(null);
+        }
+
+        // Set abandonment risk data
+        if (abandonmentRiskRes.status === 'fulfilled') {
+          setAbandonmentRiskData(abandonmentRiskRes.value.data.results);
+        } else {
+          console.error('Failed to fetch abandonment risk data:', abandonmentRiskRes.reason);
+          setAbandonmentRiskData(null);
+        }
+
+        // Set unaired content data
+        if (unairedContentRes.status === 'fulfilled') {
+          setUnairedContentData(unairedContentRes.value.data.results);
+        } else {
+          console.error('Failed to fetch unaired content data:', unairedContentRes.reason);
+          setUnairedContentData(null);
         }
       } finally {
         setIsLoadingEnhancedStats(false);
@@ -217,6 +276,50 @@ export default function EnhancedProfileStatisticsDashboard({
             <SeasonalViewingCard stats={seasonalData} />
           )}
         </Grid>
+
+        {/* Content Depth Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          {isLoadingEnhancedStats ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <ContentDepthCard stats={contentDepthData} />
+          )}
+        </Grid>
+
+        {/* Content Discovery Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          {isLoadingEnhancedStats ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <ContentDiscoveryCard stats={contentDiscoveryData} />
+          )}
+        </Grid>
+
+        {/* Abandonment Risk Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          {isLoadingEnhancedStats ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <AbandonmentRiskCard stats={abandonmentRiskData} />
+          )}
+        </Grid>
+
+        {/* Unaired Content Card */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          {isLoadingEnhancedStats ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <UnairedContentCard stats={unairedContentData} />
+          )}
+        </Grid>
       </>
     );
   }, [
@@ -228,6 +331,10 @@ export default function EnhancedProfileStatisticsDashboard({
     timeToWatchData,
     seasonalData,
     milestoneData,
+    contentDepthData,
+    contentDiscoveryData,
+    abandonmentRiskData,
+    unairedContentData,
     isLoadingEnhancedStats,
   ]);
 

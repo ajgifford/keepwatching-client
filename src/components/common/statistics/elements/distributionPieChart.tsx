@@ -1,4 +1,4 @@
-import { ChartDataItem } from './distributionTypes';
+import { ChartDataItem } from '../utils/distributionTypes';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface DistributionPieChartProps {

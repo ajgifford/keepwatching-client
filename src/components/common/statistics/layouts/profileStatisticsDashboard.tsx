@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 
 import Grid from '@mui/material/Grid2';
 
+import ShowProgressCard from '../cards/showProgressCard';
+import { getProfileSummaryProps } from '../utils/statisticsUtils';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
-import ShowProgressCard from './showProgressCard';
-import { getProfileSummaryProps } from './statisticsUtils';
 import { ProfileStatisticsResponse, WatchStatus } from '@ajgifford/keepwatching-types';
 
 interface ProfileStatisticsDashboardProps {
