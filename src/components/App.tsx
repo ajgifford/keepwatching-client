@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { Container } from '@mui/material';
 
+import { auth } from '../app/firebaseConfig';
 import store from '../app/store';
 import { AppThemeProvider } from '../theme/ThemeProvider';
 import ErrorBoundary from './common/errorBoundary';
@@ -26,6 +27,7 @@ import Register from './pages/register';
 import Search from './pages/search';
 import ShowDetails from './pages/showDetails';
 import Shows from './pages/shows';
+import { onAuthStateChanged } from 'firebase/auth';
 
 function useFooterHeight() {
   useEffect(() => {
@@ -45,6 +47,21 @@ function useFooterHeight() {
 
 function App() {
   useFooterHeight();
+  const [authInitialized, setAuthInitialized] = useState(false);
+
+  useEffect(() => {
+    // Wait for Firebase auth to initialize before rendering the app
+    const unsubscribe = onAuthStateChanged(auth, () => {
+      setAuthInitialized(true);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Don't render the app until Firebase auth has initialized
+  if (!authInitialized) {
+    return null;
+  }
 
   return (
     <ErrorBoundary>
