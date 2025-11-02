@@ -109,7 +109,7 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
         {activeTab === 0 && (
           <Box>
             {dailyChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" minHeight={300} height={400}>
                 <AreaChart data={dailyChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="episodesGradient" x1="0" y1="0" x2="0" y2="1">
@@ -118,7 +118,7 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} reversed />
                   <YAxis />
                   <Tooltip
                     contentStyle={{
@@ -149,10 +149,10 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
         {activeTab === 1 && (
           <Box>
             {weeklyChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" minHeight={300} height={400}>
                 <BarChart data={weeklyChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="week" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="week" tick={{ fontSize: 12 }} reversed />
                   <YAxis />
                   <Tooltip
                     contentStyle={{
@@ -176,10 +176,10 @@ const ActivityTimelineChart = ({ timeline, isLoading = false }: ActivityTimeline
         {activeTab === 2 && (
           <Box>
             {monthlyChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" minHeight={300} height={400}>
                 <BarChart data={monthlyChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} reversed />
                   <YAxis />
                   <Tooltip
                     contentStyle={{
