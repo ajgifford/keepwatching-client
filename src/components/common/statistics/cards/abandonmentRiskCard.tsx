@@ -25,7 +25,9 @@ export const AbandonmentRiskCard: React.FC<AbandonmentRiskCardProps> = ({ stats 
     );
   }
 
-  const getRiskLevel = (rate: number) => {
+  type RiskColor = 'default' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
+
+  const getRiskLevel = (rate: number): { label: string; color: RiskColor } => {
     if (rate > 30) return { label: 'High', color: 'error' };
     if (rate > 15) return { label: 'Medium', color: 'warning' };
     return { label: 'Low', color: 'success' };
@@ -50,7 +52,7 @@ export const AbandonmentRiskCard: React.FC<AbandonmentRiskCardProps> = ({ stats 
               <Typography variant="body2" color="text.secondary">
                 Show Abandonment Rate
               </Typography>
-              <Chip label={`${riskLevel.label} Risk`} color={riskLevel.color as any} size="small" sx={{ mt: 1 }} />
+              <Chip label={`${riskLevel.label} Risk`} color={riskLevel.color} size="small" sx={{ mt: 1 }} />
             </Box>
           </Grid>
 
