@@ -33,7 +33,7 @@ import { getAccountSummaryProps } from '../utils/statisticsUtils';
 import { getTopCategory, getTopCategoryPercentage } from '../utils/useStatisticsData';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import {
-  AccountAbandonmentRiskStats,
+  AbandonmentRiskStats,
   AccountActivityTimeline,
   AccountBingeWatchingStats,
   AccountContentDepthStats,
@@ -76,7 +76,7 @@ export default function EnhancedAccountStatisticsDashboard({
   const [milestoneData, setMilestoneData] = useState<MilestoneStats | null>(null);
   const [contentDepthData, setContentDepthData] = useState<AccountContentDepthStats | null>(null);
   const [contentDiscoveryData, setContentDiscoveryData] = useState<AccountContentDiscoveryStats | null>(null);
-  const [abandonmentRiskData, setAbandonmentRiskData] = useState<AccountAbandonmentRiskStats | null>(null);
+  const [abandonmentRiskData, setAbandonmentRiskData] = useState<AbandonmentRiskStats | null>(null);
   const [unairedContentData, setUnairedContentData] = useState<AccountUnairedContentStats | null>(null);
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
 
