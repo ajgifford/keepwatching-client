@@ -104,6 +104,15 @@ export const AbandonmentRiskCard: React.FC<AbandonmentRiskCardProps> = ({ stats 
                           </>
                         }
                       />
+                      {show.profileName && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ ml: 2, alignSelf: 'flex-start', mt: 1 }}
+                        >
+                          {show.profileName}
+                        </Typography>
+                      )}
                     </ListItem>
                   ))}
                 </List>
