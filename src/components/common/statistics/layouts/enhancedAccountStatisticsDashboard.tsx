@@ -17,14 +17,13 @@ import Grid from '@mui/material/Grid2';
 import axiosInstance from '../../../../app/api/axiosInstance';
 import { AbandonmentRiskCard } from '../cards/abandonmentRiskCard';
 import ActivityTimelineChart from '../cards/activityTimelineChart';
-import AnniversaryCard from '../cards/anniversaryCard';
 import BacklogAgingCard from '../cards/backlogAgingCard';
 import BingeWatchingCard from '../cards/bingeWatchingCard';
 import ContentBreakdownCard from '../cards/contentBreakdownCard';
 import { ContentDepthCard } from '../cards/contentDepthCard';
 import { ContentDiscoveryCard } from '../cards/contentDiscoveryCard';
 import ContentSummaryCard from '../cards/contentSummaryCard';
-import MilestonesCard from '../cards/milestonesCard';
+import MilestonesAndAnniversaryCard from '../cards/milestonesAndAnniversaryCard';
 import { SeasonalViewingCard } from '../cards/seasonalViewingCard';
 import { TimeToWatchCard } from '../cards/timeToWatchCard';
 import { UnairedContentCard } from '../cards/unairedContentCard';
@@ -39,13 +38,13 @@ import {
   AccountBingeWatchingStats,
   AccountContentDepthStats,
   AccountContentDiscoveryStats,
-  AccountMilestoneStats,
   AccountSeasonalViewingStats,
   AccountStatisticsResponse,
   AccountTimeToWatchStats,
   AccountUnairedContentStats,
   AccountWatchStreakStats,
   AccountWatchingVelocityStats,
+  MilestoneStats,
 } from '@ajgifford/keepwatching-types';
 
 interface EnhancedAccountStatisticsDashboardProps {
@@ -74,7 +73,7 @@ export default function EnhancedAccountStatisticsDashboard({
   const [streakData, setStreakData] = useState<AccountWatchStreakStats | null>(null);
   const [timeToWatchData, setTimeToWatchData] = useState<AccountTimeToWatchStats | null>(null);
   const [seasonalData, setSeasonalData] = useState<AccountSeasonalViewingStats | null>(null);
-  const [milestoneData, setMilestoneData] = useState<AccountMilestoneStats | null>(null);
+  const [milestoneData, setMilestoneData] = useState<MilestoneStats | null>(null);
   const [contentDepthData, setContentDepthData] = useState<AccountContentDepthStats | null>(null);
   const [contentDiscoveryData, setContentDiscoveryData] = useState<AccountContentDiscoveryStats | null>(null);
   const [abandonmentRiskData, setAbandonmentRiskData] = useState<AccountAbandonmentRiskStats | null>(null);
@@ -320,17 +319,8 @@ export default function EnhancedAccountStatisticsDashboard({
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <MilestonesCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
-                </Grid>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <AnniversaryCard
-                    profileCreatedAt={milestoneData?.accountCreatedAt}
-                    firstEpisodeWatchedAt={milestoneData?.firstEpisodeWatchedAt}
-                    firstMovieWatchedAt={milestoneData?.firstMovieWatchedAt}
-                    totalEpisodesWatched={statistics.episodeStatistics.watchedEpisodes}
-                    totalMoviesWatched={statistics.movieStatistics.total}
-                  />
+                <Grid size={{ xs: 12 }}>
+                  <MilestonesAndAnniversaryCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
                 </Grid>
               </Grid>
             </AccordionDetails>

@@ -17,12 +17,11 @@ import Grid from '@mui/material/Grid2';
 import axiosInstance from '../../../../app/api/axiosInstance';
 import { AbandonmentRiskCard } from '../cards/abandonmentRiskCard';
 import ActivityTimelineChart from '../cards/activityTimelineChart';
-import AnniversaryCard from '../cards/anniversaryCard';
 import BacklogAgingCard from '../cards/backlogAgingCard';
 import BingeWatchingCard from '../cards/bingeWatchingCard';
 import { ContentDepthCard } from '../cards/contentDepthCard';
 import { ContentDiscoveryCard } from '../cards/contentDiscoveryCard';
-import MilestonesCard from '../cards/milestonesCard';
+import MilestonesAndAnniversaryCard from '../cards/milestonesAndAnniversaryCard';
 import { SeasonalViewingCard } from '../cards/seasonalViewingCard';
 import ShowProgressCard from '../cards/showProgressCard';
 import { TimeToWatchCard } from '../cards/timeToWatchCard';
@@ -272,17 +271,8 @@ export default function EnhancedProfileStatisticsDashboard({
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <MilestonesCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
-                </Grid>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <AnniversaryCard
-                    profileCreatedAt={milestoneData?.profileCreatedAt}
-                    firstEpisodeWatchedAt={milestoneData?.firstEpisodeWatchedAt}
-                    firstMovieWatchedAt={milestoneData?.firstMovieWatchedAt}
-                    totalEpisodesWatched={statistics.episodeWatchProgress.watchedEpisodes}
-                    totalMoviesWatched={statistics.movieStatistics.watchStatusCounts.watched}
-                  />
+                <Grid size={{ xs: 12 }}>
+                  <MilestonesAndAnniversaryCard stats={milestoneData} isLoading={isLoadingEnhancedStats} />
                 </Grid>
               </Grid>
             </AccordionDetails>
