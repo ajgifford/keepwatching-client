@@ -57,7 +57,6 @@ import {
   buildEpisodeAirDate,
   buildEpisodeLineDetails,
   buildSeasonAirDate,
-  buildTMDBImagePath,
   calculateRuntimeDisplay,
 } from '../utility/contentUtility';
 import {
@@ -68,7 +67,7 @@ import {
   getWatchStatusAction,
 } from '../utility/watchStatusUtility';
 import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, WatchStatus } from '@ajgifford/keepwatching-types';
-import { ErrorComponent, LoadingComponent, formatUserRating } from '@ajgifford/keepwatching-ui';
+import { ErrorComponent, LoadingComponent, buildTMDBImagePath, formatUserRating } from '@ajgifford/keepwatching-ui';
 import { getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
 function ShowDetails() {

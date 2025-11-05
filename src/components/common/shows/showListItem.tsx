@@ -24,15 +24,11 @@ import {
 
 import { useAppDispatch } from '../../../app/hooks';
 import { removeShowFavorite, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
-import {
-  buildEpisodeLine,
-  buildServicesLine,
-  buildShowAirDate,
-  buildTMDBImagePath,
-} from '../../utility/contentUtility';
+import { buildEpisodeLine, buildServicesLine, buildShowAirDate } from '../../utility/contentUtility';
 import { WatchStatusIcon, determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 export type FilterProps = {
   genre: string;

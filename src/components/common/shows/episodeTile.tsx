@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 
 import { Avatar, Box, Grid, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface PropTypes {
   episode: RecentUpcomingEpisode;

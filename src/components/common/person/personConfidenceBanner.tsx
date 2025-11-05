@@ -11,7 +11,7 @@ import {
   selectSelectedPerson,
   toggleDisambiguation,
 } from '../../../app/slices/personSearchSlice';
-import { buildTMDBImagePath } from '../../utility/contentUtility';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 export const PersonConfidenceBanner: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 
 import { Avatar, Box, Card, CardContent, Chip, Stack, Typography, useTheme } from '@mui/material';
 
-import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
+import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface MovieCardProps {
   movie: ProfileMovie;

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { Avatar, Box, Card, CardContent, Chip, Typography, useTheme } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { CastMember, ShowCastMember } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 // Type guard to check if the person is a ShowCastMember
 const isShowCastMember = (person: CastMember | ShowCastMember): person is ShowCastMember => {

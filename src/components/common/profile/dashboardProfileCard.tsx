@@ -7,10 +7,11 @@ import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
 import { Box, Card, CardContent, Grid, Stack, Typography, alpha } from '@mui/material';
 
-import { getProfileImageUrl } from '../../utility/imageUtils';
+import { STATIC_CONTENT_URL } from '../../../app/constants/constants';
 import MilestoneBadge from '../statistics/elements/milestoneBadge';
 import { getLastAchievedMilestone, getNextMilestone } from '../statistics/utils/milestoneUtils';
 import { MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
+import { getProfileImageUrl } from '@ajgifford/keepwatching-ui';
 
 interface DashboardProfileCardProps {
   profile: Profile;
@@ -202,7 +203,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
           <Box
             crossOrigin="anonymous"
             component="img"
-            src={getProfileImageUrl(profile.image)}
+            src={getProfileImageUrl(profile.image, STATIC_CONTENT_URL)}
             alt={profile.name}
             sx={{
               width: 100,

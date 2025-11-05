@@ -26,12 +26,13 @@ import {
   useTheme,
 } from '@mui/material';
 
+import { STATIC_CONTENT_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout, selectCurrentAccount } from '../../app/slices/accountSlice';
 import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
 import NotificationIconDropdown from '../notification/notificationIconDropdown';
-import { getProfileImageUrl } from '../utility/imageUtils';
+import { getProfileImageUrl } from '@ajgifford/keepwatching-ui';
 
 function Navigation() {
   const dispatch = useAppDispatch();
@@ -111,7 +112,7 @@ function Navigation() {
           <Tooltip title={`Active Profile: ${profile.name}`} arrow>
             <IconButton onClick={handleProfileMenuOpen} sx={{ ml: 2 }}>
               <Avatar
-                src={getProfileImageUrl(profile.image)}
+                src={getProfileImageUrl(profile.image, STATIC_CONTENT_URL)}
                 alt={profile.name}
                 slotProps={{
                   img: {
@@ -149,7 +150,7 @@ function Navigation() {
                 sx={{ pl: 2 }}
               >
                 <Avatar
-                  src={getProfileImageUrl(p.image)}
+                  src={getProfileImageUrl(p.image, STATIC_CONTENT_URL)}
                   alt={p.name}
                   slotProps={{
                     img: {

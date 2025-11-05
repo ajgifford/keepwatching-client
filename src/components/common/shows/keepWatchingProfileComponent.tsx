@@ -4,9 +4,9 @@ import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { EpisodeCard } from './episodeCard';
 import { KeepWatchingShow, NextEpisode, UserWatchStatus } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 const balanceShowsAcrossRows = (shows: KeepWatchingShow[]): KeepWatchingShow[] => {
   if (!shows || shows.length <= 2) return shows;

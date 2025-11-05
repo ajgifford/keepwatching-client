@@ -34,8 +34,8 @@ import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
 import { selectActiveProfile } from '../../app/slices/activeProfileSlice';
 import { CreditCard } from '../common/person/creditCard';
-import { buildTMDBImagePath } from '../utility/contentUtility';
 import { PersonDetails as PersonDetailsType } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 import { ErrorComponent, LoadingComponent } from '@ajgifford/keepwatching-ui';
 
 const getGenderIcon = (gender: number) => {

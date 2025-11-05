@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Avatar, Card, CardContent, Chip, Grid, Rating, Stack, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { Credit, ShowCredit } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 // Type guard to check if the credit is a ShowCredit
 const isShowCredit = (credit: Credit | ShowCredit): credit is ShowCredit => {

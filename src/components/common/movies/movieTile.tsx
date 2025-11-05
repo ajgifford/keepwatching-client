@@ -1,7 +1,7 @@
 import { Avatar, Box, Grid, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface PropTypes {
   movie: ProfileMovie;

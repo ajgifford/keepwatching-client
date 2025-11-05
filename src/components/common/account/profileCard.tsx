@@ -10,12 +10,13 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StarsIcon from '@mui/icons-material/Stars';
 import { Alert, Box, Button, CircularProgress, Menu, MenuItem, Stack, Typography } from '@mui/material';
 
+import { STATIC_CONTENT_URL } from '../../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
 import { removeProfileImage, selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
-import { getProfileImageUrl } from '../../utility/imageUtils';
 import { Profile } from '@ajgifford/keepwatching-types';
+import { getProfileImageUrl } from '@ajgifford/keepwatching-ui';
 
 interface PropTypes {
   profile: Profile;
@@ -120,7 +121,7 @@ export function ProfileCard({
           <Box
             crossOrigin="anonymous"
             component="img"
-            src={getProfileImageUrl(profile.image)}
+            src={getProfileImageUrl(profile.image, STATIC_CONTENT_URL)}
             alt={profile.name}
             className={`profile-image ${isRemovingImage ? 'loading' : ''}`}
             sx={{

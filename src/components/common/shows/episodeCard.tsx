@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { WatchStatusIcon } from '../../utility/watchStatusUtility';
 import { NextEpisode, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface EpisodeCardProps {
   episode: NextEpisode;

@@ -11,9 +11,9 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import FavoritesButton from '../media/favoriteButton';
 import { DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface SearchResultProps {
   result: DiscoverAndSearchResult;

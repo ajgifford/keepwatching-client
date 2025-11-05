@@ -4,8 +4,8 @@ import LiveTvIcon from '@mui/icons-material/LiveTv';
 import MovieIcon from '@mui/icons-material/Movie';
 import { Badge, Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { ProfileMovie, ProfileShow } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 import { getWatchStatusColor } from '@ajgifford/keepwatching-ui';
 
 interface ProfileContentCardProps {

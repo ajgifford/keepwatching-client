@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface DashboardEpisodeCardProps {
   episode: RecentUpcomingEpisode;

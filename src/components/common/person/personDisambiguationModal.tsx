@@ -29,8 +29,8 @@ import {
   selectShowDisambiguation,
   toggleDisambiguation,
 } from '../../../app/slices/personSearchSlice';
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { PersonSearchResult } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 export const PersonDisambiguationModal: React.FC = () => {
   const dispatch = useAppDispatch();

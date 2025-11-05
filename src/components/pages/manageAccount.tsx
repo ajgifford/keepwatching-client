@@ -26,6 +26,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { STATIC_CONTENT_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   deleteAccount,
@@ -48,8 +49,8 @@ import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
 import AccountStatisticsDialog from '../common/statistics/layouts/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/layouts/profileStatisticsDialog';
-import { getAccountImageUrl } from '../utility/imageUtils';
 import { Profile } from '@ajgifford/keepwatching-types';
+import { getAccountImageUrl } from '@ajgifford/keepwatching-ui';
 import { ErrorComponent } from '@ajgifford/keepwatching-ui';
 import { getAuth } from 'firebase/auth';
 
@@ -259,7 +260,7 @@ const ManageAccount = () => {
             <Box
               crossOrigin="anonymous"
               component="img"
-              src={getAccountImageUrl(safeAccount.image)}
+              src={getAccountImageUrl(safeAccount.image, STATIC_CONTENT_URL)}
               alt={safeAccount.name}
               referrerPolicy="no-referrer"
               sx={{

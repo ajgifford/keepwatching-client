@@ -38,9 +38,9 @@ import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { MovieCastSection } from '../common/movies/movieCast';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
-import { buildTMDBImagePath } from '../utility/contentUtility';
 import { WatchStatusIcon } from '../utility/watchStatusUtility';
 import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 import {
   ErrorComponent,
   LoadingComponent,

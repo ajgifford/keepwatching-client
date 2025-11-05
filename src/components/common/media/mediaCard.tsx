@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Card, CardActions, CardContent, CardMedia, Tooltip, Typography } from '@mui/material';
 
-import { buildTMDBImagePath } from '../../utility/contentUtility';
 import FavoritesButton from './favoriteButton';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 interface MediaCardProps {
   item: SimilarOrRecommendedShow;

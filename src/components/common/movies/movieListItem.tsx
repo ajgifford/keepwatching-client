@@ -19,10 +19,11 @@ import {
 
 import { useAppDispatch } from '../../../app/hooks';
 import { removeMovieFavorite, updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
-import { buildTMDBImagePath, calculateRuntimeDisplay } from '../../utility/contentUtility';
+import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { WatchStatusIcon, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
 import { ProfileMovie, SimpleWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 export type FilterProps = {
   genre: string;
