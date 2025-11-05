@@ -1,6 +1,6 @@
 import { Box, LinearProgress, Typography } from '@mui/material';
 
-import { getProgressBarColor } from '../../../utility/watchStatusColors';
+import { getProgressBarColor } from '@ajgifford/keepwatching-ui';
 
 interface StatisticsProgressBarProps {
   value: number;

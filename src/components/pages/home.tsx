@@ -17,8 +17,6 @@ import {
   selectUpcomingEpisodes,
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
-import { ErrorComponent } from '../common/errorComponent';
-import { LoadingComponent } from '../common/loadingComponent';
 import StreamingServiceSection from '../common/media/streamingServiceSection';
 import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
@@ -26,6 +24,7 @@ import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import ProfileStatisticsComponent from '../common/statistics/layouts/profileStatisticsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
+import { ErrorComponent, LoadingComponent } from '@ajgifford/keepwatching-ui';
 
 const Home = () => {
   const dispatch = useAppDispatch();

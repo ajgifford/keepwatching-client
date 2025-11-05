@@ -5,8 +5,8 @@ import MovieIcon from '@mui/icons-material/Movie';
 import { Badge, Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
-import { getWatchStatusColor } from '../../utility/watchStatusColors';
 import { ProfileMovie, ProfileShow } from '@ajgifford/keepwatching-types';
+import { getWatchStatusColor } from '@ajgifford/keepwatching-ui';
 
 interface ProfileContentCardProps {
   content: ProfileShow | ProfileMovie;

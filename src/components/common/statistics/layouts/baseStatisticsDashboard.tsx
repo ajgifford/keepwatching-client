@@ -2,12 +2,14 @@ import { ReactNode } from 'react';
 
 import { Box, Card, CardContent, CircularProgress, Container, Grid, Typography } from '@mui/material';
 
-import StatisticsSummaryCard from '../cards/statisticsSummaryCard';
-import DistributionBarChart from '../elements/distributionBarChart';
-import DistributionPieChart from '../elements/distributionPieChart';
-import WatchStatusChart from '../elements/watchStatusChart';
 import { useStatisticsData } from '../utils/useStatisticsData';
 import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
+import {
+  DistributionBarChart,
+  DistributionPieChart,
+  StatisticsSummaryCard,
+  WatchStatusChart,
+} from '@ajgifford/keepwatching-ui';
 
 export interface BaseStatisticsDashboardProps {
   statistics?: AccountStatisticsResponse | ProfileStatisticsResponse | null;

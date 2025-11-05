@@ -33,15 +33,6 @@ export const WatchStatusIcon: React.FC<{
   }
 };
 
-export function getWatchStatusDisplay(status: WatchStatus | undefined) {
-  if (!status) return '';
-  if (status === WatchStatus.WATCHED) return 'Watched';
-  if (status === WatchStatus.UP_TO_DATE) return 'Up To Date';
-  if (status === WatchStatus.WATCHING) return 'Watching';
-  if (status === WatchStatus.NOT_WATCHED) return 'Not Watched';
-  if (status === WatchStatus.UNAIRED) return 'Not Yet Aired';
-}
-
 export function determineNextSeasonWatchStatus(season: ProfileSeason): UserWatchStatus {
   switch (season.watchStatus) {
     case WatchStatus.NOT_WATCHED:

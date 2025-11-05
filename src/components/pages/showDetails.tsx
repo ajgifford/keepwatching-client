@@ -48,8 +48,6 @@ import {
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
-import { ErrorComponent } from '../common/errorComponent';
-import { LoadingComponent } from '../common/loadingComponent';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
 import { ShowCastSection } from '../common/shows/showCast';
@@ -68,9 +66,10 @@ import {
   canChangeSeasonWatchStatus,
   determineNextSeasonWatchStatus,
   getWatchStatusAction,
-  getWatchStatusDisplay,
 } from '../utility/watchStatusUtility';
 import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, WatchStatus } from '@ajgifford/keepwatching-types';
+import { ErrorComponent, LoadingComponent, formatUserRating } from '@ajgifford/keepwatching-ui';
+import { getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
 function ShowDetails() {
   const { showId, profileId } = useParams();
@@ -214,13 +213,6 @@ function ShowDetails() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
     });
-  };
-
-  const formatUserRating = (rating: number | undefined) => {
-    if (rating) {
-      return `${rating.toFixed(2)} / 10`;
-    }
-    return 'Unknown';
   };
 
   const formatSeasons = (seasons: number | undefined) => {

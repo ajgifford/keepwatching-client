@@ -14,11 +14,11 @@ import {
   selectSelectedPerson,
   selectShowDisambiguation,
 } from '../../../app/slices/personSearchSlice';
-import { LoadingComponent } from '../loadingComponent';
 import { PersonConfidenceBanner } from '../person/personConfidenceBanner';
 import { PersonDisambiguationModal } from '../person/personDisambiguationModal';
 import { PersonFilmographyDisplay } from '../person/personFilmographyDisplay';
 import { SearchEmptyState } from './searchEmptyState';
+import { LoadingComponent } from '@ajgifford/keepwatching-ui';
 
 export const PersonSearchTab: React.FC = () => {
   const dispatch = useAppDispatch();

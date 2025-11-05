@@ -18,10 +18,10 @@ import {
 } from '@mui/material';
 
 import { PersonSearchDetails } from '../../../app/model/personSearchTypes';
-import { LoadingComponent } from '../loadingComponent';
 import { MediaCard } from '../media/mediaCard';
 import { TabPanel, a11yProps } from '../tabs/tabPanel';
 import { SearchPersonCredit } from '@ajgifford/keepwatching-types';
+import { LoadingComponent } from '@ajgifford/keepwatching-ui';
 
 interface PersonFilmographyDisplayProps {
   person: PersonSearchDetails;

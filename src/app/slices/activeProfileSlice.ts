@@ -1,6 +1,5 @@
 import axiosInstance from '../api/axiosInstance';
 import { generateGenreFilterValues, generateStreamingServiceFilterValues } from '../constants/filters';
-import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
 import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
@@ -27,6 +26,7 @@ import {
   UserWatchStatus,
   WatchStatus,
 } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 

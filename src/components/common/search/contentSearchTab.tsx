@@ -7,9 +7,9 @@ import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, Tex
 import axiosInstance from '../../../app/api/axiosInstance';
 import { useAppDispatch } from '../../../app/hooks';
 import { ActivityNotificationType, showActivityNotification } from '../../../app/slices/activityNotificationSlice';
-import { LoadingComponent } from '../loadingComponent';
 import SearchResults from './searchResults';
 import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
+import { LoadingComponent } from '@ajgifford/keepwatching-ui';
 import { AxiosError, AxiosResponse } from 'axios';
 
 interface ContentSearchTabProps {

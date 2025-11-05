@@ -34,8 +34,6 @@ import {
   selectSimilarMovies,
 } from '../../app/slices/activeMovieSlice';
 import { updateMovieWatchStatus } from '../../app/slices/activeProfileSlice';
-import { ErrorComponent } from '../common/errorComponent';
-import { LoadingComponent } from '../common/loadingComponent';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { MovieCastSection } from '../common/movies/movieCast';
@@ -43,6 +41,13 @@ import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { buildTMDBImagePath } from '../utility/contentUtility';
 import { WatchStatusIcon } from '../utility/watchStatusUtility';
 import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
+import {
+  ErrorComponent,
+  LoadingComponent,
+  formatCurrency,
+  formatRuntime,
+  formatUserRating,
+} from '@ajgifford/keepwatching-ui';
 
 function MovieDetails() {
   const { movieId, profileId } = useParams();
@@ -135,32 +140,6 @@ function MovieDetails() {
     };
 
     return pathMap[basePath] || 'Back';
-  };
-
-  const formatRuntime = (minutes: number | undefined) => {
-    if (minutes) {
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      return `${hours}h ${mins}m`;
-    }
-    return '';
-  };
-
-  const formatUserRating = (rating: number | undefined) => {
-    if (rating) {
-      return `${rating.toFixed(2)} / 10`;
-    }
-    return 'Unknown';
-  };
-
-  const formatCurrency = (amount: number | undefined) => {
-    if (amount) {
-      return amount.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      });
-    }
-    return 'Unknown';
   };
 
   function formatReleaseDate(releaseDate: string | undefined): string {

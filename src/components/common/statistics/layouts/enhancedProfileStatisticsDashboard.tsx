@@ -15,19 +15,6 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
-import { AbandonmentRiskCard } from '../cards/abandonmentRiskCard';
-import ActivityTimelineChart from '../cards/activityTimelineChart';
-import BacklogAgingCard from '../cards/backlogAgingCard';
-import BingeWatchingCard from '../cards/bingeWatchingCard';
-import { ContentDepthCard } from '../cards/contentDepthCard';
-import { ContentDiscoveryCard } from '../cards/contentDiscoveryCard';
-import MilestonesAndAnniversaryCard from '../cards/milestonesAndAnniversaryCard';
-import { SeasonalViewingCard } from '../cards/seasonalViewingCard';
-import ShowProgressCard from '../cards/showProgressCard';
-import { TimeToWatchCard } from '../cards/timeToWatchCard';
-import { UnairedContentCard } from '../cards/unairedContentCard';
-import WatchStreakCard from '../cards/watchStreakCard';
-import WatchVelocityCard from '../cards/watchVelocityCard';
 import { getProfileSummaryProps } from '../utils/statisticsUtils';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import {
@@ -45,6 +32,21 @@ import {
   WatchingActivityTimeline,
   WatchingVelocityStats,
 } from '@ajgifford/keepwatching-types';
+import {
+  AbandonmentRiskCard,
+  ActivityTimelineChart,
+  BacklogAgingCard,
+  BingeWatchingCard,
+  ContentDepthCard,
+  ContentDiscoveryCard,
+  MilestonesAndAnniversaryCard,
+  SeasonalViewingCard,
+  ShowProgressCard,
+  TimeToWatchCard,
+  UnairedContentCard,
+  WatchStreakCard,
+  WatchVelocityCard,
+} from '@ajgifford/keepwatching-ui';
 
 interface EnhancedProfileStatisticsDashboardProps {
   profileId: number;

@@ -1,5 +1,4 @@
 import axiosInstance from '../api/axiosInstance';
-import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
 import { updateNextEpisodeWatchStatus, updateShowWatchStatus } from './activeProfileSlice';
@@ -15,6 +14,7 @@ import {
   UserWatchStatus,
   WatchStatus,
 } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 

@@ -33,11 +33,10 @@ import {
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppSelector } from '../../app/hooks';
 import { selectActiveProfile } from '../../app/slices/activeProfileSlice';
-import { ErrorComponent } from '../common/errorComponent';
-import { LoadingComponent } from '../common/loadingComponent';
 import { CreditCard } from '../common/person/creditCard';
 import { buildTMDBImagePath } from '../utility/contentUtility';
 import { PersonDetails as PersonDetailsType } from '@ajgifford/keepwatching-types';
+import { ErrorComponent, LoadingComponent } from '@ajgifford/keepwatching-ui';
 
 const getGenderIcon = (gender: number) => {
   return gender === 1 ? <Female /> : gender === 2 ? <Male /> : <PersonIcon />;

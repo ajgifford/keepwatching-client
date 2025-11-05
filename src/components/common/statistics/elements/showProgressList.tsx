@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { Box, Divider, LinearProgress, Typography } from '@mui/material';
 
-import { getProgressBarColor } from '../../../utility/watchStatusColors';
 import { ShowProgress, WatchStatus } from '@ajgifford/keepwatching-types';
+import { getProgressBarColor } from '@ajgifford/keepwatching-ui';
 
 interface ShowProgressListProps {
   shows: ShowProgress[];

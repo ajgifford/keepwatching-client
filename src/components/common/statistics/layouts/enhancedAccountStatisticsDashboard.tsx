@@ -15,20 +15,6 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
-import { AbandonmentRiskCard } from '../cards/abandonmentRiskCard';
-import ActivityTimelineChart from '../cards/activityTimelineChart';
-import BacklogAgingCard from '../cards/backlogAgingCard';
-import BingeWatchingCard from '../cards/bingeWatchingCard';
-import ContentBreakdownCard from '../cards/contentBreakdownCard';
-import { ContentDepthCard } from '../cards/contentDepthCard';
-import { ContentDiscoveryCard } from '../cards/contentDiscoveryCard';
-import ContentSummaryCard from '../cards/contentSummaryCard';
-import MilestonesAndAnniversaryCard from '../cards/milestonesAndAnniversaryCard';
-import { SeasonalViewingCard } from '../cards/seasonalViewingCard';
-import { TimeToWatchCard } from '../cards/timeToWatchCard';
-import { UnairedContentCard } from '../cards/unairedContentCard';
-import WatchStreakCard from '../cards/watchStreakCard';
-import WatchVelocityCard from '../cards/watchVelocityCard';
 import { getAccountSummaryProps } from '../utils/statisticsUtils';
 import { getTopCategory, getTopCategoryPercentage } from '../utils/useStatisticsData';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
@@ -46,6 +32,22 @@ import {
   AccountWatchingVelocityStats,
   MilestoneStats,
 } from '@ajgifford/keepwatching-types';
+import {
+  AbandonmentRiskCard,
+  ActivityTimelineChart,
+  BacklogAgingCard,
+  BingeWatchingCard,
+  ContentBreakdownCard,
+  ContentDepthCard,
+  ContentDiscoveryCard,
+  ContentSummaryCard,
+  MilestonesAndAnniversaryCard,
+  SeasonalViewingCard,
+  TimeToWatchCard,
+  UnairedContentCard,
+  WatchStreakCard,
+  WatchVelocityCard,
+} from '@ajgifford/keepwatching-ui';
 
 interface EnhancedAccountStatisticsDashboardProps {
   accountId: number;

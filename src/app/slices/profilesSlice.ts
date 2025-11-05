@@ -1,9 +1,9 @@
 import axiosInstance from '../api/axiosInstance';
-import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { Profile, ProfileResponse, ProfilesResponse } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { EntityState, createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 

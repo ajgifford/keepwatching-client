@@ -1,6 +1,5 @@
 import axiosInstance from '../api/axiosInstance';
 import { auth, getFirebaseAuthErrorMessage } from '../firebaseConfig';
-import { ApiErrorResponse } from '../model/errors';
 import { RootState } from '../store';
 import { setActiveProfile } from './activeProfileSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
@@ -8,6 +7,7 @@ import { fetchAccountPreferences } from './preferencesSlice';
 import { fetchProfiles } from './profilesSlice';
 import { fetchSystemNotifications } from './systemNotificationsSlice';
 import { Account, AccountResponse } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { ThunkDispatch, UnknownAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { FirebaseError } from 'firebase/app';
