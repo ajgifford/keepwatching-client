@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 
-import { Box, Card, CardContent, CircularProgress, Container, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, CircularProgress, Container, Grid, Typography } from '@mui/material';
 
 import StatisticsSummaryCard from '../cards/statisticsSummaryCard';
 import DistributionBarChart from '../elements/distributionBarChart';

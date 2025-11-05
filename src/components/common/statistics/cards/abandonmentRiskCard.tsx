@@ -1,8 +1,7 @@
 import React from 'react';
 
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { Box, Card, CardContent, Chip, List, ListItem, ListItemText, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Chip, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { AbandonmentRiskStats } from '@ajgifford/keepwatching-types';
 

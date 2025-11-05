@@ -475,9 +475,9 @@ function ShowDetails() {
           {/* Additional Show Details */}
           <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
             <Grid container spacing={2} sx={{ mb: 6 }}>
-              <Grid item xs={12} md={8}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Genres
                     </Typography>
@@ -488,7 +488,7 @@ function ShowDetails() {
                     </Box>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                         Network • Streaming On
@@ -499,7 +499,7 @@ function ShowDetails() {
                     </Box>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                         Watch Status
@@ -511,7 +511,7 @@ function ShowDetails() {
                     </Box>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                         Show Status
@@ -522,7 +522,7 @@ function ShowDetails() {
                 </Grid>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Paper
                   variant="outlined"
                   sx={{
@@ -536,12 +536,12 @@ function ShowDetails() {
                   </Typography>
 
                   <Grid container sx={{ mb: 1 }}>
-                    <Grid item xs={4} sm={3}>
+                    <Grid size={{ xs: 4, sm: 3 }}>
                       <Typography variant="body2" color="text.secondary" noWrap>
                         Last Episode
                       </Typography>
                     </Grid>
-                    <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
+                    <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight={500}>
                         {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode) : 'No Last Episode'}
                       </Typography>
@@ -551,12 +551,12 @@ function ShowDetails() {
                   <Divider sx={{ my: 1, opacity: 0.6 }} />
 
                   <Grid container>
-                    <Grid item xs={4} sm={3}>
+                    <Grid size={{ xs: 4, sm: 3 }}>
                       <Typography variant="body2" color="text.secondary" noWrap>
                         Next Episode
                       </Typography>
                     </Grid>
-                    <Grid item xs={8} sm={9} sx={{ textAlign: 'right' }}>
+                    <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight={500}>
                         {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode) : 'No Next Episode'}
                       </Typography>

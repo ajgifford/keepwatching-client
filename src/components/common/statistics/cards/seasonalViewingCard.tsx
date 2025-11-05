@@ -1,8 +1,7 @@
 import React from 'react';
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { Box, Card, CardContent, Stack, Tooltip, Typography, useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Grid, Stack, Tooltip, Typography, useTheme } from '@mui/material';
 
 import { SeasonalViewingStats } from '@ajgifford/keepwatching-types';
 

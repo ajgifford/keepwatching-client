@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  LinearProgress,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Grid, LinearProgress, Typography } from '@mui/material';
 
 interface ContentBreakdownItem {
   label: string;
@@ -27,7 +20,7 @@ export default function ContentBreakdownCard({ title, items }: ContentBreakdownC
           {title}
         </Typography>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             {items.map((item, index) => (
               <Box key={index} sx={{ mb: index < items.length - 1 ? 2 : 0 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>

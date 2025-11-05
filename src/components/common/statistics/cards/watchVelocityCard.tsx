@@ -3,8 +3,7 @@ import { useMemo } from 'react';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { Box, Card, CardContent, Chip, Divider, Typography, useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Chip, Divider, Grid, Typography, useTheme } from '@mui/material';
 
 import { WatchingVelocityStats } from '@ajgifford/keepwatching-types';
 

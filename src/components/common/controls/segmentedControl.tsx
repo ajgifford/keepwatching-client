@@ -64,23 +64,27 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
     return baseStyles;
   };
 
-  const getGroupStyles = () => ({
-    '& .MuiButton-root': {
-      borderRadius: 0,
-    },
-    '& .MuiButton-root:first-of-type': {
-      borderTopLeftRadius: theme.shape.borderRadius * 2,
-      borderBottomLeftRadius: theme.shape.borderRadius * 2,
-    },
-    '& .MuiButton-root:last-of-type': {
-      borderTopRightRadius: theme.shape.borderRadius * 2,
-      borderBottomRightRadius: theme.shape.borderRadius * 2,
-    },
-    '& .MuiButton-root:not(:last-of-type)': {
-      borderRightWidth: variant === 'outlined' ? 0 : 1,
-    },
-    ...sx,
-  });
+  const getGroupStyles = () => {
+    const borderRadius = typeof theme.shape.borderRadius === 'number' ? theme.shape.borderRadius * 2 : 8; // fallback value
+
+    return {
+      '& .MuiButton-root': {
+        borderRadius: 0,
+      },
+      '& .MuiButton-root:first-of-type': {
+        borderTopLeftRadius: borderRadius,
+        borderBottomLeftRadius: borderRadius,
+      },
+      '& .MuiButton-root:last-of-type': {
+        borderTopRightRadius: borderRadius,
+        borderBottomRightRadius: borderRadius,
+      },
+      '& .MuiButton-root:not(:last-of-type)': {
+        borderRightWidth: variant === 'outlined' ? 0 : 1,
+      },
+      ...sx,
+    };
+  };
 
   return (
     <Box sx={{ display: 'inline-block' }}>

@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 
 import MovieIcon from '@mui/icons-material/Movie';
 import UpcomingIcon from '@mui/icons-material/Upcoming';
-import { Box, Chip, Typography, useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Chip, Grid, Typography, useTheme } from '@mui/material';
 
 import { MovieCard } from './movieCard';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';

@@ -1,5 +1,4 @@
-import { Box, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Grid, Typography } from '@mui/material';
 
 import { PersonCard } from '../person/personCard';
 import { CastMember } from '@ajgifford/keepwatching-types';

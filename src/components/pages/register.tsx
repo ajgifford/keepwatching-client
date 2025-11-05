@@ -8,12 +8,12 @@ import {
   Button,
   Container,
   CssBaseline,
+  Grid,
   TextField,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch } from '../../app/hooks';
 import { register } from '../../app/slices/accountSlice';

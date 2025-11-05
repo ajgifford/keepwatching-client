@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Avatar, Box, Stack, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';

@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid,
   IconButton,
   Menu,
   MenuItem,
@@ -24,7 +25,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {

@@ -3,8 +3,7 @@ import React from 'react';
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import { Box, Card, CardContent, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 
 import { UnairedContentStats } from '@ajgifford/keepwatching-types';
 

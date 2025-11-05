@@ -1,5 +1,4 @@
-import { Avatar, Box, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Avatar, Box, Grid, Typography } from '@mui/material';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';

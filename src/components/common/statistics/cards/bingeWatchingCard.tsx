@@ -5,13 +5,13 @@ import {
   CardContent,
   Chip,
   Divider,
+  Grid,
   List,
   ListItem,
   ListItemText,
   Typography,
   useTheme,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
 import { BingeWatchingStats } from '@ajgifford/keepwatching-types';
 

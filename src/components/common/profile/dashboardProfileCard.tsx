@@ -5,8 +5,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
-import { Box, Card, CardContent, Stack, Typography, alpha } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Grid, Stack, Typography, alpha } from '@mui/material';
 
 import { getProfileImageUrl } from '../../utility/imageUtils';
 import MilestoneBadge from '../statistics/elements/milestoneBadge';

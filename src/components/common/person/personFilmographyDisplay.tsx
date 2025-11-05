@@ -158,7 +158,7 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
         {sortedMovieCredits.length > 0 ? (
           <Grid container spacing={2}>
             {sortedMovieCredits.map((credit) => (
-              <Grid item xs={6} sm={4} md={3} lg={2} key={`movie-${credit.tmdbId}-${credit.character}`}>
+              <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }} key={`movie-${credit.tmdbId}-${credit.character}`}>
                 <Box sx={{ position: 'relative' }}>
                   <MediaCard item={convertCreditToMediaItem(credit)} searchType="movies" />
                 </Box>
@@ -205,7 +205,7 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
         {sortedTvCredits.length > 0 ? (
           <Grid container spacing={2}>
             {sortedTvCredits.map((credit) => (
-              <Grid item xs={6} sm={4} md={3} lg={2} key={`tv-${credit.tmdbId}-${credit.character}`}>
+              <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }} key={`tv-${credit.tmdbId}-${credit.character}`}>
                 <Box sx={{ position: 'relative' }}>
                   <MediaCard item={convertCreditToMediaItem(credit)} searchType="shows" />
                 </Box>

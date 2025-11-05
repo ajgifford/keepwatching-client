@@ -319,7 +319,7 @@ export default function PersonDetails() {
 
             <CardContent sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
               <Grid container spacing={4}>
-                <Grid item xs={12} lg={6}>
+                <Grid size={{ xs: 12, lg: 6 }}>
                   <Typography
                     variant="h5"
                     gutterBottom
@@ -340,7 +340,7 @@ export default function PersonDetails() {
                   </Stack>
                 </Grid>
 
-                <Grid item xs={12} lg={6}>
+                <Grid size={{ xs: 12, lg: 6 }}>
                   <Typography
                     variant="h5"
                     gutterBottom

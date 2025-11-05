@@ -1,7 +1,6 @@
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
-import { Box, Card, CardContent, Chip, Divider, Typography, useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Chip, Divider, Grid, Typography, useTheme } from '@mui/material';
 
 import { WatchStreakStats } from '@ajgifford/keepwatching-types';
 

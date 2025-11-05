@@ -246,7 +246,7 @@ const Notifications: React.FC = () => {
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               size="small"
@@ -267,7 +267,7 @@ const Notifications: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <FormControl fullWidth size="small">
               <InputLabel>Filter</InputLabel>
               <Select
@@ -285,7 +285,7 @@ const Notifications: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 5 }}>
             <Stack direction="row" spacing={1} justifyContent="flex-end">
               {unreadCount === 0 ? (
                 <Button

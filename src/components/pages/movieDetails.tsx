@@ -400,7 +400,7 @@ function MovieDetails() {
           {/* Additional Movie Details */}
           <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
             <Grid container spacing={3} sx={{ mb: 6 }}>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Streaming On
                 </Typography>
@@ -408,7 +408,7 @@ function MovieDetails() {
                   {movie?.streamingServices || 'Not available for streaming'}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Director
                 </Typography>
@@ -416,7 +416,7 @@ function MovieDetails() {
                   {movie?.director || 'Unknown'}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Production Companies
                 </Typography>
@@ -424,7 +424,7 @@ function MovieDetails() {
                   {movie?.productionCompanies || 'Unknown'}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Genres
                 </Typography>
@@ -434,7 +434,7 @@ function MovieDetails() {
                   ))}
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Box Office
                 </Typography>
@@ -442,7 +442,7 @@ function MovieDetails() {
                   {formatCurrency(movie?.revenue)}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Budget
                 </Typography>

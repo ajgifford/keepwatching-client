@@ -9,10 +9,10 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  Grid,
   Stack,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
 import { AbandonmentRiskCard } from '../cards/abandonmentRiskCard';

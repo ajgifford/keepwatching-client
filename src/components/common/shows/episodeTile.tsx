@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Avatar, Box, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Avatar, Box, Grid, Typography } from '@mui/material';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';

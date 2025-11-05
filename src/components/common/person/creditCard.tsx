@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { Avatar, Card, CardContent, Chip, Rating, Stack, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Avatar, Card, CardContent, Chip, Grid, Rating, Stack, Typography } from '@mui/material';
 
 import { buildTMDBImagePath } from '../../utility/contentUtility';
 import { Credit, ShowCredit } from '@ajgifford/keepwatching-types';

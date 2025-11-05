@@ -13,6 +13,7 @@ import {
   Card,
   CardContent,
   Chip,
+  Grid,
   LinearProgress,
   Stack,
   Tooltip,
@@ -20,7 +21,6 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
 import { MILESTONE_THRESHOLDS, Milestone, MilestoneStats } from '@ajgifford/keepwatching-types';
 

@@ -3,8 +3,7 @@ import React from 'react';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Chip, Grid, Typography } from '@mui/material';
 
 import { ContentDiscoveryStats } from '@ajgifford/keepwatching-types';
 

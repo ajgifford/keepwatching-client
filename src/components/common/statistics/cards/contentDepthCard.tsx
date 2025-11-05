@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { Box, Card, CardContent, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 
 import DistributionBarChart from '../elements/distributionBarChart';
 import DistributionPieChart from '../elements/distributionPieChart';
