@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
-import { getProfileSummaryProps } from '../utils/statisticsUtils';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import {
   AbandonmentRiskStats,
@@ -46,6 +45,7 @@ import {
   UnairedContentCard,
   WatchStreakCard,
   WatchVelocityCard,
+  getProfileSummaryProps,
 } from '@ajgifford/keepwatching-ui';
 
 interface EnhancedProfileStatisticsDashboardProps {

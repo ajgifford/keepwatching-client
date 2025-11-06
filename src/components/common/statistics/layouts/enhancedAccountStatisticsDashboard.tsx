@@ -15,8 +15,6 @@ import {
 } from '@mui/material';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
-import { getAccountSummaryProps } from '../utils/statisticsUtils';
-import { getTopCategory, getTopCategoryPercentage } from '../utils/useStatisticsData';
 import BaseStatisticsDashboard from './baseStatisticsDashboard';
 import {
   AbandonmentRiskStats,
@@ -47,6 +45,9 @@ import {
   UnairedContentCard,
   WatchStreakCard,
   WatchVelocityCard,
+  getAccountSummaryProps,
+  getTopCategory,
+  getTopCategoryPercentage,
 } from '@ajgifford/keepwatching-ui';
 
 interface EnhancedAccountStatisticsDashboardProps {

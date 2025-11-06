@@ -2,13 +2,13 @@ import { ReactNode } from 'react';
 
 import { Box, Card, CardContent, CircularProgress, Container, Grid, Typography } from '@mui/material';
 
-import { useStatisticsData } from '../utils/useStatisticsData';
 import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 import {
   DistributionBarChart,
   DistributionPieChart,
   StatisticsSummaryCard,
   WatchStatusChart,
+  useStatisticsData,
 } from '@ajgifford/keepwatching-ui';
 
 export interface BaseStatisticsDashboardProps {
