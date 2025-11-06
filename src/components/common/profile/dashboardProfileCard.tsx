@@ -8,10 +8,9 @@ import TvIcon from '@mui/icons-material/Tv';
 import { Box, Card, CardContent, Grid, Stack, Typography, alpha } from '@mui/material';
 
 import { STATIC_CONTENT_URL } from '../../../app/constants/constants';
-import MilestoneBadge from '../statistics/elements/milestoneBadge';
 import { getLastAchievedMilestone, getNextMilestone } from '../statistics/utils/milestoneUtils';
 import { MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
-import { getProfileImageUrl } from '@ajgifford/keepwatching-ui';
+import { MilestoneBadge, getProfileImageUrl } from '@ajgifford/keepwatching-ui';
 
 interface DashboardProfileCardProps {
   profile: Profile;

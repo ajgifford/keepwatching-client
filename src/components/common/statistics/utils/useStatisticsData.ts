@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 
-import { WatchStatusDataItem } from '../elements/watchStatusChart';
-import { ChartDataItem, convertToChartData } from '../utils/distributionTypes';
 import { AccountStatisticsResponse, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
+import { ChartDataItem, WatchStatusDataItem, convertToChartData } from '@ajgifford/keepwatching-ui';
 
 export function useStatisticsData(
   statistics: AccountStatisticsResponse | ProfileStatisticsResponse | null | undefined
