@@ -1,20 +1,15 @@
 import { useEffect, useState } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-
-import axiosInstance from '../../../../app/api/axiosInstance';
+import axiosInstance from '../../../app/api/axiosInstance';
 import { ProfileEnhancedStatistics, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 import { EnhancedProfileStatisticsDashboard } from '@ajgifford/keepwatching-ui';
 
-interface ProfileStatisticsDialogProps {
-  open: boolean;
-  title: string;
+interface ProfileStatisticsComponentProps {
   accountId: number;
   profileId: number;
-  onClose: () => void;
 }
 
-const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }: ProfileStatisticsDialogProps) => {
+const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsComponentProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
   const [enhancedStatistics, setEnhancedStatistics] = useState<ProfileEnhancedStatistics>({});
@@ -22,7 +17,7 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
 
   useEffect(() => {
     const fetchAllStats = async () => {
-      if (!open || !accountId || !profileId) return;
+      if (!accountId || !profileId) return;
 
       setLoading(true);
       setIsLoadingEnhancedStats(true);
@@ -85,42 +80,19 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
       }
     };
 
-    if (accountId && profileId && open) {
+    if (accountId && profileId) {
       fetchAllStats();
     }
-  }, [accountId, profileId, open]);
+  }, [accountId, profileId]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="lg"
-      fullWidth
-      PaperProps={{
-        sx: {
-          minHeight: '80vh',
-          maxHeight: '90vh',
-        },
-      }}
-    >
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent dividers>
-        <EnhancedProfileStatisticsDashboard
-          accountId={accountId}
-          profileId={profileId}
-          statistics={statistics}
-          isLoading={loading}
-          enhancedStatistics={enhancedStatistics}
-          isLoadingEnhancedStats={isLoadingEnhancedStats}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} variant="outlined">
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <EnhancedProfileStatisticsDashboard
+      statistics={statistics}
+      isLoading={loading}
+      enhancedStatistics={enhancedStatistics}
+      isLoadingEnhancedStats={isLoadingEnhancedStats}
+    />
   );
 };
 
-export default ProfileStatisticsDialog;
+export default ProfileStatisticsComponent;

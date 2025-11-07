@@ -47,8 +47,8 @@ import {
 import NameEditDialog from '../common/account/nameEditDialog';
 import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
-import AccountStatisticsDialog from '../common/statistics/layouts/accountStatisticsDialog';
-import ProfileStatisticsDialog from '../common/statistics/layouts/profileStatisticsDialog';
+import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
+import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { Profile } from '@ajgifford/keepwatching-types';
 import { getAccountImageUrl } from '@ajgifford/keepwatching-ui';
 import { ErrorComponent } from '@ajgifford/keepwatching-ui';

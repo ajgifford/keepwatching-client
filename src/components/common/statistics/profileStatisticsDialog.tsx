@@ -2,33 +2,34 @@ import { useEffect, useState } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-import axiosInstance from '../../../../app/api/axiosInstance';
-import { AccountEnhancedStatistics, AccountStatisticsResponse } from '@ajgifford/keepwatching-types';
-import { EnhancedAccountStatisticsDashboard } from '@ajgifford/keepwatching-ui';
+import axiosInstance from '../../../app/api/axiosInstance';
+import { ProfileEnhancedStatistics, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
+import { EnhancedProfileStatisticsDashboard } from '@ajgifford/keepwatching-ui';
 
-interface AccountStatisticsDialogProps {
+interface ProfileStatisticsDialogProps {
   open: boolean;
   title: string;
   accountId: number;
+  profileId: number;
   onClose: () => void;
 }
 
-const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountStatisticsDialogProps) => {
+const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }: ProfileStatisticsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [statistics, setStatistics] = useState<AccountStatisticsResponse | null>(null);
-  const [enhancedStatistics, setEnhancedStatistics] = useState<AccountEnhancedStatistics>({});
+  const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
+  const [enhancedStatistics, setEnhancedStatistics] = useState<ProfileEnhancedStatistics>({});
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
 
   useEffect(() => {
     const fetchAllStats = async () => {
-      if (!open || !accountId) return;
+      if (!open || !accountId || !profileId) return;
 
       setLoading(true);
       setIsLoadingEnhancedStats(true);
 
       try {
         // Fetch base statistics
-        const baseResponse = await axiosInstance.get(`/accounts/${accountId}/statistics`);
+        const baseResponse = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics`);
         setStatistics(baseResponse.data.results);
 
         // Fetch all enhanced statistics in parallel
@@ -45,21 +46,23 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
           abandonmentRiskRes,
           unairedContentRes,
         ] = await Promise.allSettled([
-          axiosInstance.get(`/accounts/${accountId}/statistics/velocity`, { params: { days: 30 } }),
-          axiosInstance.get(`/accounts/${accountId}/statistics/activity/timeline`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/binge`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/streaks`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/time-to-watch`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/seasonal`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/milestones`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/content-depth`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/content-discovery`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/abandonment-risk`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/unaired-content`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
+            params: { days: 30 },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-depth`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-discovery`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/abandonment-risk`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/unaired-content`),
         ]);
 
         // Build enhanced statistics object
-        const enhanced: AccountEnhancedStatistics = {
+        const enhanced: ProfileEnhancedStatistics = {
           velocity: velocityRes.status === 'fulfilled' ? velocityRes.value.data.results : null,
           timeline: timelineRes.status === 'fulfilled' ? timelineRes.value.data.results : null,
           binge: bingeRes.status === 'fulfilled' ? bingeRes.value.data.results : null,
@@ -82,10 +85,10 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
       }
     };
 
-    if (accountId && open) {
+    if (accountId && profileId && open) {
       fetchAllStats();
     }
-  }, [accountId, open]);
+  }, [accountId, profileId, open]);
 
   return (
     <Dialog
@@ -102,8 +105,7 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent dividers>
-        <EnhancedAccountStatisticsDashboard
-          accountId={accountId}
+        <EnhancedProfileStatisticsDashboard
           statistics={statistics}
           isLoading={loading}
           enhancedStatistics={enhancedStatistics}
@@ -119,4 +121,4 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
   );
 };
 
-export default AccountStatisticsDialog;
+export default ProfileStatisticsDialog;
