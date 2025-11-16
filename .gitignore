@@ -90,6 +90,8 @@ web_modules/
 .env.production
 .env.production.local
 .env.local
+.env_windows
+.env_pi
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
