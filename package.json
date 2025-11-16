@@ -16,7 +16,7 @@
     "@types/react-dom": "^19.0.0",
     "axios": "1.13.2",
     "email-validator": "^2.0.4",
-    "firebase": "^11.2.0",
+    "firebase": "^12.6.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-is": "^19.0.0",
