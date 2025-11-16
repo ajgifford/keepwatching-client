@@ -19,6 +19,10 @@ pids
 # Output
 build
 
+# Vite
+.vite
+dist
+
 # Certs
 certs
 
