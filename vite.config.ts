@@ -73,5 +73,35 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: true,
+    chunkSizeWarningLimit: 600, // Set to 600 kB to allow current app size while monitoring growth
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          
+          // MUI core components
+          'mui-core': ['@mui/material'],
+          
+          // MUI icons (large package)
+          'mui-icons': ['@mui/icons-material'],
+          
+          // Emotion styling
+          'emotion': ['@emotion/react', '@emotion/styled'],
+          
+          // Redux
+          'redux': ['@reduxjs/toolkit', 'react-redux'],
+          
+          // Charts library
+          'recharts': ['recharts'],
+          
+          // Socket.io
+          'socket': ['socket.io-client'],
+          
+          // Axios
+          'axios': ['axios'],
+        },
+      },
+    },
   },
 });
