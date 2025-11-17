@@ -77,8 +77,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // React core
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // React core (including react-is to ensure proper loading order)
+          'react-vendor': ['react', 'react-dom', 'react-router-dom', 'react-is'],
           
           // MUI core components
           'mui-core': ['@mui/material'],
