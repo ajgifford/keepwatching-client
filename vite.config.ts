@@ -80,14 +80,11 @@ export default defineConfig({
           // React core (including react-is to ensure proper loading order)
           'react-vendor': ['react', 'react-dom', 'react-router-dom', 'react-is'],
           
-          // MUI core components
-          'mui-core': ['@mui/material'],
+          // MUI and Emotion together (MUI depends on Emotion)
+          'mui-core': ['@mui/material', '@emotion/react', '@emotion/styled'],
           
           // MUI icons (large package)
           'mui-icons': ['@mui/icons-material'],
-          
-          // Emotion styling
-          'emotion': ['@emotion/react', '@emotion/styled'],
           
           // Redux
           'redux': ['@reduxjs/toolkit', 'react-redux'],
