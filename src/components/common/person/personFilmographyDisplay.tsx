@@ -95,7 +95,7 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
     };
   };
 
-  if (!person.movieCredits || !person.tvCredits) {
+  if (!person.movieCredits || !person.tvCredits || person.totalCredits === undefined) {
     return <LoadingComponent />;
   }
 

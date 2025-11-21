@@ -1,0 +1,204 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Search - Snapshots should match snapshot for initial render 1`] = `
+<div>
+  <div>
+    <h4
+      class="MuiTypography-root MuiTypography-h4 css-f84ov1-MuiTypography-root"
+    >
+      Search
+    </h4>
+    <div
+      class="MuiBox-root css-1fkybvm"
+    >
+      <div
+        class="MuiTabs-root css-jhczcq-MuiTabs-root"
+      >
+        <div
+          class="MuiTabs-scroller MuiTabs-fixed css-s2t35c-MuiTabs-scroller"
+          style="overflow: hidden; margin-bottom: 0px;"
+        >
+          <div
+            aria-label="search type tabs"
+            class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+            role="tablist"
+          >
+            <button
+              aria-controls="home-tabpanel-0"
+              aria-selected="true"
+              class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary Mui-selected css-iypnj4-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-0"
+              role="tab"
+              tabindex="0"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                data-testid="TvIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2m0 14H3V5h18z"
+                />
+              </svg>
+              TV Shows
+            </button>
+            <button
+              aria-controls="home-tabpanel-1"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary css-iypnj4-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-1"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                data-testid="MovieIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="m18 4 2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4z"
+                />
+              </svg>
+              Movies
+            </button>
+            <button
+              aria-controls="home-tabpanel-2"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary css-iypnj4-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-2"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                data-testid="PersonIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"
+                />
+              </svg>
+              People
+            </button>
+          </div>
+          <span
+            class="MuiTabs-indicator css-1qltlow-MuiTabs-indicator"
+            style="left: 0px; width: 0px;"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      aria-labelledby="home-tab-0"
+      id="home-tabpanel-0"
+      role="tabpanel"
+    >
+      <div
+        class="MuiBox-root css-1v3caum"
+      >
+        <div
+          data-testid="content-search-tab"
+        >
+          ContentSearchTab
+        </div>
+      </div>
+    </div>
+    <div
+      aria-labelledby="home-tab-1"
+      hidden=""
+      id="home-tabpanel-1"
+      role="tabpanel"
+    />
+    <div
+      aria-labelledby="home-tab-2"
+      hidden=""
+      id="home-tabpanel-2"
+      role="tabpanel"
+    />
+  </div>
+</div>
+`;
+
+exports[`Search - Snapshots should match snapshot of search tabs 1`] = `
+<div
+  aria-label="search type tabs"
+  class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+  role="tablist"
+>
+  <button
+    aria-controls="home-tabpanel-0"
+    aria-selected="true"
+    class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary Mui-selected css-iypnj4-MuiButtonBase-root-MuiTab-root"
+    id="home-tab-0"
+    role="tab"
+    tabindex="0"
+    type="button"
+  >
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+      data-testid="TvIcon"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2m0 14H3V5h18z"
+      />
+    </svg>
+    TV Shows
+  </button>
+  <button
+    aria-controls="home-tabpanel-1"
+    aria-selected="false"
+    class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary css-iypnj4-MuiButtonBase-root-MuiTab-root"
+    id="home-tab-1"
+    role="tab"
+    tabindex="-1"
+    type="button"
+  >
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+      data-testid="MovieIcon"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="m18 4 2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4z"
+      />
+    </svg>
+    Movies
+  </button>
+  <button
+    aria-controls="home-tabpanel-2"
+    aria-selected="false"
+    class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary css-iypnj4-MuiButtonBase-root-MuiTab-root"
+    id="home-tab-2"
+    role="tab"
+    tabindex="-1"
+    type="button"
+  >
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+      data-testid="PersonIcon"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"
+      />
+    </svg>
+    People
+  </button>
+</div>
+`;

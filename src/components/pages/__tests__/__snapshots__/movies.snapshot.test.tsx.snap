@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Movies - Snapshots should match snapshot for initial render 1`] = `
+<div>
+  <div
+    class="MuiBox-root css-76cv7s"
+  >
+    <h4
+      class="MuiTypography-root MuiTypography-h4 MuiTypography-alignLeft css-1ya2hdm-MuiTypography-root"
+      style="--Typography-textAlign: left;"
+    >
+      Movies
+    </h4>
+    <div
+      class="MuiStack-root css-cze59j-MuiStack-root"
+    >
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-1uent87-MuiButtonBase-root-MuiButton-root"
+        id="moviesFilterButton"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium icon css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+        </span>
+        Filters
+      </button>
+      <div
+        class="MuiStack-root css-1hbs1w5-MuiStack-root"
+      />
+      <h6
+        class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-alignJustify css-1ktgya2-MuiTypography-root"
+        style="--Typography-textAlign: justify;"
+      >
+        Count: 
+        2
+      </h6>
+    </div>
+  </div>
+  <div
+    class="MuiBox-root css-1yuhvjn"
+  >
+    <div
+      class="MuiBox-root css-0"
+    >
+      <ul
+        class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root"
+        id="moviesList"
+      >
+        <div
+          data-testid="movie-list-item"
+        >
+          Movie 1
+        </div>
+        <li
+          aria-orientation="horizontal"
+          class="MuiDivider-root MuiDivider-inset css-gyhshc-MuiDivider-root"
+          role="separator"
+        />
+        <div
+          data-testid="movie-list-item"
+        >
+          Movie 2
+        </div>
+        <li
+          aria-orientation="horizontal"
+          class="MuiDivider-root MuiDivider-inset css-gyhshc-MuiDivider-root"
+          role="separator"
+        />
+      </ul>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Movies - Snapshots should match snapshot of movies list 1`] = `
+<div
+  class="MuiBox-root css-76cv7s"
+>
+  <h4
+    class="MuiTypography-root MuiTypography-h4 MuiTypography-alignLeft css-1ya2hdm-MuiTypography-root"
+    style="--Typography-textAlign: left;"
+  >
+    Movies
+  </h4>
+  <div
+    class="MuiStack-root css-cze59j-MuiStack-root"
+  >
+    <button
+      class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-1uent87-MuiButtonBase-root-MuiButton-root"
+      id="moviesFilterButton"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium icon css-1umw9bq-MuiSvgIcon-root"
+          data-testid="FilterListIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+          />
+        </svg>
+      </span>
+      Filters
+    </button>
+    <div
+      class="MuiStack-root css-1hbs1w5-MuiStack-root"
+    />
+    <h6
+      class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-alignJustify css-1ktgya2-MuiTypography-root"
+      style="--Typography-textAlign: justify;"
+    >
+      Count: 
+      2
+    </h6>
+  </div>
+</div>
+`;

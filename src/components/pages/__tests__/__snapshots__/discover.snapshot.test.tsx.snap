@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Discover - Snapshots should match snapshot for initial render 1`] = `
+<div>
+  <h4
+    class="MuiTypography-root MuiTypography-h4 css-11pxkfa-MuiTypography-root"
+  >
+    Discover
+  </h4>
+  <div
+    class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-196bwzp-MuiPaper-root-MuiCard-root"
+  >
+    <div
+      class="MuiCardContent-root css-1994y9o-MuiCardContent-root"
+    >
+      <div
+        class="MuiBox-root css-1gsv261"
+      >
+        <div
+          class="MuiTabs-root css-jhczcq-MuiTabs-root"
+        >
+          <div
+            class="MuiTabs-scroller MuiTabs-fixed css-s2t35c-MuiTabs-scroller"
+            style="overflow: hidden; margin-bottom: 0px;"
+          >
+            <div
+              aria-label="discover content tabs"
+              class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+              role="tablist"
+            >
+              <button
+                aria-controls="discover-tabpanel-0"
+                aria-selected="true"
+                class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary MuiTab-fullWidth Mui-selected css-1qsc88e-MuiButtonBase-root-MuiTab-root"
+                id="discover-tab-0"
+                role="tab"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                  data-testid="TrendingUpIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+                  />
+                </svg>
+                Trending Content
+              </button>
+              <button
+                aria-controls="discover-tabpanel-1"
+                aria-selected="false"
+                class="MuiButtonBase-root MuiTab-root MuiTab-labelIcon MuiTab-textColorPrimary MuiTab-fullWidth css-1qsc88e-MuiButtonBase-root-MuiTab-root"
+                id="discover-tab-1"
+                role="tab"
+                tabindex="-1"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                  data-testid="ExploreIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1 1.1-.49 1.1-1.1-.49-1.1-1.1-1.1M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m2.19 12.19L6 18l3.81-8.19L18 6z"
+                  />
+                </svg>
+                By Service
+              </button>
+            </div>
+            <span
+              class="MuiTabs-indicator css-1qltlow-MuiTabs-indicator"
+              style="left: 0px; width: 0px;"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        aria-labelledby="discover-tab-0"
+        id="discover-tabpanel-0"
+        role="tabpanel"
+      >
+        <div
+          class="MuiBox-root css-1v3caum"
+        >
+          <div
+            class="MuiStack-root css-5f1f8a-MuiStack-root"
+          >
+            <div
+              class="MuiBox-root css-1iqaoy3"
+            >
+              <div
+                data-testid="segmented-control"
+              >
+                <button>
+                  TV Shows
+                </button>
+                <button>
+                  Movies
+                </button>
+              </div>
+            </div>
+            <button
+              class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-mf3dnm-MuiButtonBase-root-MuiButton-root"
+              id="discoverTrendingGoButton"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeLarge css-hev6se-MuiButton-startIcon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                  data-testid="TrendingUpIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+                  />
+                </svg>
+              </span>
+              Find Trending Content
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        aria-labelledby="discover-tab-1"
+        hidden=""
+        id="discover-tabpanel-1"
+        role="tabpanel"
+      />
+    </div>
+  </div>
+  <div
+    data-testid="search-results"
+  />
+</div>
+`;
+
+exports[`Discover - Snapshots should match snapshot of Trending Content tab 1`] = `
+<div
+  aria-labelledby="discover-tab-0"
+  id="discover-tabpanel-0"
+  role="tabpanel"
+>
+  <div
+    class="MuiBox-root css-1v3caum"
+  >
+    <div
+      class="MuiStack-root css-5f1f8a-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1iqaoy3"
+      >
+        <div
+          data-testid="segmented-control"
+        >
+          <button>
+            TV Shows
+          </button>
+          <button>
+            Movies
+          </button>
+        </div>
+      </div>
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-mf3dnm-MuiButtonBase-root-MuiButton-root"
+        id="discoverTrendingGoButton"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeLarge css-hev6se-MuiButton-startIcon"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="TrendingUpIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+            />
+          </svg>
+        </span>
+        Find Trending Content
+      </button>
+    </div>
+  </div>
+</div>
+`;

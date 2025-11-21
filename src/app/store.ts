@@ -7,29 +7,35 @@ import personSearchReducer from './slices/personSearchSlice';
 import preferencesReducer from './slices/preferencesSlice';
 import profilesReducer from './slices/profilesSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
-import { configureStore } from '@reduxjs/toolkit';
+import { PreloadedState, configureStore } from '@reduxjs/toolkit';
 
-const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    profiles: profilesReducer,
-    activeProfile: activeProfileReducer,
-    activeShow: activeShowReducer,
-    activeMovie: activeMovieReducer,
-    activityNotification: activityNotificationReducer,
-    systemNotification: systemNotificationsReducer,
-    personSearch: personSearchReducer,
-    preferences: preferencesReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['personSearch/searchPeople/fulfilled', 'personSearch/fetchPersonDetails/fulfilled'],
-      },
-    }),
-});
+export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+  return configureStore({
+    reducer: {
+      auth: authReducer,
+      profiles: profilesReducer,
+      activeProfile: activeProfileReducer,
+      activeShow: activeShowReducer,
+      activeMovie: activeMovieReducer,
+      activityNotification: activityNotificationReducer,
+      systemNotification: systemNotificationsReducer,
+      personSearch: personSearchReducer,
+      preferences: preferencesReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['personSearch/searchPeople/fulfilled', 'personSearch/fetchPersonDetails/fulfilled'],
+        },
+      }),
+    preloadedState,
+  });
+};
+
+const store = setupStore();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export type AppStore = ReturnType<typeof setupStore>;
 
 export default store;

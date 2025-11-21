@@ -1,0 +1,831 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Notifications - Snapshots should match snapshot for initial render 1`] = `
+<div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthLg css-j81c45-MuiContainer-root"
+  >
+    <div
+      class="MuiBox-root css-i3pbo"
+    >
+      <div
+        class="MuiBox-root css-1coeexk"
+      >
+        <button
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ow27nx-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="ArrowBackIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+            />
+          </svg>
+        </button>
+        <div
+          class="MuiBox-root css-i9gxme"
+        >
+          <h4
+            class="MuiTypography-root MuiTypography-h4 css-17nmnue-MuiTypography-root"
+          >
+            Notifications
+          </h4>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-bgwxpl-MuiPaper-root-MuiCard-root"
+      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-mwb7rv-MuiGrid-root"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-4 css-xur2zb-MuiGrid-root"
+        >
+          <div
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+          >
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+            >
+              <div
+                class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeSmall css-1nowbqt-MuiInputAdornment-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-ltemk3-MuiSvgIcon-root"
+                  data-testid="SearchIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                  />
+                </svg>
+              </div>
+              <input
+                aria-invalid="false"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall MuiInputBase-inputAdornedStart css-1q55ijt-MuiInputBase-input-MuiOutlinedInput-input"
+                id="_r_1_"
+                placeholder="Search notifications..."
+                type="text"
+                value=""
+              />
+              <fieldset
+                aria-hidden="true"
+                class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="css-1nf2c5d-MuiNotchedOutlined-root"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="notranslate"
+                  >
+                    ​
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-3 css-lvb8h-MuiGrid-root"
+        >
+          <div
+            class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-hvjq6j-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="true"
+            >
+              Filter
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-sizeSmall MuiSelect-root css-mcgvc9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+            >
+              <div
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-trm6af-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+                role="combobox"
+                tabindex="0"
+              >
+                All Notifications
+              </div>
+              <input
+                aria-hidden="true"
+                aria-invalid="false"
+                class="MuiSelect-nativeInput css-j0riat-MuiSelect-nativeInput"
+                tabindex="-1"
+                value="all"
+              />
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-1rfqz7c-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
+                data-testid="ArrowDropDownIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
+              <fieldset
+                aria-hidden="true"
+                class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="css-ex8a5f-MuiNotchedOutlined-root"
+                >
+                  <span>
+                    Filter
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-5 css-16ebuf1-MuiGrid-root"
+        >
+          <div
+            class="MuiStack-root css-2bof0u-MuiStack-root"
+          >
+            <button
+              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorPrimary css-wyro15-MuiButtonBase-root-MuiButton-root"
+              tabindex="0"
+              type="button"
+            >
+              Mark All Read
+            </button>
+            <button
+              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorError MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorError css-1vvreb9-MuiButtonBase-root-MuiButton-root"
+              tabindex="0"
+              type="button"
+            >
+              Dismiss All
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-erinop-MuiPaper-root-MuiCard-root"
+      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+    >
+      <ul
+        class="MuiList-root MuiList-padding css-2wvk20-MuiList-root"
+      >
+        <li
+          class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-vw0bqz-MuiListItem-root"
+        >
+          <div
+            class="MuiListItemIcon-root css-1u4g0mt-MuiListItemIcon-root"
+          >
+            <div
+              class="MuiBox-root css-1kewph3"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="TvIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2m0 14H3V5h18z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
+            >
+              <div
+                class="MuiBox-root css-1w4vxup"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1 css-1ove3qi-MuiTypography-root"
+                >
+                  New Episode Available
+                </h6>
+                <div
+                  class="MuiChip-root MuiChip-filled MuiChip-sizeSmall MuiChip-colorPrimary MuiChip-filledPrimary css-1qb8adt-MuiChip-root"
+                >
+                  <span
+                    class="MuiChip-label MuiChip-labelSmall css-eccknh-MuiChip-label"
+                  >
+                    New
+                  </span>
+                </div>
+              </div>
+            </span>
+            <p
+              class="MuiTypography-root MuiTypography-body2 MuiListItemText-secondary css-1a1whku-MuiTypography-root"
+            >
+              <span
+                class="MuiBox-root css-13o7eu2"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-body2 css-1wx1fab-MuiTypography-root"
+                >
+                  Test notification 1
+                </span>
+                <span
+                  class="MuiTypography-root MuiTypography-caption css-722vde-MuiTypography-root"
+                >
+                  12/31/2023
+                </span>
+              </span>
+            </p>
+          </div>
+          <div
+            class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+          >
+            <div
+              class="MuiBox-root css-1utx3w7"
+            >
+              <button
+                aria-label="Mark as read"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1hrn9jm-MuiButtonBase-root-MuiIconButton-root"
+                data-mui-internal-clone-element="true"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                  data-testid="MarkEmailReadIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 19c0-3.87 3.13-7 7-7 1.08 0 2.09.25 3 .68V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h8.08c-.05-.33-.08-.66-.08-1M4 6l8 5 8-5v2l-8 5-8-5zm13.34 16-3.54-3.54 1.41-1.41 2.12 2.12 4.24-4.24L23 16.34z"
+                  />
+                </svg>
+              </button>
+              <button
+                aria-label="Dismiss notification"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-d17nts-MuiButtonBase-root-MuiIconButton-root"
+                data-mui-internal-clone-element="true"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                  data-testid="CloseIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <hr
+          class="MuiDivider-root MuiDivider-fullWidth css-1t5vqs6-MuiDivider-root"
+        />
+        <li
+          class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-bgwv9s-MuiListItem-root"
+        >
+          <div
+            class="MuiListItemIcon-root css-1u4g0mt-MuiListItemIcon-root"
+          >
+            <div
+              class="MuiBox-root css-1nustn2"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="AutoAwesomeIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
+            >
+              <div
+                class="MuiBox-root css-1w4vxup"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1 css-9wzi5v-MuiTypography-root"
+                >
+                  System Update
+                </h6>
+              </div>
+            </span>
+            <p
+              class="MuiTypography-root MuiTypography-body2 MuiListItemText-secondary css-1a1whku-MuiTypography-root"
+            >
+              <span
+                class="MuiBox-root css-13o7eu2"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-body2 css-1wx1fab-MuiTypography-root"
+                >
+                  Test notification 2
+                </span>
+                <span
+                  class="MuiTypography-root MuiTypography-caption css-722vde-MuiTypography-root"
+                >
+                  1/1/2024
+                </span>
+              </span>
+            </p>
+          </div>
+          <div
+            class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+          >
+            <div
+              class="MuiBox-root css-1utx3w7"
+            >
+              <button
+                aria-label="Mark as unread"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-xnszkd-MuiButtonBase-root-MuiIconButton-root"
+                data-mui-internal-clone-element="true"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                  data-testid="MarkEmailUnreadIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M22 8.98V18c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h10.1c-.06.32-.1.66-.1 1 0 1.48.65 2.79 1.67 3.71L12 11 4 6v2l8 5 5.3-3.32c.54.2 1.1.32 1.7.32 1.13 0 2.16-.39 3-1.02M16 5c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3-3 1.34-3 3"
+                  />
+                </svg>
+              </button>
+              <button
+                aria-label="Dismiss notification"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-d17nts-MuiButtonBase-root-MuiIconButton-root"
+                data-mui-internal-clone-element="true"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                  data-testid="CloseIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Notifications - Snapshots should match snapshot of notifications list 1`] = `
+<div
+  class="MuiContainer-root MuiContainer-maxWidthLg css-j81c45-MuiContainer-root"
+>
+  <div
+    class="MuiBox-root css-i3pbo"
+  >
+    <div
+      class="MuiBox-root css-1coeexk"
+    >
+      <button
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ow27nx-MuiButtonBase-root-MuiIconButton-root"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ArrowBackIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+          />
+        </svg>
+      </button>
+      <div
+        class="MuiBox-root css-i9gxme"
+      >
+        <h4
+          class="MuiTypography-root MuiTypography-h4 css-17nmnue-MuiTypography-root"
+        >
+          Notifications
+        </h4>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-bgwxpl-MuiPaper-root-MuiCard-root"
+    style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-mwb7rv-MuiGrid-root"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-4 css-xur2zb-MuiGrid-root"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeSmall css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-ltemk3-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall MuiInputBase-inputAdornedStart css-1q55ijt-MuiInputBase-input-MuiOutlinedInput-input"
+              id="_r_e_"
+              placeholder="Search notifications..."
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-3 css-lvb8h-MuiGrid-root"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-hvjq6j-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+          >
+            Filter
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-sizeSmall MuiSelect-root css-mcgvc9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+          >
+            <div
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-trm6af-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+              role="combobox"
+              tabindex="0"
+            >
+              All Notifications
+            </div>
+            <input
+              aria-hidden="true"
+              aria-invalid="false"
+              class="MuiSelect-nativeInput css-j0riat-MuiSelect-nativeInput"
+              tabindex="-1"
+              value="all"
+            />
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-1rfqz7c-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
+              data-testid="ArrowDropDownIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M7 10l5 5 5-5z"
+              />
+            </svg>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-ex8a5f-MuiNotchedOutlined-root"
+              >
+                <span>
+                  Filter
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-5 css-16ebuf1-MuiGrid-root"
+      >
+        <div
+          class="MuiStack-root css-2bof0u-MuiStack-root"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorPrimary css-wyro15-MuiButtonBase-root-MuiButton-root"
+            tabindex="0"
+            type="button"
+          >
+            Mark All Read
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorError MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorError css-1vvreb9-MuiButtonBase-root-MuiButton-root"
+            tabindex="0"
+            type="button"
+          >
+            Dismiss All
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-erinop-MuiPaper-root-MuiCard-root"
+    style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+  >
+    <ul
+      class="MuiList-root MuiList-padding css-2wvk20-MuiList-root"
+    >
+      <li
+        class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-vw0bqz-MuiListItem-root"
+      >
+        <div
+          class="MuiListItemIcon-root css-1u4g0mt-MuiListItemIcon-root"
+        >
+          <div
+            class="MuiBox-root css-1kewph3"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+              data-testid="TvIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2m0 14H3V5h18z"
+              />
+            </svg>
+          </div>
+        </div>
+        <div
+          class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
+          >
+            <div
+              class="MuiBox-root css-1w4vxup"
+            >
+              <h6
+                class="MuiTypography-root MuiTypography-subtitle1 css-1ove3qi-MuiTypography-root"
+              >
+                New Episode Available
+              </h6>
+              <div
+                class="MuiChip-root MuiChip-filled MuiChip-sizeSmall MuiChip-colorPrimary MuiChip-filledPrimary css-1qb8adt-MuiChip-root"
+              >
+                <span
+                  class="MuiChip-label MuiChip-labelSmall css-eccknh-MuiChip-label"
+                >
+                  New
+                </span>
+              </div>
+            </div>
+          </span>
+          <p
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-secondary css-1a1whku-MuiTypography-root"
+          >
+            <span
+              class="MuiBox-root css-13o7eu2"
+            >
+              <span
+                class="MuiTypography-root MuiTypography-body2 css-1wx1fab-MuiTypography-root"
+              >
+                Test notification 1
+              </span>
+              <span
+                class="MuiTypography-root MuiTypography-caption css-722vde-MuiTypography-root"
+              >
+                12/31/2023
+              </span>
+            </span>
+          </p>
+        </div>
+        <div
+          class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+        >
+          <div
+            class="MuiBox-root css-1utx3w7"
+          >
+            <button
+              aria-label="Mark as read"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1hrn9jm-MuiButtonBase-root-MuiIconButton-root"
+              data-mui-internal-clone-element="true"
+              tabindex="0"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                data-testid="MarkEmailReadIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 19c0-3.87 3.13-7 7-7 1.08 0 2.09.25 3 .68V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h8.08c-.05-.33-.08-.66-.08-1M4 6l8 5 8-5v2l-8 5-8-5zm13.34 16-3.54-3.54 1.41-1.41 2.12 2.12 4.24-4.24L23 16.34z"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Dismiss notification"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-d17nts-MuiButtonBase-root-MuiIconButton-root"
+              data-mui-internal-clone-element="true"
+              tabindex="0"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                data-testid="CloseIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </li>
+      <hr
+        class="MuiDivider-root MuiDivider-fullWidth css-1t5vqs6-MuiDivider-root"
+      />
+      <li
+        class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-bgwv9s-MuiListItem-root"
+      >
+        <div
+          class="MuiListItemIcon-root css-1u4g0mt-MuiListItemIcon-root"
+        >
+          <div
+            class="MuiBox-root css-1nustn2"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+              data-testid="AutoAwesomeIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25z"
+              />
+            </svg>
+          </div>
+        </div>
+        <div
+          class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
+          >
+            <div
+              class="MuiBox-root css-1w4vxup"
+            >
+              <h6
+                class="MuiTypography-root MuiTypography-subtitle1 css-9wzi5v-MuiTypography-root"
+              >
+                System Update
+              </h6>
+            </div>
+          </span>
+          <p
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-secondary css-1a1whku-MuiTypography-root"
+          >
+            <span
+              class="MuiBox-root css-13o7eu2"
+            >
+              <span
+                class="MuiTypography-root MuiTypography-body2 css-1wx1fab-MuiTypography-root"
+              >
+                Test notification 2
+              </span>
+              <span
+                class="MuiTypography-root MuiTypography-caption css-722vde-MuiTypography-root"
+              >
+                1/1/2024
+              </span>
+            </span>
+          </p>
+        </div>
+        <div
+          class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+        >
+          <div
+            class="MuiBox-root css-1utx3w7"
+          >
+            <button
+              aria-label="Mark as unread"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-xnszkd-MuiButtonBase-root-MuiIconButton-root"
+              data-mui-internal-clone-element="true"
+              tabindex="0"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                data-testid="MarkEmailUnreadIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M22 8.98V18c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h10.1c-.06.32-.1.66-.1 1 0 1.48.65 2.79 1.67 3.71L12 11 4 6v2l8 5 5.3-3.32c.54.2 1.1.32 1.7.32 1.13 0 2.16-.39 3-1.02M16 5c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3-3 1.34-3 3"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Dismiss notification"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-d17nts-MuiButtonBase-root-MuiIconButton-root"
+              data-mui-internal-clone-element="true"
+              tabindex="0"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-6dq5bp-MuiSvgIcon-root"
+                data-testid="CloseIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+`;

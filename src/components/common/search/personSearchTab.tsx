@@ -43,7 +43,8 @@ export const PersonSearchTab: React.FC = () => {
         dispatch(fetchPersonDetails(selectedPerson.id));
       }
     }
-  }, [selectedPerson, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPerson?.id, dispatch]);
 
   const handleSearch = useCallback(() => {
     if (!searchText.trim()) return;

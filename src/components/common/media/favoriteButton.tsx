@@ -93,41 +93,43 @@ function FavoritesButton(props: FavoritesButtonProps) {
     handleFavoriteProfileClick(tmdbId);
   }, [handleFavoriteProfileClick, tmdbId]);
 
+  const buttonElement = isSmallScreen ? (
+    <IconButton
+      id={`favoriteButton_${tmdbId}`}
+      aria-label="favoriteButton"
+      onClick={handleClick}
+      disabled={isLoading}
+      sx={{
+        position: 'relative',
+        '&.Mui-disabled': {
+          opacity: alreadyFavorited ? 1 : 0.6,
+        },
+      }}
+    >
+      {getButtonContent()}
+    </IconButton>
+  ) : (
+    <Button
+      id={`favoriteButton_${tmdbId}`}
+      onClick={handleClick}
+      endIcon={getButtonContent()}
+      variant={alreadyFavorited ? 'contained' : 'outlined'}
+      disabled={isLoading}
+      sx={{
+        position: 'relative',
+        minWidth: '120px',
+        '&.Mui-disabled': {
+          opacity: alreadyFavorited ? 1 : 0.6,
+        },
+      }}
+    >
+      {getButtonText()}
+    </Button>
+  );
+
   return (
     <Tooltip key={`favoriteButtonTooltip_${tmdbId}`} title={getTooltipText()}>
-      {isSmallScreen ? (
-        <IconButton
-          id={`favoriteButton_${tmdbId}`}
-          aria-label="favoriteButton"
-          onClick={handleClick}
-          disabled={isLoading}
-          sx={{
-            position: 'relative',
-            '&.Mui-disabled': {
-              opacity: alreadyFavorited ? 1 : 0.6,
-            },
-          }}
-        >
-          {getButtonContent()}
-        </IconButton>
-      ) : (
-        <Button
-          id={`favoriteButton_${tmdbId}`}
-          onClick={handleClick}
-          endIcon={getButtonContent()}
-          variant={alreadyFavorited ? 'contained' : 'outlined'}
-          disabled={isLoading}
-          sx={{
-            position: 'relative',
-            minWidth: '120px',
-            '&.Mui-disabled': {
-              opacity: alreadyFavorited ? 1 : 0.6,
-            },
-          }}
-        >
-          {getButtonText()}
-        </Button>
-      )}
+      {isLoading ? <span>{buttonElement}</span> : buttonElement}
     </Tooltip>
   );
 }

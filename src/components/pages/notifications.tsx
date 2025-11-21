@@ -455,11 +455,13 @@ const Notifications: React.FC = () => {
                         </Box>
                       }
                       secondary={
-                        <Box>
+                        <Box component="span" sx={{ display: 'block' }}>
                           <Typography
+                            component="span"
                             variant="body2"
                             color="text.secondary"
                             sx={{
+                              display: 'block',
                               mb: 0.5,
                               lineHeight: 1.4,
                               wordWrap: 'break-word',
@@ -469,8 +471,10 @@ const Notifications: React.FC = () => {
                             {parsedMessage}
                           </Typography>
                           <Typography
+                            component="span"
                             variant="caption"
                             sx={{
+                              display: 'block',
                               color: theme.palette.text.secondary,
                               fontSize: '0.7rem',
                             }}

@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Home - Snapshots should match snapshot for initial render 1`] = `
+<div>
+  <div
+    class="MuiBox-root css-8atqhb"
+  >
+    <div
+      data-testid="dashboard-profile-card"
+    >
+      <button>
+        Navigate to Stats
+      </button>
+    </div>
+    <div
+      class="MuiBox-root css-1gsv261"
+    >
+      <div
+        class="MuiTabs-root css-1xkjjjh-MuiTabs-root"
+      >
+        <div
+          class="MuiTabs-scrollableX MuiTabs-hideScrollbar css-i8yde5"
+          style="width: 99px; height: 99px; position: absolute; top: -9999px; overflow: scroll;"
+        />
+        <div
+          class="MuiTabs-scroller MuiTabs-hideScrollbar MuiTabs-scrollableX css-1fr578y-MuiTabs-scroller"
+          style="margin-bottom: 0px;"
+        >
+          <div
+            aria-label="home content tabs"
+            class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+            role="tablist"
+          >
+            <button
+              aria-controls="home-tabpanel-0"
+              aria-selected="true"
+              class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary Mui-selected css-1usuzwp-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-0"
+              role="tab"
+              tabindex="0"
+              type="button"
+            >
+              Keep Watching
+            </button>
+            <button
+              aria-controls="home-tabpanel-1"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-1usuzwp-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-1"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              TV Shows
+            </button>
+            <button
+              aria-controls="home-tabpanel-2"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-1usuzwp-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-2"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              Movies
+            </button>
+            <button
+              aria-controls="home-tabpanel-3"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-1usuzwp-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-3"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              By Service
+            </button>
+            <button
+              aria-controls="home-tabpanel-4"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-1usuzwp-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-4"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              Statistics
+            </button>
+          </div>
+          <span
+            class="MuiTabs-indicator css-1qltlow-MuiTabs-indicator"
+            style="left: 0px; width: 0px;"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      role="tabpanel"
+    >
+      <div
+        data-testid="keep-watching-component"
+      >
+        KeepWatchingProfileComponent
+      </div>
+    </div>
+    <div
+      hidden=""
+      role="tabpanel"
+    />
+    <div
+      hidden=""
+      role="tabpanel"
+    />
+    <div
+      hidden=""
+      role="tabpanel"
+    />
+    <div
+      hidden=""
+      role="tabpanel"
+    />
+  </div>
+</div>
+`;
+
+exports[`Home - Snapshots should match snapshot of Keep Watching tab 1`] = `
+<div
+  role="tabpanel"
+>
+  <div
+    data-testid="keep-watching-component"
+  >
+    KeepWatchingProfileComponent
+  </div>
+</div>
+`;
