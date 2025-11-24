@@ -11,6 +11,7 @@ interface ScrollableMediaRowProps<T> {
   renderItem: (item: T) => ReactNode;
   emptyMessage?: string;
   onLoadMore?: () => void;
+  getItemKey?: (item: T, index: number) => string | number;
 }
 
 export function ScrollableMediaRow<T>({
@@ -20,6 +21,7 @@ export function ScrollableMediaRow<T>({
   renderItem,
   emptyMessage = 'No items found',
   onLoadMore,
+  getItemKey = (_item, index) => index,
 }: ScrollableMediaRowProps<T>) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -145,7 +147,7 @@ export function ScrollableMediaRow<T>({
           }}
         >
           {items.map((item, index) => (
-            <Box key={index} className="media-item" sx={{ mx: 1, flexShrink: 0 }}>
+            <Box key={getItemKey(item, index)} className="media-item" sx={{ mx: 1, flexShrink: 0 }}>
               {renderItem(item)}
             </Box>
           ))}

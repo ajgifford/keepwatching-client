@@ -473,7 +473,7 @@ function ShowDetails() {
                       Genres
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {show?.genres.split(',').map((genre) => (
+                      {show?.genres.split(',').map((genre: string) => (
                         <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
                       ))}
                     </Box>
@@ -583,7 +583,7 @@ function ShowDetails() {
             <TabPanel value={tabValue} index={1}>
               {seasons ? (
                 <Box>
-                  {seasons.map((season) => (
+                  {seasons.map((season: ProfileSeason) => (
                     <Accordion
                       key={season.id}
                       sx={{
@@ -626,21 +626,27 @@ function ShowDetails() {
                           </Typography>
                         </Box>
 
-                        <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                          <OptionalTooltipControl
-                            identifier={`watchStatusTooltip_${show?.id || 0}_${season.id}`}
-                            title={getWatchStatusAction(season.watchStatus)}
-                            disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
-                          >
-                            <IconButton
-                              onClick={(event) => handleSeasonWatchStatusChange(season, event)}
-                              disabled={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)}
-                              size="medium"
-                              sx={{ my: 'auto' }}
-                            >
-                              <WatchStatusIcon status={season.watchStatus} />
-                            </IconButton>
-                          </OptionalTooltipControl>
+                        <Box 
+                          sx={{ 
+                            position: 'relative', 
+                            display: 'flex', 
+                            alignItems: 'center',
+                            cursor: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'default' : 'pointer',
+                            opacity: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 0.5 : 1,
+                            p: 1,
+                            borderRadius: 1,
+                            '&:hover': {
+                              backgroundColor: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'transparent' : 'action.hover',
+                            }
+                          }}
+                          onClick={(event) => {
+                            if (!loadingSeasons[season.id] && canChangeSeasonWatchStatus(season)) {
+                              handleSeasonWatchStatusChange(season, event);
+                            }
+                          }}
+                          title={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? '' : getWatchStatusAction(season.watchStatus)}
+                        >
+                          <WatchStatusIcon status={season.watchStatus} />
                           {loadingSeasons[season.id] && (
                             <CircularProgress
                               size={24}
@@ -659,7 +665,7 @@ function ShowDetails() {
                       <AccordionDetails sx={{ p: 0 }}>
                         {season.episodes && season.episodes.length > 0 ? (
                           <List disablePadding>
-                            {season.episodes.map((episode, index) => (
+                            {season.episodes.map((episode: ProfileEpisode, index: number) => (
                               <React.Fragment key={episode.id}>
                                 <ListItem
                                   sx={{

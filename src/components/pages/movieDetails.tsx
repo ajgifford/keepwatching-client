@@ -39,7 +39,7 @@ import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { MovieCastSection } from '../common/movies/movieCast';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { WatchStatusIcon } from '../utility/watchStatusUtility';
-import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
+import { ProfileMovie, SimilarOrRecommendedMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 import {
   ErrorComponent,
@@ -408,7 +408,7 @@ function MovieDetails() {
                   Genres
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {movie?.genres.split(',').map((genre) => (
+                  {movie?.genres.split(',').map((genre: string) => (
                     <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
                   ))}
                 </Box>
@@ -460,7 +460,8 @@ function MovieDetails() {
                     items={recommendedMovies}
                     isLoading={movieDetailsLoading}
                     emptyMessage="No recommended movies found"
-                    renderItem={(movie) => <MediaCard item={movie} searchType="movies" />}
+                    renderItem={(movie: SimilarOrRecommendedMovie) => <MediaCard item={movie} searchType="movies" />}
+                    getItemKey={(movie) => movie.id}
                   />
                 </Box>
                 <Divider sx={{ my: 3 }} />
@@ -470,7 +471,8 @@ function MovieDetails() {
                     items={similarMovies}
                     isLoading={movieDetailsLoading}
                     emptyMessage="No similar movies found"
-                    renderItem={(movie) => <MediaCard item={movie} searchType="movies" />}
+                    renderItem={(movie: SimilarOrRecommendedMovie) => <MediaCard item={movie} searchType="movies" />}
+                    getItemKey={(movie) => movie.id}
                   />
                 </Box>
               </Box>

@@ -8,6 +8,7 @@ import {
 } from '../../../app/slices/activeShowSlice';
 import { MediaCard } from '../media/mediaCard';
 import { ScrollableMediaRow } from '../media/scrollableMediaRow';
+import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 
 interface RecommendedShowsComponentProps {
   showId: number;
@@ -29,7 +30,8 @@ export const RecommendedShowsComponent = ({ showId, profileId }: RecommendedShow
       items={recommendedShows}
       isLoading={recommendedShowsLoading}
       emptyMessage="No recommended shows found"
-      renderItem={(show) => <MediaCard item={show} searchType="shows" />}
+      renderItem={(show: SimilarOrRecommendedShow) => <MediaCard item={show} searchType="shows" />}
+      getItemKey={(show) => show.id}
     />
   );
 };

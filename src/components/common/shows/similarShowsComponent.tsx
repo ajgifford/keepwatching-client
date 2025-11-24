@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { fetchSimilarShows, selectSimilarShows, selectSimilarShowsLoading } from '../../../app/slices/activeShowSlice';
 import { MediaCard } from '../media/mediaCard';
 import { ScrollableMediaRow } from '../media/scrollableMediaRow';
+import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 
 interface SimilarShowsComponentProps {
   showId: number;
@@ -25,7 +26,8 @@ export const SimilarShowsComponent = ({ showId, profileId }: SimilarShowsCompone
       items={similarShows}
       isLoading={similarShowsLoading}
       emptyMessage="No similar shows found"
-      renderItem={(show) => <MediaCard item={show} searchType="shows" />}
+      renderItem={(show: SimilarOrRecommendedShow) => <MediaCard item={show} searchType="shows" />}
+      getItemKey={(show) => show.id}
     />
   );
 };
