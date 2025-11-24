@@ -50,6 +50,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2023-05-15',
       character: 'Character A',
       job: 'Actor',
+      mediaType: 'movie'
     },
     {
       tmdbId: 2,
@@ -58,6 +59,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2022-03-10',
       character: 'Character B',
       job: 'Actor',
+      mediaType: 'movie'
     },
     {
       tmdbId: 3,
@@ -66,6 +68,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2024-01-20',
       character: 'Character C',
       job: 'Actor',
+      mediaType: 'movie'
     },
   ];
 
@@ -77,6 +80,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2021-06-01',
       character: 'Character X',
       job: 'Actor',
+      mediaType: 'movie'
     },
     {
       tmdbId: 102,
@@ -85,6 +89,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2020-09-15',
       character: 'Character Y',
       job: 'Actor',
+      mediaType: 'movie'
     },
   ];
 
@@ -192,7 +197,7 @@ describe('PersonFilmographyDisplay', () => {
       render(<PersonFilmographyDisplay person={mockPerson} />);
 
       const movieCards = screen.getAllByTestId('media-card-movies');
-      expect(movieCards.length).toBe(3);
+      expect(movieCards).toHaveLength(3);
     });
 
     it('should render all movie titles', () => {
@@ -225,7 +230,7 @@ describe('PersonFilmographyDisplay', () => {
       await user.click(tvTab);
 
       const tvCards = screen.getAllByTestId('media-card-shows');
-      expect(tvCards.length).toBe(2);
+      expect(tvCards).toHaveLength(2);
     });
 
     it('should render all TV titles', async () => {
@@ -380,6 +385,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '',
           character: 'Character A',
           job: 'Actor',
+          mediaType: 'movie'
         },
         {
           tmdbId: 2,
@@ -388,6 +394,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '2023-01-01',
           character: 'Character B',
           job: 'Actor',
+          mediaType: 'movie'
         },
       ];
 
@@ -399,7 +406,7 @@ describe('PersonFilmographyDisplay', () => {
       render(<PersonFilmographyDisplay person={personWithMissingDates} />);
 
       const movieCards = screen.getAllByTestId('media-card-movies');
-      expect(movieCards.length).toBe(2);
+      expect(movieCards).toHaveLength(2);
     });
 
     it('should handle very long titles', () => {
@@ -411,6 +418,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '2023-01-01',
           character: 'Character',
           job: 'Actor',
+          mediaType: 'movie'
         },
       ];
 
@@ -433,6 +441,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '2023-01-01',
           character: 'Character',
           job: 'Actor',
+          mediaType: 'movie'
         },
       ];
 
@@ -492,7 +501,7 @@ describe('PersonFilmographyDisplay', () => {
       render(<PersonFilmographyDisplay person={personWithNoJob} />);
 
       const movieCards = screen.getAllByTestId('media-card-movies');
-      expect(movieCards.length).toBe(1);
+      expect(movieCards).toHaveLength(1);
     });
 
     it('should handle large number of credits', () => {
@@ -563,7 +572,7 @@ describe('PersonFilmographyDisplay', () => {
       const { container } = render(<PersonFilmographyDisplay person={mockPerson} />);
 
       const chips = container.querySelectorAll('.MuiChip-root');
-      expect(chips.length).toBe(3); // Movies, TV Shows, Total Credits
+      expect(chips).toHaveLength(3); // Movies, TV Shows, Total Credits
     });
   });
 });

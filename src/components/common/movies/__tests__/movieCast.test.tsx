@@ -94,7 +94,7 @@ describe('MovieCastSection', () => {
 
       render(<MovieCastSection castMembers={manyCast} profileId={profileId} />);
 
-      expect(screen.getAllByTestId(/^person-card-/).length).toBe(20);
+      expect(screen.getAllByTestId(/^person-card-/)).toHaveLength(20);
     });
   });
 
@@ -197,7 +197,7 @@ describe('MovieCastSection', () => {
 
       // All PersonCard components should be rendered
       const personCards = container.querySelectorAll('[data-testid^="person-card-"]');
-      expect(personCards.length).toBe(3);
+      expect(personCards).toHaveLength(3);
     });
   });
 

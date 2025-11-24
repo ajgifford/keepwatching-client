@@ -333,6 +333,6 @@ describe('KeepWatchingShowComponent', () => {
 
     // Episode without airDate should not be rendered
     const episodeTitles = screen.getAllByText(/^Episode \d+$/);
-    expect(episodeTitles.length).toBe(3); // Only the first 3 episodes with air dates
+    expect(episodeTitles).toHaveLength(3); // Only the first 3 episodes with air dates
   });
 });

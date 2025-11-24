@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { MoviesSection } from '../moviesSection';
-import { ProfileMovie } from '@ajgifford/keepwatching-types';
+import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock MovieCard component
 jest.mock('../movieCard', () => ({
@@ -17,51 +17,54 @@ describe('MoviesSection', () => {
   const mockRecentMovies: ProfileMovie[] = [
     {
       id: 1,
-      movieId: 550,
       title: 'Fight Club',
       releaseDate: '1999-10-15',
       posterImage: '/poster1.jpg',
       backdropImage: '/backdrop1.jpg',
-      overview: 'A ticking-time-bomb insomniac...',
+      description: 'A ticking-time-bomb insomniac...',
       runtime: 139,
-      voteAverage: 8.4,
+      userRating: 8.4,
       streamingServices: 'Netflix',
-      watched: false,
+      watchStatus: WatchStatus.NOT_WATCHED,
       profileId: 1,
       genres: 'Drama',
+      tmdbId: 550,
+      mpaRating: ''
     },
     {
       id: 2,
-      movieId: 680,
       title: 'Pulp Fiction',
       releaseDate: '1994-10-14',
       posterImage: '/poster2.jpg',
       backdropImage: '/backdrop2.jpg',
-      overview: 'The lives of two mob hitmen...',
+      description: 'The lives of two mob hitmen...',
       runtime: 154,
-      voteAverage: 8.9,
+      userRating: 8.9,
       streamingServices: 'Amazon Prime',
-      watched: true,
+      watchStatus: WatchStatus.WATCHED,
       profileId: 1,
       genres: 'Crime',
+      tmdbId: 680,
+      mpaRating: ''
     },
   ];
 
   const mockUpcomingMovies: ProfileMovie[] = [
     {
       id: 3,
-      movieId: 123,
+      tmdbId: 123,
       title: 'Upcoming Movie 1',
       releaseDate: '2025-12-25',
       posterImage: '/poster3.jpg',
       backdropImage: '/backdrop3.jpg',
-      overview: 'An upcoming movie...',
+      description: 'An upcoming movie...',
       runtime: 120,
-      voteAverage: 0,
+      userRating: 0,
       streamingServices: '',
-      watched: false,
+      watchStatus: WatchStatus.NOT_WATCHED,
       profileId: 1,
       genres: 'Action',
+      mpaRating: ''
     },
   ];
 
@@ -128,7 +131,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(2);
+      expect(movieCards).toHaveLength(2);
     });
 
     it('should render correct number of movie cards for upcoming movies', () => {
@@ -137,7 +140,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(1);
+      expect(movieCards).toHaveLength(1);
     });
 
     it('should render all movies from both sections', () => {
@@ -146,7 +149,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(3);
+      expect(movieCards).toHaveLength(3);
     });
   });
 
@@ -177,7 +180,7 @@ describe('MoviesSection', () => {
 
       // Should only have 1 movie card (from upcoming)
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(1);
+      expect(movieCards).toHaveLength(1);
     });
 
     it('should not render movie cards when upcoming movies is empty', () => {
@@ -187,7 +190,7 @@ describe('MoviesSection', () => {
 
       // Should only have 2 movie cards (from recent)
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(2);
+      expect(movieCards).toHaveLength(2);
     });
   });
 
@@ -238,7 +241,7 @@ describe('MoviesSection', () => {
       );
 
       const outlinedChips = container.querySelectorAll('.MuiChip-outlined');
-      expect(outlinedChips.length).toBe(2);
+      expect(outlinedChips).toHaveLength(2);
     });
 
     it('should render small sized chips', () => {
@@ -247,7 +250,7 @@ describe('MoviesSection', () => {
       );
 
       const smallChips = container.querySelectorAll('.MuiChip-sizeSmall');
-      expect(smallChips.length).toBe(2);
+      expect(smallChips).toHaveLength(2);
     });
   });
 
@@ -292,7 +295,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(1);
+      expect(movieCards).toHaveLength(1);
       expect(screen.getByText('Fight Club')).toBeInTheDocument();
     });
 
@@ -304,7 +307,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(1);
+      expect(movieCards).toHaveLength(1);
       expect(screen.getByText('Upcoming Movie 1')).toBeInTheDocument();
     });
 
@@ -320,7 +323,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(10);
+      expect(movieCards).toHaveLength(10);
     });
 
     it('should handle many upcoming movies', () => {
@@ -335,7 +338,7 @@ describe('MoviesSection', () => {
       );
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
-      expect(movieCards.length).toBe(5);
+      expect(movieCards).toHaveLength(5);
     });
   });
 

@@ -112,7 +112,7 @@ describe('EpisodesSection', () => {
     it('should render correct number of recent episodes', () => {
       renderWithRouter(<EpisodesSection recentEpisodes={mockRecentEpisodes} upcomingEpisodes={mockUpcomingEpisodes} />);
 
-      expect(screen.getAllByText(/Breaking Bad|Better Call Saul/).length).toBe(2);
+      expect(screen.getAllByText(/Breaking Bad|Better Call Saul/)).toHaveLength(2);
     });
 
     it('should render correct number of upcoming episodes', () => {
@@ -317,7 +317,7 @@ describe('EpisodesSection', () => {
 
       renderWithRouter(<EpisodesSection recentEpisodes={manyEpisodes} upcomingEpisodes={[]} />);
 
-      expect(screen.getAllByTestId(/episode-card-/).length).toBe(20);
+      expect(screen.getAllByTestId(/episode-card-/)).toHaveLength(20);
     });
 
     it('should handle large number of upcoming episodes', () => {
@@ -329,7 +329,7 @@ describe('EpisodesSection', () => {
 
       renderWithRouter(<EpisodesSection recentEpisodes={[]} upcomingEpisodes={manyEpisodes} />);
 
-      expect(screen.getAllByTestId(/episode-card-/).length).toBe(15);
+      expect(screen.getAllByTestId(/episode-card-/)).toHaveLength(15);
     });
 
     it('should handle episodes with same show but different seasons', () => {
@@ -383,7 +383,7 @@ describe('EpisodesSection', () => {
       const keys = Array.from(episodeCards).map((card) => card.getAttribute('data-testid'));
       const uniqueKeys = new Set(keys);
 
-      expect(keys.length).toBe(uniqueKeys.size);
+      expect(keys).toHaveLength(uniqueKeys.size);
     });
 
     it('should generate unique keys for upcoming episodes', () => {
@@ -395,7 +395,7 @@ describe('EpisodesSection', () => {
       const keys = Array.from(episodeCards).map((card) => card.getAttribute('data-testid'));
       const uniqueKeys = new Set(keys);
 
-      expect(keys.length).toBe(uniqueKeys.size);
+      expect(keys).toHaveLength(uniqueKeys.size);
     });
   });
 });

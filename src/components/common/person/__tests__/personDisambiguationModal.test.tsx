@@ -155,7 +155,7 @@ describe('PersonDisambiguationModal', () => {
       });
 
       const actingChips = screen.getAllByText('Acting');
-      expect(actingChips.length).toBe(3);
+      expect(actingChips).toHaveLength(3);
     });
 
     it('should render popularity values', () => {
@@ -203,7 +203,7 @@ describe('PersonDisambiguationModal', () => {
       });
 
       const selectedChips = screen.getAllByText('Selected');
-      expect(selectedChips.length).toBe(1);
+      expect(selectedChips).toHaveLength(1);
     });
 
     it('should mark selected person in the list', () => {
@@ -459,7 +459,7 @@ describe('PersonDisambiguationModal', () => {
       });
 
       const listItems = container.querySelectorAll('.MuiListItem-root');
-      expect(listItems.length).toBe(0);
+      expect(listItems).toHaveLength(0);
     });
   });
 
@@ -630,7 +630,7 @@ describe('PersonDisambiguationModal', () => {
       });
 
       const actingChips = screen.getAllByText('Acting');
-      expect(actingChips.length).toBe(3);
+      expect(actingChips).toHaveLength(3);
     });
 
     it('should render popularity for each person', () => {

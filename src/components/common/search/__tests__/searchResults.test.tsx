@@ -23,46 +23,35 @@ jest.mock('../searchResultItem', () => ({
 describe('SearchResults', () => {
   const mockResults: DiscoverAndSearchResult[] = [
     {
-      id: 1,
+      id: '1',
       title: 'Breaking Bad',
-      tmdbId: 123,
       image: '/breaking-bad.jpg',
       premiered: '2008-01-20',
       summary: 'A chemistry teacher turned meth producer',
       genres: ['Drama', 'Crime'],
-      country: 'US',
       rating: 9.5,
       popularity: 95.5,
-      language: 'en',
-      inFavorites: false,
     },
     {
-      id: 2,
+      id: '2',
       title: 'Better Call Saul',
-      tmdbId: 456,
+
       image: '/bcs.jpg',
       premiered: '2015-02-08',
       summary: 'Lawyer prequel to Breaking Bad',
       genres: ['Drama', 'Crime'],
-      country: 'US',
       rating: 8.9,
       popularity: 88.0,
-      language: 'en',
-      inFavorites: false,
     },
     {
-      id: 3,
+      id: '3',
       title: 'The Wire',
-      tmdbId: 789,
       image: '/wire.jpg',
       premiered: '2002-06-02',
       summary: 'Baltimore crime drama',
       genres: ['Drama', 'Crime'],
-      country: 'US',
       rating: 9.3,
       popularity: 92.0,
-      language: 'en',
-      inFavorites: false,
     },
   ];
 
@@ -108,7 +97,7 @@ describe('SearchResults', () => {
       );
 
       const progressBars = screen.getAllByRole('progressbar');
-      expect(progressBars.length).toBe(1);
+      expect(progressBars).toHaveLength(1);
     });
   });
 
@@ -141,7 +130,7 @@ describe('SearchResults', () => {
       );
 
       const resultItems = screen.getAllByTestId('search-result-item');
-      expect(resultItems.length).toBe(3);
+      expect(resultItems).toHaveLength(3);
     });
 
     it('should pass correct props to SearchResultItem', () => {
@@ -188,7 +177,7 @@ describe('SearchResults', () => {
       );
 
       const dividers = container.querySelectorAll('.MuiDivider-root');
-      expect(dividers.length).toBe(3);
+      expect(dividers).toHaveLength(3);
     });
 
     it('should apply search-result-item class for infinite scroll', () => {
@@ -203,7 +192,7 @@ describe('SearchResults', () => {
       );
 
       const searchResultItems = container.querySelectorAll('.search-result-item');
-      expect(searchResultItems.length).toBe(3);
+      expect(searchResultItems).toHaveLength(3);
     });
   });
 
@@ -338,7 +327,7 @@ describe('SearchResults', () => {
       );
 
       const resultItems = screen.getAllByTestId('search-result-item');
-      expect(resultItems.length).toBe(1);
+      expect(resultItems).toHaveLength(1);
       expect(screen.getByText('Breaking Bad')).toBeInTheDocument();
     });
 
@@ -360,7 +349,7 @@ describe('SearchResults', () => {
       );
 
       const resultItems = screen.getAllByTestId('search-result-item');
-      expect(resultItems.length).toBe(50);
+      expect(resultItems).toHaveLength(50);
     });
 
     it('should handle missing searchQuery', () => {

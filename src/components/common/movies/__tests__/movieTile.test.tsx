@@ -86,7 +86,7 @@ describe('MovieTile', () => {
       const { container } = render(<MovieTile movie={mockMovie} />);
 
       const body1Elements = container.querySelectorAll('.MuiTypography-body1');
-      expect(body1Elements.length).toBe(2);
+      expect(body1Elements).toHaveLength(2);
     });
   });
 

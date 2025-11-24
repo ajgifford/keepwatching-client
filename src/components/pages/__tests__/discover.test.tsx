@@ -270,7 +270,7 @@ describe('Discover', () => {
 
       await waitFor(() => {
         const segmentedControls = screen.getAllByTestId('segmented-control');
-        expect(segmentedControls.length).toBe(3); // Type, Service, Filter
+        expect(segmentedControls).toHaveLength(3); // Type, Service, Filter
       });
     });
 

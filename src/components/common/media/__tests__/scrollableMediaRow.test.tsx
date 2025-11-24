@@ -401,7 +401,7 @@ describe('ScrollableMediaRow', () => {
       );
 
       const progressBars = screen.getAllByRole('progressbar');
-      expect(progressBars.length).toBe(1);
+      expect(progressBars).toHaveLength(1);
     });
 
     it('should not show loading spinner at end when not loading', () => {
@@ -594,7 +594,7 @@ describe('ScrollableMediaRow', () => {
       );
 
       const mediaItems = container.querySelectorAll('.media-item');
-      expect(mediaItems.length).toBe(mockItems.length);
+      expect(mediaItems).toHaveLength(mockItems.length);
     });
   });
 });

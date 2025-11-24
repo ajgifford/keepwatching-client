@@ -346,7 +346,7 @@ describe('FavoritesButton', () => {
 
       // State should not change
       await waitFor(() => {
-        expect(Object.keys(store.getState()).length).toBe(initialActionsCount);
+        expect(Object.keys(store.getState())).toHaveLength(initialActionsCount);
       });
     });
   });

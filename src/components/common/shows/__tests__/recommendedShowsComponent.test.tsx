@@ -320,7 +320,7 @@ describe('RecommendedShowsComponent', () => {
 
     // Should not dispatch again
     await waitFor(() => {
-      expect(dispatchSpy.mock.calls.length).toBe(initialCallCount);
+      expect(dispatchSpy.mock.calls).toHaveLength(initialCallCount);
     });
   });
 });

@@ -527,7 +527,7 @@ describe('DashboardProfileCard', () => {
       const { container } = renderWithRouter(<DashboardProfileCard {...defaultProps} />);
 
       const statCards = container.querySelectorAll('a');
-      expect(statCards.length).toBe(4); // All four stat cards are links
+      expect(statCards).toHaveLength(4); // All four stat cards are links
     });
 
     it('should have cursor pointer on stat cards', () => {
