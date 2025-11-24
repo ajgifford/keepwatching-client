@@ -121,8 +121,8 @@ export const DISCOVER_TYPE_OPTIONS: SegmentedControlOption[] = [
 export const SERVICE_OPTIONS: SegmentedControlOption[] = [
   { value: 'netflix', label: 'Netflix' },
   { value: 'disney', label: 'Disney+' },
-  { value: 'hbo', label: 'Max' },
-  { value: 'apple', label: 'Apple TV+' },
+  { value: 'hbo', label: 'HBO Max' },
+  { value: 'apple', label: 'Apple TV' },
   { value: 'prime', label: 'Prime Video' },
 ];
 
