@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Container } from '@mui/material';
 
 import { auth } from '../app/firebaseConfig';
+import { useActivityTracking } from '../app/hooks/useActivityTracking';
 import store from '../app/store';
 import { AppThemeProvider } from '../theme/ThemeProvider';
 import ErrorBoundary from './common/errorBoundary';
@@ -45,6 +46,15 @@ function useFooterHeight() {
   }, []);
 }
 
+/**
+ * Component to initialize activity tracking
+ * Must be rendered inside Redux Provider to access state
+ */
+function ActivityTracker() {
+  useActivityTracking();
+  return null;
+}
+
 function App() {
   useFooterHeight();
   const [authInitialized, setAuthInitialized] = useState(false);
@@ -68,6 +78,7 @@ function App() {
       <Provider store={store}>
         <AppThemeProvider>
           <WebSocketProvider />
+          <ActivityTracker />
           <div className="app-container">
             <BrowserRouter>
               <ErrorBoundary>

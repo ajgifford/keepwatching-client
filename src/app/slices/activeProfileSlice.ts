@@ -1,6 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { generateGenreFilterValues, generateStreamingServiceFilterValues } from '../constants/filters';
 import { RootState } from '../store';
+import { clearActivityTimestamp } from '../utils/activityTracker';
 import { deleteAccount, logout } from './accountSlice';
 import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
@@ -519,10 +520,12 @@ const activeProfileSlice = createSlice({
     builder
       .addCase(logout.fulfilled, () => {
         localStorage.removeItem(ACTIVE_PROFILE_KEY);
+        clearActivityTimestamp();
         return blankState;
       })
       .addCase(deleteAccount.fulfilled, () => {
         localStorage.removeItem(ACTIVE_PROFILE_KEY);
+        clearActivityTimestamp();
         return blankState;
       })
       .addCase(updateProfileImage.fulfilled, (state, action) => {
