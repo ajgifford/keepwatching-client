@@ -5,7 +5,7 @@
   "type": "module",
   "dependencies": {
     "@ajgifford/keepwatching-types": "^0.7.4",
-    "@ajgifford/keepwatching-ui": "^0.3.0",
+    "@ajgifford/keepwatching-ui": "^0.3.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.4",
