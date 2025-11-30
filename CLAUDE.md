@@ -72,7 +72,7 @@ Main routes:
   - `media/` - Media cards, favorite button, scrollable rows
   - `movies/` - Movie-specific components
   - `shows/` - TV show components (episodes, seasons, keep watching)
-  - `statistics/` - Analytics dashboards and charts (uses Recharts)
+  - `statistics/` - Statistics dialogs for account and profile analytics (uses components from `@ajgifford/keepwatching-ui`)
   - `search/` - Search functionality
   - `person/` - Person/cast related components
   - `controls/` - Custom UI controls
@@ -94,6 +94,15 @@ The WebSocket connection is managed globally:
   - `showsUpdate` / `moviesUpdate` - Reload active profile
   - `updateShowFavorite` - Update show in state and reload episodes
   - `newNotifications` / `updateNotifications` - Update notification state
+
+### Statistics Architecture
+Statistics are displayed in dialogs accessible from the Manage Account page:
+- **AccountStatisticsDialog** - Shows account-level analytics across all profiles
+- **ProfileStatisticsDialog** - Shows analytics for a specific profile
+- Statistics data is fetched directly via REST API (not stored in Redux)
+- Base statistics and enhanced statistics are fetched in parallel using `Promise.allSettled`
+- Enhanced statistics include: velocity, timeline, binge patterns, streaks, time-to-watch, seasonal trends, milestones, content depth, content discovery, abandonment risk, unaired content, and profile comparisons
+- UI components provided by `@ajgifford/keepwatching-ui` package (`EnhancedAccountStatisticsDashboard` and `EnhancedProfileStatisticsDashboard`)
 
 ### Material-UI Theming
 - Uses MUI v6 with Emotion for styling
