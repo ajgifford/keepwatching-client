@@ -7,21 +7,25 @@ import personSearchReducer from './slices/personSearchSlice';
 import preferencesReducer from './slices/preferencesSlice';
 import profilesReducer from './slices/profilesSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
-import { PreloadedState, configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+const rootReducer = combineReducers({
+  auth: authReducer,
+  profiles: profilesReducer,
+  activeProfile: activeProfileReducer,
+  activeShow: activeShowReducer,
+  activeMovie: activeMovieReducer,
+  activityNotification: activityNotificationReducer,
+  systemNotification: systemNotificationsReducer,
+  personSearch: personSearchReducer,
+  preferences: preferencesReducer,
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
+
+export const setupStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
-    reducer: {
-      auth: authReducer,
-      profiles: profilesReducer,
-      activeProfile: activeProfileReducer,
-      activeShow: activeShowReducer,
-      activeMovie: activeMovieReducer,
-      activityNotification: activityNotificationReducer,
-      systemNotification: systemNotificationsReducer,
-      personSearch: personSearchReducer,
-      preferences: preferencesReducer,
-    },
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
@@ -34,7 +38,6 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
 
 const store = setupStore();
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type AppStore = ReturnType<typeof setupStore>;
 

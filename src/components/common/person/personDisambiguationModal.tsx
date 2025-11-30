@@ -105,7 +105,7 @@ export const PersonDisambiguationModal: React.FC = () => {
 
       <DialogContent dividers sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
-          {results.map((person, index) => (
+          {results.map((person: PersonSearchResult, index: number) => (
             <ListItem
               key={person.id}
               disablePadding

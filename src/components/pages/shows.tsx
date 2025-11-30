@@ -80,7 +80,7 @@ const Shows = () => {
   };
 
   const sortedShows = [...shows].sort((a, b) => {
-    const watchedOrder = { UNAIRED: 3, NOT_WATCHED: 2, WATCHING: 1, UP_TO_DATE: 4, WATCHED: 5 };
+    const watchedOrder: Record<string, number> = { UNAIRED: 3, NOT_WATCHED: 2, WATCHING: 1, UP_TO_DATE: 4, WATCHED: 5 };
     const aWatched = watchedOrder[a.watchStatus];
     const bWatched = watchedOrder[b.watchStatus];
     if (aWatched !== bWatched) {
@@ -195,7 +195,7 @@ const Shows = () => {
                 <MenuItem id="showsFilterGenre_all" key="genresFilter_all" value="">
                   --All--
                 </MenuItem>
-                {genreFilterValues.map((genre) => (
+                {genreFilterValues.map((genre: string) => (
                   <MenuItem id={`showsFilterGenre_${genre}`} key={genre} value={genre}>
                     {genre}
                   </MenuItem>
@@ -214,7 +214,7 @@ const Shows = () => {
                 <MenuItem id="showsFilterStreamingService_all" key="streamingServicesFilter_all" value="">
                   --All--
                 </MenuItem>
-                {streamingServiceFilterValues.map((service) => (
+                {streamingServiceFilterValues.map((service: string) => (
                   <MenuItem id={`showsFilterStreamingService_${service}`} key={service} value={service}>
                     {service}
                   </MenuItem>

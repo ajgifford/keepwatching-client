@@ -1,13 +1,12 @@
 import { ReactElement } from 'react';
 
-import { PreloadedState, configureStore } from '@reduxjs/toolkit';
 import { RenderOptions, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import { AppStore, RootState, setupStore } from './store';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  preloadedState?: PreloadedState<RootState>;
+  preloadedState?: Partial<RootState>;
   store?: AppStore;
 }
 
@@ -26,5 +25,5 @@ export function renderWithProviders(
 }
 
 export function createMockStore(initialState: Partial<RootState> = {}) {
-  return setupStore(initialState as PreloadedState<RootState>);
+  return setupStore(initialState);
 }

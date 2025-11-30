@@ -188,7 +188,7 @@ const Notifications: React.FC = () => {
   };
 
   // Filter and search logic
-  const filteredNotifications = notifications.filter((notification) => {
+  const filteredNotifications = notifications.filter((notification: AccountNotification) => {
     const matchesFilter = (() => {
       switch (filter) {
         case 'unread':
@@ -209,7 +209,7 @@ const Notifications: React.FC = () => {
     return matchesFilter && matchesSearch;
   });
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n: AccountNotification) => !n.read).length;
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
@@ -325,7 +325,7 @@ const Notifications: React.FC = () => {
       >
         {filteredNotifications.length > 0 ? (
           <List sx={{ p: 0 }}>
-            {filteredNotifications.map((notification, index) => {
+            {filteredNotifications.map((notification: AccountNotification, index: number) => {
               const config = getNotificationConfig(notification);
               const IconComponent = config.icon;
               const isUnread = !notification.read;

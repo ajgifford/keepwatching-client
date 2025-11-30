@@ -122,7 +122,7 @@ function NotificationIconDropdown() {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n: AccountNotification) => !n.read).length;
 
   useEffect(() => {
     if (!currentAccount?.id) return;
@@ -281,7 +281,7 @@ function NotificationIconDropdown() {
                   },
                 }}
               >
-                {notifications.slice(0, 10).map((notification, index) => {
+                {notifications.slice(0, 10).map((notification: AccountNotification, index: number) => {
                   const config = getNotificationConfig(notification);
                   const parsedMessage = parseMessage(notification.message);
                   const IconComponent = config.icon;

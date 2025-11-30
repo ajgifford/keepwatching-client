@@ -876,14 +876,14 @@ export const selectActiveProfileError = (state: RootState) => state.activeProfil
 export const selectShowByTMDBId = createSelector(
   [selectShows, (state: RootState, tmdbId: number) => tmdbId],
   (shows = [], tmdbId) => {
-    return shows.find((show) => show.tmdbId === tmdbId);
+    return shows.find((show: ProfileShow) => show.tmdbId === tmdbId);
   }
 );
 
 export const selectMovieByTMDBId = createSelector(
   [selectMovies, (state: RootState, tmdbId: number) => tmdbId],
   (movies = [], tmdbId) => {
-    return movies.find((movie) => movie.tmdbId === tmdbId);
+    return movies.find((movie: ProfileMovie) => movie.tmdbId === tmdbId);
   }
 );
 
@@ -891,8 +891,8 @@ export const selectMoviesByIds = createSelector(
   [selectMovies, (state: RootState, movieIds: MovieReference[]) => movieIds],
   (movies = [], movieIds = []) => {
     const selectedMovies: ProfileMovie[] = [];
-    movieIds.forEach((movieId) => {
-      const movie = movies.find((movie) => movie.id === Number(movieId.id));
+    movieIds.forEach((movieId: MovieReference) => {
+      const movie = movies.find((movie: ProfileMovie) => movie.id === Number(movieId.id));
       if (movie) {
         selectedMovies.push(movie);
       }
@@ -902,18 +902,18 @@ export const selectMoviesByIds = createSelector(
 );
 
 export const selectShowWatchCounts = createSelector([selectShows], (shows = []) => {
-  const watched = shows.filter((show) => show.watchStatus === WatchStatus.WATCHED).length;
-  const notWatched = shows.filter((show) => show.watchStatus === WatchStatus.NOT_WATCHED).length;
-  const watching = shows.filter((show) => show.watchStatus === WatchStatus.WATCHING).length;
-  const upToDate = shows.filter((show) => show.watchStatus === WatchStatus.UP_TO_DATE).length;
-  const unaired = shows.filter((show) => show.watchStatus === WatchStatus.UNAIRED).length;
+  const watched = shows.filter((show: ProfileShow) => show.watchStatus === WatchStatus.WATCHED).length;
+  const notWatched = shows.filter((show: ProfileShow) => show.watchStatus === WatchStatus.NOT_WATCHED).length;
+  const watching = shows.filter((show: ProfileShow) => show.watchStatus === WatchStatus.WATCHING).length;
+  const upToDate = shows.filter((show: ProfileShow) => show.watchStatus === WatchStatus.UP_TO_DATE).length;
+  const unaired = shows.filter((show: ProfileShow) => show.watchStatus === WatchStatus.UNAIRED).length;
   return { watched, upToDate, watching, notWatched, unaired };
 });
 
 export const selectMovieWatchCounts = createSelector([selectMovies], (movies = []) => {
-  const watched = movies.filter((movie) => movie.watchStatus === WatchStatus.WATCHED).length;
-  const notWatched = movies.filter((movie) => movie.watchStatus === WatchStatus.NOT_WATCHED).length;
-  const unaired = movies.filter((movie) => movie.watchStatus === WatchStatus.UNAIRED).length;
+  const watched = movies.filter((movie: ProfileMovie) => movie.watchStatus === WatchStatus.WATCHED).length;
+  const notWatched = movies.filter((movie: ProfileMovie) => movie.watchStatus === WatchStatus.NOT_WATCHED).length;
+  const unaired = movies.filter((movie: ProfileMovie) => movie.watchStatus === WatchStatus.UNAIRED).length;
   return { watched, notWatched, unaired };
 });
 
@@ -951,7 +951,7 @@ export const selectContentByStreamingService = createSelector(
     };
 
     // Add shows to the map
-    shows.forEach((show) => {
+    shows.forEach((show: ProfileShow) => {
       if (show.streamingServices) {
         const serviceArray = show.streamingServices.split(',').map((service: string) => service.trim());
         serviceArray.forEach((service: string) => {
@@ -982,7 +982,7 @@ export const selectContentByStreamingService = createSelector(
     });
 
     // Add movies to the map
-    movies.forEach((movie) => {
+    movies.forEach((movie: ProfileMovie) => {
       if (movie.streamingServices) {
         const serviceArray = movie.streamingServices.split(',').map((service: string) => service.trim());
         serviceArray.forEach((service: string) => {
