@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
 import ShowDetails from '../showDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
 
@@ -47,11 +48,7 @@ jest.mock('../../../app/slices/activeProfileSlice', () => ({
 }));
 
 jest.mock('../../common/controls/optionalTooltipControl', () => ({
-  OptionalTooltipControl: ({ children, title }: any) => (
-    <div title={title}>
-      {children}
-    </div>
-  ),
+  OptionalTooltipControl: ({ children, title }: any) => <div title={title}>{children}</div>,
 }));
 
 jest.mock('../../common/shows/keepWatchingShowComponent', () => ({
@@ -67,9 +64,7 @@ jest.mock('../../common/shows/similarShowsComponent', () => ({
 }));
 
 jest.mock('../../common/shows/showCast', () => ({
-  ShowCastSection: ({ cast }: { cast: any[] }) => (
-    <div data-testid="show-cast-section">Cast: {cast?.length || 0}</div>
-  ),
+  ShowCastSection: ({ cast }: { cast: any[] }) => <div data-testid="show-cast-section">Cast: {cast?.length || 0}</div>,
 }));
 
 jest.mock('../../common/tabs/tabPanel', () => ({
@@ -205,11 +200,7 @@ const mockWatchedEpisodes = {
   11: false,
 };
 
-const renderShowDetails = (
-  showId = '1',
-  profileId = '1',
-  initialEntries = [`/shows/${showId}/${profileId}`]
-) => {
+const renderShowDetails = (showId = '1', profileId = '1', initialEntries = [`/shows/${showId}/${profileId}`]) => {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
@@ -250,9 +241,7 @@ describe('ShowDetails', () => {
       const { fetchShowWithDetails } = require('../../../app/slices/activeShowSlice');
       renderShowDetails();
 
-      expect(mockDispatch).toHaveBeenCalledWith(
-        fetchShowWithDetails({ profileId: 1, showId: 1 })
-      );
+      expect(mockDispatch).toHaveBeenCalledWith(fetchShowWithDetails({ profileId: 1, showId: 1 }));
     });
 
     it('dispatches clearActiveShow on unmount', () => {
@@ -414,9 +403,7 @@ describe('ShowDetails', () => {
       const backButton = screen.getByLabelText('back');
       fireEvent.click(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/shows?genre=Drama&streamingService=Netflix&watchStatus=WATCHING'
-      );
+      expect(mockNavigate).toHaveBeenCalledWith('/shows?genre=Drama&streamingService=Netflix&watchStatus=WATCHING');
     });
   });
 
@@ -609,9 +596,9 @@ describe('ShowDetails', () => {
     it('dispatches updateSeasonWatchStatus when season watch button is clicked', async () => {
       jest.clearAllMocks();
       mockDispatch.mockResolvedValue({ type: 'mock' });
-      
+
       const { updateSeasonWatchStatus } = require('../../../app/slices/activeShowSlice');
-      
+
       renderShowDetails();
       const seasonsTab = screen.getByRole('tab', { name: /seasons & episodes/i });
       fireEvent.click(seasonsTab);
@@ -622,7 +609,7 @@ describe('ShowDetails', () => {
 
       // Find watch status icons that are within the accordion header (not inside episodes)
       const watchStatusIcons = screen.getAllByTestId('watch-status-icon');
-      
+
       // Find a season-level watch Box (within AccordionSummary, not in episode list)
       // The Box now handles the click instead of a button
       let seasonWatchBox = null;
@@ -638,13 +625,14 @@ describe('ShowDetails', () => {
       if (seasonWatchBox) {
         fireEvent.click(seasonWatchBox);
 
-        await waitFor(() => {
-          const calls = mockDispatch.mock.calls;
-          const updateSeasonCall = calls.find(call => 
-            call[0]?.type === 'activeShow/updateSeasonWatchStatus'
-          );
-          expect(updateSeasonCall).toBeDefined();
-        }, { timeout: 3000 });
+        await waitFor(
+          () => {
+            const calls = mockDispatch.mock.calls;
+            const updateSeasonCall = calls.find((call) => call[0]?.type === 'activeShow/updateSeasonWatchStatus');
+            expect(updateSeasonCall).toBeDefined();
+          },
+          { timeout: 3000 }
+        );
       } else {
         // If we can't find the button, skip the test rather than fail
         expect(true).toBe(true);
@@ -656,9 +644,9 @@ describe('ShowDetails', () => {
     it('dispatches updateEpisodeWatchStatus when episode watch button is clicked', async () => {
       jest.clearAllMocks();
       mockDispatch.mockResolvedValue({ type: 'mock' });
-      
+
       const { updateEpisodeWatchStatus } = require('../../../app/slices/activeShowSlice');
-      
+
       renderShowDetails();
       const seasonsTab = screen.getByRole('tab', { name: /seasons & episodes/i });
       fireEvent.click(seasonsTab);
@@ -677,7 +665,7 @@ describe('ShowDetails', () => {
 
       // Find all watch status icons
       const watchStatusIcons = screen.getAllByTestId('watch-status-icon');
-      
+
       // Find an episode-level watch button (within ListItem, not AccordionSummary)
       let episodeButton = null;
       for (const icon of watchStatusIcons) {
@@ -693,13 +681,14 @@ describe('ShowDetails', () => {
       if (episodeButton) {
         fireEvent.click(episodeButton);
 
-        await waitFor(() => {
-          const calls = mockDispatch.mock.calls;
-          const updateEpisodeCall = calls.find(call => 
-            call[0]?.type === 'activeShow/updateEpisodeWatchStatus'
-          );
-          expect(updateEpisodeCall).toBeDefined();
-        }, { timeout: 3000 });
+        await waitFor(
+          () => {
+            const calls = mockDispatch.mock.calls;
+            const updateEpisodeCall = calls.find((call) => call[0]?.type === 'activeShow/updateEpisodeWatchStatus');
+            expect(updateEpisodeCall).toBeDefined();
+          },
+          { timeout: 3000 }
+        );
       } else {
         // If we can't find the button, skip the test rather than fail
         expect(true).toBe(true);

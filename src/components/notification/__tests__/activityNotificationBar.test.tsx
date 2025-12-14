@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import ActivityNotificationBar from '../activityNotificationBar';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

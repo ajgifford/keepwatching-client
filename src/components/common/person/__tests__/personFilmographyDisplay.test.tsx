@@ -1,9 +1,9 @@
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
-import { PersonFilmographyDisplay } from '../personFilmographyDisplay';
 import { PersonSearchDetails } from '../../../../app/model/personSearchTypes';
+import { PersonFilmographyDisplay } from '../personFilmographyDisplay';
 import { SearchPersonCredit } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('../../../utility/contentUtility', () => ({
@@ -50,7 +50,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2023-05-15',
       character: 'Character A',
       job: 'Actor',
-      mediaType: 'movie'
+      mediaType: 'movie',
     },
     {
       tmdbId: 2,
@@ -59,7 +59,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2022-03-10',
       character: 'Character B',
       job: 'Actor',
-      mediaType: 'movie'
+      mediaType: 'movie',
     },
     {
       tmdbId: 3,
@@ -68,7 +68,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2024-01-20',
       character: 'Character C',
       job: 'Actor',
-      mediaType: 'movie'
+      mediaType: 'movie',
     },
   ];
 
@@ -80,7 +80,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2021-06-01',
       character: 'Character X',
       job: 'Actor',
-      mediaType: 'movie'
+      mediaType: 'movie',
     },
     {
       tmdbId: 102,
@@ -89,7 +89,7 @@ describe('PersonFilmographyDisplay', () => {
       releaseDate: '2020-09-15',
       character: 'Character Y',
       job: 'Actor',
-      mediaType: 'movie'
+      mediaType: 'movie',
     },
   ];
 
@@ -385,7 +385,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '',
           character: 'Character A',
           job: 'Actor',
-          mediaType: 'movie'
+          mediaType: 'movie',
         },
         {
           tmdbId: 2,
@@ -394,7 +394,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '2023-01-01',
           character: 'Character B',
           job: 'Actor',
-          mediaType: 'movie'
+          mediaType: 'movie',
         },
       ];
 
@@ -418,7 +418,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '2023-01-01',
           character: 'Character',
           job: 'Actor',
-          mediaType: 'movie'
+          mediaType: 'movie',
         },
       ];
 
@@ -441,7 +441,7 @@ describe('PersonFilmographyDisplay', () => {
           releaseDate: '2023-01-01',
           character: 'Character',
           job: 'Actor',
-          mediaType: 'movie'
+          mediaType: 'movie',
         },
       ];
 

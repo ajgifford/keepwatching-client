@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom';
+// Polyfill for TextEncoder/TextDecoder (needed for React Router v7)
+import { TextDecoder, TextEncoder } from 'util';
 import 'whatwg-fetch';
 
-// Polyfill for TextEncoder/TextDecoder (needed for React Router v7)
-import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder as any;
 global.TextDecoder = TextDecoder as any;
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,

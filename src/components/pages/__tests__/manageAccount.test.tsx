@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import ManageAccount from '../manageAccount';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -126,18 +126,18 @@ describe('ManageAccount', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock the selector functions directly
     const accountSlice = require('../../../app/slices/accountSlice');
     const activeProfileSlice = require('../../../app/slices/activeProfileSlice');
     const profilesSlice = require('../../../app/slices/profilesSlice');
-    
+
     accountSlice.selectCurrentAccount.mockReturnValue(mockAccount);
     activeProfileSlice.selectActiveProfile.mockReturnValue(mockActiveProfile);
     activeProfileSlice.selectLastUpdated.mockReturnValue('2025-01-01 12:00:00');
     profilesSlice.selectAllProfiles.mockReturnValue(mockProfiles);
     profilesSlice.selectProfileById.mockReturnValue(mockProfiles[0]);
-    
+
     // Mock useAppSelector to call the selector with a mock state
     const { useAppSelector } = require('../../../app/hooks');
     useAppSelector.mockImplementation((selector: any) => {

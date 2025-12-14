@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
@@ -79,24 +80,24 @@ export default defineConfig({
         manualChunks: {
           // React core (including react-is to ensure proper loading order)
           'react-vendor': ['react', 'react-dom', 'react-router-dom', 'react-is'],
-          
+
           // MUI and Emotion together (MUI depends on Emotion)
           'mui-core': ['@mui/material', '@emotion/react', '@emotion/styled'],
-          
+
           // MUI icons (large package)
           'mui-icons': ['@mui/icons-material'],
-          
+
           // Redux
-          'redux': ['@reduxjs/toolkit', 'react-redux'],
-          
+          redux: ['@reduxjs/toolkit', 'react-redux'],
+
           // Charts library
-          'recharts': ['recharts'],
-          
+          recharts: ['recharts'],
+
           // Socket.io
-          'socket': ['socket.io-client'],
-          
+          socket: ['socket.io-client'],
+
           // Axios
-          'axios': ['axios'],
+          axios: ['axios'],
         },
       },
     },

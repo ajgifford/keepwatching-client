@@ -1,13 +1,14 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
-import Navigation from '../navigation';
+
 import accountSlice from '../../../app/slices/accountSlice';
 import activeProfileSlice from '../../../app/slices/activeProfileSlice';
 import profilesSlice from '../../../app/slices/profilesSlice';
 import systemNotificationsSlice from '../../../app/slices/systemNotificationsSlice';
+import Navigation from '../navigation';
 import { Profile } from '@ajgifford/keepwatching-types';
+import { configureStore } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 jest.mock('axios');
@@ -491,10 +492,7 @@ describe('Navigation', () => {
       );
 
       const showsButton = screen.getByRole('link', { name: /shows/i });
-      expect(showsButton).toHaveAttribute(
-        'href',
-        '/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING%2CUP_TO_DATE'
-      );
+      expect(showsButton).toHaveAttribute('href', '/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING%2CUP_TO_DATE');
     });
 
     it('has correct route with query params for movies navigation', () => {

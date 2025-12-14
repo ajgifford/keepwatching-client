@@ -1,6 +1,6 @@
 /**
  * Activity Tracker Utility
- * 
+ *
  * Tracks user activity and determines when cached data should be refreshed.
  * This helps ensure users see up-to-date information when returning to the app
  * after extended periods of inactivity or when reopening the app.
@@ -28,7 +28,7 @@ export const getLastActivityTimestamp = (): Date | null => {
 /**
  * Determines if the cached data is stale based on the last activity timestamp
  * and the data's last updated timestamp
- * 
+ *
  * @param lastUpdated - The timestamp when data was last updated (from Redux state)
  * @returns true if data should be refreshed, false otherwise
  */
@@ -53,7 +53,7 @@ export const shouldRefreshData = (lastUpdated: string | null): boolean => {
   // If we have a last activity timestamp, check if there was a significant gap
   if (lastActivity) {
     const timeSinceActivity = now.getTime() - lastActivity.getTime();
-    
+
     // If user was inactive for more than the threshold, refresh data
     if (timeSinceActivity > DATA_FRESHNESS_THRESHOLD_MS) {
       return true;

@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { AxiosResponse } from 'axios';
 import { BrowserRouter } from 'react-router-dom';
 
 import Discover from '../discover';
+import userEvent from '@testing-library/user-event';
+import { AxiosResponse } from 'axios';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

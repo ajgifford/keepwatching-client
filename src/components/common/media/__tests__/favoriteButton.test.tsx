@@ -1,17 +1,17 @@
 import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
-import { renderWithProviders } from '../../../../app/testUtils';
+import { useMediaQuery } from '@mui/material';
+
 import { addMovieFavorite, addShowFavorite } from '../../../../app/slices/activeProfileSlice';
+import { renderWithProviders } from '../../../../app/testUtils';
 import FavoritesButton from '../favoriteButton';
+import userEvent from '@testing-library/user-event';
 
 // Mock MUI useMediaQuery
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
   useMediaQuery: jest.fn(),
 }));
-
-import { useMediaQuery } from '@mui/material';
 
 const mockUseMediaQuery = useMediaQuery as jest.Mock;
 

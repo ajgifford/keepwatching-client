@@ -1,6 +1,4 @@
-import { Profile } from '@ajgifford/keepwatching-types';
-import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
-
+import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
 import {
   addProfile,
@@ -14,6 +12,8 @@ import {
   selectProfilesLoading,
   updateProfileImage,
 } from '../profilesSlice';
+import { Profile } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 
 // Mock axios
 jest.mock('../../api/axiosInstance', () => ({
@@ -25,8 +25,6 @@ jest.mock('../../api/axiosInstance', () => ({
     delete: jest.fn(),
   },
 }));
-
-import axiosInstance from '../../api/axiosInstance';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 
@@ -83,7 +81,6 @@ describe('profilesSlice', () => {
       const saved = localStorage.getItem('profiles');
       expect(saved).toBe(JSON.stringify([mockProfile]));
     });
-
   });
 
   describe('addProfile', () => {

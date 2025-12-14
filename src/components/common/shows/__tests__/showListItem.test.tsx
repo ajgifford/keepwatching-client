@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import { ShowListItem, FilterProps } from '../showListItem';
+import { FilterProps, ShowListItem } from '../showListItem';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -29,7 +29,11 @@ jest.mock('../../../utility/contentUtility', () => ({
 }));
 
 jest.mock('../../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: any) => <div data-testid="watch-status-icon" data-status={status}>Icon</div>,
+  WatchStatusIcon: ({ status }: any) => (
+    <div data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </div>
+  ),
   determineNextShowWatchStatus: jest.fn((show: any) =>
     show.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED
   ),
@@ -82,7 +86,7 @@ describe('ShowListItem', () => {
     userRating: 0,
     inProduction: false,
     lastAirDate: null,
-    network: null
+    network: null,
   };
 
   const mockGetFilters = jest.fn(
@@ -391,7 +395,7 @@ describe('ShowListItem', () => {
       });
 
       resolveDispatch!();
-      
+
       // Wait for the finally block to execute and update state
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -422,7 +426,7 @@ describe('ShowListItem', () => {
       });
 
       resolveDispatch!();
-      
+
       // Wait for the finally block to execute and update state
       await waitFor(() => {
         expect(watchStatusButton).not.toBeDisabled();

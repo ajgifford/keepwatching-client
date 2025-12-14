@@ -1,11 +1,10 @@
-import { WatchStatus } from '@ajgifford/keepwatching-types';
-
 import {
   generateGenreFilterValues,
   generateStreamingServiceFilterValues,
   movieWatchStatuses,
   showWatchStatuses,
 } from '../filters';
+import { WatchStatus } from '@ajgifford/keepwatching-types';
 
 describe('filters constants', () => {
   describe('showWatchStatuses', () => {

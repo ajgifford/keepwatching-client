@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { DISCOVER_TYPE_OPTIONS, SEARCH_TYPE_OPTIONS, SegmentedControl } from '../segmentedControl';
+import userEvent from '@testing-library/user-event';
 
 describe('SegmentedControl', () => {
   const mockOptions = [
@@ -33,10 +33,7 @@ describe('SegmentedControl', () => {
   });
 
   it('should render disabled option correctly', () => {
-    const optionsWithDisabled = [
-      ...mockOptions,
-      { value: 'option4', label: 'Disabled Option', disabled: true },
-    ];
+    const optionsWithDisabled = [...mockOptions, { value: 'option4', label: 'Disabled Option', disabled: true }];
 
     render(<SegmentedControl options={optionsWithDisabled} value="option1" onChange={mockOnChange} />);
 
@@ -107,9 +104,7 @@ describe('SegmentedControl', () => {
 
   describe('snapshot tests', () => {
     it('should match snapshot with default props', () => {
-      const { container } = render(
-        <SegmentedControl options={mockOptions} value="option1" onChange={mockOnChange} />
-      );
+      const { container } = render(<SegmentedControl options={mockOptions} value="option1" onChange={mockOnChange} />);
       expect(container).toMatchSnapshot();
     });
   });

@@ -208,16 +208,13 @@ describe('MovieTile', () => {
     it('should handle movie with very long streaming services string', () => {
       const longServicesMovie = {
         ...mockMovie,
-        streamingServices:
-          'Netflix, Amazon Prime, Hulu, Disney+, HBO Max, Paramount+, Apple TV+, Peacock, Discovery+',
+        streamingServices: 'Netflix, Amazon Prime, Hulu, Disney+, HBO Max, Paramount+, Apple TV+, Peacock, Discovery+',
       };
 
       render(<MovieTile movie={longServicesMovie} />);
 
       expect(
-        screen.getByText(
-          'Netflix, Amazon Prime, Hulu, Disney+, HBO Max, Paramount+, Apple TV+, Peacock, Discovery+'
-        )
+        screen.getByText('Netflix, Amazon Prime, Hulu, Disney+, HBO Max, Paramount+, Apple TV+, Peacock, Discovery+')
       ).toBeInTheDocument();
     });
 

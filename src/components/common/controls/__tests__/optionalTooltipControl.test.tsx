@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { OptionalTooltipControl } from '../optionalTooltipControl';
+import userEvent from '@testing-library/user-event';
 
 describe('OptionalTooltipControl', () => {
   const mockChild = <button>Test Button</button>;

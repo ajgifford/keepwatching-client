@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import Register from '../register';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

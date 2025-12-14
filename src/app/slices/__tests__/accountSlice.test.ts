@@ -1,4 +1,29 @@
+import axiosInstance from '../../api/axiosInstance';
+import { createMockStore } from '../../testUtils';
+import {
+  deleteAccount,
+  googleLogin,
+  login,
+  logout,
+  register,
+  removeAccountImage,
+  selectAccountError,
+  selectAccountLoading,
+  selectCurrentAccount,
+  updateAccount,
+  updateAccountImage,
+  verifyEmail,
+} from '../accountSlice';
 import { Account } from '@ajgifford/keepwatching-types';
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+} from 'firebase/auth';
 
 // Mock Firebase
 jest.mock('../../firebaseConfig', () => ({
@@ -49,33 +74,6 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
-
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-} from 'firebase/auth';
-
-import axiosInstance from '../../api/axiosInstance';
-import { createMockStore } from '../../testUtils';
-import {
-  deleteAccount,
-  googleLogin,
-  login,
-  logout,
-  register,
-  removeAccountImage,
-  selectAccountError,
-  selectAccountLoading,
-  selectCurrentAccount,
-  updateAccount,
-  updateAccountImage,
-  verifyEmail,
-} from '../accountSlice';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 const mockSignIn = signInWithEmailAndPassword as jest.Mock;
@@ -186,9 +184,7 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(
-        register({ email: 'test@test.com', password: 'password123', name: 'Test User' })
-      );
+      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -211,9 +207,7 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(
-        register({ email: 'test@test.com', password: 'password123', name: 'Test User' })
-      );
+      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith('account', JSON.stringify(mockAccount));
     });
@@ -222,9 +216,7 @@ describe('accountSlice', () => {
       mockCreateUser.mockRejectedValueOnce(new Error('Email already in use'));
 
       const store = createMockStore();
-      await store.dispatch(
-        register({ email: 'test@test.com', password: 'password123', name: 'Test User' })
-      );
+      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -243,9 +235,7 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(
-        register({ email: 'test@test.com', password: 'password123', name: 'Test User' })
-      );
+      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -262,9 +252,7 @@ describe('accountSlice', () => {
       mockAxiosInstance.post.mockRejectedValueOnce(new Error('Network error'));
 
       const store = createMockStore();
-      await store.dispatch(
-        register({ email: 'test@test.com', password: 'password123', name: 'Test User' })
-      );
+      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);

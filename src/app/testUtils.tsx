@@ -1,6 +1,5 @@
-import { ReactElement } from 'react';
-
 import { RenderOptions, render } from '@testing-library/react';
+import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 
 import { AppStore, RootState, setupStore } from './store';
@@ -12,11 +11,7 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
 
 export function renderWithProviders(
   ui: ReactElement,
-  {
-    preloadedState = {},
-    store = setupStore(preloadedState),
-    ...renderOptions
-  }: ExtendedRenderOptions = {}
+  { preloadedState = {}, store = setupStore(preloadedState), ...renderOptions }: ExtendedRenderOptions = {}
 ) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return <Provider store={store}>{children}</Provider>;

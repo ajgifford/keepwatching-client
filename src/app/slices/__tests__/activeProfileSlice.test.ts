@@ -1,3 +1,34 @@
+import axiosInstance from '../../api/axiosInstance';
+import { createMockStore } from '../../testUtils';
+import { deleteAccount, logout } from '../accountSlice';
+import {
+  addMovieFavorite,
+  addShowFavorite,
+  fetchMilestoneStats,
+  reloadActiveProfile,
+  reloadProfileEpisodes,
+  removeMovieFavorite,
+  removeShowFavorite,
+  selectActiveProfile,
+  selectActiveProfileError,
+  selectActiveProfileLoading,
+  selectMilestoneStats,
+  selectMovieGenres,
+  selectMovieStreamingServices,
+  selectMovies,
+  selectNextUnwatchedEpisodes,
+  selectRecentEpisodes,
+  selectRecentMovies,
+  selectShowGenres,
+  selectShowStreamingServices,
+  selectShows,
+  selectUpcomingEpisodes,
+  selectUpcomingMovies,
+  setActiveProfile,
+  updateMovieWatchStatus,
+  updateNextEpisodeWatchStatus,
+  updateShowWatchStatus,
+} from '../activeProfileSlice';
 import { MilestoneStats, Profile, WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock axios
@@ -32,38 +63,6 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
-
-import axiosInstance from '../../api/axiosInstance';
-import { createMockStore } from '../../testUtils';
-import { deleteAccount, logout } from '../accountSlice';
-import {
-  addMovieFavorite,
-  addShowFavorite,
-  fetchMilestoneStats,
-  reloadActiveProfile,
-  reloadProfileEpisodes,
-  removeMovieFavorite,
-  removeShowFavorite,
-  selectActiveProfile,
-  selectActiveProfileError,
-  selectActiveProfileLoading,
-  selectMilestoneStats,
-  selectMovieGenres,
-  selectMovies,
-  selectMovieStreamingServices,
-  selectNextUnwatchedEpisodes,
-  selectRecentEpisodes,
-  selectRecentMovies,
-  selectShowGenres,
-  selectShows,
-  selectShowStreamingServices,
-  selectUpcomingEpisodes,
-  selectUpcomingMovies,
-  setActiveProfile,
-  updateMovieWatchStatus,
-  updateNextEpisodeWatchStatus,
-  updateShowWatchStatus,
-} from '../activeProfileSlice';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 
@@ -566,7 +565,9 @@ describe('activeProfileSlice', () => {
         },
       });
 
-      const result = await store.dispatch(updateShowWatchStatus({ profileId: 1, showId: 1, status: WatchStatus.WATCHED }));
+      const result = await store.dispatch(
+        updateShowWatchStatus({ profileId: 1, showId: 1, status: WatchStatus.WATCHED })
+      );
 
       expect(result.meta.requestStatus).toBe('rejected');
     });
@@ -783,7 +784,9 @@ describe('activeProfileSlice', () => {
         },
       });
 
-      const result = await store.dispatch(updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED }));
+      const result = await store.dispatch(
+        updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED })
+      );
 
       expect(result.meta.requestStatus).toBe('rejected');
     });
@@ -848,7 +851,9 @@ describe('activeProfileSlice', () => {
         },
       });
 
-      const result = await store.dispatch(updateNextEpisodeWatchStatus({ profileId: 1, showId: 1, status: WatchStatus.WATCHED }));
+      const result = await store.dispatch(
+        updateNextEpisodeWatchStatus({ profileId: 1, showId: 1, status: WatchStatus.WATCHED })
+      );
 
       expect(result.meta.requestStatus).toBe('rejected');
     });

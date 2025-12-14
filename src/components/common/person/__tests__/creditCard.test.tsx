@@ -5,7 +5,9 @@ import { Credit, ShowCredit } from '@ajgifford/keepwatching-types';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
-  buildTMDBImagePath: jest.fn((path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path}`),
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path}`
+  ),
 }));
 
 describe('CreditCard', () => {

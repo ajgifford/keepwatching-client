@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import DashboardProfileCard from '../dashboardProfileCard';
-import { Profile, MilestoneStats, Milestone } from '@ajgifford/keepwatching-types';
+import { Milestone, MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('../../../../app/constants/constants', () => ({
@@ -177,9 +177,7 @@ describe('DashboardProfileCard', () => {
       const { container } = renderWithRouter(<DashboardProfileCard {...defaultProps} />);
 
       const links = container.querySelectorAll('a');
-      const showsToWatchLink = Array.from(links).find((link) =>
-        link.textContent?.includes('Shows to Watch')
-      );
+      const showsToWatchLink = Array.from(links).find((link) => link.textContent?.includes('Shows to Watch'));
 
       expect(showsToWatchLink).toHaveAttribute('href', '/shows?watchStatus=UNAIRED%2CNOT_WATCHED%2CWATCHING');
     });
@@ -188,9 +186,7 @@ describe('DashboardProfileCard', () => {
       const { container } = renderWithRouter(<DashboardProfileCard {...defaultProps} />);
 
       const links = container.querySelectorAll('a');
-      const showsWatchedLink = Array.from(links).find((link) =>
-        link.textContent?.includes('Shows Watched')
-      );
+      const showsWatchedLink = Array.from(links).find((link) => link.textContent?.includes('Shows Watched'));
 
       expect(showsWatchedLink).toHaveAttribute('href', '/shows?watchStatus=WATCHED%2CUP_TO_DATE');
     });
@@ -199,9 +195,7 @@ describe('DashboardProfileCard', () => {
       const { container } = renderWithRouter(<DashboardProfileCard {...defaultProps} />);
 
       const links = container.querySelectorAll('a');
-      const moviesToWatchLink = Array.from(links).find((link) =>
-        link.textContent?.includes('Movies to Watch')
-      );
+      const moviesToWatchLink = Array.from(links).find((link) => link.textContent?.includes('Movies to Watch'));
 
       expect(moviesToWatchLink).toHaveAttribute('href', '/movies?watchStatus=UNAIRED%2CNOT_WATCHED');
     });
@@ -210,9 +204,7 @@ describe('DashboardProfileCard', () => {
       const { container } = renderWithRouter(<DashboardProfileCard {...defaultProps} />);
 
       const links = container.querySelectorAll('a');
-      const moviesWatchedLink = Array.from(links).find((link) =>
-        link.textContent?.includes('Movies Watched')
-      );
+      const moviesWatchedLink = Array.from(links).find((link) => link.textContent?.includes('Movies Watched'));
 
       expect(moviesWatchedLink).toHaveAttribute('href', '/movies?watchStatus=WATCHED');
     });
@@ -478,7 +470,7 @@ describe('DashboardProfileCard', () => {
     it('should handle profile name with apostrophe', () => {
       const apostropheProfile = {
         ...mockProfile,
-        name: "James",
+        name: 'James',
       };
 
       renderWithRouter(<DashboardProfileCard {...defaultProps} profile={apostropheProfile} />);

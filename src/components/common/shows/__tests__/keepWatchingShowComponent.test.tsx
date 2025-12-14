@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import { KeepWatchingShowComponent } from '../keepWatchingShowComponent';
+
 import activeShowSlice from '../../../../app/slices/activeShowSlice';
-import { ProfileShowWithSeasons, ProfileSeason, ProfileEpisode, WatchStatus } from '@ajgifford/keepwatching-types';
+import { KeepWatchingShowComponent } from '../keepWatchingShowComponent';
+import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, WatchStatus } from '@ajgifford/keepwatching-types';
+import { configureStore } from '@reduxjs/toolkit';
 
 const createMockEpisode = (id: number, episodeNumber: number, airDate: string): ProfileEpisode => ({
   id,
@@ -19,7 +20,7 @@ const createMockEpisode = (id: number, episodeNumber: number, airDate: string): 
   tmdbId: 0,
   showId: 0,
   seasonNumber: 0,
-  episodeType: ''
+  episodeType: '',
 });
 
 const mockSeason: ProfileSeason = {
@@ -38,7 +39,7 @@ const mockSeason: ProfileSeason = {
   profileId: 0,
   watchStatus: WatchStatus.UNAIRED,
   tmdbId: 0,
-  numberOfEpisodes: 3
+  numberOfEpisodes: 3,
 };
 
 const mockShow: ProfileShowWithSeasons = {
@@ -64,10 +65,13 @@ const mockShow: ProfileShowWithSeasons = {
   type: '',
   inProduction: false,
   lastAirDate: null,
-  seasons: [mockSeason]
+  seasons: [mockSeason],
 };
 
-const createMockStore = (show: ProfileShowWithSeasons | null = mockShow, watchedEpisodes: Record<number, boolean> = {}) => {
+const createMockStore = (
+  show: ProfileShowWithSeasons | null = mockShow,
+  watchedEpisodes: Record<number, boolean> = {}
+) => {
   return configureStore({
     reducer: {
       activeShow: activeShowSlice,
@@ -174,9 +178,7 @@ describe('KeepWatchingShowComponent', () => {
   });
 
   it('limits to maximum 6 episodes', () => {
-    const manyEpisodes = Array.from({ length: 10 }, (_, i) =>
-      createMockEpisode(i + 1, i + 1, '2024-01-01')
-    );
+    const manyEpisodes = Array.from({ length: 10 }, (_, i) => createMockEpisode(i + 1, i + 1, '2024-01-01'));
 
     const seasonWithManyEpisodes: ProfileSeason = {
       ...mockSeason,
@@ -267,14 +269,11 @@ describe('KeepWatchingShowComponent', () => {
       overview: 'Second season',
       releaseDate: '2024-06-01',
       posterImage: '/season2-poster.jpg',
-      episodes: [
-        createMockEpisode(4, 1, '2024-06-01'),
-        createMockEpisode(5, 2, '2024-06-08'),
-      ],
+      episodes: [createMockEpisode(4, 1, '2024-06-01'), createMockEpisode(5, 2, '2024-06-08')],
       profileId: 0,
       watchStatus: WatchStatus.UNAIRED,
       tmdbId: 0,
-      numberOfEpisodes: 2
+      numberOfEpisodes: 2,
     };
 
     const multiSeasonShow = {
@@ -313,7 +312,7 @@ describe('KeepWatchingShowComponent', () => {
     const episodeWithoutAirDate = createMockEpisode(4, 4, '2024-01-01');
     // Cast to any to bypass TypeScript checking for this test scenario
     (episodeWithoutAirDate as any).airDate = null;
-    
+
     const seasonWithNullAirDate: ProfileSeason = {
       ...mockSeason,
       episodes: [...mockSeason.episodes, episodeWithoutAirDate],

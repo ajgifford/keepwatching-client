@@ -21,8 +21,8 @@ jest.mock('firebase/auth', () => ({
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   ErrorComponent: ({ error }: { error: string }) => <div data-testid="error-component">{error}</div>,
   LoadingComponent: () => <div data-testid="loading-component">Loading...</div>,
-  getAccountImageUrl: jest.fn((image: string | null, staticUrl: string) => 
-    image || `${staticUrl}/default-account-image.png`
+  getAccountImageUrl: jest.fn(
+    (image: string | null, staticUrl: string) => image || `${staticUrl}/default-account-image.png`
   ),
 }));
 

@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
-import { PersonConfidenceBanner } from '../personConfidenceBanner';
-import { renderWithProviders } from '../../../../app/testUtils';
 import * as personSearchSlice from '../../../../app/slices/personSearchSlice';
+import { renderWithProviders } from '../../../../app/testUtils';
+import { PersonConfidenceBanner } from '../personConfidenceBanner';
 import { PersonSearch } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -19,7 +19,8 @@ describe('PersonConfidenceBanner', () => {
     department: 'Acting',
     popularity: 85.5,
     knownFor: ['Forrest Gump', 'Cast Away', 'Toy Story', 'Saving Private Ryan', 'The Green Mile'],
-    biography: 'Thomas Jeffrey Hanks is an American actor and filmmaker. Known for both his comedic and dramatic roles, he is one of the most popular and recognizable film stars worldwide.',
+    biography:
+      'Thomas Jeffrey Hanks is an American actor and filmmaker. Known for both his comedic and dramatic roles, he is one of the most popular and recognizable film stars worldwide.',
     birthday: '1956-07-09',
     birthplace: 'Concord, California, USA',
     deathday: undefined,
@@ -587,8 +588,7 @@ describe('PersonConfidenceBanner', () => {
           ...mockState.personSearch,
           selectedPerson: {
             ...mockSelectedPerson,
-            biography:
-              'This is a very long biography that goes on and on and on. '.repeat(20) + 'More text here.',
+            biography: 'This is a very long biography that goes on and on and on. '.repeat(20) + 'More text here.',
           },
         },
       };

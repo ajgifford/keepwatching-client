@@ -253,7 +253,9 @@ describe('SearchEmptyState', () => {
     it('should show correct message for shows initial state', () => {
       render(<SearchEmptyState searchType="shows" />);
 
-      expect(screen.getByText(/Search by title \(and year\) to discover your next binge-worthy series/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Search by title \(and year\) to discover your next binge-worthy series/)
+      ).toBeInTheDocument();
     });
 
     it('should show correct message for people initial state', () => {

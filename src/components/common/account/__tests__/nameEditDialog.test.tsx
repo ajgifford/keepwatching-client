@@ -1,6 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+
 import NameEditDialog from '../nameEditDialog';
+import userEvent from '@testing-library/user-event';
 
 describe('NameEditDialog', () => {
   const mockOnClose = jest.fn();

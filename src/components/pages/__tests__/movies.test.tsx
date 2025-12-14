@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 import Movies from '../movies';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('../../../app/hooks', () => ({
@@ -10,9 +10,7 @@ jest.mock('../../../app/hooks', () => ({
 }));
 
 jest.mock('../../common/movies/movieListItem', () => ({
-  MovieListItem: ({ movie }: { movie: any }) => (
-    <li data-testid={`movie-list-item-${movie.id}`}>{movie.title}</li>
-  ),
+  MovieListItem: ({ movie }: { movie: any }) => <li data-testid={`movie-list-item-${movie.id}`}>{movie.title}</li>,
 }));
 
 jest.mock('../../utility/contentUtility', () => ({
@@ -58,8 +56,12 @@ describe('Movies', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const { useAppSelector } = require('../../../app/hooks');
-    const { selectMovies, selectMovieGenres, selectMovieStreamingServices } = require('../../../app/slices/activeProfileSlice');
-    
+    const {
+      selectMovies,
+      selectMovieGenres,
+      selectMovieStreamingServices,
+    } = require('../../../app/slices/activeProfileSlice');
+
     useAppSelector.mockImplementation((selector: any) => {
       if (selector === selectMovies) return mockMovies;
       if (selector === selectMovieGenres) return ['Action', 'Sci-Fi', 'Drama', 'Thriller'];
@@ -132,7 +134,7 @@ describe('Movies', () => {
       await waitFor(() => {
         expect(screen.getByText('Movie Filters')).toBeInTheDocument();
       });
-      
+
       // Check for the genre select element
       const genreSelect = document.getElementById('moviesFilterGenreSelect');
       expect(genreSelect).toBeInTheDocument();
@@ -148,7 +150,7 @@ describe('Movies', () => {
       await waitFor(() => {
         expect(screen.getByText('Movie Filters')).toBeInTheDocument();
       });
-      
+
       // Check for the streaming service select element
       const serviceSelect = document.getElementById('moviesFilterStreamingServiceSelect');
       expect(serviceSelect).toBeInTheDocument();
@@ -164,7 +166,7 @@ describe('Movies', () => {
       await waitFor(() => {
         expect(screen.getByText('Movie Filters')).toBeInTheDocument();
       });
-      
+
       // Check for the watch status select element
       const watchStatusSelect = document.getElementById('moviesFilterWatchStatusSelect');
       expect(watchStatusSelect).toBeInTheDocument();
@@ -359,8 +361,12 @@ describe('Movies', () => {
   describe('empty state', () => {
     it('should display message when no movies match filters', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovies, selectMovieGenres, selectMovieStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectMovies,
+        selectMovieGenres,
+        selectMovieStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovies) return [];
         if (selector === selectMovieGenres) return ['Action', 'Sci-Fi'];
@@ -375,8 +381,12 @@ describe('Movies', () => {
 
     it('should show count as 0 when no movies', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovies, selectMovieGenres, selectMovieStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectMovies,
+        selectMovieGenres,
+        selectMovieStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovies) return [];
         if (selector === selectMovieGenres) return [];
@@ -398,7 +408,7 @@ describe('Movies', () => {
 
       // Verify we have all 4 movies
       expect(movieItems).toHaveLength(4);
-      
+
       // Expected order based on watchedOrder in movies.tsx: UNAIRED(1), NOT_WATCHED(2), WATCHED(3)
       // Within WATCHED, alphabetically by title (stripped of articles)
       // Movie 3: The Shawshank Redemption (UNAIRED) - "Shawshank Redemption"
@@ -433,7 +443,7 @@ describe('Movies', () => {
       await waitFor(() => {
         expect(screen.getByText('Movie Filters')).toBeInTheDocument();
       });
-      
+
       // Check that all filter controls exist by ID
       expect(document.getElementById('moviesFilterGenreSelect')).toBeInTheDocument();
       expect(document.getElementById('moviesFilterStreamingServiceSelect')).toBeInTheDocument();
@@ -466,8 +476,12 @@ describe('Movies', () => {
   describe('edge cases', () => {
     it('should handle empty genre list', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovies, selectMovieGenres, selectMovieStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectMovies,
+        selectMovieGenres,
+        selectMovieStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovies) return mockMovies;
         if (selector === selectMovieGenres) return [];
@@ -482,8 +496,12 @@ describe('Movies', () => {
 
     it('should handle empty streaming services list', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovies, selectMovieGenres, selectMovieStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectMovies,
+        selectMovieGenres,
+        selectMovieStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovies) return mockMovies;
         if (selector === selectMovieGenres) return ['Action'];
@@ -508,8 +526,12 @@ describe('Movies', () => {
       ];
 
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovies, selectMovieGenres, selectMovieStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectMovies,
+        selectMovieGenres,
+        selectMovieStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovies) return moviesWithNoGenres;
         if (selector === selectMovieGenres) return [];

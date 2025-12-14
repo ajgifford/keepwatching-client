@@ -1,9 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import PreferencesDialog from '../preferencesDialog';
+
 import accountSlice from '../../../../app/slices/accountSlice';
 import preferencesSlice from '../../../../app/slices/preferencesSlice';
+import PreferencesDialog from '../preferencesDialog';
+import { configureStore } from '@reduxjs/toolkit';
 import { getAuth } from 'firebase/auth';
 
 // Mock Firebase auth
@@ -150,7 +151,9 @@ describe('PreferencesDialog', () => {
       </Provider>
     );
 
-    const weeklyDigestSwitch = screen.getByRole('switch', { name: /receive weekly digest emails/i }) as HTMLInputElement;
+    const weeklyDigestSwitch = screen.getByRole('switch', {
+      name: /receive weekly digest emails/i,
+    }) as HTMLInputElement;
     expect(weeklyDigestSwitch.checked).toBe(true);
   });
 
@@ -238,9 +241,12 @@ describe('PreferencesDialog', () => {
     fireEvent.click(saveButton);
 
     // The button text changes to "Saving..." briefly
-    await waitFor(() => {
-      expect(screen.queryByText(/saving/i)).toBeInTheDocument();
-    }, { timeout: 100 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/saving/i)).toBeInTheDocument();
+      },
+      { timeout: 100 }
+    );
   });
 
   it('resets local state when Cancel is clicked after making changes', () => {

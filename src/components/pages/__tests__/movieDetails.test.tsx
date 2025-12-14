@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
 import MovieDetails from '../movieDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
 
@@ -47,9 +48,7 @@ jest.mock('../../common/media/scrollableMediaRow', () => ({
     <div data-testid="scrollable-media-row">
       <h3>{title}</h3>
       {items?.map((item: any, index: number) => (
-        <div key={getItemKey(item, index)}>
-          {renderItem(item)}
-        </div>
+        <div key={getItemKey(item, index)}>{renderItem(item)}</div>
       ))}
     </div>
   ),
@@ -120,11 +119,7 @@ const mockSimilarMovies = [
   { id: 5, title: 'Similar Movie 2' },
 ];
 
-const renderMovieDetails = (
-  movieId = '1',
-  profileId = '1',
-  initialEntries = [`/movies/${movieId}/${profileId}`]
-) => {
+const renderMovieDetails = (movieId = '1', profileId = '1', initialEntries = [`/movies/${movieId}/${profileId}`]) => {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
@@ -165,9 +160,7 @@ describe('MovieDetails', () => {
       const { fetchMovieWithDetails } = require('../../../app/slices/activeMovieSlice');
       renderMovieDetails();
 
-      expect(mockDispatch).toHaveBeenCalledWith(
-        fetchMovieWithDetails({ profileId: 1, movieId: 1 })
-      );
+      expect(mockDispatch).toHaveBeenCalledWith(fetchMovieWithDetails({ profileId: 1, movieId: 1 }));
     });
 
     it('dispatches clearActiveMovie on unmount', () => {
@@ -399,8 +392,7 @@ describe('MovieDetails', () => {
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.WATCHED };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers)
-          return mockCastMembers;
+        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
         if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
           return mockRecommendedMovies;
         if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
@@ -438,8 +430,7 @@ describe('MovieDetails', () => {
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.UNAIRED };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers)
-          return mockCastMembers;
+        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
         if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
           return mockRecommendedMovies;
         if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
@@ -523,7 +514,7 @@ describe('MovieDetails', () => {
       const posterImages = container.querySelectorAll('img[alt="Test Movie"]');
       // Should have both backdrop and poster
       expect(posterImages.length).toBeGreaterThan(0);
-      
+
       // Poster is the second image (after backdrop)
       const posterImage = posterImages[1] as HTMLImageElement;
       expect(posterImage.src).toContain('/poster.jpg');
@@ -543,8 +534,7 @@ describe('MovieDetails', () => {
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, posterImage: null };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers)
-          return mockCastMembers;
+        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
         if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
           return mockRecommendedMovies;
         if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
@@ -558,7 +548,7 @@ describe('MovieDetails', () => {
       // Get the poster image (second image with alt text)
       const posterImages = container.querySelectorAll('img[alt="Test Movie"]');
       const posterImage = posterImages[1] as HTMLImageElement;
-      
+
       fireEvent.error(posterImage);
 
       expect(posterImage.src).toContain('placehold.co');
@@ -582,8 +572,7 @@ describe('MovieDetails', () => {
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, releaseDate: recentDate };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers)
-          return mockCastMembers;
+        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
         if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
           return mockRecommendedMovies;
         if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
@@ -603,8 +592,7 @@ describe('MovieDetails', () => {
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, releaseDate: undefined };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers)
-          return mockCastMembers;
+        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
         if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
           return mockRecommendedMovies;
         if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;

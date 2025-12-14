@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { BrowserRouter } from 'react-router-dom';
-import { KeepWatchingProfileComponent } from '../keepWatchingProfileComponent';
+
 import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+import { KeepWatchingProfileComponent } from '../keepWatchingProfileComponent';
 import { KeepWatchingShow, NextEpisode } from '@ajgifford/keepwatching-types';
+import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
 
 const mockEpisode1: NextEpisode = {
   profileId: 1,
@@ -35,7 +36,7 @@ const mockShow: KeepWatchingShow = {
   showTitle: 'Test Show',
   posterImage: '/poster.jpg',
   episodes: [mockEpisode1, mockEpisode2],
-  lastWatched: ''
+  lastWatched: '',
 };
 
 const mockShow2: KeepWatchingShow = {
@@ -50,7 +51,7 @@ const mockShow2: KeepWatchingShow = {
       episodeId: 3,
     },
   ],
-  lastWatched: ''
+  lastWatched: '',
 };
 
 const createMockStore = (nextUnwatchedEpisodes: KeepWatchingShow[] = []) => {

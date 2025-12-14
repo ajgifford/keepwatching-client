@@ -1,7 +1,7 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act, render, screen, waitFor } from '@testing-library/react';
 
 import { ScrollableMediaRow } from '../scrollableMediaRow';
+import userEvent from '@testing-library/user-event';
 
 // Mock MUI icons
 jest.mock('@mui/icons-material/ChevronLeft', () => ({
@@ -46,42 +46,21 @@ describe('ScrollableMediaRow', () => {
 
   describe('rendering states', () => {
     it('should show loading spinner when isLoading=true and no items', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={[]}
-          isLoading={true}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={[]} isLoading={true} renderItem={mockRenderItem} />);
 
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
     it('should show empty message when no items and not loading', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={[]}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={[]} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByText('No items found')).toBeInTheDocument();
     });
 
     it('should render items when provided', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByTestId('item-1')).toBeInTheDocument();
@@ -93,12 +72,7 @@ describe('ScrollableMediaRow', () => {
 
     it('should render title as string', () => {
       render(
-        <ScrollableMediaRow
-          title="String Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
+        <ScrollableMediaRow title="String Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />
       );
 
       expect(screen.getByText('String Title')).toBeInTheDocument();
@@ -111,14 +85,7 @@ describe('ScrollableMediaRow', () => {
         </div>
       );
 
-      render(
-        <ScrollableMediaRow
-          title={titleNode}
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title={titleNode} items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.getByText('Complex')).toBeInTheDocument();
       expect(screen.getByText('Title')).toBeInTheDocument();
@@ -144,14 +111,7 @@ describe('ScrollableMediaRow', () => {
     });
 
     it('should show right arrow when content overflows', async () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       // Fast-forward the timeout
       await act(async () => {
@@ -164,14 +124,7 @@ describe('ScrollableMediaRow', () => {
     });
 
     it('should not show left arrow initially', async () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       await act(async () => {
         jest.advanceTimersByTime(100);
@@ -192,14 +145,7 @@ describe('ScrollableMediaRow', () => {
         value: 500,
       });
 
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       await act(async () => {
         jest.advanceTimersByTime(100);
@@ -244,14 +190,7 @@ describe('ScrollableMediaRow', () => {
     it('should scroll with negative value when scrolling left', () => {
       // This test verifies the scrollLeft function logic
       // The actual left arrow visibility is tested in other tests
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       // Access the component's scrollLeft function indirectly by verifying
       // the expected behavior: scrolling left should use negative values
@@ -264,14 +203,7 @@ describe('ScrollableMediaRow', () => {
     it('should scroll right when right arrow clicked', async () => {
       const user = userEvent.setup({ delay: null });
 
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       await act(async () => {
         jest.advanceTimersByTime(100);
@@ -290,14 +222,7 @@ describe('ScrollableMediaRow', () => {
       const user = userEvent.setup({ delay: null });
       HTMLElement.prototype.querySelector = jest.fn().mockReturnValue(null);
 
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       await act(async () => {
         jest.advanceTimersByTime(100);
@@ -354,12 +279,7 @@ describe('ScrollableMediaRow', () => {
 
     it('should not call onLoadMore when not provided', () => {
       const { container } = render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
+        <ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />
       );
 
       const scrollContainer = container.querySelector('[class*="MuiBox-root"]')?.children[1]
@@ -391,28 +311,14 @@ describe('ScrollableMediaRow', () => {
 
   describe('loading states', () => {
     it('should show loading spinner at end when loading more items', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={true}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={true} renderItem={mockRenderItem} />);
 
       const progressBars = screen.getAllByRole('progressbar');
       expect(progressBars).toHaveLength(1);
     });
 
     it('should not show loading spinner at end when not loading', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     });
@@ -435,14 +341,7 @@ describe('ScrollableMediaRow', () => {
     });
 
     it('should use default empty message when not provided', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={[]}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={[]} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.getByText('No items found')).toBeInTheDocument();
     });
@@ -454,12 +353,7 @@ describe('ScrollableMediaRow', () => {
       const clearTimeoutSpy = jest.spyOn(globalThis, 'clearTimeout');
 
       const { unmount } = render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
+        <ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />
       );
 
       unmount();
@@ -481,14 +375,7 @@ describe('ScrollableMediaRow', () => {
         value: 500,
       });
 
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       await act(async () => {
         jest.advanceTimersByTime(100);
@@ -506,14 +393,7 @@ describe('ScrollableMediaRow', () => {
 
   describe('edge cases', () => {
     it('should handle empty items array', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={[]}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={[]} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.getByText('No items found')).toBeInTheDocument();
     });
@@ -522,12 +402,7 @@ describe('ScrollableMediaRow', () => {
       const singleItem = [{ id: 1, name: 'Single Item' }];
 
       render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={singleItem}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
+        <ScrollableMediaRow title="Test Title" items={singleItem} isLoading={false} renderItem={mockRenderItem} />
       );
 
       expect(screen.getByTestId('item-1')).toBeInTheDocument();
@@ -540,28 +415,14 @@ describe('ScrollableMediaRow', () => {
         name: `Item ${i + 1}`,
       }));
 
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={manyItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={manyItems} isLoading={false} renderItem={mockRenderItem} />);
 
       expect(screen.getByTestId('item-1')).toBeInTheDocument();
       expect(screen.getByTestId('item-50')).toBeInTheDocument();
     });
 
     it('should render all items correctly', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />);
 
       mockItems.forEach((item) => {
         expect(screen.getByText(item.name)).toBeInTheDocument();
@@ -569,14 +430,7 @@ describe('ScrollableMediaRow', () => {
     });
 
     it('should handle loading with items', () => {
-      render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={true}
-          renderItem={mockRenderItem}
-        />
-      );
+      render(<ScrollableMediaRow title="Test Title" items={mockItems} isLoading={true} renderItem={mockRenderItem} />);
 
       // Should show items AND loading spinner
       expect(screen.getByTestId('item-1')).toBeInTheDocument();
@@ -585,12 +439,7 @@ describe('ScrollableMediaRow', () => {
 
     it('should apply media-item className to each item wrapper', () => {
       const { container } = render(
-        <ScrollableMediaRow
-          title="Test Title"
-          items={mockItems}
-          isLoading={false}
-          renderItem={mockRenderItem}
-        />
+        <ScrollableMediaRow title="Test Title" items={mockItems} isLoading={false} renderItem={mockRenderItem} />
       );
 
       const mediaItems = container.querySelectorAll('.media-item');

@@ -6,7 +6,9 @@ import { CastMember, ShowCastMember } from '@ajgifford/keepwatching-types';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
-  buildTMDBImagePath: jest.fn((path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path}`),
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path}`
+  ),
 }));
 
 describe('PersonCard', () => {
@@ -290,7 +292,7 @@ describe('PersonCard', () => {
         ...mockCastMember,
         name: "O'Brien & Smith",
         personName: "O'Brien & Smith",
-        characterName: "Lt. Dan \"Danny\" O'Reilly",
+        characterName: 'Lt. Dan "Danny" O\'Reilly',
       };
 
       renderPersonCard(specialCharPerson);

@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 import Shows from '../shows';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('../../../app/hooks', () => ({
@@ -63,8 +63,12 @@ describe('Shows', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const { useAppSelector } = require('../../../app/hooks');
-    const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-    
+    const {
+      selectShows,
+      selectShowGenres,
+      selectShowStreamingServices,
+    } = require('../../../app/slices/activeProfileSlice');
+
     useAppSelector.mockImplementation((selector: any) => {
       if (selector === selectShows) return mockShows;
       if (selector === selectShowGenres) return ['Action', 'Comedy', 'Crime', 'Drama', 'Horror', 'Sci-Fi'];
@@ -137,7 +141,7 @@ describe('Shows', () => {
       await waitFor(() => {
         expect(screen.getByText('Show Filters')).toBeInTheDocument();
       });
-      
+
       // Check for the genre select element
       const genreSelect = document.getElementById('showsFilterGenreSelect');
       expect(genreSelect).toBeInTheDocument();
@@ -153,7 +157,7 @@ describe('Shows', () => {
       await waitFor(() => {
         expect(screen.getByText('Show Filters')).toBeInTheDocument();
       });
-      
+
       // Check for the streaming service select element
       const serviceSelect = document.getElementById('showsFilterStreamingServiceSelect');
       expect(serviceSelect).toBeInTheDocument();
@@ -169,7 +173,7 @@ describe('Shows', () => {
       await waitFor(() => {
         expect(screen.getByText('Show Filters')).toBeInTheDocument();
       });
-      
+
       // Check for the watch status select element
       const watchStatusSelect = document.getElementById('showsFilterWatchStatusSelect');
       expect(watchStatusSelect).toBeInTheDocument();
@@ -364,8 +368,12 @@ describe('Shows', () => {
   describe('empty state', () => {
     it('should display message when no shows match filters', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectShows,
+        selectShowGenres,
+        selectShowStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShows) return [];
         if (selector === selectShowGenres) return ['Comedy', 'Drama'];
@@ -380,8 +388,12 @@ describe('Shows', () => {
 
     it('should show count as 0 when no shows', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectShows,
+        selectShowGenres,
+        selectShowStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShows) return [];
         if (selector === selectShowGenres) return [];
@@ -403,7 +415,7 @@ describe('Shows', () => {
 
       // Verify we have all 5 shows
       expect(showItems).toHaveLength(5);
-      
+
       // Expected order based on watchedOrder in shows.tsx: WATCHING(1), NOT_WATCHED(2), UNAIRED(3), UP_TO_DATE(4), WATCHED(5)
       // Then alphabetically within each status group
       expect(showItems[0]).toHaveAttribute('data-testid', 'show-list-item-2'); // Breaking Bad (WATCHING)
@@ -425,7 +437,7 @@ describe('Shows', () => {
       await waitFor(() => {
         expect(screen.getByText('Show Filters')).toBeInTheDocument();
       });
-      
+
       // Check that all filter controls exist by ID
       expect(document.getElementById('showsFilterGenreSelect')).toBeInTheDocument();
       expect(document.getElementById('showsFilterStreamingServiceSelect')).toBeInTheDocument();
@@ -458,8 +470,12 @@ describe('Shows', () => {
   describe('edge cases', () => {
     it('should handle empty genre list', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectShows,
+        selectShowGenres,
+        selectShowStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShows) return mockShows;
         if (selector === selectShowGenres) return [];
@@ -474,8 +490,12 @@ describe('Shows', () => {
 
     it('should handle empty streaming services list', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectShows,
+        selectShowGenres,
+        selectShowStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShows) return mockShows;
         if (selector === selectShowGenres) return ['Comedy'];
@@ -500,8 +520,12 @@ describe('Shows', () => {
       ];
 
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectShows,
+        selectShowGenres,
+        selectShowStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShows) return showsWithNoGenres;
         if (selector === selectShowGenres) return [];
@@ -527,8 +551,12 @@ describe('Shows', () => {
       ];
 
       const { useAppSelector } = require('../../../app/hooks');
-      const { selectShows, selectShowGenres, selectShowStreamingServices } = require('../../../app/slices/activeProfileSlice');
-      
+      const {
+        selectShows,
+        selectShowGenres,
+        selectShowStreamingServices,
+      } = require('../../../app/slices/activeProfileSlice');
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShows) return showsWithMultipleServices;
         if (selector === selectShowGenres) return ['Comedy'];

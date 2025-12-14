@@ -1,23 +1,3 @@
-import {
-  ProfileEpisode,
-  ProfileSeason,
-  ProfileShowWithSeasons,
-  ShowCast,
-  SimilarOrRecommendedShow,
-  WatchStatus,
-} from '@ajgifford/keepwatching-types';
-
-// Mock axios
-jest.mock('../../api/axiosInstance', () => ({
-  __esModule: true,
-  default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-  },
-}));
-
 import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
 import { deleteAccount, logout } from '../accountSlice';
@@ -43,6 +23,25 @@ import {
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../activeShowSlice';
+import {
+  ProfileEpisode,
+  ProfileSeason,
+  ProfileShowWithSeasons,
+  ShowCast,
+  SimilarOrRecommendedShow,
+  WatchStatus,
+} from '@ajgifford/keepwatching-types';
+
+// Mock axios
+jest.mock('../../api/axiosInstance', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 

@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import Home from '../home';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -131,7 +131,7 @@ describe('Home', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const { useAppSelector } = require('../../../app/hooks');
-    const { 
+    const {
       selectActiveProfile,
       selectActiveProfileError,
       selectActiveProfileLoading,
@@ -144,12 +144,12 @@ describe('Home', () => {
       selectUpcomingEpisodes,
       selectUpcomingMovies,
     } = require('../../../app/slices/activeProfileSlice');
-    
+
     useAppSelector.mockImplementation((selector: any) => {
       // These selectors are called before any conditional rendering, so always return valid values
       if (selector === selectShowWatchCounts) return mockShowWatchCounts;
       if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
-      
+
       if (selector === selectActiveProfileLoading) return false;
       if (selector === selectActiveProfileError) return null;
       if (selector === selectActiveProfile) return mockProfile;
@@ -158,7 +158,7 @@ describe('Home', () => {
       if (selector === selectUpcomingEpisodes) return mockUpcomingEpisodes;
       if (selector === selectRecentMovies) return [1, 2];
       if (selector === selectUpcomingMovies) return [3, 4];
-      
+
       // Handle arrow function selectors like (state) => selectMoviesByIds(state, recentMovieIds)
       if (typeof selector === 'function' && selector.toString().includes('selectMoviesByIds')) {
         const selectorStr = selector.toString();
@@ -169,7 +169,7 @@ describe('Home', () => {
           return mockUpcomingMovies;
         }
       }
-      
+
       // Default fallback
       return [];
     });
@@ -209,12 +209,12 @@ describe('Home', () => {
   describe('loading and error states', () => {
     it('should render LoadingComponent when activeProfileLoading is true', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         selectActiveProfileLoading,
         selectShowWatchCounts,
         selectMovieWatchCounts,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return true;
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
@@ -230,13 +230,13 @@ describe('Home', () => {
 
     it('should render ErrorComponent when activeProfileError exists', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         selectActiveProfileLoading,
         selectActiveProfileError,
         selectShowWatchCounts,
         selectMovieWatchCounts,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return 'Error loading profile';
@@ -254,14 +254,14 @@ describe('Home', () => {
 
     it('should render LoadingComponent when profile is null', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         selectActiveProfileLoading,
         selectActiveProfileError,
         selectActiveProfile,
         selectShowWatchCounts,
         selectMovieWatchCounts,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return null;
@@ -370,7 +370,7 @@ describe('Home', () => {
 
     it('should not dispatch fetchMilestoneStats when profile is null', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         fetchMilestoneStats,
         selectActiveProfileLoading,
         selectActiveProfileError,
@@ -378,7 +378,7 @@ describe('Home', () => {
         selectShowWatchCounts,
         selectMovieWatchCounts,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return null;
@@ -401,7 +401,7 @@ describe('Home', () => {
 
       // Change profile
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         selectActiveProfile,
         selectActiveProfileLoading,
         selectActiveProfileError,
@@ -413,7 +413,7 @@ describe('Home', () => {
         selectRecentMovies,
         selectUpcomingMovies,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectActiveProfile) return { ...mockProfile, id: 2 };
         if (selector === selectActiveProfileLoading) return false;
@@ -425,7 +425,7 @@ describe('Home', () => {
         if (selector === selectUpcomingEpisodes) return mockUpcomingEpisodes;
         if (selector === selectRecentMovies) return [1, 2];
         if (selector === selectUpcomingMovies) return [3, 4];
-        
+
         if (typeof selector === 'function' && selector.toString().includes('selectMoviesByIds')) {
           const selectorStr = selector.toString();
           if (selectorStr.includes('recentMovieIds')) {
@@ -435,7 +435,7 @@ describe('Home', () => {
             return mockUpcomingMovies;
           }
         }
-        
+
         return [];
       });
 
@@ -566,7 +566,7 @@ describe('Home', () => {
 
     it('should handle empty milestone stats', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         selectActiveProfile,
         selectActiveProfileLoading,
         selectActiveProfileError,
@@ -578,7 +578,7 @@ describe('Home', () => {
         selectRecentMovies,
         selectUpcomingMovies,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
         if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
@@ -590,7 +590,7 @@ describe('Home', () => {
         if (selector === selectUpcomingEpisodes) return mockUpcomingEpisodes;
         if (selector === selectRecentMovies) return [1, 2];
         if (selector === selectUpcomingMovies) return [3, 4];
-        
+
         if (typeof selector === 'function' && selector.toString().includes('selectMoviesByIds')) {
           const selectorStr = selector.toString();
           if (selectorStr.includes('recentMovieIds')) {
@@ -600,7 +600,7 @@ describe('Home', () => {
             return mockUpcomingMovies;
           }
         }
-        
+
         return [];
       });
 
@@ -611,7 +611,7 @@ describe('Home', () => {
 
     it('should handle empty episodes and movies', () => {
       const { useAppSelector } = require('../../../app/hooks');
-      const { 
+      const {
         selectActiveProfile,
         selectActiveProfileLoading,
         selectActiveProfileError,
@@ -623,7 +623,7 @@ describe('Home', () => {
         selectRecentMovies,
         selectUpcomingMovies,
       } = require('../../../app/slices/activeProfileSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
         if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
@@ -635,11 +635,11 @@ describe('Home', () => {
         if (selector === selectRecentMovies) return [];
         if (selector === selectUpcomingMovies) return [];
         if (selector === selectMilestoneStats) return mockMilestoneStats;
-        
+
         if (typeof selector === 'function' && selector.toString().includes('selectMoviesByIds')) {
           return [];
         }
-        
+
         return [];
       });
 

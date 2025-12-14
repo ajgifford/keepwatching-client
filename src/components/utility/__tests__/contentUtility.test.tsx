@@ -1,7 +1,5 @@
 import { render } from '@testing-library/react';
 
-import { ProfileShow, ShowEpisode, WatchStatus } from '@ajgifford/keepwatching-types';
-
 import {
   buildEpisodeAirDate,
   buildEpisodeLine,
@@ -12,6 +10,7 @@ import {
   calculateRuntimeDisplay,
   stripArticle,
 } from '../contentUtility';
+import { ProfileShow, ShowEpisode, WatchStatus } from '@ajgifford/keepwatching-types';
 
 describe('contentUtility', () => {
   describe('calculateRuntimeDisplay', () => {

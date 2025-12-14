@@ -1,8 +1,8 @@
-import { render, screen, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act, render, screen, within } from '@testing-library/react';
 
-import StreamingServiceSection from '../streamingServiceSection';
 import { StreamingServiceContent } from '../../../../app/slices/activeProfileSlice';
+import StreamingServiceSection from '../streamingServiceSection';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockNavigate = jest.fn();
@@ -117,9 +117,7 @@ describe('StreamingServiceSection', () => {
 
       render(<StreamingServiceSection />);
 
-      expect(
-        screen.getByText(/No content available. Add shows or movies to your favorites/)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/No content available. Add shows or movies to your favorites/)).toBeInTheDocument();
     });
 
     it('should not show Quick Jump when no content', () => {

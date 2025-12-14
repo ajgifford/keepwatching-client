@@ -1,5 +1,4 @@
-import { PersonSearchResult, SearchPersonCredit } from '@ajgifford/keepwatching-types';
-
+import axiosInstance from '../../api/axiosInstance';
 import { PERSON_SEARCH_CONFIG, PersonSearchDetails } from '../../model/personSearchTypes';
 import { createMockStore } from '../../testUtils';
 import {
@@ -21,6 +20,7 @@ import {
   setQuery,
   toggleDisambiguation,
 } from '../personSearchSlice';
+import { PersonSearchResult, SearchPersonCredit } from '@ajgifford/keepwatching-types';
 
 // Mock axios
 jest.mock('../../api/axiosInstance', () => ({
@@ -29,8 +29,6 @@ jest.mock('../../api/axiosInstance', () => ({
     get: jest.fn(),
   },
 }));
-
-import axiosInstance from '../../api/axiosInstance';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 

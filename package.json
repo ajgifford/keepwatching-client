@@ -42,7 +42,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "format": "prettier --config ./.prettierrc.js . --write",
+    "format": "prettier --config ./.prettierrc.cjs . --write",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix"
   },

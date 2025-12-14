@@ -1,14 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
-import { PersonDisambiguationModal } from '../personDisambiguationModal';
-import { renderWithProviders } from '../../../../app/testUtils';
 import * as personSearchSlice from '../../../../app/slices/personSearchSlice';
+import { renderWithProviders } from '../../../../app/testUtils';
+import { PersonDisambiguationModal } from '../personDisambiguationModal';
 import { PersonSearch, PersonSearchResult } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
-  buildTMDBImagePath: jest.fn((path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`),
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`
+  ),
 }));
 
 // Mock useMediaQuery

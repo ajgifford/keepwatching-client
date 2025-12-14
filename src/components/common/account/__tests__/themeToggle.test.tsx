@@ -1,8 +1,9 @@
 import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
+import axiosInstance from '../../../../app/api/axiosInstance';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { ThemeToggle } from '../themeToggle';
+import userEvent from '@testing-library/user-event';
 
 // Mock axios
 jest.mock('../../../../app/api/axiosInstance', () => ({
@@ -11,8 +12,6 @@ jest.mock('../../../../app/api/axiosInstance', () => ({
     put: jest.fn(),
   },
 }));
-
-import axiosInstance from '../../../../app/api/axiosInstance';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 

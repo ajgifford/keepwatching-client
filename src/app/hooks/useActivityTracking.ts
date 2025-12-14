@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { reloadActiveProfile, selectActiveProfile, selectLastUpdated } from '../slices/activeProfileSlice';
 import { selectCurrentAccount } from '../slices/accountSlice';
+import { reloadActiveProfile, selectActiveProfile, selectLastUpdated } from '../slices/activeProfileSlice';
 import { shouldRefreshData, updateActivityTimestamp } from '../utils/activityTracker';
 
 /**
  * Custom hook to track user activity and refresh data when stale
- * 
+ *
  * This hook:
  * 1. Checks if cached data is stale on mount and window focus
  * 2. Refreshes the active profile data if needed
@@ -88,11 +89,14 @@ export const useActivityTracking = () => {
       return;
     }
 
-    const intervalId = setInterval(() => {
-      if (shouldRefreshData(lastUpdated)) {
-        checkAndRefreshData();
-      }
-    }, 5 * 60 * 1000); // Check every 5 minutes
+    const intervalId = setInterval(
+      () => {
+        if (shouldRefreshData(lastUpdated)) {
+          checkAndRefreshData();
+        }
+      },
+      5 * 60 * 1000
+    ); // Check every 5 minutes
 
     return () => {
       clearInterval(intervalId);

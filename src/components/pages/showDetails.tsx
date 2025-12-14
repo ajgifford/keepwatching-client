@@ -626,25 +626,33 @@ function ShowDetails() {
                           </Typography>
                         </Box>
 
-                        <Box 
-                          sx={{ 
-                            position: 'relative', 
-                            display: 'flex', 
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            display: 'flex',
                             alignItems: 'center',
-                            cursor: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'default' : 'pointer',
+                            cursor:
+                              loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'default' : 'pointer',
                             opacity: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 0.5 : 1,
                             p: 1,
                             borderRadius: 1,
                             '&:hover': {
-                              backgroundColor: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'transparent' : 'action.hover',
-                            }
+                              backgroundColor:
+                                loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
+                                  ? 'transparent'
+                                  : 'action.hover',
+                            },
                           }}
                           onClick={(event) => {
                             if (!loadingSeasons[season.id] && canChangeSeasonWatchStatus(season)) {
                               handleSeasonWatchStatusChange(season, event);
                             }
                           }}
-                          title={loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? '' : getWatchStatusAction(season.watchStatus)}
+                          title={
+                            loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
+                              ? ''
+                              : getWatchStatusAction(season.watchStatus)
+                          }
                         >
                           <WatchStatusIcon status={season.watchStatus} />
                           {loadingSeasons[season.id] && (

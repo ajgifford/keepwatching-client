@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { SearchResultItem } from '../searchResultItem';
 import { DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -147,7 +147,7 @@ describe('SearchResultItem', () => {
       expect(screen.getByText(/TBD/)).toBeInTheDocument();
     });
 
-    it('should handle today\'s date as past', () => {
+    it("should handle today's date as past", () => {
       const todayResult = {
         ...mockSearchResult,
         premiered: '2024-01-15',

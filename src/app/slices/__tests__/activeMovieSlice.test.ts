@@ -1,3 +1,17 @@
+import axiosInstance from '../../api/axiosInstance';
+import { createMockStore } from '../../testUtils';
+import { deleteAccount, logout } from '../accountSlice';
+import {
+  clearActiveMovie,
+  fetchMovieWithDetails,
+  selectCastMembers,
+  selectMovie,
+  selectMovieError,
+  selectMovieLoading,
+  selectRecommendedMovies,
+  selectSimilarMovies,
+} from '../activeMovieSlice';
+import { updateMovieWatchStatus } from '../activeProfileSlice';
 import {
   CastMember,
   MovieDetailsResponse,
@@ -15,21 +29,6 @@ jest.mock('../../api/axiosInstance', () => ({
     delete: jest.fn(),
   },
 }));
-
-import axiosInstance from '../../api/axiosInstance';
-import { createMockStore } from '../../testUtils';
-import { deleteAccount, logout } from '../accountSlice';
-import { updateMovieWatchStatus } from '../activeProfileSlice';
-import {
-  clearActiveMovie,
-  fetchMovieWithDetails,
-  selectCastMembers,
-  selectMovie,
-  selectMovieError,
-  selectMovieLoading,
-  selectRecommendedMovies,
-  selectSimilarMovies,
-} from '../activeMovieSlice';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 

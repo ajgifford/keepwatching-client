@@ -29,7 +29,7 @@ describe('MoviesSection', () => {
       profileId: 1,
       genres: 'Drama',
       tmdbId: 550,
-      mpaRating: ''
+      mpaRating: '',
     },
     {
       id: 2,
@@ -45,7 +45,7 @@ describe('MoviesSection', () => {
       profileId: 1,
       genres: 'Crime',
       tmdbId: 680,
-      mpaRating: ''
+      mpaRating: '',
     },
   ];
 
@@ -64,7 +64,7 @@ describe('MoviesSection', () => {
       watchStatus: WatchStatus.NOT_WATCHED,
       profileId: 1,
       genres: 'Action',
-      mpaRating: ''
+      mpaRating: '',
     },
   ];
 
@@ -84,27 +84,21 @@ describe('MoviesSection', () => {
     });
 
     it('should render movie icon for recent movies', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />);
 
       const movieIcon = container.querySelector('[data-testid="MovieIcon"]');
       expect(movieIcon).toBeInTheDocument();
     });
 
     it('should render upcoming icon for upcoming movies', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />);
 
       const upcomingIcon = container.querySelector('[data-testid="UpcomingIcon"]');
       expect(upcomingIcon).toBeInTheDocument();
     });
 
     it('should render both sections when both have movies', () => {
-      renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />
-      );
+      renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />);
 
       expect(screen.getByText('Recent Movies')).toBeInTheDocument();
       expect(screen.getByText('Upcoming Movies')).toBeInTheDocument();
@@ -126,18 +120,14 @@ describe('MoviesSection', () => {
     });
 
     it('should render correct number of movie cards for recent movies', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />);
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
       expect(movieCards).toHaveLength(2);
     });
 
     it('should render correct number of movie cards for upcoming movies', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />);
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
       expect(movieCards).toHaveLength(1);
@@ -174,9 +164,7 @@ describe('MoviesSection', () => {
     });
 
     it('should not render movie cards when recent movies is empty', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />);
 
       // Should only have 1 movie card (from upcoming)
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
@@ -184,9 +172,7 @@ describe('MoviesSection', () => {
     });
 
     it('should not render movie cards when upcoming movies is empty', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />);
 
       // Should only have 2 movie cards (from recent)
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
@@ -216,9 +202,7 @@ describe('MoviesSection', () => {
 
   describe('chips and badges', () => {
     it('should render secondary colored chip for recent movies', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />);
 
       const secondaryChip = container.querySelector('.MuiChip-colorSecondary');
       expect(secondaryChip).toBeInTheDocument();
@@ -226,9 +210,7 @@ describe('MoviesSection', () => {
     });
 
     it('should render warning colored chip for upcoming movies', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />);
 
       const warningChip = container.querySelector('.MuiChip-colorWarning');
       expect(warningChip).toBeInTheDocument();
@@ -256,18 +238,14 @@ describe('MoviesSection', () => {
 
   describe('layout and styling', () => {
     it('should render in grid container', () => {
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />);
 
       const gridContainers = container.querySelectorAll('[class*="MuiGrid"][class*="container"]');
       expect(gridContainers.length).toBeGreaterThan(0);
     });
 
     it('should render section headers with h5 variant', () => {
-      renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />
-      );
+      renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />);
 
       const recentHeader = screen.getByText('Recent Movies');
       const upcomingHeader = screen.getByText('Upcoming Movies');
@@ -290,9 +268,7 @@ describe('MoviesSection', () => {
     it('should handle single recent movie', () => {
       const singleMovie = [mockRecentMovies[0]];
 
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={singleMovie} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={singleMovie} upcomingMovies={[]} />);
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
       expect(movieCards).toHaveLength(1);
@@ -302,9 +278,7 @@ describe('MoviesSection', () => {
     it('should handle single upcoming movie', () => {
       const singleMovie = [mockUpcomingMovies[0]];
 
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={singleMovie} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={singleMovie} />);
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
       expect(movieCards).toHaveLength(1);
@@ -318,9 +292,7 @@ describe('MoviesSection', () => {
         title: `Movie ${i + 1}`,
       }));
 
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={manyMovies} upcomingMovies={[]} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={manyMovies} upcomingMovies={[]} />);
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
       expect(movieCards).toHaveLength(10);
@@ -333,9 +305,7 @@ describe('MoviesSection', () => {
         title: `Upcoming ${i + 1}`,
       }));
 
-      const { container } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={manyMovies} />
-      );
+      const { container } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={manyMovies} />);
 
       const movieCards = container.querySelectorAll('[data-testid="movie-card"]');
       expect(movieCards).toHaveLength(5);
@@ -344,18 +314,14 @@ describe('MoviesSection', () => {
 
   describe('accessibility', () => {
     it('should have accessible section headers', () => {
-      renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />
-      );
+      renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />);
 
       expect(screen.getByText('Recent Movies')).toBeInTheDocument();
       expect(screen.getByText('Upcoming Movies')).toBeInTheDocument();
     });
 
     it('should have accessible links', () => {
-      renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />
-      );
+      renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={mockUpcomingMovies} />);
 
       const links = screen.getAllByRole('link');
       expect(links.length).toBeGreaterThanOrEqual(2);
@@ -390,9 +356,7 @@ describe('MoviesSection', () => {
     });
 
     it('should re-render with updated recent movies', () => {
-      const { rerender } = renderWithRouter(
-        <MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />
-      );
+      const { rerender } = renderWithRouter(<MoviesSection recentMovies={mockRecentMovies} upcomingMovies={[]} />);
 
       expect(screen.getByText('Fight Club')).toBeInTheDocument();
 
@@ -415,9 +379,7 @@ describe('MoviesSection', () => {
     });
 
     it('should re-render with updated upcoming movies', () => {
-      const { rerender } = renderWithRouter(
-        <MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />
-      );
+      const { rerender } = renderWithRouter(<MoviesSection recentMovies={[]} upcomingMovies={mockUpcomingMovies} />);
 
       expect(screen.getByText('Upcoming Movie 1')).toBeInTheDocument();
 

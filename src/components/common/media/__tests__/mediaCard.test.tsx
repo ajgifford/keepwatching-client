@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { MediaCard } from '../mediaCard';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock FavoritesButton component
 jest.mock('../favoriteButton', () => ({
@@ -270,9 +270,7 @@ describe('MediaCard', () => {
       render(<MediaCard item={itemWithLongGenres} searchType="shows" />);
 
       expect(
-        screen.getByText(
-          'Drama, Thriller, Mystery, Crime, Action, Adventure, Comedy, Horror, Sci-Fi, Fantasy'
-        )
+        screen.getByText('Drama, Thriller, Mystery, Crime, Action, Adventure, Comedy, Horror, Sci-Fi, Fantasy')
       ).toBeInTheDocument();
     });
 

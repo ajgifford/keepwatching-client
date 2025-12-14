@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
-import { AxiosResponse } from 'axios';
 import { BrowserRouter } from 'react-router-dom';
 
 import Discover from '../discover';
+import { AxiosResponse } from 'axios';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

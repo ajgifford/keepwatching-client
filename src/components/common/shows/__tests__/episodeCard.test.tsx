@@ -1,16 +1,22 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { EpisodeCard } from '../episodeCard';
 import { NextEpisode, WatchStatus } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
-  buildTMDBImagePath: jest.fn((path: string, size?: string, alt?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`),
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string, alt?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`
+  ),
 }));
 
 jest.mock('../../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: any) => <div data-testid="watch-status-icon" data-status={status}>Icon</div>,
+  WatchStatusIcon: ({ status }: any) => (
+    <div data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </div>
+  ),
 }));
 
 describe('EpisodeCard', () => {

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { ProfileContentCard } from '../profileContentCard';
 import { ProfileMovie, ProfileShow } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock buildTMDBImagePath and getWatchStatusColor
 jest.mock('@ajgifford/keepwatching-ui', () => ({

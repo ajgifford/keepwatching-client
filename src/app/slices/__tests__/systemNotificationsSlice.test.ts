@@ -1,6 +1,4 @@
-import { AccountNotification } from '@ajgifford/keepwatching-types';
-import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
-
+import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
 import {
   dismissAllSystemNotifications,
@@ -13,6 +11,8 @@ import {
   selectSystemNotificationsLoading,
   updateNotifications,
 } from '../systemNotificationsSlice';
+import { AccountNotification } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 
 // Mock axios
 jest.mock('../../api/axiosInstance', () => ({
@@ -22,8 +22,6 @@ jest.mock('../../api/axiosInstance', () => ({
     post: jest.fn(),
   },
 }));
-
-import axiosInstance from '../../api/axiosInstance';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 

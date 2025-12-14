@@ -13,33 +13,31 @@ export default {
     '^../../firebaseConfig$': '<rootDir>/src/app/__mocks__/firebaseConfig.ts',
   },
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
       },
-    }],
-    '^.+\\.(js|jsx)$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
-        allowJs: true,
+    ],
+    '^.+\\.(js|jsx)$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+          allowJs: true,
+        },
       },
-    }],
+    ],
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(@ajgifford|@mui|@babel|@emotion)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(@ajgifford|@mui|@babel|@emotion)/)'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/vite-env.d.ts',
-    '!src/main.tsx',
-    '!src/index.tsx',
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/vite-env.d.ts', '!src/main.tsx', '!src/index.tsx'],
   coverageThreshold: {
     global: {
       branches: 70,
@@ -48,8 +46,5 @@ export default {
       statements: 70,
     },
   },
-  testMatch: [
-    '**/__tests__/**/*.+(ts|tsx|js)',
-    '**/?(*.)+(spec|test).+(ts|tsx|js)',
-  ],
+  testMatch: ['**/__tests__/**/*.+(ts|tsx|js)', '**/?(*.)+(spec|test).+(ts|tsx|js)'],
 };

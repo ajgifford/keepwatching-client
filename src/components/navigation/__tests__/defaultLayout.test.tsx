@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import DefaultLayout from '../defaultLayout';
+
 import accountSlice from '../../../app/slices/accountSlice';
+import DefaultLayout from '../defaultLayout';
+import { configureStore } from '@reduxjs/toolkit';
 
 const mockAccount = {
   id: 1,

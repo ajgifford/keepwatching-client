@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import Search from '../search';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -379,10 +379,10 @@ describe('Search', () => {
       renderWithRouter(<Search />);
 
       const tvShowsTab = screen.getByRole('tab', { name: /tv shows/i });
-      
+
       // Clear the mock to check if it gets called again
       clearPersonSearch.mockClear();
-      
+
       await user.click(tvShowsTab);
 
       // Clicking an already selected tab should NOT trigger onChange, so clearPersonSearch should NOT be called

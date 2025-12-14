@@ -6,7 +6,9 @@ import { ProfileMovie } from '@ajgifford/keepwatching-types';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
-  buildTMDBImagePath: jest.fn((path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path}`),
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path}`
+  ),
 }));
 
 jest.mock('../../../utility/contentUtility', () => ({
@@ -24,7 +26,8 @@ describe('MovieCard', () => {
     title: 'The Shawshank Redemption',
     posterImage: '/shawshank.jpg',
     backdropImage: '/shawshank-backdrop.jpg',
-    description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+    description:
+      'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
     releaseDate: '1994-09-23',
     runtime: 142,
     genres: 'Drama, Crime',

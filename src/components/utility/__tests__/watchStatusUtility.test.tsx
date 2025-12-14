@@ -1,7 +1,5 @@
 import { render } from '@testing-library/react';
 
-import { ProfileEpisode, ProfileSeason, ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
-
 import {
   WatchStatusIcon,
   canChangeEpisodeWatchStatus,
@@ -12,6 +10,7 @@ import {
   determineNextWatchStatus,
   getWatchStatusAction,
 } from '../watchStatusUtility';
+import { ProfileEpisode, ProfileSeason, ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 
 describe('watchStatusUtility', () => {
   describe('WatchStatusIcon', () => {

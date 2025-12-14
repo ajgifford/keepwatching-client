@@ -1,11 +1,12 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import { ProfileCard } from '../profileCard';
+
 import accountSlice from '../../../../app/slices/accountSlice';
 import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
 import profilesSlice from '../../../../app/slices/profilesSlice';
+import { ProfileCard } from '../profileCard';
 import { Profile } from '@ajgifford/keepwatching-types';
+import { configureStore } from '@reduxjs/toolkit';
 
 const mockProfile: Profile = {
   id: 1,
@@ -31,11 +32,7 @@ const mockAccount = {
   createdAt: new Date('2024-01-01'),
 };
 
-const createMockStore = (
-  profile = mockProfile,
-  activeProfile = mockActiveProfile,
-  account = mockAccount
-) => {
+const createMockStore = (profile = mockProfile, activeProfile = mockActiveProfile, account = mockAccount) => {
   return configureStore({
     reducer: {
       auth: accountSlice,

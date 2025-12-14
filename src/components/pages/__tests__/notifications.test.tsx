@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import Notifications from '../notifications';
 import { AccountNotification } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -44,7 +44,7 @@ const mockNotifications: AccountNotification[] = [
     read: false,
     startDate: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60)
+    endDate: new Date(Date.now() + 1000 * 60 * 60),
   },
   {
     id: 2,
@@ -54,7 +54,7 @@ const mockNotifications: AccountNotification[] = [
     read: true,
     startDate: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60)
+    endDate: new Date(Date.now() + 1000 * 60 * 60),
   },
   {
     id: 3,
@@ -64,7 +64,7 @@ const mockNotifications: AccountNotification[] = [
     read: false,
     startDate: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60)
+    endDate: new Date(Date.now() + 1000 * 60 * 60),
   },
   {
     id: 4,
@@ -74,7 +74,7 @@ const mockNotifications: AccountNotification[] = [
     read: true,
     startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60)
+    endDate: new Date(Date.now() + 1000 * 60 * 60),
   },
 ];
 
@@ -94,7 +94,7 @@ describe('Notifications', () => {
     const { useAppSelector } = require('../../../app/hooks');
     const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
     const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-    
+
     useAppSelector.mockImplementation((selector: any) => {
       if (selector === selectCurrentAccount) return mockAccount;
       if (selector === selectSystemNotifications) return mockNotifications;
@@ -157,7 +157,10 @@ describe('Notifications', () => {
     it('should not dispatch fetchSystemNotifications when account is null', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const { selectSystemNotifications, fetchSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
+      const {
+        selectSystemNotifications,
+        fetchSystemNotifications,
+      } = require('../../../app/slices/systemNotificationsSlice');
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return null;
@@ -190,11 +193,11 @@ describe('Notifications', () => {
       renderWithRouter(<Notifications />);
 
       const unreadCount = mockNotifications.filter((n) => !n.read).length;
-      
+
       // Click the dropdown to reveal the options
       const filterSelect = screen.getByRole('combobox');
       await user.click(filterSelect);
-      
+
       // Now check for the unread count in the option
       expect(screen.getByText(`Unread (${unreadCount})`)).toBeInTheDocument();
     });
@@ -298,11 +301,10 @@ describe('Notifications', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
       const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
-        if (selector === selectSystemNotifications)
-          return mockNotifications.map((n) => ({ ...n, read: true }));
+        if (selector === selectSystemNotifications) return mockNotifications.map((n) => ({ ...n, read: true }));
         return null;
       });
 
@@ -358,7 +360,7 @@ describe('Notifications', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
       const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return [];
@@ -377,7 +379,7 @@ describe('Notifications', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
       const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return [];
@@ -496,7 +498,7 @@ describe('Notifications', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
       const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return notificationsWithHTML;
@@ -524,7 +526,7 @@ describe('Notifications', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
       const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-      
+
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return oldNotification;

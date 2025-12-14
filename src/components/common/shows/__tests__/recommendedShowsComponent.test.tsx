@@ -1,12 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
 import { BrowserRouter } from 'react-router-dom';
-import { RecommendedShowsComponent } from '../recommendedShowsComponent';
-import activeShowSlice, { fetchRecommendedShows } from '../../../../app/slices/activeShowSlice';
-import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+
 import accountSlice from '../../../../app/slices/accountSlice';
+import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+import activeShowSlice, { fetchRecommendedShows } from '../../../../app/slices/activeShowSlice';
+import { RecommendedShowsComponent } from '../recommendedShowsComponent';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
+import { configureStore } from '@reduxjs/toolkit';
 
 const mockRecommendedShow1: SimilarOrRecommendedShow = {
   id: 200,
@@ -36,10 +37,7 @@ const mockRecommendedShow2: SimilarOrRecommendedShow = {
   inFavorites: false,
 };
 
-const createMockStore = (
-  recommendedShows: SimilarOrRecommendedShow[] = [],
-  recommendedShowsLoading = false
-) => {
+const createMockStore = (recommendedShows: SimilarOrRecommendedShow[] = [], recommendedShowsLoading = false) => {
   return configureStore({
     reducer: {
       activeShow: activeShowSlice,

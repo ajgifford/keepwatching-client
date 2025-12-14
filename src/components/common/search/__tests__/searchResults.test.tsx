@@ -6,7 +6,13 @@ import { DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 // Mock child components
 jest.mock('../searchEmptyState', () => ({
   SearchEmptyState: ({ searchType, isNoResults, searchQuery, source }: any) => (
-    <div data-testid="search-empty-state" data-search-type={searchType} data-is-no-results={isNoResults} data-search-query={searchQuery} data-source={source}>
+    <div
+      data-testid="search-empty-state"
+      data-search-type={searchType}
+      data-is-no-results={isNoResults}
+      data-search-query={searchQuery}
+      data-source={source}
+    >
       SearchEmptyState
     </div>
   ),
@@ -58,13 +64,7 @@ describe('SearchResults', () => {
   describe('loading state', () => {
     it('should show loading spinner when loading with no results', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="shows"
-          source="search"
-          isLoading={true}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="shows" source="search" isLoading={true} searchPerformed={false} />
       );
 
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
@@ -73,13 +73,7 @@ describe('SearchResults', () => {
 
     it('should not show loading spinner when not loading', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="shows"
-          source="search"
-          isLoading={false}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="shows" source="search" isLoading={false} searchPerformed={false} />
       );
 
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -199,13 +193,7 @@ describe('SearchResults', () => {
   describe('empty state', () => {
     it('should show SearchEmptyState when no results and search not performed', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="shows"
-          source="search"
-          isLoading={false}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="shows" source="search" isLoading={false} searchPerformed={false} />
       );
 
       const emptyState = screen.getByTestId('search-empty-state');
@@ -233,13 +221,7 @@ describe('SearchResults', () => {
 
     it('should pass correct searchType to SearchEmptyState', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="people"
-          source="search"
-          isLoading={false}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="people" source="search" isLoading={false} searchPerformed={false} />
       );
 
       const emptyState = screen.getByTestId('search-empty-state');
@@ -248,13 +230,7 @@ describe('SearchResults', () => {
 
     it('should pass source prop to SearchEmptyState', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="shows"
-          source="discover"
-          isLoading={false}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="shows" source="discover" isLoading={false} searchPerformed={false} />
       );
 
       const emptyState = screen.getByTestId('search-empty-state');
@@ -354,13 +330,7 @@ describe('SearchResults', () => {
 
     it('should handle missing searchQuery', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="shows"
-          source="search"
-          isLoading={false}
-          searchPerformed={true}
-        />
+        <SearchResults results={[]} searchType="shows" source="search" isLoading={false} searchPerformed={true} />
       );
 
       // Should render empty state without errors even when searchQuery is not provided
@@ -418,13 +388,7 @@ describe('SearchResults', () => {
 
     it('should handle people search type in empty state', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="people"
-          source="search"
-          isLoading={false}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="people" source="search" isLoading={false} searchPerformed={false} />
       );
 
       const emptyState = screen.getByTestId('search-empty-state');
@@ -467,13 +431,7 @@ describe('SearchResults', () => {
   describe('loading combinations', () => {
     it('should show initial loading without SearchEmptyState', () => {
       render(
-        <SearchResults
-          results={[]}
-          searchType="shows"
-          source="search"
-          isLoading={true}
-          searchPerformed={false}
-        />
+        <SearchResults results={[]} searchType="shows" source="search" isLoading={true} searchPerformed={false} />
       );
 
       expect(screen.getByRole('progressbar')).toBeInTheDocument();

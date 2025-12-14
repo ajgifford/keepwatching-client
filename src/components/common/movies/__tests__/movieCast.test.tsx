@@ -145,10 +145,12 @@ describe('MovieCastSection', () => {
 
   describe('edge cases', () => {
     it('should handle cast member with missing profileImage', () => {
-      const castWithoutImage = [{
-        ...mockCastMembers[0],
-        profileImage: '',
-      }];
+      const castWithoutImage = [
+        {
+          ...mockCastMembers[0],
+          profileImage: '',
+        },
+      ];
 
       render(<MovieCastSection castMembers={castWithoutImage} profileId={profileId} />);
 
@@ -156,14 +158,16 @@ describe('MovieCastSection', () => {
     });
 
     it('should handle cast member with long names', () => {
-      const longNameCast = [{
-        personId: 1,
-        personName: 'A Very Long Actor Name That Goes On And On',
-        characterName: 'A Very Long Character Name That Goes On And On',
-        personTmdbId: 31,
-        contentId: 13,
-        profileImage: '/actor.jpg',
-      }];
+      const longNameCast = [
+        {
+          personId: 1,
+          personName: 'A Very Long Actor Name That Goes On And On',
+          characterName: 'A Very Long Character Name That Goes On And On',
+          personTmdbId: 31,
+          contentId: 13,
+          profileImage: '/actor.jpg',
+        },
+      ];
 
       render(<MovieCastSection castMembers={longNameCast} profileId={profileId} />);
 
@@ -203,14 +207,16 @@ describe('MovieCastSection', () => {
 
   describe('cast member data variations', () => {
     it('should handle cast with minimal information', () => {
-      const minimalCast: CastMember[] = [{
-        personId: 1,
-        personName: 'Actor',
-        characterName: 'Character',
-        personTmdbId: 1,
-        contentId: 1,
-        profileImage: '',
-      }];
+      const minimalCast: CastMember[] = [
+        {
+          personId: 1,
+          personName: 'Actor',
+          characterName: 'Character',
+          personTmdbId: 1,
+          contentId: 1,
+          profileImage: '',
+        },
+      ];
 
       render(<MovieCastSection castMembers={minimalCast} profileId={profileId} />);
 
@@ -218,14 +224,16 @@ describe('MovieCastSection', () => {
     });
 
     it('should handle cast with special characters in names', () => {
-      const specialCharCast: CastMember[] = [{
-        personId: 1,
-        personName: "O'Brien & Smith",
-        characterName: "Lt. Dan \"Danny\" O'Reilly",
-        personTmdbId: 1,
-        contentId: 1,
-        profileImage: '/actor.jpg',
-      }];
+      const specialCharCast: CastMember[] = [
+        {
+          personId: 1,
+          personName: "O'Brien & Smith",
+          characterName: 'Lt. Dan "Danny" O\'Reilly',
+          personTmdbId: 1,
+          contentId: 1,
+          profileImage: '/actor.jpg',
+        },
+      ];
 
       render(<MovieCastSection castMembers={specialCharCast} profileId={profileId} />);
 

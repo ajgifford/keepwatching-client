@@ -1,23 +1,16 @@
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+
 import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import jest from 'eslint-plugin-jest';
 import prettier from 'eslint-config-prettier';
+import jest from 'eslint-plugin-jest';
 
 export default [
   // Global ignores
   {
-    ignores: [
-      'node_modules/**',
-      'build/**',
-      'dist/**',
-      'coverage/**',
-      '.vite/**',
-      '*.config.js',
-      '*.config.ts',
-    ],
+    ignores: ['node_modules/**', 'build/**', 'dist/**', 'coverage/**', '.vite/**', '*.config.js', '*.config.ts'],
   },
 
   // Base config for all files
@@ -84,7 +77,7 @@ export default [
     },
     rules: {
       // ESLint recommended rules are included via js.configs.recommended
-      
+
       // TypeScript rules
       // Note: Disabling @typescript-eslint/no-unused-vars due to a bug in v8
       // The TypeScript compiler will catch unused variables anyway

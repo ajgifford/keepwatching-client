@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import { MovieListItem, FilterProps } from '../movieListItem';
-import { renderWithProviders } from '../../../../app/testUtils';
-import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 import * as activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+import { renderWithProviders } from '../../../../app/testUtils';
+import { FilterProps, MovieListItem } from '../movieListItem';
+import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -56,7 +56,8 @@ describe('MovieListItem', () => {
     title: 'The Shawshank Redemption',
     posterImage: '/shawshank.jpg',
     backdropImage: '/shawshank-backdrop.jpg',
-    description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+    description:
+      'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
     releaseDate: '1994-09-23',
     runtime: 142,
     genres: 'Drama, Crime',
@@ -68,11 +69,13 @@ describe('MovieListItem', () => {
     mpaRating: 'R',
   };
 
-  const mockGetFilters = jest.fn((): FilterProps => ({
-    genre: 'Drama',
-    streamingService: 'Netflix',
-    watchStatus: ['Not Watched'],
-  }));
+  const mockGetFilters = jest.fn(
+    (): FilterProps => ({
+      genre: 'Drama',
+      streamingService: 'Netflix',
+      watchStatus: ['Not Watched'],
+    })
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();

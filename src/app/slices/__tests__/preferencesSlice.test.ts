@@ -1,7 +1,6 @@
-import { DEFAULT_PREFERENCES } from '@ajgifford/keepwatching-types';
-import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
-
+import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
+import { deleteAccount, logout } from '../accountSlice';
 import {
   fetchAccountPreferences,
   selectDisplayPreferences,
@@ -15,7 +14,8 @@ import {
   updateMultiplePreferences,
   updatePreferences,
 } from '../preferencesSlice';
-import { deleteAccount, logout } from '../accountSlice';
+import { DEFAULT_PREFERENCES } from '@ajgifford/keepwatching-types';
+import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 
 // Mock axios
 jest.mock('../../api/axiosInstance', () => ({
@@ -25,8 +25,6 @@ jest.mock('../../api/axiosInstance', () => ({
     put: jest.fn(),
   },
 }));
-
-import axiosInstance from '../../api/axiosInstance';
 
 const mockAxiosInstance = axiosInstance as jest.Mocked<typeof axiosInstance>;
 
