@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
 
+import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -119,7 +120,7 @@ export const DashboardEpisodeCard: React.FC<DashboardEpisodeCardProps> = ({ epis
         </Box>
       </Box>
 
-      <CardContent sx={{ p: 2.5, height: 140, display: 'flex', flexDirection: 'column' }}>
+      <CardContent sx={{ p: 2.5, height: 155, display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h6" fontWeight={600} gutterBottom noWrap>
           {episode.showName}
         </Typography>
@@ -130,6 +131,10 @@ export const DashboardEpisodeCard: React.FC<DashboardEpisodeCardProps> = ({ epis
 
         <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
           {episode.episodeTitle}
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
+          {calculateRuntimeDisplay(episode.runtime)}
         </Typography>
       </CardContent>
     </Card>

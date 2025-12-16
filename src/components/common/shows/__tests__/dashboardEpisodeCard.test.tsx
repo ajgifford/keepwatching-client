@@ -24,6 +24,7 @@ describe('DashboardEpisodeCard', () => {
     episodeTitle: 'Ozymandias',
     episodeStillImage: '/ozymandias.jpg',
     airDate: '2024-01-15',
+    runtime: 47,
     network: 'AMC',
     streamingServices: 'Netflix',
     profileId: 123,
@@ -55,6 +56,12 @@ describe('DashboardEpisodeCard', () => {
       renderWithRouter(<DashboardEpisodeCard episode={mockEpisode} />);
 
       expect(screen.getByText('Ozymandias')).toBeInTheDocument();
+    });
+
+    it('should render episode runtime', () => {
+      renderWithRouter(<DashboardEpisodeCard episode={mockEpisode} />);
+
+      expect(screen.getByText('47 minutes')).toBeInTheDocument();
     });
 
     it('should render episode image', () => {
@@ -266,6 +273,17 @@ describe('DashboardEpisodeCard', () => {
   });
 
   describe('edge cases', () => {
+    it('should handle no runtime', () => {
+      const noRuntimeEpisode = {
+        ...mockEpisode,
+        runtime: undefined,
+      };
+
+      renderWithRouter(<DashboardEpisodeCard episode={noRuntimeEpisode as unknown as RecentUpcomingEpisode} />);
+
+      expect(screen.getByText('TBD')).toBeInTheDocument();
+    });
+
     it('should handle very long show name with noWrap', () => {
       const longNameEpisode = {
         ...mockEpisode,

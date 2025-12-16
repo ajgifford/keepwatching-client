@@ -22,8 +22,8 @@ describe('contentUtility', () => {
       expect(calculateRuntimeDisplay(45)).toBe('45 minutes');
     });
 
-    it('should return hours and minutes for runtime between 60-119', () => {
-      expect(calculateRuntimeDisplay(90)).toBe('1 hours, 30 minutes');
+    it('should return hour and minutes for runtime between 60-119', () => {
+      expect(calculateRuntimeDisplay(90)).toBe('1 hour, 30 minutes');
     });
 
     it('should return hours and minutes for runtime >= 120', () => {

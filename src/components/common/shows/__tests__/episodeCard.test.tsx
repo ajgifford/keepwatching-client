@@ -81,26 +81,31 @@ describe('EpisodeCard', () => {
 
   describe('network and streaming services', () => {
     it('should display network when available', () => {
-      render(<EpisodeCard episode={mockEpisode} onWatchStatusChange={mockOnWatchStatusChange} />);
+      const mockEpisodeWithRuntime = {
+        ...mockEpisode,
+        runtime: 46,
+      };
+      render(<EpisodeCard episode={mockEpisodeWithRuntime} onWatchStatusChange={mockOnWatchStatusChange} />);
 
-      expect(screen.getByText('AMC')).toBeInTheDocument();
+      expect(screen.getByText('AMC • 46 minutes')).toBeInTheDocument();
     });
 
     it('should display streaming services when network is not available', () => {
       const episodeWithoutNetwork = {
         ...mockEpisode,
         network: '',
+        runtime: 65,
       };
 
       render(<EpisodeCard episode={episodeWithoutNetwork} onWatchStatusChange={mockOnWatchStatusChange} />);
 
-      expect(screen.getByText('Netflix')).toBeInTheDocument();
+      expect(screen.getByText('Netflix • 1 hour, 5 minutes')).toBeInTheDocument();
     });
 
     it('should prioritize network over streaming services', () => {
       render(<EpisodeCard episode={mockEpisode} onWatchStatusChange={mockOnWatchStatusChange} />);
 
-      expect(screen.getByText('AMC')).toBeInTheDocument();
+      expect(screen.getByText('AMC • TBD')).toBeInTheDocument();
       expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
     });
   });

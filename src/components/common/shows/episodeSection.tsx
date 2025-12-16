@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import TvIcon from '@mui/icons-material/Tv';
-import { Box, Chip, Divider, Typography, alpha, useTheme } from '@mui/material';
+import { Box, Chip, Divider, Typography, useTheme } from '@mui/material';
 
+import { ScrollableMediaRow } from '../media/scrollableMediaRow';
 import { DashboardEpisodeCard } from './dashboardEpisodeCard';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
 
@@ -43,95 +44,54 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ icon, title, subtitle, co
   return content;
 };
 
-interface ScrollableRowProps {
-  children: React.ReactNode[];
-  emptyMessage: string;
-}
-
-const ScrollableRow: React.FC<ScrollableRowProps> = ({ children, emptyMessage }) => {
-  const theme = useTheme();
-
-  if (!children || children.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="body1" color="text.secondary">
-          {emptyMessage}
-        </Typography>
-      </Box>
-    );
-  }
-
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: 2.5,
-        overflowX: 'auto',
-        pb: 2,
-        scrollBehavior: 'smooth',
-        '&::-webkit-scrollbar': {
-          height: 8,
-        },
-        '&::-webkit-scrollbar-track': {
-          backgroundColor: alpha(theme.palette.grey[300], 0.3),
-          borderRadius: 4,
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.5),
-          borderRadius: 4,
-          '&:hover': {
-            backgroundColor: alpha(theme.palette.primary.main, 0.7),
-          },
-        },
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
-
 export const EpisodesSection: React.FC<EpisodesSectionProps> = ({ recentEpisodes, upcomingEpisodes }) => {
   const theme = useTheme();
 
   return (
     <Box sx={{ width: '100%' }}>
       {/* Recent Episodes Section */}
-      <Box sx={{ mb: 6 }}>
-        <SectionHeader
-          icon={<TvIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
-          title="Recent Episodes"
-          subtitle="Aired last 7 days"
-          color="primary"
-          linkTo="/shows?watchStatus=WATCHING%2CUP_TO_DATE"
-        />
-        <ScrollableRow emptyMessage="No recent episodes">
-          {recentEpisodes.map((episode) => (
-            <DashboardEpisodeCard
-              key={`recent-${episode.showId}-s${episode.seasonNumber}e${episode.episodeNumber}`}
-              episode={episode}
-            />
-          ))}
-        </ScrollableRow>
-      </Box>
+      <ScrollableMediaRow
+        title={
+          <SectionHeader
+            icon={<TvIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+            title="Recent Episodes"
+            subtitle="Aired last 7 days"
+            color="primary"
+            linkTo="/shows?watchStatus=WATCHING%2CUP_TO_DATE"
+          />
+        }
+        items={recentEpisodes}
+        isLoading={false}
+        renderItem={(episode) => (
+          <Box sx={{ width: { xs: 250, sm: 280 } }}>
+            <DashboardEpisodeCard episode={episode} />
+          </Box>
+        )}
+        emptyMessage="No recent episodes"
+        getItemKey={(episode) => `recent-${episode.showId}-s${episode.seasonNumber}e${episode.episodeNumber}`}
+      />
 
       {/* Upcoming Episodes Section */}
-      <Box sx={{ mb: 6 }}>
-        <SectionHeader
-          icon={<ScheduleIcon sx={{ fontSize: 28, color: theme.palette.info.main }} />}
-          title="Upcoming Episodes"
-          subtitle="Airing next 7 days"
-          color="info"
-          linkTo="/shows?watchStatus=WATCHING%2CUP_TO_DATE"
-        />
-        <ScrollableRow emptyMessage="No upcoming episodes">
-          {upcomingEpisodes.map((episode) => (
-            <DashboardEpisodeCard
-              key={`upcoming-${episode.showId}-s${episode.seasonNumber}e${episode.episodeNumber}`}
-              episode={episode}
-            />
-          ))}
-        </ScrollableRow>
-      </Box>
+      <ScrollableMediaRow
+        title={
+          <SectionHeader
+            icon={<ScheduleIcon sx={{ fontSize: 28, color: theme.palette.info.main }} />}
+            title="Upcoming Episodes"
+            subtitle="Airing next 7 days"
+            color="info"
+            linkTo="/shows?watchStatus=WATCHING%2CUP_TO_DATE"
+          />
+        }
+        items={upcomingEpisodes}
+        isLoading={false}
+        renderItem={(episode) => (
+          <Box sx={{ width: { xs: 250, sm: 280 } }}>
+            <DashboardEpisodeCard episode={episode} />
+          </Box>
+        )}
+        emptyMessage="No upcoming episodes"
+        getItemKey={(episode) => `upcoming-${episode.showId}-s${episode.seasonNumber}e${episode.episodeNumber}`}
+      />
 
       <Divider sx={{ my: 4 }} />
     </Box>

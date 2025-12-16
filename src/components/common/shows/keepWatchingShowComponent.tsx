@@ -51,6 +51,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
           streamingServices: show.streamingServices || '',
           episodeTitle: episode.title,
           airDate: episode.airDate,
+          runtime: episode.runtime,
           episodeNumber: episode.episodeNumber,
           seasonNumber: season.seasonNumber,
           overview: episode.overview,
