@@ -169,7 +169,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
             zIndex: 2,
           }}
         >
-          <Stack direction="row" spacing={1}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
             {lastAchieved && (
               <MilestoneBadge
                 type={lastAchieved.type}
@@ -191,6 +191,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
           </Stack>
         </Box>
       )}
+
       <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
         {/* Profile Header */}
         <Box
