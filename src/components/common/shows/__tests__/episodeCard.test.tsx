@@ -9,6 +9,12 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn(
     (path: string, size?: string, alt?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`
   ),
+  parseLocalDate: jest.fn((dateString: string) => {
+    if (!dateString || dateString === 'invalid-date') {
+      return new Date(NaN);
+    }
+    return new Date(dateString);
+  }),
 }));
 
 jest.mock('../../../utility/watchStatusUtility', () => ({
