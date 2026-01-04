@@ -1,4 +1,5 @@
 import { ProfileShow, ShowEpisode } from '@ajgifford/keepwatching-types';
+import { parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 export function calculateRuntimeDisplay(runtime: number): string {
   if (!runtime) {
@@ -22,7 +23,7 @@ export function stripArticle(title: string): string {
 
 export const buildEpisodeAirDate = (airDate: string) => {
   if (airDate) {
-    const airDateDate = new Date(airDate);
+    const airDateDate = parseLocalDate(airDate);
     const now = new Date();
     if (airDateDate < now) {
       return `Aired: ${airDate}`;
@@ -34,7 +35,7 @@ export const buildEpisodeAirDate = (airDate: string) => {
 
 export const buildSeasonAirDate = (airDate: string) => {
   if (airDate) {
-    const airDateDate = new Date(airDate);
+    const airDateDate = parseLocalDate(airDate);
     const now = new Date();
     if (airDateDate < now) {
       return `First Aired: ${airDate}`;
@@ -46,7 +47,7 @@ export const buildSeasonAirDate = (airDate: string) => {
 
 export const buildShowAirDate = (airDate: string) => {
   if (airDate) {
-    const airDateDate = new Date(airDate);
+    const airDateDate = parseLocalDate(airDate);
     const now = new Date();
     if (airDateDate < now) {
       return (

@@ -13,6 +13,7 @@ import {
   UserWatchStatus,
   WatchStatus,
 } from '@ajgifford/keepwatching-types';
+import { parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 export const WatchStatusIcon: React.FC<{
   status: WatchStatus;
@@ -80,17 +81,17 @@ export function getWatchStatusAction(currentStatus: WatchStatus): string {
 
 export function canChangeShowWatchStatus(show: ProfileShow): boolean {
   const now = new Date();
-  return show.watchStatus !== WatchStatus.UNAIRED || new Date(show.releaseDate) < now;
+  return show.watchStatus !== WatchStatus.UNAIRED || parseLocalDate(show.releaseDate) < now;
 }
 
 export function canChangeSeasonWatchStatus(season: ProfileSeason): boolean {
   const now = new Date();
-  return season.watchStatus !== WatchStatus.UNAIRED || new Date(season.releaseDate) < now;
+  return season.watchStatus !== WatchStatus.UNAIRED || parseLocalDate(season.releaseDate) < now;
 }
 
 export function canChangeEpisodeWatchStatus(episode: ProfileEpisode) {
   const now = new Date();
   const isUnairedStatus = episode.watchStatus === WatchStatus.UNAIRED;
-  const airDateInPast = episode.airDate && new Date(episode.airDate) < now;
+  const airDateInPast = episode.airDate && parseLocalDate(episode.airDate) < now;
   return !isUnairedStatus || airDateInPast;
 }

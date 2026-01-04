@@ -5,7 +5,7 @@ import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typograp
 import { calculateRuntimeDisplay } from '../../../components/utility/contentUtility';
 import { WatchStatusIcon } from '../../utility/watchStatusUtility';
 import { NextEpisode, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
+import { buildTMDBImagePath, parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 interface EpisodeCardProps {
   episode: NextEpisode;
@@ -31,7 +31,7 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
       return WatchStatus.WATCHED;
     }
     const now = new Date();
-    const airDate = new Date(episode.airDate);
+    const airDate = parseLocalDate(episode.airDate);
     if (!episode.airDate || now < airDate) {
       return WatchStatus.UNAIRED;
     }

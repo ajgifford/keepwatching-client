@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
 import { EpisodeCard } from './episodeCard';
 import { NextEpisode, ProfileEpisode, ProfileSeason, UserWatchStatus } from '@ajgifford/keepwatching-types';
+import { parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) => {
   const dispatch = useAppDispatch();
@@ -36,7 +37,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
 
   show.seasons.forEach((season: ProfileSeason) => {
     const validEpisodes = season.episodes.filter(
-      (episode) => !watchedEpisodes[episode.id] && episode.airDate && new Date(episode.airDate) <= new Date()
+      (episode) => !watchedEpisodes[episode.id] && episode.airDate && parseLocalDate(episode.airDate) <= new Date()
     );
 
     validEpisodes.forEach((episode: ProfileEpisode) => {
