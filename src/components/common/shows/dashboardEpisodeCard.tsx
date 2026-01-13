@@ -5,15 +5,16 @@ import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
 
 import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
+import { buildTMDBImagePath, parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 interface DashboardEpisodeCardProps {
   episode: RecentUpcomingEpisode;
 }
 
 const formatAirDate = (dateString: string): string => {
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   const now = new Date();
+  now.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
   const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) return 'Today';

@@ -9,6 +9,11 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string, size?: string) =>
     path ? `https://image.tmdb.org/t/p/${size || 'original'}${path}` : null
   ),
+  parseLocalDate: jest.fn((dateString: string) => {
+    // Parse date string as local date (YYYY-MM-DD format)
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }),
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {
@@ -32,7 +37,7 @@ describe('DashboardEpisodeCard', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-01-15T12:00:00Z')); // Set current date to match episode air date
+    jest.setSystemTime(new Date(2024, 0, 15, 12, 0, 0)); // Set current date to match episode air date (local time)
   });
 
   afterEach(() => {
@@ -415,7 +420,7 @@ describe('DashboardEpisodeCard', () => {
     });
 
     it('should handle date at midnight boundary', () => {
-      jest.setSystemTime(new Date('2024-01-15T00:00:00Z'));
+      jest.setSystemTime(new Date(2024, 0, 15, 0, 0, 0)); // Local midnight
 
       renderWithRouter(<DashboardEpisodeCard episode={mockEpisode} />);
 
@@ -423,7 +428,7 @@ describe('DashboardEpisodeCard', () => {
     });
 
     it('should handle date at end of day boundary', () => {
-      jest.setSystemTime(new Date('2024-01-15T23:59:59Z'));
+      jest.setSystemTime(new Date(2024, 0, 15, 23, 59, 59)); // Local end of day
 
       renderWithRouter(<DashboardEpisodeCard episode={mockEpisode} />);
 
