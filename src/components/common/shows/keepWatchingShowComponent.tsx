@@ -3,7 +3,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
 import { EpisodeCard } from './episodeCard';
-import { NextEpisode, ProfileEpisode, ProfileSeason, UserWatchStatus } from '@ajgifford/keepwatching-types';
+import { NextEpisode, ProfileSeason, UserWatchStatus } from '@ajgifford/keepwatching-types';
 import { parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) => {
@@ -33,42 +33,73 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
     );
   }
 
-  const nextEpisodes: NextEpisode[] = [];
-
-  show.seasons.forEach((season: ProfileSeason) => {
-    const validEpisodes = season.episodes.filter(
-      (episode) => !watchedEpisodes[episode.id] && episode.airDate && parseLocalDate(episode.airDate) <= new Date()
+  // Step 1: Find active seasons (have watched episodes AND have remaining unwatched episodes)
+  const activeSeasons = show.seasons.filter((season: ProfileSeason) => {
+    const hasWatchedEpisodes = season.episodes.some((ep) => watchedEpisodes[ep.id]);
+    const hasUnwatchedAiredEpisodes = season.episodes.some(
+      (ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date()
     );
-
-    validEpisodes.forEach((episode: ProfileEpisode) => {
-      if (nextEpisodes.length < 6) {
-        nextEpisodes.push({
-          profileId,
-          showId: show.id,
-          showName: show.title,
-          seasonId: season.id,
-          episodeId: episode.id,
-          network: show.network || '',
-          streamingServices: show.streamingServices || '',
-          episodeTitle: episode.title,
-          airDate: episode.airDate,
-          runtime: episode.runtime,
-          episodeNumber: episode.episodeNumber,
-          seasonNumber: season.seasonNumber,
-          overview: episode.overview,
-          posterImage: show.posterImage,
-          episodeStillImage: episode.stillImage,
-        });
-      }
-    });
+    return hasWatchedEpisodes && hasUnwatchedAiredEpisodes;
   });
 
-  nextEpisodes.sort((a, b) => {
-    if (a.seasonNumber !== b.seasonNumber) {
-      return a.seasonNumber - b.seasonNumber;
+  // Step 2: Determine which seasons to use (active seasons, or fall back to all seasons with unwatched episodes)
+  const seasonsToProcess =
+    activeSeasons.length > 0
+      ? activeSeasons
+      : show.seasons.filter((s) =>
+          s.episodes.some((ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date())
+        );
+
+  // Step 3: Get unwatched episodes per season
+  const episodesBySeason: Map<number, NextEpisode[]> = new Map();
+  seasonsToProcess.forEach((season: ProfileSeason) => {
+    const unwatchedEpisodes = season.episodes
+      .filter((ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date())
+      .sort((a, b) => a.episodeNumber - b.episodeNumber)
+      .map((episode) => ({
+        profileId,
+        showId: show.id,
+        showName: show.title,
+        seasonId: season.id,
+        episodeId: episode.id,
+        network: show.network || '',
+        streamingServices: show.streamingServices || '',
+        episodeTitle: episode.title,
+        airDate: episode.airDate,
+        runtime: episode.runtime,
+        episodeNumber: episode.episodeNumber,
+        seasonNumber: season.seasonNumber,
+        overview: episode.overview,
+        posterImage: show.posterImage,
+        episodeStillImage: episode.stillImage,
+      }));
+
+    if (unwatchedEpisodes.length > 0) {
+      episodesBySeason.set(season.seasonNumber, unwatchedEpisodes);
     }
-    return a.episodeNumber - b.episodeNumber;
   });
+
+  // Step 4: Round-robin to collect up to 6 episodes from active seasons
+  const nextEpisodes: NextEpisode[] = [];
+  const seasonNumbers = Array.from(episodesBySeason.keys()).sort((a, b) => a - b);
+  const indices: Map<number, number> = new Map(seasonNumbers.map((sn) => [sn, 0]));
+
+  while (nextEpisodes.length < 6 && seasonNumbers.length > 0) {
+    for (const seasonNum of [...seasonNumbers]) {
+      if (nextEpisodes.length >= 6) break;
+
+      const episodes = episodesBySeason.get(seasonNum);
+      const idx = indices.get(seasonNum);
+
+      if (episodes && idx !== undefined && idx < episodes.length) {
+        nextEpisodes.push(episodes[idx]);
+        indices.set(seasonNum, idx + 1);
+      } else {
+        // This season is exhausted, remove it
+        seasonNumbers.splice(seasonNumbers.indexOf(seasonNum), 1);
+      }
+    }
+  }
 
   if (nextEpisodes.length === 0) {
     return (

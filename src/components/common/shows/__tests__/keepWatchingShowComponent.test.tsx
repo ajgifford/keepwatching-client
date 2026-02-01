@@ -260,7 +260,7 @@ describe('KeepWatchingShowComponent', () => {
     expect(screen.getByText('Episode 2')).toBeInTheDocument();
   });
 
-  it('handles multiple seasons correctly', () => {
+  it('fills from multiple seasons when no episodes are watched', () => {
     const season2: ProfileSeason = {
       id: 2,
       showId: 100,
@@ -269,7 +269,10 @@ describe('KeepWatchingShowComponent', () => {
       overview: 'Second season',
       releaseDate: '2024-06-01',
       posterImage: '/season2-poster.jpg',
-      episodes: [createMockEpisode(4, 1, '2024-06-01'), createMockEpisode(5, 2, '2024-06-08')],
+      episodes: [
+        { ...createMockEpisode(4, 1, '2024-06-01'), seasonId: 2, seasonNumber: 2 },
+        { ...createMockEpisode(5, 2, '2024-06-08'), seasonId: 2, seasonNumber: 2 },
+      ],
       profileId: 0,
       watchStatus: WatchStatus.UNAIRED,
       tmdbId: 0,
@@ -288,9 +291,63 @@ describe('KeepWatchingShowComponent', () => {
       </Provider>
     );
 
-    // Should show episodes from both seasons
+    // With no watched episodes, should fill from all seasons using round-robin
+    // S1: 3 episodes, S2: 2 episodes → round-robin shows all 5
     const episodeTitles = screen.getAllByText(/^Episode \d+$/);
-    expect(episodeTitles.length).toBeGreaterThan(3);
+    expect(episodeTitles).toHaveLength(5);
+  });
+
+  it('shows episodes from active seasons with watched progress using round-robin', () => {
+    const season1Episodes = [
+      { ...createMockEpisode(1, 1, '2024-01-01'), seasonId: 1, seasonNumber: 1 },
+      { ...createMockEpisode(2, 2, '2024-01-08'), seasonId: 1, seasonNumber: 1 },
+      { ...createMockEpisode(3, 3, '2024-01-15'), seasonId: 1, seasonNumber: 1 },
+    ];
+
+    const season1: ProfileSeason = {
+      ...mockSeason,
+      episodes: season1Episodes,
+    };
+
+    const season2: ProfileSeason = {
+      id: 2,
+      showId: 100,
+      seasonNumber: 2,
+      name: 'Season 2',
+      overview: 'Second season',
+      releaseDate: '2024-06-01',
+      posterImage: '/season2-poster.jpg',
+      episodes: [
+        { ...createMockEpisode(4, 1, '2024-06-01'), seasonId: 2, seasonNumber: 2 },
+        { ...createMockEpisode(5, 2, '2024-06-08'), seasonId: 2, seasonNumber: 2 },
+        { ...createMockEpisode(6, 3, '2024-06-15'), seasonId: 2, seasonNumber: 2 },
+      ],
+      profileId: 0,
+      watchStatus: WatchStatus.UNAIRED,
+      tmdbId: 0,
+      numberOfEpisodes: 3,
+    };
+
+    const multiSeasonShow = {
+      ...mockShow,
+      seasons: [season1, season2],
+    };
+
+    // Mark first episode of each season as watched to make both seasons "active"
+    const watchedEpisodes = { 1: true, 4: true };
+
+    const store = createMockStore(multiSeasonShow, watchedEpisodes);
+    render(
+      <Provider store={store}>
+        <KeepWatchingShowComponent profileId={1} />
+      </Provider>
+    );
+
+    // Should show remaining episodes from both active seasons (round-robin)
+    // S1: E2, E3 remaining | S2: E2, E3 remaining
+    // Round-robin order: S1E2, S2E2, S1E3, S2E3
+    const episodeTitles = screen.getAllByText(/^Episode \d+$/);
+    expect(episodeTitles).toHaveLength(4);
   });
 
   it('dispatches updateEpisodeWatchStatus when episode watch status changes', () => {
