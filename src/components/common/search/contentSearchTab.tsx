@@ -2,7 +2,19 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Tooltip,
+} from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
 import { useAppDispatch } from '../../../app/hooks';
@@ -169,6 +181,10 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
     performSearch(true);
   };
 
+  const handleSearchClear = () => {
+    setSearchText('');
+  };
+
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       handleSearch();
@@ -215,8 +231,21 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
             fullWidth
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             sx={{ mr: 2 }}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {searchText && ( // Only show the button when the field is not empty
+                      <IconButton onClick={handleSearchClear} edge="end" aria-label="clear input">
+                        <ClearIcon />
+                      </IconButton>
+                    )}
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <Button variant="contained" onClick={handleSearch} disabled={isLoading}>
             Search

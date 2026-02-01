@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Alert, Box, Button, TextField } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import { Alert, Box, Button, IconButton, InputAdornment, TextField } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { ActivityNotificationType, showActivityNotification } from '../../../app/slices/activityNotificationSlice';
@@ -68,6 +69,10 @@ export const PersonSearchTab: React.FC = () => {
     }
   };
 
+  const handleSearchClear = () => {
+    setSearchText('');
+  };
+
   const renderSearchResults = () => {
     // Show loading for initial search
     if (personLoading && !selectedPerson && personResults.length === 0) {
@@ -110,8 +115,21 @@ export const PersonSearchTab: React.FC = () => {
             fullWidth
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             sx={{ mr: 2 }}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {searchText && ( // Only show the button when the field is not empty
+                      <IconButton onClick={handleSearchClear} edge="end" aria-label="clear input">
+                        <ClearIcon />
+                      </IconButton>
+                    )}
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <Button variant="contained" onClick={handleSearch} disabled={personLoading}>
             Search
