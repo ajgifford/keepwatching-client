@@ -183,6 +183,7 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
 
   const handleSearchClear = () => {
     setSearchText('');
+    setResults([]);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
