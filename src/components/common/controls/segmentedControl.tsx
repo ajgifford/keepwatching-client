@@ -5,6 +5,7 @@ import { Box, Button, ButtonGroup, SxProps, Theme, useTheme } from '@mui/materia
 export interface SegmentedControlOption {
   value: string;
   label: string;
+  mobileLabel?: string;
   disabled?: boolean;
 }
 
@@ -13,6 +14,7 @@ interface SegmentedControlProps {
   value: string;
   onChange: (value: string) => void;
   fullWidth?: boolean;
+  compact?: boolean;
   size?: 'small' | 'medium' | 'large';
   variant?: 'outlined' | 'contained';
   color?: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error';
@@ -24,6 +26,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   value,
   onChange,
   fullWidth = false,
+  compact = false,
   size = 'medium',
   variant = 'outlined',
   color = 'primary',
@@ -36,12 +39,12 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
       borderRadius: 0,
       textTransform: 'none' as const,
       fontWeight: isSelected ? 600 : 400,
-      minWidth: fullWidth ? 'auto' : 140, // Increased from 120 to 140
+      minWidth: fullWidth ? 'auto' : 140,
       flex: fullWidth ? 1 : 'none',
       position: 'relative' as const,
       zIndex: isSelected ? 2 : 1,
       transition: 'all 0.2s ease-in-out',
-      whiteSpace: 'nowrap' as const, // Prevent text wrapping
+      whiteSpace: fullWidth ? ('normal' as const) : ('nowrap' as const),
       ...(variant === 'outlined' && {
         borderColor: theme.palette[color].main,
         backgroundColor: isSelected ? theme.palette[color].main : 'transparent',
@@ -87,10 +90,11 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   };
 
   return (
-    <Box sx={{ display: 'inline-block' }}>
+    <Box sx={{ display: fullWidth ? 'block' : 'inline-block' }}>
       <ButtonGroup variant={variant} color={color} size={size} fullWidth={fullWidth} sx={getGroupStyles()}>
         {options.map((option) => {
           const isSelected = value === option.value;
+          const label = compact && option.mobileLabel ? option.mobileLabel : option.label;
 
           return (
             <Button
@@ -99,7 +103,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
               disabled={option.disabled}
               sx={getButtonStyles(option, isSelected)}
             >
-              {option.label}
+              {label}
             </Button>
           );
         })}
@@ -123,12 +127,12 @@ export const SERVICE_OPTIONS: SegmentedControlOption[] = [
   { value: 'disney', label: 'Disney+' },
   { value: 'hbo', label: 'HBO Max' },
   { value: 'apple', label: 'Apple TV' },
-  { value: 'prime', label: 'Prime Video' },
+  { value: 'prime', label: 'Prime Video', mobileLabel: 'Prime' },
 ];
 
 export const FILTER_OPTIONS: SegmentedControlOption[] = [
   { value: 'top', label: 'Top Rated' },
-  { value: 'new', label: 'New Releases' },
+  { value: 'new', label: 'New Releases', mobileLabel: 'New' },
   { value: 'upcoming', label: 'Upcoming' },
-  { value: 'expiring', label: 'Expiring Soon' },
+  { value: 'expiring', label: 'Expiring Soon', mobileLabel: 'Expiring' },
 ];

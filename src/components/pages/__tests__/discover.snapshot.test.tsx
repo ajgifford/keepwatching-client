@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import Discover from '../discover';
@@ -98,13 +98,15 @@ describe('Discover - Snapshots', () => {
     mockAxiosGet.mockResolvedValue(mockTrendingResponse);
   });
 
-  it('should match snapshot for initial render', () => {
+  it('should match snapshot after initial auto-load', async () => {
     const { container } = renderWithRouter(<Discover />);
+    await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     expect(container).toMatchSnapshot();
   });
 
-  it('should match snapshot of Trending Content tab', () => {
+  it('should match snapshot of Trending Content tab after auto-load', async () => {
     const { container } = renderWithRouter(<Discover />);
+    await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     const trendingTab = container.querySelector('[role="tabpanel"]');
     expect(trendingTab).toMatchSnapshot();
   });

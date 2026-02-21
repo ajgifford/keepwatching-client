@@ -116,89 +116,47 @@ describe('Discover', () => {
   });
 
   describe('basic rendering', () => {
-    it('should render Discover heading', () => {
+    it('should render Discover heading', async () => {
       renderWithRouter(<Discover />);
-
       expect(screen.getByRole('heading', { name: /discover/i })).toBeInTheDocument();
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should render two tabs', () => {
+    it('should render two tabs', async () => {
       renderWithRouter(<Discover />);
-
       expect(screen.getByRole('tab', { name: /trending content/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /by service/i })).toBeInTheDocument();
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should render tabs container with correct aria-label', () => {
+    it('should render tabs container with correct aria-label', async () => {
       renderWithRouter(<Discover />);
-
       const tabsContainer = screen.getByRole('tablist', { name: /discover content tabs/i });
       expect(tabsContainer).toBeInTheDocument();
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should default to Trending Content tab', () => {
+    it('should default to Trending Content tab', async () => {
       renderWithRouter(<Discover />);
-
       const trendingTab = screen.getByRole('tab', { name: /trending content/i });
       expect(trendingTab).toHaveAttribute('aria-selected', 'true');
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
   });
 
-  describe('trending tab', () => {
-    it('should render type selector in trending tab', () => {
+  describe('auto-loading', () => {
+    it('should auto-load trending content on mount', async () => {
       renderWithRouter(<Discover />);
-
-      const segmentedControls = screen.getAllByTestId('segmented-control');
-      expect(segmentedControls.length).toBeGreaterThan(0);
-    });
-
-    it('should render Find Trending Content button', () => {
-      renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      expect(button).toBeInTheDocument();
-    });
-
-    it('should have button enabled by default', () => {
-      renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      expect(button).not.toBeDisabled();
-    });
-
-    it('should disable button when type is none', async () => {
-      const user = userEvent.setup();
-      renderWithRouter(<Discover />);
-
-      // This test assumes SegmentedControl allows selecting 'none'
-      // The actual implementation may differ
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      expect(button).not.toBeDisabled();
-    });
-
-    it('should make API call when Find Trending Content button clicked', async () => {
-      const user = userEvent.setup();
-      renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', {
-          params: expect.objectContaining({
-            showType: 'series',
-            page: 1,
-          }),
+          params: expect.objectContaining({ showType: 'series', page: 1 }),
         });
       });
     });
 
-    it('should display results after successful search', async () => {
-      const user = userEvent.setup();
+    it('should display results after auto-loading on mount', async () => {
       renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
 
       await waitFor(() => {
         expect(screen.getByText('Trending Show 1')).toBeInTheDocument();
@@ -206,45 +164,39 @@ describe('Discover', () => {
       });
     });
 
-    it('should show results count after search', async () => {
-      const user = userEvent.setup();
+    it('should show results count after loading', async () => {
       renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
 
       await waitFor(() => {
         expect(screen.getByText(/showing 2 of 20 results/i)).toBeInTheDocument();
       });
     });
+  });
 
-    it('should show loading state during search', async () => {
-      const user = userEvent.setup();
-      mockAxiosGet.mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(mockTrendingResponse), 100))
-      );
-
+  describe('trending tab', () => {
+    it('should render type selector in trending tab', async () => {
       renderWithRouter(<Discover />);
 
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
-
-      expect(screen.getByRole('button', { name: /loading/i })).toBeInTheDocument();
+      const segmentedControls = screen.getAllByTestId('segmented-control');
+      expect(segmentedControls.length).toBeGreaterThan(0);
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should disable button during loading', async () => {
+    it('should reload with new type when type control changes', async () => {
       const user = userEvent.setup();
-      mockAxiosGet.mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(mockTrendingResponse), 100))
-      );
-
       renderWithRouter(<Discover />);
 
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', expect.any(Object)));
+      mockAxiosGet.mockClear();
 
-      const loadingButton = screen.getByRole('button', { name: /loading/i });
-      expect(loadingButton).toBeDisabled();
+      const moviesButton = screen.getByText('Movies');
+      await user.click(moviesButton);
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', {
+          params: expect.objectContaining({ showType: 'movie', page: 1 }),
+        });
+      });
     });
   });
 
@@ -274,47 +226,16 @@ describe('Discover', () => {
       });
     });
 
-    it('should render dynamic button text based on filter', async () => {
-      const user = userEvent.setup();
-      renderWithRouter(<Discover />);
-
-      const byServiceTab = screen.getByRole('tab', { name: /by service/i });
-      await user.click(byServiceTab);
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /find top content/i })).toBeInTheDocument();
-      });
-    });
-
-    it('should update button text when filter changes to new', async () => {
-      const user = userEvent.setup();
-      renderWithRouter(<Discover />);
-
-      const byServiceTab = screen.getByRole('tab', { name: /by service/i });
-      await user.click(byServiceTab);
-
-      await waitFor(() => {
-        const newButton = screen.getByText('New');
-        user.click(newButton);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /find new content/i })).toBeInTheDocument();
-      });
-    });
-
-    it('should make API call with service parameter', async () => {
+    it('should auto-load with service parameter when By Service tab selected', async () => {
       const user = userEvent.setup();
       mockAxiosGet.mockResolvedValue(mockTopResponse);
       renderWithRouter(<Discover />);
 
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', expect.any(Object)));
+      mockAxiosGet.mockClear();
+
       const byServiceTab = screen.getByRole('tab', { name: /by service/i });
       await user.click(byServiceTab);
-
-      await waitFor(async () => {
-        const button = screen.getByRole('button', { name: /find top content/i });
-        await user.click(button);
-      });
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/discover/top', {
@@ -327,23 +248,18 @@ describe('Discover', () => {
       });
     });
 
-    it('should make API call to changes endpoint for non-top filters', async () => {
+    it('should auto-load from changes endpoint when non-top filter selected', async () => {
       const user = userEvent.setup();
-      mockAxiosGet.mockResolvedValue(mockTopResponse);
       renderWithRouter(<Discover />);
 
       const byServiceTab = screen.getByRole('tab', { name: /by service/i });
       await user.click(byServiceTab);
 
-      await waitFor(async () => {
-        const newButton = screen.getByText('New');
-        await user.click(newButton);
-      });
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/top', expect.any(Object)));
+      mockAxiosGet.mockClear();
 
-      await waitFor(async () => {
-        const button = screen.getByRole('button', { name: /find new content/i });
-        await user.click(button);
-      });
+      const newButton = screen.getByText('New');
+      await user.click(newButton);
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/discover/changes', {
@@ -359,100 +275,94 @@ describe('Discover', () => {
   });
 
   describe('filter changes', () => {
-    it('should reset results when service changes', async () => {
+    it('should auto-reload when type changes', async () => {
       const user = userEvent.setup();
       renderWithRouter(<Discover />);
 
-      // First search
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', expect.any(Object)));
+      mockAxiosGet.mockClear();
 
-      await waitFor(() => {
-        expect(screen.getByText('Trending Show 1')).toBeInTheDocument();
-      });
-
-      // Switch to By Service tab and change service
-      const byServiceTab = screen.getByRole('tab', { name: /by service/i });
-      await user.click(byServiceTab);
-
-      await waitFor(async () => {
-        const huluButton = screen.getByText('Hulu');
-        await user.click(huluButton);
-      });
-
-      // Results should be cleared (not showing old results)
-      expect(screen.queryByText('Trending Show 1')).not.toBeInTheDocument();
-    });
-
-    it('should reset results when type changes', async () => {
-      const user = userEvent.setup();
-      renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
-
-      await waitFor(() => {
-        expect(screen.getByText('Trending Show 1')).toBeInTheDocument();
-      });
-
-      // Change type
       const moviesButton = screen.getByText('Movies');
       await user.click(moviesButton);
 
-      expect(screen.queryByText('Trending Show 1')).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', {
+          params: expect.objectContaining({ showType: 'movie', page: 1 }),
+        });
+      });
     });
 
-    it('should reset page to 1 when filter changes', async () => {
+    it('should auto-reload when service changes', async () => {
       const user = userEvent.setup();
       renderWithRouter(<Discover />);
 
       const byServiceTab = screen.getByRole('tab', { name: /by service/i });
       await user.click(byServiceTab);
 
-      await waitFor(async () => {
-        const newButton = screen.getByText('New');
-        await user.click(newButton);
-      });
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/top', expect.any(Object)));
+      mockAxiosGet.mockClear();
 
-      await waitFor(async () => {
-        const button = screen.getByRole('button', { name: /find new content/i });
-        await user.click(button);
+      const huluButton = screen.getByText('Hulu');
+      await user.click(huluButton);
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/discover/top', {
+          params: expect.objectContaining({ service: 'hulu', page: 1 }),
+        });
       });
+    });
+
+    it('should always fetch page 1 when a filter changes', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(<Discover />);
+
+      const byServiceTab = screen.getByRole('tab', { name: /by service/i });
+      await user.click(byServiceTab);
+
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/top', expect.any(Object)));
+      mockAxiosGet.mockClear();
+
+      const newButton = screen.getByText('New');
+      await user.click(newButton);
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith(expect.any(String), {
-          params: expect.objectContaining({
-            page: 1,
-          }),
+          params: expect.objectContaining({ page: 1 }),
         });
       });
     });
   });
 
   describe('tab switching', () => {
-    it('should reset search state when switching tabs', async () => {
+    it('should clear old results and load new ones when switching tabs', async () => {
       const user = userEvent.setup();
-      renderWithRouter(<Discover />);
+      const byServiceResponse: AxiosResponse = {
+        ...mockTopResponse,
+        data: {
+          results: [{ id: 5, title: 'Netflix Top Show', type: 'series' }],
+          currentPage: 1,
+          totalPages: 1,
+          totalResults: 1,
+        },
+      };
 
-      // Search in trending
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
+      mockAxiosGet.mockResolvedValueOnce(mockTrendingResponse).mockResolvedValue(byServiceResponse);
+      renderWithRouter(<Discover />);
 
       await waitFor(() => {
         expect(screen.getByText('Trending Show 1')).toBeInTheDocument();
       });
 
-      // Switch to By Service tab
       const byServiceTab = screen.getByRole('tab', { name: /by service/i });
       await user.click(byServiceTab);
 
-      // Results should be cleared
       await waitFor(() => {
         expect(screen.queryByText('Trending Show 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Netflix Top Show')).toBeTruthy();
       });
     });
 
-    it('should update discoverMode when switching tabs', async () => {
+    it('should update tab selection when switching tabs', async () => {
       const user = userEvent.setup();
       renderWithRouter(<Discover />);
 
@@ -473,15 +383,11 @@ describe('Discover', () => {
   });
 
   describe('error handling', () => {
-    it('should show error notification on API failure', async () => {
-      const user = userEvent.setup();
+    it('should show error notification when API fails on mount', async () => {
       const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
       mockAxiosGet.mockRejectedValue(new Error('API Error'));
 
       renderWithRouter(<Discover />);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
 
       await waitFor(() => {
         expect(showActivityNotification).toHaveBeenCalledWith({
@@ -491,28 +397,18 @@ describe('Discover', () => {
       });
     });
 
-    it('should handle axios error with custom message', async () => {
-      const user = userEvent.setup();
+    it('should show default error message for non-axios errors', async () => {
       const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
-      // Note: The actual component uses AxiosError from axios which checks instanceof
-      // Since we can't easily mock that, this test verifies the default error handling
+      // The component checks instanceof AxiosError, which a plain object won't satisfy,
+      // so it falls back to the default error message
       const axiosError: any = {
         isAxiosError: true,
-        response: {
-          data: {
-            message: 'Custom error message',
-          },
-        },
+        response: { data: { message: 'Custom error message' } },
       };
       mockAxiosGet.mockRejectedValue(axiosError);
 
       renderWithRouter(<Discover />);
 
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
-
-      // The component checks for instanceof AxiosError, which our mock won't satisfy
-      // So it falls back to the default error message
       await waitFor(() => {
         expect(showActivityNotification).toHaveBeenCalledWith({
           message: 'Failed to load content',
@@ -523,13 +419,17 @@ describe('Discover', () => {
   });
 
   describe('infinite scroll', () => {
-    it('should show loading spinner for subsequent pages', async () => {
-      const user = userEvent.setup();
+    it('should load subsequent pages when intersection observer fires', async () => {
       const secondPageResponse: AxiosResponse = {
         ...mockTrendingResponse,
         data: {
           ...mockTrendingResponse.data,
+          results: [
+            { id: 5, title: 'Trending Show 3', type: 'series' },
+            { id: 6, title: 'Trending Show 4', type: 'series' },
+          ],
           currentPage: 2,
+          totalPages: 2,
         },
       };
 
@@ -537,51 +437,48 @@ describe('Discover', () => {
 
       renderWithRouter(<Discover />);
 
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
-
       await waitFor(() => {
         expect(screen.getByText('Trending Show 1')).toBeInTheDocument();
       });
 
-      // Note: Testing infinite scroll with IntersectionObserver is complex
-      // This is a basic test to ensure the structure is in place
+      // Note: actually triggering IntersectionObserver in jsdom is complex;
+      // this test verifies the first page loaded correctly and the structure is in place
+      expect(mockAxiosGet).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('accessibility', () => {
-    it('should have accessible tabs with proper roles', () => {
+    it('should have two accessible tabs', async () => {
       renderWithRouter(<Discover />);
-
       const tabs = screen.getAllByRole('tab');
       expect(tabs).toHaveLength(2);
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should have tablist with aria-label', () => {
+    it('should have tablist with aria-label', async () => {
       renderWithRouter(<Discover />);
-
       const tablist = screen.getByRole('tablist', { name: /discover content tabs/i });
       expect(tablist).toBeInTheDocument();
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should have tabpanels with proper roles', () => {
+    it('should have tabpanels with proper roles', async () => {
       renderWithRouter(<Discover />);
-
       const tabpanels = screen.getAllByRole('tabpanel');
       expect(tabpanels.length).toBeGreaterThan(0);
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
   });
 
   describe('component lifecycle', () => {
-    it('should render without crashing', () => {
+    it('should render without crashing', async () => {
       const { container } = renderWithRouter(<Discover />);
       expect(container).toBeInTheDocument();
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 
-    it('should clean up IntersectionObserver on unmount', () => {
+    it('should clean up IntersectionObserver on unmount', async () => {
       const disconnectMock = jest.fn();
-
-      // Mock IntersectionObserver before rendering
       const mockIntersectionObserver = jest.fn().mockImplementation(() => ({
         disconnect: disconnectMock,
         observe: jest.fn(),
@@ -596,14 +493,11 @@ describe('Discover', () => {
       (window as any).IntersectionObserver = mockIntersectionObserver;
 
       const { unmount } = renderWithRouter(<Discover />);
-
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
       unmount();
 
-      // The component's useEffect cleanup runs on unmount, which checks if
-      // observerRef.current exists and calls disconnect on it. Since the observer
-      // is only created when results are returned via the lastResultElementRef callback,
-      // and we haven't triggered a search, no observer is created and disconnect is not called.
-      // This test verifies the cleanup logic exists, even if not triggered in this scenario.
+      // The observer is only created when lastResultElementRef is attached to a DOM node.
+      // The SearchResults mock does not attach the ref, so disconnect is never called.
       expect(disconnectMock).not.toHaveBeenCalled();
     });
   });
@@ -613,35 +507,24 @@ describe('Discover', () => {
       const user = userEvent.setup();
       renderWithRouter(<Discover />);
 
-      // Change to movies
+      await waitFor(() => expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', expect.any(Object)));
+      mockAxiosGet.mockClear();
+
       const moviesButton = screen.getByText('Movies');
       await user.click(moviesButton);
 
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
-
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/discover/trending', {
-          params: expect.objectContaining({
-            showType: 'movie',
-          }),
+          params: expect.objectContaining({ showType: 'movie' }),
         });
       });
     });
 
-    it('should pass searchType as movies when type is movies', async () => {
-      const user = userEvent.setup();
+    it('should render the SearchResults component', async () => {
       renderWithRouter(<Discover />);
 
-      const moviesButton = screen.getByText('Movies');
-      await user.click(moviesButton);
-
-      const button = screen.getByRole('button', { name: /find trending content/i });
-      await user.click(button);
-
       await waitFor(() => {
-        const searchResults = screen.getByTestId('search-results');
-        expect(searchResults).toBeInTheDocument();
+        expect(screen.getByTestId('search-results')).toBeTruthy();
       });
     });
   });

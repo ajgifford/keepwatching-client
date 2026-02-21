@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`Discover - Snapshots should match snapshot for initial render 1`] = `
+exports[`Discover - Snapshots should match snapshot after initial auto-load 1`] = `
 <div>
   <h4
     class="MuiTypography-root MuiTypography-h4 css-11pxkfa-MuiTypography-root"
@@ -89,45 +89,18 @@ exports[`Discover - Snapshots should match snapshot for initial render 1`] = `
           class="MuiBox-root css-1v3caum"
         >
           <div
-            class="MuiStack-root css-5f1f8a-MuiStack-root"
+            class="MuiStack-root css-tacc89-MuiStack-root"
           >
             <div
-              class="MuiBox-root css-1iqaoy3"
+              data-testid="segmented-control"
             >
-              <div
-                data-testid="segmented-control"
-              >
-                <button>
-                  TV Shows
-                </button>
-                <button>
-                  Movies
-                </button>
-              </div>
+              <button>
+                TV Shows
+              </button>
+              <button>
+                Movies
+              </button>
             </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-mf3dnm-MuiButtonBase-root-MuiButton-root"
-              id="discoverTrendingGoButton"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeLarge css-hev6se-MuiButton-startIcon"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
-                  data-testid="TrendingUpIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
-                  />
-                </svg>
-              </span>
-              Find Trending Content
-            </button>
           </div>
         </div>
       </div>
@@ -139,13 +112,33 @@ exports[`Discover - Snapshots should match snapshot for initial render 1`] = `
       />
     </div>
   </div>
+  <p
+    class="MuiTypography-root MuiTypography-body2 css-19b5ozw-MuiTypography-root"
+  >
+    Showing 
+    2
+     
+    of 20
+     results
+  </p>
   <div
     data-testid="search-results"
-  />
+  >
+    <div
+      data-testid="search-result-item"
+    >
+      Trending Show 1
+    </div>
+    <div
+      data-testid="search-result-item"
+    >
+      Trending Show 2
+    </div>
+  </div>
 </div>
 `;
 
-exports[`Discover - Snapshots should match snapshot of Trending Content tab 1`] = `
+exports[`Discover - Snapshots should match snapshot of Trending Content tab after auto-load 1`] = `
 <div
   aria-labelledby="discover-tab-0"
   id="discover-tabpanel-0"
@@ -155,45 +148,18 @@ exports[`Discover - Snapshots should match snapshot of Trending Content tab 1`] 
     class="MuiBox-root css-1v3caum"
   >
     <div
-      class="MuiStack-root css-5f1f8a-MuiStack-root"
+      class="MuiStack-root css-tacc89-MuiStack-root"
     >
       <div
-        class="MuiBox-root css-1iqaoy3"
+        data-testid="segmented-control"
       >
-        <div
-          data-testid="segmented-control"
-        >
-          <button>
-            TV Shows
-          </button>
-          <button>
-            Movies
-          </button>
-        </div>
+        <button>
+          TV Shows
+        </button>
+        <button>
+          Movies
+        </button>
       </div>
-      <button
-        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-mf3dnm-MuiButtonBase-root-MuiButton-root"
-        id="discoverTrendingGoButton"
-        tabindex="0"
-        type="button"
-      >
-        <span
-          class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeLarge css-hev6se-MuiButton-startIcon"
-        >
-          <svg
-            aria-hidden="true"
-            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
-            data-testid="TrendingUpIcon"
-            focusable="false"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
-            />
-          </svg>
-        </span>
-        Find Trending Content
-      </button>
     </div>
   </div>
 </div>

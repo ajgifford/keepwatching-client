@@ -2,7 +2,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ExploreIcon from '@mui/icons-material/Explore';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { Box, Button, Card, CardContent, CircularProgress, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Divider,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
@@ -57,6 +69,8 @@ function a11yProps(index: number) {
 
 function Discover() {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const defaultService = 'netflix';
   const defaultType = 'series';
   const [results, setResults] = useState<DiscoverAndSearchResult[]>([]);
@@ -74,42 +88,19 @@ function Discover() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const newMode: DiscoverMode = newValue === 0 ? 'trending' : 'byService';
     setTabValue(newValue);
-    setDiscoverMode(newValue === 0 ? 'trending' : 'byService');
-    resetSearch();
-  };
-
-  const resetSearch = () => {
-    setResults([]);
-    setPage(1);
-    setSearchPerformed(false);
+    setDiscoverMode(newMode);
     setSelectedService(defaultService);
     setSelectedType(defaultType);
-    if (discoverMode !== 'trending') {
+    if (newMode === 'trending') {
       setSelectedFilter('top');
     }
   };
 
-  const handleServiceChanged = (value: string) => {
-    setSelectedService(value);
-    setResults([]);
-    setPage(1);
-    setSearchPerformed(false);
-  };
-
-  const handleTypeChanged = (value: string) => {
-    setSelectedType(value);
-    setResults([]);
-    setPage(1);
-    setSearchPerformed(false);
-  };
-
-  const handleFilterChanged = (value: string) => {
-    setSelectedFilter(value);
-    setResults([]);
-    setPage(1);
-    setSearchPerformed(false);
-  };
+  const handleServiceChanged = (value: string) => setSelectedService(value);
+  const handleTypeChanged = (value: string) => setSelectedType(value);
+  const handleFilterChanged = (value: string) => setSelectedFilter(value);
 
   const lastResultElementRef = useCallback(
     (node: HTMLElement | null) => {
@@ -133,9 +124,12 @@ function Discover() {
   );
 
   const findContent = useCallback(
-    async (isNewSearch = false) => {
+    async (pageToLoad: number) => {
+      if (pageToLoad === 1) {
+        setSearchPerformed(false);
+      }
       setIsLoading(true);
-      const currentPage = isNewSearch ? 1 : page;
+
       let endpoint = '';
       if (discoverMode === 'trending') {
         endpoint = '/discover/trending';
@@ -152,7 +146,7 @@ function Discover() {
 
       const params: DiscoverParams = {
         showType: selectedType === 'movies' ? 'movie' : selectedType,
-        page: currentPage,
+        page: pageToLoad,
       };
       if (discoverMode === 'byService') {
         params.service = selectedService;
@@ -164,7 +158,7 @@ function Discover() {
       try {
         const response: AxiosResponse<DiscoverAndSearchResponse> = await axiosInstance.get(endpoint, { params });
 
-        if (isNewSearch) {
+        if (pageToLoad === 1) {
           setResults(response.data.results);
           setTotalResults(response.data.totalResults || 0);
         } else {
@@ -188,14 +182,29 @@ function Discover() {
         setIsLoading(false);
       }
     },
-    [discoverMode, dispatch, page, selectedFilter, selectedService, selectedType]
+    [discoverMode, dispatch, selectedFilter, selectedService, selectedType]
   );
 
+  // Fetch fresh results on mount and whenever any filter value changes.
+  // findContent is recreated (via useCallback) when discoverMode, selectedType,
+  // selectedService, or selectedFilter change, so this effect fires automatically.
   useEffect(() => {
-    if (page > 1 && searchPerformed) {
-      findContent(false);
+    setPage(1);
+    setResults([]);
+    setTotalResults(0);
+    setHasMore(true);
+    findContent(1);
+  }, [findContent]);
+
+  // Load the next page when the infinite scroll observer increments the page counter.
+  // findContent is intentionally omitted from deps: page only increments after a
+  // successful load, so the closure always holds the correct filter values.
+  useEffect(() => {
+    if (page > 1) {
+      findContent(page);
     }
-  }, [page, searchPerformed, findContent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   useEffect(() => {
     return () => {
@@ -204,13 +213,6 @@ function Discover() {
       }
     };
   }, []);
-
-  const handleSearch = () => {
-    setPage(1);
-    setResults([]);
-    setTotalResults(0);
-    findContent(true);
-  };
 
   return (
     <>
@@ -222,8 +224,8 @@ function Discover() {
         <CardContent sx={{ p: '8px' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="discover content tabs" variant="fullWidth">
-              <Tab label="Trending Content" icon={<TrendingUpIcon />} iconPosition="start" {...a11yProps(0)} />
-              <Tab label="By Service" icon={<ExploreIcon />} iconPosition="start" {...a11yProps(1)} />
+              <Tab label="Trending Content" icon={<TrendingUpIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(0)} />
+              <Tab label="By Service" icon={<ExploreIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(1)} />
             </Tabs>
           </Box>
 
@@ -231,60 +233,38 @@ function Discover() {
             <Stack
               direction={{ xs: 'column', md: 'row' }}
               spacing={2}
-              justifyContent={{ md: 'space-between' }}
-              alignItems={{ md: 'center' }}
+              justifyContent="center"
+              alignItems={{ xs: 'stretch', md: 'center' }}
               sx={{ p: '8px', m: '1px' }}
             >
-              <Box
+              <SegmentedControl
+                options={DISCOVER_TYPE_OPTIONS}
+                value={selectedType}
+                onChange={handleTypeChanged}
+                fullWidth={isMobile}
+                variant="outlined"
+                color="primary"
                 sx={{
-                  paddingLeft: 2,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100%',
+                  '& .MuiButtonGroup-root': {
+                    height: 56,
+                  },
                 }}
-              >
-                <SegmentedControl
-                  options={DISCOVER_TYPE_OPTIONS}
-                  value={selectedType}
-                  onChange={handleTypeChanged}
-                  fullWidth={false}
-                  variant="outlined"
-                  color="primary"
-                  sx={{
-                    '& .MuiButtonGroup-root': {
-                      height: 56,
-                    },
-                  }}
-                />
-              </Box>
-
-              <Button
-                id="discoverTrendingGoButton"
-                variant="contained"
-                size="large"
-                onClick={handleSearch}
-                startIcon={isLoading && page === 1 ? <CircularProgress size={20} /> : <TrendingUpIcon />}
-                disabled={selectedType === 'none' || (isLoading && page === 1)}
-                sx={{
-                  height: '56px',
-                  alignSelf: { xs: 'flex-start', md: 'center' },
-                }}
-              >
-                {isLoading && page === 1 ? 'Loading...' : 'Find Trending Content'}
-              </Button>
+              />
             </Stack>
           </TabPanel>
 
           <TabPanel value={tabValue} index={1}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ p: '8px', m: '1px' }}>
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={2}
+              justifyContent="center"
+              alignItems={{ xs: 'stretch', md: 'center' }}
+              sx={{ p: '8px', m: '1px' }}
+            >
               <Stack
-                direction={{ xs: 'row', md: 'row' }}
+                direction={{ xs: 'column', md: 'row' }}
                 spacing={2}
-                sx={{
-                  width: { xs: '100%', md: 'auto' },
-                  flex: { md: 1 },
-                }}
+                sx={{ width: { xs: '100%', md: 'auto' } }}
               >
                 <Box
                   sx={{
@@ -292,13 +272,14 @@ function Discover() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '100%',
+                    width: { xs: '100%', md: 'auto' },
                   }}
                 >
                   <SegmentedControl
                     options={DISCOVER_TYPE_OPTIONS}
                     value={selectedType}
                     onChange={handleTypeChanged}
-                    fullWidth={false}
+                    fullWidth={isMobile}
                     variant="outlined"
                     color="primary"
                     sx={{
@@ -309,7 +290,7 @@ function Discover() {
                   />
                 </Box>
 
-                <Divider orientation="vertical" flexItem sx={{ height: 56 }} />
+                {isMobile ? <Divider orientation="horizontal" flexItem /> : <Divider orientation="vertical" flexItem sx={{ height: 56 }} />}
 
                 <Box
                   sx={{
@@ -317,13 +298,16 @@ function Discover() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '100%',
+                    width: { xs: '100%', md: 'auto' },
                   }}
                 >
                   <SegmentedControl
                     options={SERVICE_OPTIONS}
                     value={selectedService}
                     onChange={handleServiceChanged}
-                    fullWidth={false}
+                    fullWidth={isMobile}
+                    compact={isMobile}
+                    size={isMobile ? 'small' : 'medium'}
                     variant="outlined"
                     color="success"
                     sx={{
@@ -334,7 +318,7 @@ function Discover() {
                   />
                 </Box>
 
-                <Divider orientation="vertical" flexItem sx={{ height: 56 }} />
+                {isMobile ? <Divider orientation="horizontal" flexItem /> : <Divider orientation="vertical" flexItem sx={{ height: 56 }} />}
 
                 <Box
                   sx={{
@@ -342,13 +326,16 @@ function Discover() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '100%',
+                    width: { xs: '100%', md: 'auto' },
                   }}
                 >
                   <SegmentedControl
                     options={FILTER_OPTIONS}
                     value={selectedFilter}
                     onChange={handleFilterChanged}
-                    fullWidth={false}
+                    fullWidth={isMobile}
+                    compact={isMobile}
+                    size={isMobile ? 'small' : 'medium'}
                     variant="outlined"
                     color="warning"
                     sx={{
@@ -359,22 +346,6 @@ function Discover() {
                   />
                 </Box>
               </Stack>
-              <Button
-                id="discoverTopGoButton"
-                variant="contained"
-                size="large"
-                onClick={handleSearch}
-                startIcon={isLoading && page === 1 ? <CircularProgress size={20} /> : <ExploreIcon />}
-                disabled={selectedService === 'none' || selectedType === 'none' || (isLoading && page === 1)}
-                sx={{
-                  height: '56px',
-                  alignSelf: { xs: 'flex-start', md: 'center' },
-                }}
-              >
-                {isLoading && page === 1
-                  ? 'Loading...'
-                  : `Find ${selectedFilter === 'top' ? 'Top' : selectedFilter === 'new' ? 'New' : selectedFilter === 'upcoming' ? 'Upcoming' : 'Expiring'} Content`}
-              </Button>
             </Stack>
           </TabPanel>
         </CardContent>
