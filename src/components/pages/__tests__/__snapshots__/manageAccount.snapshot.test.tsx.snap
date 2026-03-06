@@ -223,6 +223,11 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
   >
     AccountStatisticsDialog
   </div>
+  <div
+    data-testid="review-watch-history-dialog"
+  >
+    ReviewWatchHistoryDialog
+  </div>
 </div>
 `;
 

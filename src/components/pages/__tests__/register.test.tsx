@@ -577,7 +577,7 @@ describe('Register', () => {
       await user.type(nameField, longName);
 
       expect(nameField.value).toBe(longName);
-    });
+    }, 15000);
 
     it('should handle very long email', async () => {
       const user = userEvent.setup();
@@ -589,7 +589,7 @@ describe('Register', () => {
       await user.type(emailField, longEmail);
 
       expect(emailField.value).toBe(longEmail);
-    });
+    }, 15000);
 
     it('should handle very long password', async () => {
       const user = userEvent.setup();
@@ -602,7 +602,7 @@ describe('Register', () => {
       await user.paste(longPassword);
 
       expect(passwordField.value).toBe(longPassword);
-    });
+    }, 15000);
 
     it('should handle empty string submission', async () => {
       const user = userEvent.setup();

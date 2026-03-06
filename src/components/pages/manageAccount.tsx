@@ -47,6 +47,7 @@ import {
 import NameEditDialog from '../common/account/nameEditDialog';
 import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
+import ReviewWatchHistoryDialog from '../common/account/ReviewWatchHistoryDialog';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { Profile } from '@ajgifford/keepwatching-types';
@@ -77,6 +78,9 @@ const ManageAccount = () => {
   const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<number>(0);
   const [accountStatsDialogOpen, setAccountStatsDialogOpen] = useState<boolean>(false);
   const [accountStatsDialogTitle, setAccountStatsDialogTitle] = useState<string>('');
+  const [reviewWatchHistoryDialogOpen, setReviewWatchHistoryDialogOpen] = useState<boolean>(false);
+  const [reviewWatchHistoryProfileId, setReviewWatchHistoryProfileId] = useState<number>(0);
+  const [reviewWatchHistoryProfileName, setReviewWatchHistoryProfileName] = useState<string>('');
   const [accountImageMenuAnchor, setAccountImageMenuAnchor] = useState<null | HTMLElement>(null);
   const [isAccountImageHovered, setIsAccountImageHovered] = useState(false);
   const [isRemovingAccountImage, setIsRemovingAccountImage] = useState(false);
@@ -173,6 +177,12 @@ const ManageAccount = () => {
     setProfileStatsDialogProfileId(profile.id);
     setProfileStatsDialogTitle(`${profile.name}`);
     setProfileStatsDialogOpen(true);
+  }
+
+  function handleReviewWatchHistory(profile: Profile) {
+    setReviewWatchHistoryProfileId(profile.id);
+    setReviewWatchHistoryProfileName(profile.name);
+    setReviewWatchHistoryDialogOpen(true);
   }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -418,6 +428,7 @@ const ManageAccount = () => {
               handleSetDefault={handleSetDefaultProfile}
               handleSetActive={handleSetActiveProfile}
               handleViewStats={handleViewProfileStats}
+              handleReviewWatchHistory={handleReviewWatchHistory}
               isLoading={changingActiveProfile === profile.id}
             />
           ))}
@@ -443,6 +454,12 @@ const ManageAccount = () => {
         title={accountStatsDialogTitle}
         accountId={safeAccount.id}
         onClose={() => setAccountStatsDialogOpen(false)}
+      />
+      <ReviewWatchHistoryDialog
+        open={reviewWatchHistoryDialogOpen}
+        profileId={reviewWatchHistoryProfileId}
+        profileName={reviewWatchHistoryProfileName}
+        onClose={() => setReviewWatchHistoryDialogOpen(false)}
       />
       {/* Confirm Profile Delete Dialog */}
       <Dialog

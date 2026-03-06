@@ -8,6 +8,7 @@ import { ActivityNotificationType, showActivityNotification } from './activityNo
 import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
 import {
   AddShowFavoriteResponse,
+  BulkMarkedShow,
   EpisodesForProfile,
   EpisodesForProfileResponse,
   FavoriteMovieResponse,
@@ -305,6 +306,127 @@ export const updateShowWatchStatus = createAsyncThunk<
         return rejectWithValue(error.response?.data || error.message);
       }
       return rejectWithValue({ message: 'An unknown error occurred' });
+    }
+  }
+);
+
+export const markShowAsPriorWatched = createAsyncThunk<
+  UpdateWatchStatus,
+  { profileId: number; showId: number; upToSeasonNumber?: number },
+  { rejectValue: ApiErrorResponse }
+>(
+  'activeProfile/markShowAsPriorWatched',
+  async (
+    { profileId, showId, upToSeasonNumber },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue({ message: 'No account found' });
+      }
+
+      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}/shows/priorWatchStatus`,
+        { showId, upToSeasonNumber }
+      );
+
+      const showWithSeasons = response.data.statusData.showWithSeasons;
+      const show = toProfileShow(showWithSeasons);
+      const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
+
+      return { show, showWithSeasons, nextUnwatchedEpisodes };
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred marking show as prior watched' });
+    }
+  }
+);
+
+export const getBulkMarkedShows = createAsyncThunk<
+  BulkMarkedShow[],
+  { profileId: number },
+  { rejectValue: ApiErrorResponse }
+>(
+  'activeProfile/getBulkMarkedShows',
+  async ({ profileId }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue({ message: 'No account found' });
+      }
+
+      const response = await axiosInstance.get(
+        `/accounts/${accountId}/profiles/${profileId}/watchHistory/bulkMarked`
+      );
+      return response.data.shows;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred fetching bulk marked shows' });
+    }
+  }
+);
+
+export const dismissBulkMarkedShow = createAsyncThunk<
+  void,
+  { profileId: number; showId: number },
+  { rejectValue: ApiErrorResponse }
+>(
+  'activeProfile/dismissBulkMarkedShow',
+  async ({ profileId, showId }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue({ message: 'No account found' });
+      }
+
+      await axiosInstance.post(
+        `/accounts/${accountId}/profiles/${profileId}/watchHistory/dismiss`,
+        { showId }
+      );
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred dismissing show from review' });
+    }
+  }
+);
+
+export const retroactivelyMarkShowAsPrior = createAsyncThunk<
+  void,
+  { profileId: number; showId: number; seasonIds?: number[] },
+  { rejectValue: ApiErrorResponse }
+>(
+  'activeProfile/retroactivelyMarkShowAsPrior',
+  async ({ profileId, showId, seasonIds }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue({ message: 'No account found' });
+      }
+
+      await axiosInstance.post(
+        `/accounts/${accountId}/profiles/${profileId}/watchHistory/markAsPrior`,
+        { showId, seasonIds }
+      );
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred marking show as prior watched' });
     }
   }
 );
@@ -712,6 +834,28 @@ const activeProfileSlice = createSlice({
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateShowWatchStatus.rejected, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(markShowAsPriorWatched.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(markShowAsPriorWatched.fulfilled, (state, action) => {
+        const { show, nextUnwatchedEpisodes } = action.payload;
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((m) => m.id === show.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
+        }
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
+        state.lastUpdated = new Date().toLocaleString();
+        state.loading = false;
+        state.error = null;
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(markShowAsPriorWatched.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Failed to update show status' };
       })

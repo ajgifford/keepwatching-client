@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
-import { updateNextEpisodeWatchStatus, updateShowWatchStatus } from './activeProfileSlice';
+import { markShowAsPriorWatched, updateNextEpisodeWatchStatus, updateShowWatchStatus } from './activeProfileSlice';
 import {
   KeepWatchingShow,
   ProfileSeason,
@@ -286,6 +286,14 @@ const activeShowSlice = createSlice({
         state.showDetailsError = action.payload || { message: 'Failed to update season watch status' };
       })
       .addCase(updateShowWatchStatus.fulfilled, (state, action) => {
+        const { showWithSeasons } = action.payload;
+        const show = state.showWithSeasons;
+        if (show && show.id === showWithSeasons.id) {
+          state.showWithSeasons = showWithSeasons;
+        }
+        state.watchedEpisodes = buildWatchedEpisodesMap(showWithSeasons);
+      })
+      .addCase(markShowAsPriorWatched.fulfilled, (state, action) => {
         const { showWithSeasons } = action.payload;
         const show = state.showWithSeasons;
         if (show && show.id === showWithSeasons.id) {

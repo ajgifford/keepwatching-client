@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -34,7 +34,14 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { updateShowWatchStatus } from '../../app/slices/activeProfileSlice';
+import {
+  dismissBulkMarkedShow,
+  getBulkMarkedShows,
+  markShowAsPriorWatched,
+  retroactivelyMarkShowAsPrior,
+  selectActiveProfile,
+  updateShowWatchStatus,
+} from '../../app/slices/activeProfileSlice';
 import {
   clearActiveShow,
   fetchShowWithDetails,
@@ -47,6 +54,9 @@ import {
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
+import BulkMarkBanner from '../common/shows/BulkMarkBanner';
+import PriorWatchPromptDialog from '../common/shows/PriorWatchPromptDialog';
+import SeasonPriorWatchDialog from '../common/shows/SeasonPriorWatchDialog';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
@@ -66,7 +76,7 @@ import {
   determineNextSeasonWatchStatus,
   getWatchStatusAction,
 } from '../utility/watchStatusUtility';
-import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, WatchStatus } from '@ajgifford/keepwatching-types';
+import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
 import { ErrorComponent, LoadingComponent, buildTMDBImagePath, formatUserRating } from '@ajgifford/keepwatching-ui';
 import { getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
@@ -83,11 +93,20 @@ function ShowDetails() {
   const cast = useAppSelector(selectShowCast);
   const showDetailsLoading = useAppSelector(selectShowLoading);
   const showDetailsError = useAppSelector(selectShowError);
+  const activeProfile = useAppSelector(selectActiveProfile);
 
   const [tabValue, setTabValue] = useState(0);
   const [loadingSeasons, setLoadingSeasons] = useState<Record<number, boolean>>({});
   const [loadingEpisodes, setLoadingEpisodes] = useState<Record<number, boolean>>({});
   const [loadingShowWatchStatus, setLoadingShowWatchStatus] = useState<boolean>(false);
+
+  // Prior watch history state
+  const [priorWatchPromptOpen, setPriorWatchPromptOpen] = useState(false);
+  const [seasonDialogOpen, setSeasonDialogOpen] = useState(false);
+  const [pendingSeason, setPendingSeason] = useState<ProfileSeason | null>(null);
+  const [bulkMarkBannerVisible, setBulkMarkBannerVisible] = useState(false);
+
+  const priorPromptShownKey = `shown-prior-prompt-${showId}-${profileId}`;
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -99,6 +118,19 @@ function ShowDetails() {
   const streamingServiceFilter = location.state?.streamingService || '';
   const watchStatusFilter = location.state?.watchStatus || '';
 
+  const getCompletedPriorSeasons = useCallback(
+    (seasons: ProfileSeason[]) => {
+      const today = new Date();
+      return seasons.filter((season) => {
+        if (season.seasonNumber === 0) return false; // skip specials
+        const allAired = season.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today);
+        const noneWatched = season.episodes.every((ep) => ep.watchStatus === WatchStatus.NOT_WATCHED);
+        return allAired && noneWatched && season.episodes.length > 0;
+      });
+    },
+    []
+  );
+
   useEffect(() => {
     if (showId && profileId) {
       dispatch(fetchShowWithDetails({ profileId: Number(profileId), showId: Number(showId) }));
@@ -109,6 +141,34 @@ function ShowDetails() {
       dispatch(clearActiveShow());
     };
   }, [profileId, showId, dispatch]);
+
+  // Check for prior watch prompt and bulk mark banner after show loads
+  useEffect(() => {
+    if (!show || !seasons || showDetailsLoading) return;
+
+    // Check for prior watch prompt (only show once per show+profile)
+    if (show.watchStatus === WatchStatus.NOT_WATCHED && !localStorage.getItem(priorPromptShownKey)) {
+      const completedPriorSeasons = getCompletedPriorSeasons(seasons);
+      if (completedPriorSeasons.length > 0) {
+        setPriorWatchPromptOpen(true);
+        localStorage.setItem(priorPromptShownKey, 'true');
+      }
+    }
+
+    // Check for bulk mark banner
+    if (activeProfile) {
+      dispatch(getBulkMarkedShows({ profileId: activeProfile.id }))
+        .unwrap()
+        .then((bulkShows) => {
+          const isBulkMarked = bulkShows.some((s) => s.showId === show.id);
+          if (isBulkMarked) {
+            setBulkMarkBannerVisible(true);
+          }
+        })
+        .catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show?.id, showDetailsLoading]);
 
   if (showDetailsLoading) {
     return <LoadingComponent />;
@@ -142,9 +202,24 @@ function ShowDetails() {
   const handleSeasonWatchStatusChange = async (season: ProfileSeason, event: React.MouseEvent) => {
     event.stopPropagation();
 
-    setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
     const nextStatus = determineNextSeasonWatchStatus(season);
 
+    // If marking a completed season as watched, ask when they watched it
+    if (nextStatus === WatchStatus.WATCHED && season.episodes.length > 0) {
+      const today = new Date();
+      const allAired = season.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today);
+      if (allAired) {
+        setPendingSeason(season);
+        setSeasonDialogOpen(true);
+        return;
+      }
+    }
+
+    await dispatchSeasonWatchUpdate(season, nextStatus);
+  };
+
+  const dispatchSeasonWatchUpdate = async (season: ProfileSeason, nextStatus: UserWatchStatus) => {
+    setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
     try {
       await dispatch(
         updateSeasonWatchStatus({
@@ -156,6 +231,29 @@ function ShowDetails() {
     } finally {
       setLoadingSeasons((prev) => ({ ...prev, [season.id]: false }));
     }
+  };
+
+  const handleSeasonWatchedWhenAired = async () => {
+    if (!pendingSeason || !show) return;
+    setLoadingSeasons((prev) => ({ ...prev, [pendingSeason.id]: true }));
+    try {
+      await dispatch(
+        markShowAsPriorWatched({
+          profileId: Number(profileId),
+          showId: show.id,
+          upToSeasonNumber: pendingSeason.seasonNumber,
+        })
+      );
+    } finally {
+      setLoadingSeasons((prev) => ({ ...prev, [pendingSeason.id]: false }));
+      setPendingSeason(null);
+    }
+  };
+
+  const handleSeasonWatchedNow = async () => {
+    if (!pendingSeason) return;
+    await dispatchSeasonWatchUpdate(pendingSeason, WatchStatus.WATCHED);
+    setPendingSeason(null);
   };
 
   const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode) => {
@@ -242,6 +340,18 @@ function ShowDetails() {
     return `${network || 'No Network'} • ${services}`;
   };
 
+  const handlePriorWatchAll = async () => {
+    if (!show) return;
+    await dispatch(markShowAsPriorWatched({ profileId: Number(profileId), showId: show.id }));
+  };
+
+  const handlePriorWatchThrough = async (seasonNumber: number) => {
+    if (!show) return;
+    await dispatch(markShowAsPriorWatched({ profileId: Number(profileId), showId: show.id, upToSeasonNumber: seasonNumber }));
+  };
+
+  const completedSeasons = seasons ? getCompletedPriorSeasons(seasons) : [];
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Back button */}
@@ -277,6 +387,26 @@ function ShowDetails() {
           </Tooltip>
         </Box>
       </Box>
+
+      {bulkMarkBannerVisible && (
+        <Box sx={{ px: 2, pt: 1 }}>
+          <BulkMarkBanner
+            onFix={async () => {
+              setBulkMarkBannerVisible(false);
+              if (show) {
+                await dispatch(retroactivelyMarkShowAsPrior({ profileId: Number(profileId), showId: show.id }));
+                dispatch(fetchShowWithDetails({ profileId: Number(profileId), showId: show.id }));
+              }
+            }}
+            onDismiss={() => {
+              setBulkMarkBannerVisible(false);
+              if (show) {
+                dispatch(dismissBulkMarkedShow({ profileId: Number(profileId), showId: show.id }));
+              }
+            }}
+          />
+        </Box>
+      )}
 
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         {/* Show Details Card */}
@@ -734,6 +864,7 @@ function ShowDetails() {
                                     <Typography variant="body2" color="text.secondary">
                                       {buildEpisodeAirDate(episode.airDate)} •{' '}
                                       {calculateRuntimeDisplay(episode.runtime)}
+                                      {episode.watchedAt && ` • Watched: ${episode.watchedAt.slice(0, 10)}`}
                                     </Typography>
                                   </Box>
 
@@ -802,6 +933,28 @@ function ShowDetails() {
           </CardContent>
         </Card>
       </Box>
+
+      {/* Prior watch history dialogs */}
+      <PriorWatchPromptDialog
+        open={priorWatchPromptOpen}
+        showTitle={show?.title || ''}
+        completedSeasons={completedSeasons}
+        onClose={() => setPriorWatchPromptOpen(false)}
+        onStartingFresh={() => setPriorWatchPromptOpen(false)}
+        onWatchedAll={handlePriorWatchAll}
+        onWatchedThrough={handlePriorWatchThrough}
+      />
+
+      <SeasonPriorWatchDialog
+        open={seasonDialogOpen}
+        seasonName={pendingSeason?.name || ''}
+        onClose={() => {
+          setSeasonDialogOpen(false);
+          setPendingSeason(null);
+        }}
+        onWatchedWhenAired={handleSeasonWatchedWhenAired}
+        onWatchedNow={handleSeasonWatchedNow}
+      />
     </Box>
   );
 }

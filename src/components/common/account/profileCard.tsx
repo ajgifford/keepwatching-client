@@ -5,6 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import HistoryIcon from '@mui/icons-material/History';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StarsIcon from '@mui/icons-material/Stars';
@@ -25,6 +26,7 @@ interface PropTypes {
   handleSetDefault: (profile: Profile) => void;
   handleSetActive: (profile: Profile) => void;
   handleViewStats: (profile: Profile) => void;
+  handleReviewWatchHistory: (profile: Profile) => void;
   isLoading?: boolean;
 }
 
@@ -35,6 +37,7 @@ export function ProfileCard({
   handleSetDefault,
   handleSetActive,
   handleViewStats,
+  handleReviewWatchHistory,
   isLoading = false,
 }: PropTypes) {
   const dispatch = useAppDispatch();
@@ -226,6 +229,15 @@ export function ProfileCard({
           }}
         >
           View Stats
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<HistoryIcon />}
+          onClick={() => {
+            handleReviewWatchHistory(profile);
+          }}
+        >
+          Review Watch Dates
         </Button>
         <Button
           variant="outlined"

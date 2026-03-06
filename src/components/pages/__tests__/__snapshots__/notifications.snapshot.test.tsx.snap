@@ -257,7 +257,7 @@ exports[`Notifications - Snapshots should match snapshot for initial render 1`] 
             </p>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root MuiListItem-secondaryAction css-zezwi5-MuiListItemSecondaryAction-root"
           >
             <div
               class="MuiBox-root css-1utx3w7"
@@ -364,7 +364,7 @@ exports[`Notifications - Snapshots should match snapshot for initial render 1`] 
             </p>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root MuiListItem-secondaryAction css-zezwi5-MuiListItemSecondaryAction-root"
           >
             <div
               class="MuiBox-root css-1utx3w7"
@@ -672,7 +672,7 @@ exports[`Notifications - Snapshots should match snapshot of notifications list 1
           </p>
         </div>
         <div
-          class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+          class="MuiListItemSecondaryAction-root MuiListItem-secondaryAction css-zezwi5-MuiListItemSecondaryAction-root"
         >
           <div
             class="MuiBox-root css-1utx3w7"
@@ -779,7 +779,7 @@ exports[`Notifications - Snapshots should match snapshot of notifications list 1
           </p>
         </div>
         <div
-          class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root"
+          class="MuiListItemSecondaryAction-root MuiListItem-secondaryAction css-zezwi5-MuiListItemSecondaryAction-root"
         >
           <div
             class="MuiBox-root css-1utx3w7"

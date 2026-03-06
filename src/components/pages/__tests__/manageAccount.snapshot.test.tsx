@@ -61,10 +61,17 @@ jest.mock('../../../app/slices/activeProfileSlice', () => ({
   selectActiveProfile: jest.fn(),
   selectLastUpdated: jest.fn(),
   setActiveProfile: jest.fn(),
+  getBulkMarkedShows: jest.fn(() => ({ type: 'activeProfile/getBulkMarkedShows' })),
+  retroactivelyMarkShowAsPrior: jest.fn(() => ({ type: 'activeProfile/retroactivelyMarkShowAsPrior' })),
 }));
 
 jest.mock('../../common/account/profileCard', () => ({
   ProfileCard: ({ profile }: any) => <div data-testid="profile-card">{profile.name}</div>,
+}));
+
+jest.mock('../../common/account/ReviewWatchHistoryPanel', () => ({
+  __esModule: true,
+  default: () => <div data-testid="review-watch-history-panel">ReviewWatchHistoryPanel</div>,
 }));
 
 jest.mock('../../common/account/nameEditDialog', () => ({
@@ -85,6 +92,11 @@ jest.mock('../../common/statistics/accountStatisticsDialog', () => ({
 jest.mock('../../common/statistics/profileStatisticsDialog', () => ({
   __esModule: true,
   default: () => <div data-testid="profile-statistics-dialog">ProfileStatisticsDialog</div>,
+}));
+
+jest.mock('../../common/account/ReviewWatchHistoryDialog', () => ({
+  __esModule: true,
+  default: () => <div data-testid="review-watch-history-dialog">ReviewWatchHistoryDialog</div>,
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {

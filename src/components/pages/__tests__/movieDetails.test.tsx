@@ -559,7 +559,7 @@ describe('MovieDetails', () => {
     it('formats recent release date as year only for dates beyond 90 days', () => {
       renderMovieDetails();
 
-      // Since 2024-01-15 is more than 90 days old from current time (11/21/2025), it shows only year
+      // Since 2024-01-15 is more than 90 days old, it shows only year
       expect(screen.getByText('2024')).toBeInTheDocument();
     });
 
@@ -567,8 +567,10 @@ describe('MovieDetails', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectMovie } = require('../../../app/slices/activeMovieSlice');
 
-      // Use a date within last 90 days - current date is 11/21/2025
-      const recentDate = '2025-11-01';
+      // Use a date within last 90 days (30 days ago)
+      const d = new Date();
+      d.setDate(d.getDate() - 30);
+      const recentDate = d.toISOString().slice(0, 10);
 
       useAppSelector.mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, releaseDate: recentDate };
