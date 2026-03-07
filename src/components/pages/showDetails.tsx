@@ -57,6 +57,7 @@ import {
 import BulkMarkBanner from '../common/shows/BulkMarkBanner';
 import PriorWatchPromptDialog from '../common/shows/PriorWatchPromptDialog';
 import SeasonPriorWatchDialog from '../common/shows/SeasonPriorWatchDialog';
+import SkippedEpisodesDialog from '../common/shows/SkippedEpisodesDialog';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
@@ -105,6 +106,11 @@ function ShowDetails() {
   const [seasonDialogOpen, setSeasonDialogOpen] = useState(false);
   const [pendingSeason, setPendingSeason] = useState<ProfileSeason | null>(null);
   const [bulkMarkBannerVisible, setBulkMarkBannerVisible] = useState(false);
+
+  // Skipped episodes prompt state
+  const [skippedEpisodesDialogOpen, setSkippedEpisodesDialogOpen] = useState(false);
+  const [pendingEpisode, setPendingEpisode] = useState<ProfileEpisode | null>(null);
+  const [skippedEpisodes, setSkippedEpisodes] = useState<ProfileEpisode[]>([]);
 
   const priorPromptShownKey = `shown-prior-prompt-${showId}-${profileId}`;
 
@@ -256,22 +262,66 @@ function ShowDetails() {
     setPendingSeason(null);
   };
 
-  const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode) => {
+  const dispatchEpisodeWatchUpdate = async (episode: ProfileEpisode, status: UserWatchStatus) => {
     setLoadingEpisodes((prev) => ({ ...prev, [episode.id]: true }));
-
     try {
-      const nextStatus = watchedEpisodes[episode.id] ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
-
       await dispatch(
         updateEpisodeWatchStatus({
           profileId: Number(profileId),
           episodeId: episode.id,
-          episodeStatus: nextStatus,
+          episodeStatus: status,
         })
       );
     } finally {
       setLoadingEpisodes((prev) => ({ ...prev, [episode.id]: false }));
     }
+  };
+
+  const handleEpisodeWatchStatusChange = async (episode: ProfileEpisode) => {
+    const nextStatus = watchedEpisodes[episode.id] ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
+
+    if (nextStatus === WatchStatus.WATCHED && seasons) {
+      const today = new Date();
+      const currentSeason = seasons.find((s) => s.episodes.some((e) => e.id === episode.id));
+      if (currentSeason) {
+        const unwatchedPrior = currentSeason.episodes.filter(
+          (e) =>
+            e.episodeNumber < episode.episodeNumber &&
+            !watchedEpisodes[e.id] &&
+            e.airDate &&
+            new Date(e.airDate) <= today
+        );
+        if (unwatchedPrior.length > 0) {
+          setPendingEpisode(episode);
+          setSkippedEpisodes(unwatchedPrior);
+          setSkippedEpisodesDialogOpen(true);
+          return;
+        }
+      }
+    }
+
+    await dispatchEpisodeWatchUpdate(episode, nextStatus);
+  };
+
+  const handleMarkAllSkippedAndTarget = async () => {
+    setSkippedEpisodesDialogOpen(false);
+    for (const ep of skippedEpisodes) {
+      await dispatchEpisodeWatchUpdate(ep, WatchStatus.WATCHED);
+    }
+    if (pendingEpisode) {
+      await dispatchEpisodeWatchUpdate(pendingEpisode, WatchStatus.WATCHED);
+    }
+    setPendingEpisode(null);
+    setSkippedEpisodes([]);
+  };
+
+  const handleMarkJustTarget = async () => {
+    setSkippedEpisodesDialogOpen(false);
+    if (pendingEpisode) {
+      await dispatchEpisodeWatchUpdate(pendingEpisode, WatchStatus.WATCHED);
+    }
+    setPendingEpisode(null);
+    setSkippedEpisodes([]);
   };
 
   const buildBackButtonPath = () => {
@@ -954,6 +1004,19 @@ function ShowDetails() {
         }}
         onWatchedWhenAired={handleSeasonWatchedWhenAired}
         onWatchedNow={handleSeasonWatchedNow}
+      />
+
+      <SkippedEpisodesDialog
+        open={skippedEpisodesDialogOpen}
+        skippedEpisodes={skippedEpisodes}
+        targetEpisode={pendingEpisode}
+        onMarkAll={handleMarkAllSkippedAndTarget}
+        onMarkJustThis={handleMarkJustTarget}
+        onClose={() => {
+          setSkippedEpisodesDialogOpen(false);
+          setPendingEpisode(null);
+          setSkippedEpisodes([]);
+        }}
       />
     </Box>
   );

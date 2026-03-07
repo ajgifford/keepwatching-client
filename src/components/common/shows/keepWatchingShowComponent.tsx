@@ -1,9 +1,12 @@
+import { useState } from 'react';
+
 import { Box, Grid, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
+import SkippedEpisodesDialog from './SkippedEpisodesDialog';
 import { EpisodeCard } from './episodeCard';
-import { NextEpisode, ProfileSeason, UserWatchStatus } from '@ajgifford/keepwatching-types';
+import { NextEpisode, ProfileEpisode, ProfileSeason, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
 import { parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) => {
@@ -11,16 +14,62 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
   const show = useAppSelector(selectShow);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
 
+  const [skippedEpisodesDialogOpen, setSkippedEpisodesDialogOpen] = useState(false);
+  const [pendingEpisode, setPendingEpisode] = useState<ProfileEpisode | null>(null);
+  const [skippedEpisodes, setSkippedEpisodes] = useState<ProfileEpisode[]>([]);
+
+  const dispatchEpisodeWatchUpdate = async (episodeId: number, newStatus: UserWatchStatus) => {
+    await dispatch(updateEpisodeWatchStatus({ profileId, episodeId, episodeStatus: newStatus }));
+  };
+
   const handleEpisodeWatchStatusChange = async (episode: NextEpisode, newStatus: UserWatchStatus) => {
     if (!show) return;
 
-    await dispatch(
-      updateEpisodeWatchStatus({
-        profileId,
-        episodeId: episode.episodeId,
-        episodeStatus: newStatus,
-      })
-    );
+    if (newStatus === WatchStatus.WATCHED && show.seasons) {
+      const today = new Date();
+      const currentSeason = show.seasons.find((s: ProfileSeason) => s.id === episode.seasonId);
+      if (currentSeason) {
+        const unwatchedPrior = currentSeason.episodes.filter(
+          (e: ProfileEpisode) =>
+            e.episodeNumber < episode.episodeNumber &&
+            !watchedEpisodes[e.id] &&
+            e.airDate &&
+            new Date(e.airDate) <= today
+        );
+        if (unwatchedPrior.length > 0) {
+          const profileEpisode = currentSeason.episodes.find((e: ProfileEpisode) => e.id === episode.episodeId);
+          if (profileEpisode) {
+            setPendingEpisode(profileEpisode);
+            setSkippedEpisodes(unwatchedPrior);
+            setSkippedEpisodesDialogOpen(true);
+            return;
+          }
+        }
+      }
+    }
+
+    await dispatchEpisodeWatchUpdate(episode.episodeId, newStatus);
+  };
+
+  const handleMarkAllSkippedAndTarget = async () => {
+    setSkippedEpisodesDialogOpen(false);
+    for (const ep of skippedEpisodes) {
+      await dispatchEpisodeWatchUpdate(ep.id, WatchStatus.WATCHED);
+    }
+    if (pendingEpisode) {
+      await dispatchEpisodeWatchUpdate(pendingEpisode.id, WatchStatus.WATCHED);
+    }
+    setPendingEpisode(null);
+    setSkippedEpisodes([]);
+  };
+
+  const handleMarkJustTarget = async () => {
+    setSkippedEpisodesDialogOpen(false);
+    if (pendingEpisode) {
+      await dispatchEpisodeWatchUpdate(pendingEpisode.id, WatchStatus.WATCHED);
+    }
+    setPendingEpisode(null);
+    setSkippedEpisodes([]);
   };
 
   if (!show || !show.seasons) {
@@ -127,6 +176,19 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
           </Grid>
         ))}
       </Grid>
+
+      <SkippedEpisodesDialog
+        open={skippedEpisodesDialogOpen}
+        skippedEpisodes={skippedEpisodes}
+        targetEpisode={pendingEpisode}
+        onMarkAll={handleMarkAllSkippedAndTarget}
+        onMarkJustThis={handleMarkJustTarget}
+        onClose={() => {
+          setSkippedEpisodesDialogOpen(false);
+          setPendingEpisode(null);
+          setSkippedEpisodes([]);
+        }}
+      />
     </Box>
   );
 };
