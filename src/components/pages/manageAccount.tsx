@@ -28,6 +28,7 @@ import {
 
 import { STATIC_CONTENT_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useDateFormatters } from '../../app/hooks/useDateFormatters';
 import {
   deleteAccount,
   removeAccountImage,
@@ -57,6 +58,7 @@ import { getAuth } from 'firebase/auth';
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
+  const formatters = useDateFormatters();
   const account = useAppSelector(selectCurrentAccount);
   const profiles = useAppSelector(selectAllProfiles);
   const activeProfile = useAppSelector(selectActiveProfile);
@@ -394,7 +396,7 @@ const ManageAccount = () => {
           </Typography>
           {lastUpdated && (
             <Typography variant="subtitle1" color="primary" gutterBottom>
-              Last Updated: <i>{lastUpdated}</i>
+              Last Updated: <i>{formatters.dateTime(lastUpdated)}</i>
             </Typography>
           )}
         </Grid>

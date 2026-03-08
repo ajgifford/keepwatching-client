@@ -9,6 +9,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string) => `https://image.tmdb.org/t/p/original${path || ''}`),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 describe('EpisodeTile', () => {
   const mockEpisode: RecentUpcomingEpisode = {
     showId: 1,
@@ -49,7 +56,7 @@ describe('EpisodeTile', () => {
     it('should render air date', () => {
       renderWithRouter(<EpisodeTile episode={mockEpisode} />);
 
-      expect(screen.getByText('2013-09-15')).toBeInTheDocument();
+      expect(screen.getByText('09/15/2013')).toBeInTheDocument();
     });
 
     it('should render episode image', () => {
@@ -240,7 +247,7 @@ describe('EpisodeTile', () => {
 
       renderWithRouter(<EpisodeTile episode={differentDate} />);
 
-      expect(screen.getByText('September 15, 2013')).toBeInTheDocument();
+      expect(screen.getByText('09/15/2013')).toBeInTheDocument();
     });
   });
 

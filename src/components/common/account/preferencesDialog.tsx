@@ -1,16 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   Switch,
   Typography,
 } from '@mui/material';
@@ -19,6 +23,7 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectPreferences, updateEmailPreferences, updatePreferences } from '../../../app/slices/preferencesSlice';
 import { DisplayPreferences } from '@ajgifford/keepwatching-types';
+import { createDateFormatters } from '@ajgifford/keepwatching-ui';
 import { getAuth } from 'firebase/auth';
 
 interface PreferencesDialogProps {
@@ -37,6 +42,9 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
 
   // Local state for preferences (not saved until user clicks Save)
   const [localTheme, setLocalTheme] = useState<'light' | 'dark' | 'auto'>('auto');
+  const [localDateFormat, setLocalDateFormat] = useState<'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD'>('MM/DD/YYYY');
+  const [localRelativeDate, setLocalRelativeDate] = useState<'relative-recent' | 'always-relative' | 'always-absolute'>('relative-recent');
+  const [localTimeFormat, setLocalTimeFormat] = useState<'12h' | '24h'>('12h');
   const [localWeeklyDigest, setLocalWeeklyDigest] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -44,22 +52,35 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
   useEffect(() => {
     if (open) {
       setLocalTheme(displayPreferences?.theme || 'auto');
+      setLocalDateFormat(displayPreferences?.dateFormat || 'MM/DD/YYYY');
+      setLocalRelativeDate(displayPreferences?.relativeDate || 'relative-recent');
+      setLocalTimeFormat(displayPreferences?.timeFormat || '12h');
       setLocalWeeklyDigest(preferences.email?.weeklyDigest ?? true);
     }
-  }, [open, displayPreferences?.theme, preferences.email?.weeklyDigest]);
+  }, [open, displayPreferences, preferences.email?.weeklyDigest]);
+
+  const previewFormatters = useMemo(
+    () => createDateFormatters({ dateFormat: localDateFormat, relativeDate: localRelativeDate, timeFormat: localTimeFormat }),
+    [localDateFormat, localRelativeDate, localTimeFormat]
+  );
+
+  const previewDate = '2024-07-04';
 
   const handleSave = async () => {
     if (!account) return;
 
     setIsSaving(true);
     try {
-      // Save theme preference
+      // Save display preferences
       await dispatch(
         updatePreferences({
           accountId: account.id,
           preferenceType: 'display',
           updates: {
             theme: localTheme,
+            dateFormat: localDateFormat,
+            relativeDate: localRelativeDate,
+            timeFormat: localTimeFormat,
           },
         })
       );
@@ -85,6 +106,9 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
   const handleCancel = () => {
     // Reset local state to current preferences
     setLocalTheme(displayPreferences?.theme || 'auto');
+    setLocalDateFormat(displayPreferences?.dateFormat || 'MM/DD/YYYY');
+    setLocalRelativeDate(displayPreferences?.relativeDate || 'relative-recent');
+    setLocalTimeFormat(displayPreferences?.timeFormat || '12h');
     setLocalWeeklyDigest(preferences.email?.weeklyDigest ?? true);
     onClose();
   };
@@ -136,6 +160,100 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
             />
           </RadioGroup>
         </FormControl>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Date Format */}
+        <FormControl component="fieldset" sx={{ mb: 3 }} fullWidth>
+          <FormLabel component="legend" sx={{ color: 'primary.main', fontWeight: 500, mb: 1 }}>
+            Date Format
+          </FormLabel>
+          <Select
+            size="small"
+            value={localDateFormat}
+            onChange={(e) => setLocalDateFormat(e.target.value as typeof localDateFormat)}
+            sx={{ maxWidth: 200 }}
+          >
+            <MenuItem value="MM/DD/YYYY">MM/DD/YYYY</MenuItem>
+            <MenuItem value="DD/MM/YYYY">DD/MM/YYYY</MenuItem>
+            <MenuItem value="YYYY-MM-DD">YYYY-MM-DD</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Relative Date Display */}
+        <FormControl component="fieldset" sx={{ mb: 3 }}>
+          <FormLabel component="legend" sx={{ color: 'primary.main', fontWeight: 500 }}>
+            Date Display
+          </FormLabel>
+          <RadioGroup
+            value={localRelativeDate}
+            onChange={(e) => setLocalRelativeDate(e.target.value as typeof localRelativeDate)}
+            sx={{ mt: 1 }}
+          >
+            <FormControlLabel
+              value="relative-recent"
+              control={<Radio color="primary" />}
+              label="Relative for recent dates (e.g. 3 days ago)"
+              sx={{ '& .MuiFormControlLabel-label': { color: 'primary.main' } }}
+            />
+            <FormControlLabel
+              value="always-relative"
+              control={<Radio color="primary" />}
+              label="Always relative"
+              sx={{ '& .MuiFormControlLabel-label': { color: 'primary.main' } }}
+            />
+            <FormControlLabel
+              value="always-absolute"
+              control={<Radio color="primary" />}
+              label="Always absolute (use date format)"
+              sx={{ '& .MuiFormControlLabel-label': { color: 'primary.main' } }}
+            />
+          </RadioGroup>
+        </FormControl>
+
+        {/* Time Format */}
+        <FormControl component="fieldset" sx={{ mb: 3 }}>
+          <FormLabel component="legend" sx={{ color: 'primary.main', fontWeight: 500 }}>
+            Time Format
+          </FormLabel>
+          <RadioGroup
+            row
+            value={localTimeFormat}
+            onChange={(e) => setLocalTimeFormat(e.target.value as typeof localTimeFormat)}
+            sx={{ mt: 1 }}
+          >
+            <FormControlLabel
+              value="12h"
+              control={<Radio color="primary" />}
+              label="12-hour (2:30 PM)"
+              sx={{ '& .MuiFormControlLabel-label': { color: 'primary.main' } }}
+            />
+            <FormControlLabel
+              value="24h"
+              control={<Radio color="primary" />}
+              label="24-hour (14:30)"
+              sx={{ '& .MuiFormControlLabel-label': { color: 'primary.main' } }}
+            />
+          </RadioGroup>
+        </FormControl>
+
+        {/* Live Preview */}
+        <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1, mb: 3 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontWeight: 500 }}>
+            Preview (July 4, 2024)
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Content date: <strong>{previewFormatters.contentDate(previewDate)}</strong>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Milestone date: <strong>{previewFormatters.milestoneDate(previewDate)}</strong>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Date & time: <strong>{previewFormatters.dateTime(new Date(2024, 6, 4, 14, 30))}</strong>
+          </Typography>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
 
         {/* Email Preferences */}
         <Typography variant="subtitle1" color="primary" gutterBottom sx={{ fontWeight: 500 }}>

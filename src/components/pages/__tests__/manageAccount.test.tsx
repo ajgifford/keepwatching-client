@@ -103,6 +103,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   getAccountImageUrl: (image: string) => image || 'default-image.jpg',
 }));
 
+jest.mock('../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
@@ -483,7 +490,7 @@ describe('ManageAccount', () => {
       renderWithRouter(<ManageAccount />);
 
       expect(screen.getByText(/last updated/i)).toBeInTheDocument();
-      expect(screen.getByText(/2025-01-01 12:00:00/i)).toBeInTheDocument();
+      expect(screen.getByText(/01\/01\/2025, 12:00 PM/i)).toBeInTheDocument();
     });
 
     it('should not display last updated when not available', () => {

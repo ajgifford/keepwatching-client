@@ -7,6 +7,13 @@ import { KeepWatchingProfileComponent } from '../keepWatchingProfileComponent';
 import { KeepWatchingShow, NextEpisode } from '@ajgifford/keepwatching-types';
 import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 const mockEpisode1: NextEpisode = {
   profileId: 1,
   showId: 100,

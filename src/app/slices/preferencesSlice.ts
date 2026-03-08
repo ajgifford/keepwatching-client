@@ -236,8 +236,10 @@ const preferencesSlice = createSlice({
 export const selectPreferences = (state: RootState) => state.preferences.preferences;
 export const selectEmailPreferences = (state: RootState) =>
   state.preferences.preferences.email || DEFAULT_PREFERENCES.email;
-export const selectDisplayPreferences = (state: RootState) =>
-  state.preferences.preferences.display || DEFAULT_PREFERENCES.display;
+export const selectDisplayPreferences = (state: RootState) => ({
+  ...DEFAULT_PREFERENCES.display,
+  ...state.preferences.preferences.display,
+});
 export const selectNotificationPreferences = (state: RootState) =>
   state.preferences.preferences.notification || DEFAULT_PREFERENCES.notification;
 export const selectPrivacyPreferences = (state: RootState) =>

@@ -103,6 +103,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   getWatchStatusDisplay: (status: string) => status || 'Unknown',
 }));
 
+jest.mock('../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 const mockShow = {
   id: 1,
   title: 'Test Show',
@@ -301,9 +308,8 @@ describe('ShowDetails', () => {
     it('renders show year', () => {
       renderShowDetails();
 
-      // formatYear uses toLocaleDateString which can shift dates due to timezone
-      // '2024-01-01' in UTC becomes '2023' in US timezones
-      expect(screen.getByText('2023')).toBeInTheDocument();
+      // yearOnly uses parseLocalDate which parses as local time, so '2024-01-01' stays in 2024
+      expect(screen.getByText('2024')).toBeInTheDocument();
     });
 
     it('renders season count', () => {

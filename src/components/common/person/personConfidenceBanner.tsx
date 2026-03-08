@@ -4,6 +4,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Avatar, Box, Button, Chip, Paper, Typography, useTheme } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import {
   selectAlternativePersons,
   selectAutoSelectedConfidence,
@@ -16,6 +17,7 @@ import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 export const PersonConfidenceBanner: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
+  const formatters = useDateFormatters();
   const query = useAppSelector(selectPersonSearchQuery);
   const selectedPerson = useAppSelector(selectSelectedPerson);
   const alternatives = useAppSelector(selectAlternativePersons);
@@ -128,7 +130,7 @@ export const PersonConfidenceBanner: React.FC = () => {
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
             {selectedPerson.birthday && (
               <Typography variant="caption" color="text.secondary">
-                Born: {new Date(selectedPerson.birthday).toLocaleDateString()}
+                Born: {formatters.contentDate(selectedPerson.birthday)}
               </Typography>
             )}
             {selectedPerson.birthplace && (
@@ -138,7 +140,7 @@ export const PersonConfidenceBanner: React.FC = () => {
             )}
             {selectedPerson.deathday && (
               <Typography variant="caption" color="text.secondary">
-                Died: {new Date(selectedPerson.deathday).toLocaleDateString()}
+                Died: {formatters.contentDate(selectedPerson.deathday)}
               </Typography>
             )}
           </Box>

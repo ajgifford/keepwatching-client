@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import FavoritesButton from '../media/favoriteButton';
 import { DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
@@ -26,6 +27,7 @@ export function SearchResultItem(props: SearchResultProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
+  const formatters = useDateFormatters();
   const imageSrc = props.source === 'search' ? buildTMDBImagePath(searchResult.image) : searchResult.image;
 
   function buildPremieredString() {
@@ -37,6 +39,19 @@ export function SearchResultItem(props: SearchResultProps) {
         </>
       );
     }
+
+    const yearOnly = /^\d{4}$/.test(searchResult.premiered);
+    if (yearOnly) {
+      const year = parseInt(searchResult.premiered, 10);
+      const label = year > new Date().getFullYear() ? 'Premieres: ' : 'Premiered: ';
+      return (
+        <>
+          <b>{label}</b>
+          {searchResult.premiered}
+        </>
+      );
+    }
+
     const premieredDate = new Date(searchResult.premiered);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -45,14 +60,14 @@ export function SearchResultItem(props: SearchResultProps) {
       return (
         <>
           <b>Premieres: </b>
-          {searchResult.premiered}
+          {formatters.contentDate(searchResult.premiered)}
         </>
       );
     }
     return (
       <>
         <b>{'Premiered: '}</b>
-        {searchResult.premiered}
+        {formatters.contentDate(searchResult.premiered)}
       </>
     );
   }

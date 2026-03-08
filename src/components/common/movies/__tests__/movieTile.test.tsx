@@ -8,6 +8,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((image: string) => `https://image.tmdb.org/t/p/w500${image}`),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 describe('MovieTile', () => {
   const mockMovie: ProfileMovie = {
     id: 1,
@@ -35,7 +42,7 @@ describe('MovieTile', () => {
     it('should render movie release date', () => {
       render(<MovieTile movie={mockMovie} />);
 
-      expect(screen.getByText('1999-10-15')).toBeInTheDocument();
+      expect(screen.getByText('10/15/1999')).toBeInTheDocument();
     });
 
     it('should render streaming services', () => {
@@ -159,7 +166,7 @@ describe('MovieTile', () => {
 
       render(<MovieTile movie={oldMovie} />);
 
-      expect(screen.getByText('1927-10-06')).toBeInTheDocument();
+      expect(screen.getByText('10/06/1927')).toBeInTheDocument();
     });
 
     it('should render movie with future release date', () => {
@@ -171,7 +178,7 @@ describe('MovieTile', () => {
 
       render(<MovieTile movie={futureMovie} />);
 
-      expect(screen.getByText('2025-12-25')).toBeInTheDocument();
+      expect(screen.getByText('12/25/2025')).toBeInTheDocument();
     });
   });
 
@@ -187,7 +194,7 @@ describe('MovieTile', () => {
       render(<MovieTile movie={mockMovie} />);
 
       expect(screen.getByText('Fight Club')).toBeInTheDocument();
-      expect(screen.getByText('1999-10-15')).toBeInTheDocument();
+      expect(screen.getByText('10/15/1999')).toBeInTheDocument();
       expect(screen.getByText('Netflix, Amazon Prime')).toBeInTheDocument();
     });
   });
@@ -221,12 +228,12 @@ describe('MovieTile', () => {
     it('should handle movie with non-standard date format', () => {
       const nonStandardDateMovie = {
         ...mockMovie,
-        releaseDate: '1999',
+        releaseDate: '1999-01-15',
       };
 
       render(<MovieTile movie={nonStandardDateMovie} />);
 
-      expect(screen.getByText('1999')).toBeInTheDocument();
+      expect(screen.getByText('01/15/1999')).toBeInTheDocument();
     });
 
     it('should render multiple movie tiles independently', () => {

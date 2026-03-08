@@ -85,6 +85,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   formatUserRating: (rating: number) => rating?.toFixed(1) || 'N/A',
 }));
 
+jest.mock('../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 const mockMovie = {
   id: 1,
   title: 'Test Movie',
@@ -220,8 +227,8 @@ describe('MovieDetails', () => {
     it('renders movie release date', () => {
       renderMovieDetails();
 
-      // The date 2024-01-15 is more than 90 days old, so it displays as year only
-      expect(screen.getByText('2024')).toBeInTheDocument();
+      // relativeDate falls back to MM/DD/YYYY for dates beyond the 7-day threshold
+      expect(screen.getByText('01/15/2024')).toBeInTheDocument();
     });
 
     it('renders movie runtime', () => {
@@ -556,24 +563,22 @@ describe('MovieDetails', () => {
   });
 
   describe('date formatting', () => {
-    it('formats recent release date as year only for dates beyond 90 days', () => {
+    it('formats release date as absolute date for dates beyond 7 days', () => {
       renderMovieDetails();
 
-      // Since 2024-01-15 is more than 90 days old, it shows only year
-      expect(screen.getByText('2024')).toBeInTheDocument();
+      // 2024-01-15 is far in the past (>7 days), relativeDate falls back to MM/DD/YYYY
+      expect(screen.getByText('01/15/2024')).toBeInTheDocument();
     });
 
-    it('formats release date as full date for very recent releases', () => {
+    it('formats release date as absolute date for dates beyond the relative threshold', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectMovie } = require('../../../app/slices/activeMovieSlice');
 
-      // Use a date within last 90 days (30 days ago)
-      const d = new Date();
-      d.setDate(d.getDate() - 30);
-      const recentDate = d.toISOString().slice(0, 10);
+      // Use a fixed past date that is always beyond the 7-day threshold
+      const pastDate = '2025-11-15';
 
       useAppSelector.mockImplementation((selector: any) => {
-        if (selector === selectMovie) return { ...mockMovie, releaseDate: recentDate };
+        if (selector === selectMovie) return { ...mockMovie, releaseDate: pastDate };
         if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
         if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
           return mockRecommendedMovies;
@@ -585,10 +590,10 @@ describe('MovieDetails', () => {
 
       renderMovieDetails();
 
-      expect(screen.getByText(recentDate)).toBeInTheDocument();
+      expect(screen.getByText('11/15/2025')).toBeInTheDocument();
     });
 
-    it('shows TBD for missing release date', () => {
+    it('shows fallback for missing release date', () => {
       const { useAppSelector } = require('../../../app/hooks');
       const { selectMovie } = require('../../../app/slices/activeMovieSlice');
 
@@ -605,7 +610,8 @@ describe('MovieDetails', () => {
 
       renderMovieDetails();
 
-      expect(screen.getByText('TBD')).toBeInTheDocument();
+      // relativeDate returns 'Unknown' for null/undefined input
+      expect(screen.getByText('Unknown')).toBeInTheDocument();
     });
   });
 });

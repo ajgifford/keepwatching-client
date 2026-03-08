@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { removeMovieFavorite, updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { WatchStatusIcon, getWatchStatusAction } from '../../utility/watchStatusUtility';
@@ -40,6 +41,7 @@ export type MovieListItemProps = {
 export const MovieListItem = (props: MovieListItemProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const formatters = useDateFormatters();
   const movie = props.movie;
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -114,7 +116,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
                 <b>Streaming Service: </b> {movie.streamingServices}
                 <br />
                 <b>Release Date: </b>
-                {movie.releaseDate || 'TBD'} • <b>Rated: </b> {movie.mpaRating}
+                {movie.releaseDate ? formatters.contentDate(movie.releaseDate) : 'TBD'} • <b>Rated: </b> {movie.mpaRating}
                 <br />
                 <b>Runtime: </b>
                 {calculateRuntimeDisplay(movie.runtime)}

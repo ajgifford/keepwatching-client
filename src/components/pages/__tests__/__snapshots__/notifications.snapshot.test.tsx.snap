@@ -358,7 +358,7 @@ exports[`Notifications - Snapshots should match snapshot for initial render 1`] 
                 <span
                   class="MuiTypography-root MuiTypography-caption css-722vde-MuiTypography-root"
                 >
-                  1/1/2024
+                  01/01/2024
                 </span>
               </span>
             </p>
@@ -773,7 +773,7 @@ exports[`Notifications - Snapshots should match snapshot of notifications list 1
               <span
                 class="MuiTypography-root MuiTypography-caption css-722vde-MuiTypography-root"
               >
-                1/1/2024
+                01/01/2024
               </span>
             </span>
           </p>

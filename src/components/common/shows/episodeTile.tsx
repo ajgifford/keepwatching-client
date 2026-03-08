@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Avatar, Box, Grid, Typography } from '@mui/material';
 
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { RecentUpcomingEpisode } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -10,6 +11,7 @@ interface PropTypes {
 }
 
 export function EpisodeTile({ episode }: PropTypes) {
+  const formatters = useDateFormatters();
   const buildServiceDisplay = () => {
     if (episode.network) {
       return episode.network;
@@ -47,7 +49,7 @@ export function EpisodeTile({ episode }: PropTypes) {
           <Typography variant="body1">
             S{episode.seasonNumber} E{episode.episodeNumber}
           </Typography>
-          <Typography variant="body1">{episode.airDate}</Typography>
+          <Typography variant="body1">{formatters.contentDate(episode.airDate)}</Typography>
           <Typography variant="body1">{buildServiceDisplay()}</Typography>
         </Grid>
       </Grid>

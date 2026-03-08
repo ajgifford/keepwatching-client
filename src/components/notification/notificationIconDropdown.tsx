@@ -32,6 +32,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useDateFormatters } from '../../app/hooks/useDateFormatters';
 import { selectCurrentAccount } from '../../app/slices/accountSlice';
 import {
   dismissAllSystemNotifications,
@@ -88,25 +89,6 @@ const getNotificationConfig = (notification: AccountNotification): NotificationT
   };
 };
 
-const formatTimestamp = (createdAt: Date): string => {
-  const date = new Date(createdAt);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  const diffInDays = Math.floor(diffInHours / 24);
-
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes}m ago`;
-  } else if (diffInHours < 24) {
-    return `${diffInHours}h ago`;
-  } else if (diffInDays < 7) {
-    return `${diffInDays}d ago`;
-  } else {
-    return date.toLocaleDateString();
-  }
-};
-
 const parseMessage = (message: string): string => {
   const div = document.createElement('div');
   div.innerHTML = message;
@@ -117,6 +99,7 @@ function NotificationIconDropdown() {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const formatters = useDateFormatters();
   const notifications = useAppSelector(selectSystemNotifications);
   const currentAccount = useAppSelector(selectCurrentAccount);
   const [open, setOpen] = useState(false);
@@ -431,7 +414,7 @@ function NotificationIconDropdown() {
                                   fontSize: '0.65rem',
                                 }}
                               >
-                                {formatTimestamp(notification.startDate)}
+                                {formatters.notificationTimestamp(notification.startDate)}
                               </Typography>
                             </Box>
                           }

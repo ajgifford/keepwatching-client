@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { removeShowFavorite, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine, buildShowAirDate } from '../../utility/contentUtility';
 import { WatchStatusIcon, determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
@@ -45,6 +46,7 @@ export type ShowListItemProps = {
 export const ShowListItem = (props: ShowListItemProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const formatters = useDateFormatters();
   const show = props.show;
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -133,11 +135,11 @@ export const ShowListItem = (props: ShowListItemProps) => {
                   <br />
                   {buildServicesLine(show)}
                   <br />
-                  {buildShowAirDate(show.releaseDate)} • <b>Rated: </b> {show.contentRating}
+                  {buildShowAirDate(show.releaseDate, formatters.contentDate)} • <b>Rated: </b> {show.contentRating}
                   <br />
                   <b>Seasons: </b> {show.seasonCount} • <b>Episodes: </b> {show.episodeCount}
                   <br />
-                  {buildEpisodeLine(show)}
+                  {buildEpisodeLine(show, formatters.contentDate)}
                 </Typography>
                 {isSmallScreen && (
                   <Button

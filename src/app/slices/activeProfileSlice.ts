@@ -684,7 +684,7 @@ const activeProfileSlice = createSlice({
         state.movieStreamingServices = generateStreamingServiceFilterValues(movies);
         state.recentMovies = recentUpcomingMovies.recentMovies;
         state.upcomingMovies = recentUpcomingMovies.upcomingMovies;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -712,7 +712,7 @@ const activeProfileSlice = createSlice({
         state.movieStreamingServices = generateStreamingServiceFilterValues(movies);
         state.recentMovies = recentUpcomingMovies.recentMovies;
         state.upcomingMovies = recentUpcomingMovies.upcomingMovies;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -731,7 +731,7 @@ const activeProfileSlice = createSlice({
         state.upcomingEpisodes = upcomingEpisodes;
         state.recentEpisodes = recentEpisodes;
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -766,7 +766,7 @@ const activeProfileSlice = createSlice({
         }
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -784,7 +784,7 @@ const activeProfileSlice = createSlice({
         state.shows = state.shows.map((s) => (s.id === show.id ? show : s));
         state.showGenres = generateGenreFilterValues(state.shows);
         state.showStreamingServices = generateStreamingServiceFilterValues(state.shows);
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -805,7 +805,7 @@ const activeProfileSlice = createSlice({
         state.upcomingEpisodes = episodes.upcomingEpisodes;
         state.recentEpisodes = episodes.recentEpisodes;
         state.nextUnwatchedEpisodes = episodes.nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -828,7 +828,7 @@ const activeProfileSlice = createSlice({
           }
         }
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -850,7 +850,7 @@ const activeProfileSlice = createSlice({
           }
         }
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -872,7 +872,7 @@ const activeProfileSlice = createSlice({
         }
 
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
@@ -888,7 +888,7 @@ const activeProfileSlice = createSlice({
         }
 
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(addMovieFavorite.pending, (state) => {
@@ -907,7 +907,7 @@ const activeProfileSlice = createSlice({
         state.movieStreamingServices = generateStreamingServiceFilterValues(state.movies);
         state.recentMovies = recentUpcomingMovies.recentMovies;
         state.upcomingMovies = recentUpcomingMovies.upcomingMovies;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -927,7 +927,7 @@ const activeProfileSlice = createSlice({
         state.movieStreamingServices = generateStreamingServiceFilterValues(state.movies);
         state.recentMovies = recentUpcomingMovies.recentMovies;
         state.upcomingMovies = recentUpcomingMovies.upcomingMovies;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         state.loading = false;
         state.error = null;
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
@@ -950,7 +950,7 @@ const activeProfileSlice = createSlice({
           }
         }
         state.loading = false;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateMovieWatchStatus.rejected, (state, action) => {
@@ -969,7 +969,7 @@ const activeProfileSlice = createSlice({
         }
 
         state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
-        state.lastUpdated = new Date().toLocaleString();
+        state.lastUpdated = new Date().toISOString();
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(editProfile.fulfilled, (state, action) => {

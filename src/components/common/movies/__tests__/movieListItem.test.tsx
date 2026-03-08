@@ -12,6 +12,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string) => `https://image.tmdb.org/t/p/original${path}`),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 jest.mock('../../../utility/contentUtility', () => ({
   calculateRuntimeDisplay: jest.fn((runtime: number) => {
     const hours = Math.floor(runtime / 60);
@@ -141,7 +148,7 @@ describe('MovieListItem', () => {
         </BrowserRouter>
       );
 
-      expect(screen.getByText(/1994-09-23/)).toBeInTheDocument();
+      expect(screen.getByText(/09\/23\/1994/)).toBeInTheDocument();
     });
 
     it('should render MPA rating', () => {

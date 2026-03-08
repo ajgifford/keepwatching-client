@@ -148,7 +148,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
       >
         Last Updated: 
         <i>
-          2024-01-01
+          01/01/2024, 12:00 AM
         </i>
       </h6>
     </div>
@@ -378,7 +378,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
     >
       Last Updated: 
       <i>
-        2024-01-01
+        01/01/2024, 12:00 AM
       </i>
     </h6>
   </div>

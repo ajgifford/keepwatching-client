@@ -26,6 +26,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   ),
 }));
 
+jest.mock('../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 // Mock dependencies
 const mockDispatch = jest.fn();
 

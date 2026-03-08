@@ -19,6 +19,13 @@ jest.mock('../../../utility/contentUtility', () => ({
   }),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 describe('MovieCard', () => {
   const mockMovie: ProfileMovie = {
     id: 1,
@@ -186,7 +193,7 @@ describe('MovieCard', () => {
       expect(screen.getByText('5 days ago')).toBeInTheDocument();
     });
 
-    it('should show year for dates more than 30 days ago', () => {
+    it('should show absolute date for dates more than 7 days ago', () => {
       const oldMovie = {
         ...mockMovie,
         releaseDate: '2023-11-01',
@@ -194,7 +201,7 @@ describe('MovieCard', () => {
 
       renderMovieCard(oldMovie);
 
-      expect(screen.getByText('2023')).toBeInTheDocument();
+      expect(screen.getByText('11/01/2023')).toBeInTheDocument();
     });
 
     it('should handle date exactly 30 days ago', () => {
@@ -205,10 +212,10 @@ describe('MovieCard', () => {
 
       renderMovieCard(movie30DaysAgo);
 
-      expect(screen.getByText('30 days ago')).toBeInTheDocument();
+      expect(screen.getByText('12/16/2023')).toBeInTheDocument();
     });
 
-    it('should handle date exactly 31 days ago (shows year)', () => {
+    it('should handle date exactly 31 days ago', () => {
       const movie31DaysAgo = {
         ...mockMovie,
         releaseDate: '2023-12-15',
@@ -216,7 +223,7 @@ describe('MovieCard', () => {
 
       renderMovieCard(movie31DaysAgo);
 
-      expect(screen.getByText('2023')).toBeInTheDocument();
+      expect(screen.getByText('12/15/2023')).toBeInTheDocument();
     });
   });
 

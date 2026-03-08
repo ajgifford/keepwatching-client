@@ -18,6 +18,13 @@ jest.mock('../../media/favoriteButton', () => ({
   ),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 // Mock useMediaQuery
 const mockUseMediaQuery = jest.fn(() => false); // Default to large screen
 jest.mock('@mui/material', () => ({
@@ -108,7 +115,7 @@ describe('SearchResultItem', () => {
       render(<SearchResultItem result={mockSearchResult} searchType="shows" source="search" />);
 
       expect(screen.getByText(/Premiered:/)).toBeInTheDocument();
-      expect(screen.getByText(/2008-01-20/)).toBeInTheDocument();
+      expect(screen.getByText(/01\/20\/2008/)).toBeInTheDocument();
     });
 
     it('should show "Premieres" for future dates', () => {
@@ -120,7 +127,7 @@ describe('SearchResultItem', () => {
       render(<SearchResultItem result={futureResult} searchType="shows" source="search" />);
 
       expect(screen.getByText(/Premieres:/)).toBeInTheDocument();
-      expect(screen.getByText(/2025-12-31/)).toBeInTheDocument();
+      expect(screen.getByText(/12\/31\/2025/)).toBeInTheDocument();
     });
 
     it('should show "Premieres: TBD" when premiered is missing', () => {
@@ -156,6 +163,30 @@ describe('SearchResultItem', () => {
       render(<SearchResultItem result={todayResult} searchType="shows" source="search" />);
 
       expect(screen.getByText(/Premiered:/)).toBeInTheDocument();
+    });
+
+    it('should show year-only value without formatting for past year', () => {
+      const yearOnlyResult = {
+        ...mockSearchResult,
+        premiered: '2020',
+      };
+
+      render(<SearchResultItem result={yearOnlyResult} searchType="shows" source="search" />);
+
+      expect(screen.getByText(/Premiered:/)).toBeInTheDocument();
+      expect(screen.getByText(/2020/)).toBeInTheDocument();
+    });
+
+    it('should show year-only value without formatting for future year', () => {
+      const yearOnlyResult = {
+        ...mockSearchResult,
+        premiered: '2099',
+      };
+
+      render(<SearchResultItem result={yearOnlyResult} searchType="shows" source="search" />);
+
+      expect(screen.getByText(/Premieres:/)).toBeInTheDocument();
+      expect(screen.getByText(/2099/)).toBeInTheDocument();
     });
   });
 

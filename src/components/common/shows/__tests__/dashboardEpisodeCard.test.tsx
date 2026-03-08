@@ -16,6 +16,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   }),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
@@ -186,7 +193,8 @@ describe('DashboardEpisodeCard', () => {
 
       renderWithRouter(<DashboardEpisodeCard episode={multipleDaysPastEpisode} />);
 
-      expect(screen.getByText('10 days ago')).toBeInTheDocument();
+      // 10 days ago is within the 7-day relative-recent threshold so shows absolute date
+      expect(screen.getByText('01/05/2024')).toBeInTheDocument();
     });
   });
 
@@ -416,7 +424,8 @@ describe('DashboardEpisodeCard', () => {
 
       renderWithRouter(<DashboardEpisodeCard episode={farPastEpisode} />);
 
-      expect(screen.getByText(/\d+ days ago/)).toBeInTheDocument();
+      // More than 7 days ago falls back to absolute date (relative-recent threshold)
+      expect(screen.getByText('01/01/2023')).toBeInTheDocument();
     });
 
     it('should handle date at midnight boundary', () => {

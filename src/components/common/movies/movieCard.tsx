@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { Avatar, Box, Card, CardContent, Chip, Stack, Typography, useTheme } from '@mui/material';
 
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
@@ -11,21 +12,9 @@ interface MovieCardProps {
   movie: ProfileMovie;
 }
 
-const formatReleaseDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Tomorrow';
-  if (diffDays === -1) return 'Yesterday';
-  if (diffDays > 0) return `In ${diffDays} days`;
-  if (diffDays < -30) return new Date(dateString).getFullYear().toString();
-  return `${Math.abs(diffDays)} days ago`;
-};
-
 export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const theme = useTheme();
+  const formatters = useDateFormatters();
 
   return (
     <Card
@@ -92,7 +81,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             </Box>
 
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              {new Date(movie.releaseDate).getFullYear()} • {movie.streamingServices}
+              {formatters.yearOnly(movie.releaseDate)} • {movie.streamingServices}
             </Typography>
 
             <Typography
@@ -131,7 +120,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                     />
                   ))}
                 <Chip
-                  label={formatReleaseDate(movie.releaseDate)}
+                  label={formatters.relativeDate(movie.releaseDate)}
                   size="small"
                   sx={{
                     fontSize: '0.75rem',

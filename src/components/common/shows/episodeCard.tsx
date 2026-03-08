@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material';
 
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { calculateRuntimeDisplay } from '../../../components/utility/contentUtility';
 import { WatchStatusIcon } from '../../utility/watchStatusUtility';
 import { NextEpisode, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
@@ -13,6 +14,7 @@ interface EpisodeCardProps {
 }
 
 export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) => {
+  const formatters = useDateFormatters();
   const [isWatched, setIsWatched] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -100,7 +102,7 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
           </Tooltip>
         </Box>
         <Typography variant="body2" color="text.secondary">
-          {episode.airDate}
+          {formatters.contentDate(episode.airDate)}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           {`${episode.network || episode.streamingServices} • ${calculateRuntimeDisplay(episode.runtime)}`}

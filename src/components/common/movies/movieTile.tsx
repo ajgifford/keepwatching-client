@@ -1,5 +1,6 @@
 import { Avatar, Box, Grid, Typography } from '@mui/material';
 
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -8,6 +9,7 @@ interface PropTypes {
 }
 
 export function MovieTile({ movie }: PropTypes) {
+  const formatters = useDateFormatters();
   return (
     <Box id={`movieCard_${movie.id}`} key={movie.title} sx={{ p: '10px', minWidth: '200px', textAlign: 'left' }}>
       <Grid container spacing={2} alignItems="center">
@@ -21,7 +23,7 @@ export function MovieTile({ movie }: PropTypes) {
         </Grid>
         <Grid>
           <Typography variant="h6">{movie.title}</Typography>
-          <Typography variant="body1">{movie.releaseDate}</Typography>
+          <Typography variant="body1">{formatters.contentDate(movie.releaseDate)}</Typography>
           <Typography variant="body1">{movie.streamingServices}</Typography>
         </Grid>
       </Grid>

@@ -19,6 +19,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((image: string) => `https://image.tmdb.org/t/p/w500${image}`),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 describe('MediaCard', () => {
   const mockItem: SimilarOrRecommendedShow = {
     id: 123,
@@ -41,7 +48,7 @@ describe('MediaCard', () => {
 
       expect(screen.getByText('Test Show Title')).toBeInTheDocument();
       expect(screen.getByText('Drama, Thriller')).toBeInTheDocument();
-      expect(screen.getByText('2024-01-15')).toBeInTheDocument();
+      expect(screen.getByText('01/15/2024')).toBeInTheDocument();
       expect(screen.getByText(mockItem.summary!)).toBeInTheDocument();
     });
 
@@ -280,7 +287,20 @@ describe('MediaCard', () => {
 
       expect(screen.getByText('Test Show Title')).toBeInTheDocument();
       // Empty premiered should still render but be empty
-      expect(screen.queryByText('2024-01-15')).not.toBeInTheDocument();
+      expect(screen.queryByText('01/15/2024')).not.toBeInTheDocument();
+    });
+
+    it('should display year-only premiered value without formatting', () => {
+      const itemWithYearOnly = { ...mockItem, premiered: '2021' };
+      render(<MediaCard item={itemWithYearOnly} searchType="shows" />);
+
+      expect(screen.getByText('2021')).toBeInTheDocument();
+    });
+
+    it('should format full-date premiered value', () => {
+      render(<MediaCard item={mockItem} searchType="shows" />);
+
+      expect(screen.getByText('01/15/2024')).toBeInTheDocument();
     });
   });
 });

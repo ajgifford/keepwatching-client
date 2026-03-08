@@ -21,44 +21,47 @@ export function stripArticle(title: string): string {
   return title.replace(/^(a |an |the )/i, '').trim();
 }
 
-export const buildEpisodeAirDate = (airDate: string) => {
+export const buildEpisodeAirDate = (airDate: string, formatDate?: (d: string) => string) => {
   if (airDate) {
     const airDateDate = parseLocalDate(airDate);
     const now = new Date();
+    const displayDate = formatDate ? formatDate(airDate) : airDate;
     if (airDateDate < now) {
-      return `Aired: ${airDate}`;
+      return `Aired: ${displayDate}`;
     }
-    return `Airing: ${airDate}`;
+    return `Airing: ${displayDate}`;
   }
   return `Airing: TBD`;
 };
 
-export const buildSeasonAirDate = (airDate: string) => {
+export const buildSeasonAirDate = (airDate: string, formatDate?: (d: string) => string) => {
   if (airDate) {
     const airDateDate = parseLocalDate(airDate);
     const now = new Date();
+    const displayDate = formatDate ? formatDate(airDate) : airDate;
     if (airDateDate < now) {
-      return `First Aired: ${airDate}`;
+      return `First Aired: ${displayDate}`;
     }
-    return `Premiering On: ${airDate}`;
+    return `Premiering On: ${displayDate}`;
   }
   return `Premiering On: TBD`;
 };
 
-export const buildShowAirDate = (airDate: string) => {
+export const buildShowAirDate = (airDate: string, formatDate?: (d: string) => string) => {
   if (airDate) {
     const airDateDate = parseLocalDate(airDate);
     const now = new Date();
+    const displayDate = formatDate ? formatDate(airDate) : airDate;
     if (airDateDate < now) {
       return (
         <>
-          <b>Premiered: </b> {airDate}
+          <b>Premiered: </b> {displayDate}
         </>
       );
     }
     return (
       <>
-        <b>Premiering On: </b> {airDate}
+        <b>Premiering On: </b> {displayDate}
       </>
     );
   }
@@ -121,30 +124,31 @@ export const buildServicesLine = (show: ProfileShow | null) => {
   return <>No Streaming Service Information</>;
 };
 
-export const buildEpisodeLine = (show: ProfileShow | null) => {
+export const buildEpisodeLine = (show: ProfileShow | null, formatDate?: (d: string) => string) => {
   if (show && show.lastEpisode) {
     if (show.nextEpisode) {
       return (
         <>
           <b>Last Episode: </b>
-          {buildEpisodeLineDetails(show.lastEpisode)} • <b>Next Episode: </b>
-          {buildEpisodeLineDetails(show.nextEpisode)}
+          {buildEpisodeLineDetails(show.lastEpisode, formatDate)} • <b>Next Episode: </b>
+          {buildEpisodeLineDetails(show.nextEpisode, formatDate)}
         </>
       );
     }
     return (
       <>
-        <b>Last Episode: </b> {buildEpisodeLineDetails(show.lastEpisode)}
+        <b>Last Episode: </b> {buildEpisodeLineDetails(show.lastEpisode, formatDate)}
       </>
     );
   }
   return <>No Episode Data</>;
 };
 
-export const buildEpisodeLineDetails = (episode: ShowEpisode) => {
+export const buildEpisodeLineDetails = (episode: ShowEpisode, formatDate?: (d: string) => string) => {
+  const displayDate = formatDate && episode.airDate ? formatDate(episode.airDate) : episode.airDate;
   return (
     <>
-      {`S${episode.seasonNumber} E${episode.episodeNumber}`} - {episode.title} - {episode.airDate}
+      {`S${episode.seasonNumber} E${episode.episodeNumber}`} - {episode.title} - {displayDate}
     </>
   );
 };

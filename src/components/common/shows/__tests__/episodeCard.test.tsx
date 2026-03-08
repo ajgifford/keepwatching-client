@@ -17,6 +17,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   }),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 jest.mock('../../../utility/watchStatusUtility', () => ({
   WatchStatusIcon: ({ status }: any) => (
     <div data-testid="watch-status-icon" data-status={status}>
@@ -66,7 +73,7 @@ describe('EpisodeCard', () => {
     it('should render air date', () => {
       render(<EpisodeCard episode={mockEpisode} onWatchStatusChange={mockOnWatchStatusChange} />);
 
-      expect(screen.getByText('2013-09-15')).toBeInTheDocument();
+      expect(screen.getByText('09/15/2013')).toBeInTheDocument();
     });
 
     it('should render episode image', () => {

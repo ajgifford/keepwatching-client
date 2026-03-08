@@ -39,6 +39,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   LoadingComponent: () => <div data-testid="loading-component">Loading...</div>,
 }));
 
+jest.mock('../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };

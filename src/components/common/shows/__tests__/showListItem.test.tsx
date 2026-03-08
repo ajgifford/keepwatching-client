@@ -22,6 +22,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string) => (path ? `https://image.tmdb.org/t/p/original${path}` : '')),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 jest.mock('../../../utility/contentUtility', () => ({
   buildEpisodeLine: jest.fn((show: any) => `Next: S${show.seasonCount}E1`),
   buildServicesLine: jest.fn((show: any) => `Streaming: ${show.streamingServices || 'N/A'}`),

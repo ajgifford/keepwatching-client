@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch } from '../../../app/hooks';
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { dismissBulkMarkedShow, getBulkMarkedShows, retroactivelyMarkShowAsPrior } from '../../../app/slices/activeProfileSlice';
 import { BulkMarkedShow } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
@@ -27,6 +28,7 @@ interface ReviewWatchHistoryPanelProps {
 
 const ReviewWatchHistoryPanel = ({ profileId }: ReviewWatchHistoryPanelProps) => {
   const dispatch = useAppDispatch();
+  const formatters = useDateFormatters();
 
   const [loading, setLoading] = useState(false);
   const [bulkMarkedShows, setBulkMarkedShows] = useState<BulkMarkedShow[]>([]);
@@ -135,7 +137,7 @@ const ReviewWatchHistoryPanel = ({ profileId }: ReviewWatchHistoryPanelProps) =>
                 primary={show.title}
                 secondary={
                   <Typography variant="body2" color="text.secondary">
-                    {show.episodeCount} episodes marked on {new Date(show.markDate).toLocaleDateString()}
+                    {show.episodeCount} episodes marked on {formatters.activityDate(show.markDate)}
                   </Typography>
                 }
               />

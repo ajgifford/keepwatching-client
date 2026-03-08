@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Card, CardActions, CardContent, CardMedia, Tooltip, Typography } from '@mui/material';
 
+import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import FavoritesButton from './favoriteButton';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
@@ -14,6 +15,13 @@ interface MediaCardProps {
 export const MediaCard = ({ item, searchType }: MediaCardProps) => {
   const titleRef = useRef<HTMLDivElement>(null);
   const [isTitleTruncated, setIsTitleTruncated] = useState(false);
+  const formatters = useDateFormatters();
+
+  const formatPremiered = (premiered: string | undefined) => {
+    if (!premiered) return '';
+    if (/^\d{4}$/.test(premiered)) return premiered;
+    return formatters.contentDate(premiered);
+  };
 
   useEffect(() => {
     const checkTruncation = () => {
@@ -77,7 +85,7 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
         </Tooltip>
 
         <Typography variant="body2" color="text.secondary" noWrap>
-          {item.premiered}
+          {formatPremiered(item.premiered)}
         </Typography>
 
         {item.summary && (

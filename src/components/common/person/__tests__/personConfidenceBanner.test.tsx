@@ -11,6 +11,13 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string) => `https://image.tmdb.org/t/p/original${path || ''}`),
 }));
 
+jest.mock('../../../../app/hooks/useDateFormatters', () => ({
+  useDateFormatters: () => {
+    const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
+    return createDateFormatters();
+  },
+}));
+
 describe('PersonConfidenceBanner', () => {
   const mockSelectedPerson: PersonSearch = {
     tmdbId: 31,
@@ -323,8 +330,7 @@ describe('PersonConfidenceBanner', () => {
         preloadedState: mockState,
       });
 
-      const expectedDate = new Date('1956-07-09').toLocaleDateString();
-      expect(screen.getByText(new RegExp(expectedDate))).toBeInTheDocument();
+      expect(screen.getByText(/07\/09\/1956/)).toBeInTheDocument();
     });
 
     it('should render birthplace', () => {
@@ -351,8 +357,7 @@ describe('PersonConfidenceBanner', () => {
       });
 
       expect(screen.getByText(/Died:/)).toBeInTheDocument();
-      const expectedDate = new Date('2020-01-01').toLocaleDateString();
-      expect(screen.getByText(new RegExp(expectedDate))).toBeInTheDocument();
+      expect(screen.getByText(/01\/01\/2020/)).toBeInTheDocument();
     });
 
     it('should not render birthday if undefined', () => {

@@ -34,6 +34,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useDateFormatters } from '../../app/hooks/useDateFormatters';
 import {
   dismissBulkMarkedShow,
   getBulkMarkedShows,
@@ -85,6 +86,7 @@ function ShowDetails() {
   const { showId, profileId } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const formatters = useDateFormatters();
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -354,14 +356,6 @@ function ShowDetails() {
     return pathMap[basePath] || 'Back';
   };
 
-  const formatYear = (dateString: string | undefined) => {
-    if (!dateString) return 'Unknown';
-
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-    });
-  };
-
   const formatSeasons = (seasons: number | undefined) => {
     if (seasons) {
       if (seasons === 1) {
@@ -558,7 +552,7 @@ function ShowDetails() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <CalendarTodayIcon sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{formatYear(show?.releaseDate)}</Typography>
+                    <Typography variant="body2">{formatters.yearOnly(show?.releaseDate)}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <TvOutlinedIcon sx={{ fontSize: 16 }} />
@@ -714,7 +708,7 @@ function ShowDetails() {
                     </Grid>
                     <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight={500}>
-                        {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode) : 'No Last Episode'}
+                        {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode, formatters.contentDate) : 'No Last Episode'}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -729,7 +723,7 @@ function ShowDetails() {
                     </Grid>
                     <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight={500}>
-                        {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode) : 'No Next Episode'}
+                        {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode, formatters.contentDate) : 'No Next Episode'}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -802,7 +796,7 @@ function ShowDetails() {
                             Season {season.seasonNumber} • {season.numberOfEpisodes} Episodes
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {buildSeasonAirDate(season.releaseDate)}
+                            {buildSeasonAirDate(season.releaseDate, formatters.contentDate)}
                           </Typography>
                         </Box>
 
@@ -912,9 +906,9 @@ function ShowDetails() {
                                       <i>{episode.overview || 'No description available.'}</i>
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                      {buildEpisodeAirDate(episode.airDate)} •{' '}
+                                      {buildEpisodeAirDate(episode.airDate, formatters.contentDate)} •{' '}
                                       {calculateRuntimeDisplay(episode.runtime)}
-                                      {episode.watchedAt && ` • Watched: ${episode.watchedAt.slice(0, 10)}`}
+                                      {episode.watchedAt && ` • Watched: ${formatters.activityDate(episode.watchedAt.slice(0, 10))}`}
                                     </Typography>
                                   </Box>
 
