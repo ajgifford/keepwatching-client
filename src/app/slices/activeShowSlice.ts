@@ -2,6 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
 import { markShowAsPriorWatched, updateNextEpisodeWatchStatus, updateShowWatchStatus } from './activeProfileSlice';
+import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
 import {
   KeepWatchingShow,
   ProfileSeason,
@@ -333,6 +334,32 @@ const activeShowSlice = createSlice({
       .addCase(fetchRecommendedShows.rejected, (state, action) => {
         state.recommendedShowsError = action.payload || { message: 'Failed to fetch recommended shows' };
         state.recommendedShowsLoading = false;
+      })
+      .addCase(recordEpisodeRewatch.fulfilled, (state, action) => {
+        if (!state.showWithSeasons) return;
+        const { episodeId, watchCount, watchedAt } = action.payload;
+        for (const season of state.showWithSeasons.seasons) {
+          const ep = season.episodes.find((e) => e.id === episodeId);
+          if (ep) {
+            ep.watchCount = watchCount;
+            ep.watchedAt = watchedAt;
+            break;
+          }
+        }
+      })
+      .addCase(startShowRewatch.fulfilled, (state, action) => {
+        const { showWithSeasons } = action.payload;
+        if (state.showWithSeasons && state.showWithSeasons.id === showWithSeasons.id) {
+          state.showWithSeasons = showWithSeasons;
+          state.watchedEpisodes = buildWatchedEpisodesMap(showWithSeasons);
+        }
+      })
+      .addCase(startSeasonRewatch.fulfilled, (state, action) => {
+        const { showWithSeasons } = action.payload;
+        if (state.showWithSeasons && state.showWithSeasons.id === showWithSeasons.id) {
+          state.showWithSeasons = showWithSeasons;
+          state.watchedEpisodes = buildWatchedEpisodesMap(showWithSeasons);
+        }
       });
   },
 });

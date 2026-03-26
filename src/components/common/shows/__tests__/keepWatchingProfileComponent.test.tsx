@@ -44,6 +44,7 @@ const mockShow: KeepWatchingShow = {
   posterImage: '/poster.jpg',
   episodes: [mockEpisode1, mockEpisode2],
   lastWatched: '',
+  isRewatch: false,
 };
 
 const mockShow2: KeepWatchingShow = {
@@ -59,6 +60,7 @@ const mockShow2: KeepWatchingShow = {
     },
   ],
   lastWatched: '',
+  isRewatch: false,
 };
 
 const createMockStore = (nextUnwatchedEpisodes: KeepWatchingShow[] = []) => {
@@ -234,5 +236,40 @@ describe('KeepWatchingProfileComponent', () => {
 
     renderWithProviders(<KeepWatchingProfileComponent profileId={1} />, storeWithNull);
     expect(screen.getByText(/no shows to keep watching/i)).toBeInTheDocument();
+  });
+
+  it('shows Rewatch chip when show.isRewatch is true', () => {
+    const rewatchShow: KeepWatchingShow = { ...mockShow, isRewatch: true };
+    const store = createMockStore([rewatchShow]);
+    renderWithProviders(<KeepWatchingProfileComponent profileId={1} />, store);
+
+    expect(screen.getByText('Rewatch')).toBeInTheDocument();
+  });
+
+  it('does not show Rewatch chip when show.isRewatch is false', () => {
+    const store = createMockStore([mockShow]); // mockShow.isRewatch = false
+    renderWithProviders(<KeepWatchingProfileComponent profileId={1} />, store);
+
+    expect(screen.queryByText('Rewatch')).not.toBeInTheDocument();
+  });
+
+  it('shows Rewatch chip only for shows marked as rewatch', () => {
+    const rewatchShow: KeepWatchingShow = { ...mockShow, isRewatch: true };
+    const normalShow: KeepWatchingShow = { ...mockShow2, isRewatch: false };
+    const store = createMockStore([rewatchShow, normalShow]);
+    renderWithProviders(<KeepWatchingProfileComponent profileId={1} />, store);
+
+    // Only one "Rewatch" chip should appear
+    const rewatchChips = screen.getAllByText('Rewatch');
+    expect(rewatchChips).toHaveLength(1);
+  });
+
+  it('shows Rewatch chip when isRewatch is undefined (treated as falsy)', () => {
+    const showWithoutRewatch: KeepWatchingShow = { ...mockShow };
+    delete (showWithoutRewatch as any).isRewatch;
+    const store = createMockStore([showWithoutRewatch]);
+    renderWithProviders(<KeepWatchingProfileComponent profileId={1} />, store);
+
+    expect(screen.queryByText('Rewatch')).not.toBeInTheDocument();
   });
 });

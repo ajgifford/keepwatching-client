@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { Avatar, Box, Chip, Grid, Stack, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectNextUnwatchedEpisodes, updateNextEpisodeWatchStatus } from '../../../app/slices/activeProfileSlice';
@@ -84,15 +85,20 @@ const ShowWithEpisodes = ({ show, profileId }: { show: KeepWatchingShow; profile
           alt={show.showTitle}
           sx={{ width: 40, height: 40 }}
         />
-        <Typography
-          variant="h6"
-          component={Link}
-          to={`/shows/${show.showId}/${profileId}`}
-          state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
-          sx={{ textDecoration: 'none', color: 'inherit' }}
-        >
-          {show.showTitle}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+          <Typography
+            variant="h6"
+            component={Link}
+            to={`/shows/${show.showId}/${profileId}`}
+            state={{ returnPath: `/home`, genre: '', streamingService: '', watchStatus: '' }}
+            sx={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            {show.showTitle}
+          </Typography>
+          {show.isRewatch && (
+            <Chip icon={<ReplayIcon />} label="Rewatch" size="small" color="secondary" variant="outlined" />
+          )}
+        </Box>
       </Box>
 
       <Stack spacing={2}>

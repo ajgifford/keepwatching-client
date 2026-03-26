@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { AccessTime, CalendarToday, Star } from '@mui/icons-material';
+import { AccessTime, CalendarToday, Replay, Star } from '@mui/icons-material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {
   Box,
@@ -11,6 +11,11 @@ import {
   CardMedia,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -35,6 +40,7 @@ import {
   selectSimilarMovies,
 } from '../../app/slices/activeMovieSlice';
 import { updateMovieWatchStatus } from '../../app/slices/activeProfileSlice';
+import { startMovieRewatch } from '../../app/slices/watchHistorySlice';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { MovieCastSection } from '../common/movies/movieCast';
@@ -73,6 +79,8 @@ function MovieDetails() {
 
   const [tabValue, setTabValue] = useState(0);
   const [loadingWatchStatus, setLoadingWatchStatus] = useState<boolean>(false);
+  const [rewatchConfirmOpen, setRewatchConfirmOpen] = useState(false);
+  const [loadingMovieRewatch, setLoadingMovieRewatch] = useState(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -111,6 +119,17 @@ function MovieDetails() {
       );
     } finally {
       setLoadingWatchStatus(false);
+    }
+  };
+
+  const handleStartMovieRewatch = async () => {
+    if (!movie) return;
+    setRewatchConfirmOpen(false);
+    setLoadingMovieRewatch(true);
+    try {
+      await dispatch(startMovieRewatch({ profileId: Number(profileId), movieId: movie.id }));
+    } finally {
+      setLoadingMovieRewatch(false);
     }
   };
 
@@ -358,6 +377,44 @@ function MovieDetails() {
                       ? 'Mark Unwatched'
                       : 'Mark as Watched'}
                 </Button>
+                {movie?.watchStatus === WatchStatus.WATCHED && (
+                  <Button
+                    variant="outlined"
+                    disabled={loadingMovieRewatch}
+                    onClick={() => setRewatchConfirmOpen(true)}
+                    startIcon={
+                      loadingMovieRewatch ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        <Replay />
+                      )
+                    }
+                    sx={{
+                      mt: 1,
+                      ml: 1,
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      backdropFilter: 'blur(12px)',
+                      border: '2px solid rgba(255, 255, 255, 0.4)',
+                      color: 'white',
+                      fontWeight: 600,
+                      textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        border: '2px solid rgba(255, 255, 255, 0.6)',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                      },
+                      '&:disabled': {
+                        backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        border: '2px solid rgba(255, 255, 255, 0.2)',
+                      },
+                    }}
+                  >
+                    {loadingMovieRewatch ? 'Loading...' : 'Watch Again'}
+                  </Button>
+                )}
               </Box>
             </Box>
           </Box>
@@ -466,6 +523,22 @@ function MovieDetails() {
           </CardContent>
         </Card>
       </Box>
+
+      <Dialog open={rewatchConfirmOpen} onClose={() => setRewatchConfirmOpen(false)}>
+        <DialogTitle>Watch Again?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Watching "{movie?.title}" again will be recorded in your watch history. Your original watch date will be
+            preserved.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRewatchConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={handleStartMovieRewatch} variant="contained" startIcon={<Replay />}>
+            Watch Again
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

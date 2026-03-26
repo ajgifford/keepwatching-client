@@ -5,6 +5,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
+import ReplayIcon from '@mui/icons-material/Replay';
 import StarIcon from '@mui/icons-material/Star';
 import TvOutlinedIcon from '@mui/icons-material/TvOutlined';
 import {
@@ -19,6 +20,11 @@ import {
   CardMedia,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -43,6 +49,7 @@ import {
   selectActiveProfile,
   updateShowWatchStatus,
 } from '../../app/slices/activeProfileSlice';
+import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../../app/slices/watchHistorySlice';
 import {
   clearActiveShow,
   fetchShowWithDetails,
@@ -114,6 +121,14 @@ function ShowDetails() {
   const [pendingEpisode, setPendingEpisode] = useState<ProfileEpisode | null>(null);
   const [skippedEpisodes, setSkippedEpisodes] = useState<ProfileEpisode[]>([]);
 
+  // Rewatch state
+  const [loadingEpisodeRewatches, setLoadingEpisodeRewatches] = useState<Record<number, boolean>>({});
+  const [rewatchConfirmOpen, setRewatchConfirmOpen] = useState(false);
+  const [loadingShowRewatch, setLoadingShowRewatch] = useState(false);
+  const [rewatchSeasonConfirmOpen, setRewatchSeasonConfirmOpen] = useState(false);
+  const [pendingRewatchSeason, setPendingRewatchSeason] = useState<ProfileSeason | null>(null);
+  const [loadingSeasonRewatch, setLoadingSeasonRewatch] = useState<Record<number, boolean>>({});
+
   const priorPromptShownKey = `shown-prior-prompt-${showId}-${profileId}`;
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -154,8 +169,9 @@ function ShowDetails() {
   useEffect(() => {
     if (!show || !seasons || showDetailsLoading) return;
 
-    // Check for prior watch prompt (only show once per show+profile)
-    if (show.watchStatus === WatchStatus.NOT_WATCHED && !localStorage.getItem(priorPromptShownKey)) {
+    // Check for prior watch prompt (only show once per show+profile, and only if never watched before)
+    const hasWatchHistory = seasons.some((season) => season.episodes.some((ep) => (ep.watchCount ?? 0) > 0));
+    if (show.watchStatus === WatchStatus.NOT_WATCHED && !hasWatchHistory && !localStorage.getItem(priorPromptShownKey)) {
       const completedPriorSeasons = getCompletedPriorSeasons(seasons);
       if (completedPriorSeasons.length > 0) {
         setPriorWatchPromptOpen(true);
@@ -324,6 +340,39 @@ function ShowDetails() {
     }
     setPendingEpisode(null);
     setSkippedEpisodes([]);
+  };
+
+  const handleStartShowRewatch = async () => {
+    if (!show) return;
+    setRewatchConfirmOpen(false);
+    setLoadingShowRewatch(true);
+    try {
+      await dispatch(startShowRewatch({ profileId: Number(profileId), showId: show.id }));
+    } finally {
+      setLoadingShowRewatch(false);
+    }
+  };
+
+  const handleStartSeasonRewatch = async () => {
+    if (!pendingRewatchSeason) return;
+    setRewatchSeasonConfirmOpen(false);
+    const seasonId = pendingRewatchSeason.id;
+    setLoadingSeasonRewatch((prev) => ({ ...prev, [seasonId]: true }));
+    setPendingRewatchSeason(null);
+    try {
+      await dispatch(startSeasonRewatch({ profileId: Number(profileId), seasonId }));
+    } finally {
+      setLoadingSeasonRewatch((prev) => ({ ...prev, [seasonId]: false }));
+    }
+  };
+
+  const handleEpisodeRewatch = async (episode: ProfileEpisode) => {
+    setLoadingEpisodeRewatches((prev) => ({ ...prev, [episode.id]: true }));
+    try {
+      await dispatch(recordEpisodeRewatch({ profileId: Number(profileId), episodeId: episode.id }));
+    } finally {
+      setLoadingEpisodeRewatches((prev) => ({ ...prev, [episode.id]: false }));
+    }
   };
 
   const buildBackButtonPath = () => {
@@ -633,6 +682,43 @@ function ShowDetails() {
                       ? 'Mark Unwatched'
                       : 'Mark as Watched'}
                 </Button>
+                {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
+                  <Button
+                    variant="outlined"
+                    disabled={loadingShowRewatch}
+                    onClick={() => setRewatchConfirmOpen(true)}
+                    startIcon={
+                      loadingShowRewatch ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        <ReplayIcon sx={{ color: 'rewatch.main' }} />
+                      )
+                    }
+                    sx={{
+                      mt: 1,
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      backdropFilter: 'blur(12px)',
+                      border: '2px solid rgba(255, 255, 255, 0.4)',
+                      color: 'white',
+                      fontWeight: 600,
+                      textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        border: '2px solid rgba(255, 255, 255, 0.6)',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                      },
+                      '&:disabled': {
+                        backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        border: '2px solid rgba(255, 255, 255, 0.2)',
+                      },
+                    }}
+                  >
+                    {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
+                  </Button>
+                )}
               </Box>
             </Box>
           </Box>
@@ -800,46 +886,71 @@ function ShowDetails() {
                           </Typography>
                         </Box>
 
-                        <Box
-                          sx={{
-                            position: 'relative',
-                            display: 'flex',
-                            alignItems: 'center',
-                            cursor:
-                              loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'default' : 'pointer',
-                            opacity: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 0.5 : 1,
-                            p: 1,
-                            borderRadius: 1,
-                            '&:hover': {
-                              backgroundColor:
-                                loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
-                                  ? 'transparent'
-                                  : 'action.hover',
-                            },
-                          }}
-                          onClick={(event) => {
-                            if (!loadingSeasons[season.id] && canChangeSeasonWatchStatus(season)) {
-                              handleSeasonWatchStatusChange(season, event);
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Box
+                            sx={{
+                              position: 'relative',
+                              display: 'flex',
+                              alignItems: 'center',
+                              cursor:
+                                loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'default' : 'pointer',
+                              opacity: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 0.5 : 1,
+                              p: 1,
+                              borderRadius: 1,
+                              '&:hover': {
+                                backgroundColor:
+                                  loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
+                                    ? 'transparent'
+                                    : 'action.hover',
+                              },
+                            }}
+                            onClick={(event) => {
+                              if (!loadingSeasons[season.id] && canChangeSeasonWatchStatus(season)) {
+                                handleSeasonWatchStatusChange(season, event);
+                              }
+                            }}
+                            title={
+                              loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
+                                ? ''
+                                : getWatchStatusAction(season.watchStatus)
                             }
-                          }}
-                          title={
-                            loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
-                              ? ''
-                              : getWatchStatusAction(season.watchStatus)
-                          }
-                        >
-                          <WatchStatusIcon status={season.watchStatus} />
-                          {loadingSeasons[season.id] && (
-                            <CircularProgress
-                              size={24}
-                              sx={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                marginTop: '-12px',
-                                marginLeft: '-12px',
-                              }}
-                            />
+                          >
+                            <WatchStatusIcon status={season.watchStatus} />
+                            {loadingSeasons[season.id] && (
+                              <CircularProgress
+                                size={24}
+                                sx={{
+                                  position: 'absolute',
+                                  top: '50%',
+                                  left: '50%',
+                                  marginTop: '-12px',
+                                  marginLeft: '-12px',
+                                }}
+                              />
+                            )}
+                          </Box>
+                          {season.watchStatus === WatchStatus.WATCHED && (
+                            <Tooltip title="Rewatch Season">
+                              <span>
+                                <IconButton
+                                  component="span"
+                                  color="rewatch"
+                                  size="small"
+                                  disabled={!!loadingSeasonRewatch[season.id]}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    setPendingRewatchSeason(season);
+                                    setRewatchSeasonConfirmOpen(true);
+                                  }}
+                                >
+                                  {loadingSeasonRewatch[season.id] ? (
+                                    <CircularProgress size={20} />
+                                  ) : (
+                                    <ReplayIcon fontSize="small" />
+                                  )}
+                                </IconButton>
+                              </span>
+                            </Tooltip>
                           )}
                         </Box>
                       </AccordionSummary>
@@ -888,9 +999,20 @@ function ShowDetails() {
                                   </Box>
 
                                   <Box sx={{ flexGrow: 1 }}>
-                                    <Typography variant="subtitle1" fontWeight="medium">
-                                      {episode.title}
-                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                                      <Typography variant="subtitle1" fontWeight="medium">
+                                        {episode.title}
+                                      </Typography>
+                                      {(episode.watchCount ?? 0) >= 2 && (
+                                        <Chip
+                                          icon={<ReplayIcon sx={{ fontSize: '0.9rem !important' }} />}
+                                          label={`×${episode.watchCount}`}
+                                          size="small"
+                                          color="rewatch"
+                                          variant="outlined"
+                                        />
+                                      )}
+                                    </Box>
                                     <Typography
                                       variant="body2"
                                       color="text.secondary"
@@ -908,35 +1030,74 @@ function ShowDetails() {
                                     <Typography variant="body2" color="text.secondary">
                                       {buildEpisodeAirDate(episode.airDate, formatters.contentDate)} •{' '}
                                       {calculateRuntimeDisplay(episode.runtime)}
-                                      {episode.watchedAt && ` • Watched: ${formatters.activityDate(episode.watchedAt.slice(0, 10))}`}
+                                      {episode.watchedAt && ` • Last Watched: ${formatters.activityDate(episode.watchedAt.slice(0, 10))}`}
                                     </Typography>
                                   </Box>
 
-                                  <Box sx={{ position: 'relative', mt: { xs: 2, sm: 0 }, ml: { xs: 0, sm: 2 } }}>
-                                    <OptionalTooltipControl
-                                      identifier={`watchStatusTooltip_${show?.id || 0}_${season.id}_${episode.id}`}
-                                      title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}
-                                      disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
-                                    >
-                                      <IconButton
-                                        color={watchedEpisodes[episode.id] ? 'success' : 'default'}
-                                        onClick={() => handleEpisodeWatchStatusChange(episode)}
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      mt: { xs: 2, sm: 0 },
+                                      ml: { xs: 0, sm: 2 },
+                                    }}
+                                  >
+                                    <Box sx={{ position: 'relative' }}>
+                                      <OptionalTooltipControl
+                                        identifier={`watchStatusTooltip_${show?.id || 0}_${season.id}_${episode.id}`}
+                                        title={watchedEpisodes[episode.id] ? 'Mark Not Watched' : 'Mark Watched'}
                                         disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
                                       >
-                                        <WatchStatusIcon status={episode.watchStatus} />
-                                      </IconButton>
-                                    </OptionalTooltipControl>
-                                    {loadingEpisodes[episode.id] && (
-                                      <CircularProgress
-                                        size={24}
-                                        sx={{
-                                          position: 'absolute',
-                                          top: '50%',
-                                          left: '50%',
-                                          marginTop: '-12px',
-                                          marginLeft: '-12px',
-                                        }}
-                                      />
+                                        <IconButton
+                                          color={watchedEpisodes[episode.id] ? 'success' : 'default'}
+                                          onClick={() => handleEpisodeWatchStatusChange(episode)}
+                                          disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
+                                        >
+                                          <WatchStatusIcon status={episode.watchStatus} />
+                                        </IconButton>
+                                      </OptionalTooltipControl>
+                                      {loadingEpisodes[episode.id] && (
+                                        <CircularProgress
+                                          size={24}
+                                          sx={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: '50%',
+                                            marginTop: '-12px',
+                                            marginLeft: '-12px',
+                                          }}
+                                        />
+                                      )}
+                                    </Box>
+                                    {watchedEpisodes[episode.id] && (
+                                      <Box sx={{ position: 'relative' }}>
+                                        <OptionalTooltipControl
+                                          identifier={`rewatchTooltip_${show?.id || 0}_${season.id}_${episode.id}`}
+                                          title="Rewatch this episode"
+                                          disabled={loadingEpisodeRewatches[episode.id]}
+                                        >
+                                          <IconButton
+                                            color="rewatch"
+                                            onClick={() => handleEpisodeRewatch(episode)}
+                                            disabled={loadingEpisodeRewatches[episode.id]}
+                                            size="small"
+                                          >
+                                            <ReplayIcon />
+                                          </IconButton>
+                                        </OptionalTooltipControl>
+                                        {loadingEpisodeRewatches[episode.id] && (
+                                          <CircularProgress
+                                            size={24}
+                                            sx={{
+                                              position: 'absolute',
+                                              top: '50%',
+                                              left: '50%',
+                                              marginTop: '-12px',
+                                              marginLeft: '-12px',
+                                            }}
+                                          />
+                                        )}
+                                      </Box>
                                     )}
                                   </Box>
                                 </ListItem>
@@ -1012,6 +1173,38 @@ function ShowDetails() {
           setSkippedEpisodes([]);
         }}
       />
+
+      <Dialog open={rewatchConfirmOpen} onClose={() => setRewatchConfirmOpen(false)}>
+        <DialogTitle>Start Rewatch?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Starting a rewatch of "{show?.title}" will reset all episode statuses so you can track your progress
+            through the show again. Your original watch history will be preserved.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRewatchConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={handleStartShowRewatch} variant="contained" startIcon={<ReplayIcon />}>
+            Start Rewatch
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={rewatchSeasonConfirmOpen} onClose={() => { setRewatchSeasonConfirmOpen(false); setPendingRewatchSeason(null); }}>
+        <DialogTitle>Rewatch Season?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Rewatching "{pendingRewatchSeason?.name}" will reset all of its episode statuses so you can track your
+            progress again. Your original watch history will be preserved.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setRewatchSeasonConfirmOpen(false); setPendingRewatchSeason(null); }}>Cancel</Button>
+          <Button onClick={handleStartSeasonRewatch} variant="contained" startIcon={<ReplayIcon />}>
+            Rewatch Season
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

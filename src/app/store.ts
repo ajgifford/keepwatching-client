@@ -7,6 +7,7 @@ import personSearchReducer from './slices/personSearchSlice';
 import preferencesReducer from './slices/preferencesSlice';
 import profilesReducer from './slices/profilesSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
+import watchHistoryReducer from './slices/watchHistorySlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   systemNotification: systemNotificationsReducer,
   personSearch: personSearchReducer,
   preferences: preferencesReducer,
+  watchHistory: watchHistoryReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

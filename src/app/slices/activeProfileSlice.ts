@@ -4,6 +4,7 @@ import { RootState } from '../store';
 import { clearActivityTimestamp } from '../utils/activityTracker';
 import { deleteAccount, logout } from './accountSlice';
 import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
+import { startMovieRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
 import {
@@ -858,6 +859,44 @@ const activeProfileSlice = createSlice({
       .addCase(markShowAsPriorWatched.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Failed to update show status' };
+      })
+      .addCase(startShowRewatch.fulfilled, (state, action) => {
+        const { show, nextUnwatchedEpisodes } = action.payload;
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((s) => s.id === show.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
+        }
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
+        state.lastUpdated = new Date().toISOString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(startSeasonRewatch.fulfilled, (state, action) => {
+        const { show, nextUnwatchedEpisodes } = action.payload;
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((s) => s.id === show.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
+        }
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
+        state.lastUpdated = new Date().toISOString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(startMovieRewatch.fulfilled, (state, action) => {
+        const updatedMovie = action.payload;
+        const movies = state.movies;
+        if (movies) {
+          const index = movies.findIndex((m) => m.id === updatedMovie.id);
+          if (index !== -1) {
+            movies[index] = updatedMovie;
+          }
+        }
+        state.lastUpdated = new Date().toISOString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateSeasonWatchStatus.fulfilled, (state, action) => {
         const { showWithSeasons: show, nextUnwatchedEpisodes } = action.payload;
