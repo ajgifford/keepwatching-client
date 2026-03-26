@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import ExploreIcon from '@mui/icons-material/Explore';
+import HistoryIcon from '@mui/icons-material/History';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -199,6 +200,7 @@ function Navigation() {
     },
     { id: 'discover', label: 'Discover', icon: <ExploreIcon className="icon" />, to: '/discover' },
     { id: 'search', label: 'Search', icon: <SearchIcon className="icon" />, to: '/search' },
+    { id: 'history', label: 'History', icon: <HistoryIcon className="icon" />, to: '/history' },
   ];
 
   const renderNavigationButtons = () => {

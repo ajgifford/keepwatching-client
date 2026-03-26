@@ -28,6 +28,7 @@ import Register from './pages/register';
 import Search from './pages/search';
 import ShowDetails from './pages/showDetails';
 import Shows from './pages/shows';
+import WatchHistory from './pages/watchHistory';
 import { onAuthStateChanged } from 'firebase/auth';
 
 function useFooterHeight() {
@@ -170,6 +171,14 @@ function App() {
                           element={
                             <ErrorBoundary>
                               <PersonDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/history"
+                          element={
+                            <ErrorBoundary>
+                              <WatchHistory />
                             </ErrorBoundary>
                           }
                         />
