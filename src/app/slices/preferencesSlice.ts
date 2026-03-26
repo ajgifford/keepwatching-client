@@ -13,7 +13,7 @@ import {
   PrivacyPreferences,
 } from '@ajgifford/keepwatching-types';
 import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 
 const PREFERENCES_KEY = 'preferences';
@@ -236,10 +236,10 @@ const preferencesSlice = createSlice({
 export const selectPreferences = (state: RootState) => state.preferences.preferences;
 export const selectEmailPreferences = (state: RootState) =>
   state.preferences.preferences.email || DEFAULT_PREFERENCES.email;
-export const selectDisplayPreferences = (state: RootState) => ({
-  ...DEFAULT_PREFERENCES.display,
-  ...state.preferences.preferences.display,
-});
+export const selectDisplayPreferences = createSelector(
+  (state: RootState) => state.preferences.preferences.display,
+  (display) => ({ ...DEFAULT_PREFERENCES.display, ...display }),
+);
 export const selectNotificationPreferences = (state: RootState) =>
   state.preferences.preferences.notification || DEFAULT_PREFERENCES.notification;
 export const selectPrivacyPreferences = (state: RootState) =>
