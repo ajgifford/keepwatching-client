@@ -1,4 +1,26 @@
 import { Theme, createTheme } from '@mui/material/styles';
+import { PaletteColor, PaletteColorOptions } from '@mui/material/styles';
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    rewatch: PaletteColor;
+  }
+  interface PaletteOptions {
+    rewatch?: PaletteColorOptions;
+  }
+}
+
+declare module '@mui/material/Chip' {
+  interface ChipPropsColorOverrides {
+    rewatch: true;
+  }
+}
+
+declare module '@mui/material/IconButton' {
+  interface IconButtonPropsColorOverrides {
+    rewatch: true;
+  }
+}
 
 // Light theme configuration
 export const lightTheme: Theme = createTheme({
@@ -36,6 +58,12 @@ export const lightTheme: Theme = createTheme({
     },
     success: {
       main: '#4caf50',
+    },
+    rewatch: {
+      main: '#f59e0b',
+      light: '#fcd34d',
+      dark: '#d97706',
+      contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     divider: 'rgba(0, 0, 0, 0.12)',
   },
@@ -91,6 +119,12 @@ export const darkTheme: Theme = createTheme({
     },
     success: {
       main: '#66bb6a',
+    },
+    rewatch: {
+      main: '#fbbf24',
+      light: '#fde68a',
+      dark: '#f59e0b',
+      contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     divider: 'rgba(255, 255, 255, 0.12)',
   },
