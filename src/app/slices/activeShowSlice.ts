@@ -338,7 +338,7 @@ const activeShowSlice = createSlice({
       .addCase(recordEpisodeRewatch.fulfilled, (state, action) => {
         if (!state.showWithSeasons) return;
         const { episodeId, watchCount, watchedAt } = action.payload;
-        for (const season of state.showWithSeasons.seasons) {
+        for (const season of state.showWithSeasons.seasons ?? []) {
           const ep = season.episodes.find((e) => e.id === episodeId);
           if (ep) {
             ep.watchCount = watchCount;
