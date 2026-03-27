@@ -35,7 +35,7 @@ import {
   selectWatchHistoryDateFrom,
   selectWatchHistoryDateTo,
   selectWatchHistoryError,
-  selectWatchHistoryIsPriorWatchOnly,
+  selectWatchHistoryPriorWatchFilter,
   selectWatchHistoryItems,
   selectWatchHistoryLoading,
   selectWatchHistoryPage,
@@ -65,7 +65,7 @@ function WatchHistory() {
   const sortOrder = useAppSelector(selectWatchHistorySortOrder);
   const dateFrom = useAppSelector(selectWatchHistoryDateFrom);
   const dateTo = useAppSelector(selectWatchHistoryDateTo);
-  const isPriorWatchOnly = useAppSelector(selectWatchHistoryIsPriorWatchOnly);
+  const priorWatchFilter = useAppSelector(selectWatchHistoryPriorWatchFilter);
   const searchQuery = useAppSelector(selectWatchHistorySearchQuery);
 
   // Local state for the search input — debounced before dispatching
@@ -78,7 +78,7 @@ function WatchHistory() {
     sortOrder !== 'desc' ||
     !!dateFrom ||
     !!dateTo ||
-    isPriorWatchOnly ||
+    priorWatchFilter !== 'all' ||
     !!searchQuery;
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function WatchHistory() {
         sortOrder,
         dateFrom,
         dateTo,
-        isPriorWatchOnly,
+        priorWatchFilter,
         searchQuery,
       }),
     );
@@ -110,7 +110,7 @@ function WatchHistory() {
     sortOrder?: 'asc' | 'desc';
     dateFrom?: string | null;
     dateTo?: string | null;
-    isPriorWatchOnly?: boolean;
+    priorWatchFilter?: 'all' | 'priorOnly' | 'excludePrior';
     searchQuery?: string;
   }) => {
     if (!activeProfile) return;
@@ -123,7 +123,7 @@ function WatchHistory() {
         sortOrder,
         dateFrom,
         dateTo,
-        isPriorWatchOnly,
+        priorWatchFilter,
         searchQuery,
         ...overrides,
       }),
@@ -141,7 +141,7 @@ function WatchHistory() {
         sortOrder,
         dateFrom,
         dateTo,
-        isPriorWatchOnly,
+        priorWatchFilter,
         searchQuery,
       }),
     );
@@ -189,8 +189,8 @@ function WatchHistory() {
     dispatchWithFilters({ searchQuery: '' });
   };
 
-  const handlePriorWatchToggle = () => {
-    dispatchWithFilters({ isPriorWatchOnly: !isPriorWatchOnly });
+  const handlePriorWatchFilterChange = (_: React.MouseEvent<HTMLElement>, value: 'all' | 'priorOnly' | 'excludePrior' | null) => {
+    if (value !== null) dispatchWithFilters({ priorWatchFilter: value });
   };
 
   const handleClearAllFilters = () => {
@@ -202,7 +202,7 @@ function WatchHistory() {
       sortOrder: 'desc',
       dateFrom: null,
       dateTo: null,
-      isPriorWatchOnly: false,
+      priorWatchFilter: 'all',
       searchQuery: '',
     });
   };
@@ -319,14 +319,16 @@ function WatchHistory() {
             sx={{ width: { xs: '100%', sm: 260 } }}
           />
 
-          <ToggleButton
-            value="priorWatch"
-            selected={isPriorWatchOnly}
-            onChange={handlePriorWatchToggle}
+          <ToggleButtonGroup
+            value={priorWatchFilter}
+            exclusive
+            onChange={handlePriorWatchFilterChange}
             size="small"
           >
-            Prior Watches Only
-          </ToggleButton>
+            <ToggleButton value="all">All</ToggleButton>
+            <ToggleButton value="priorOnly">Prior Only</ToggleButton>
+            <ToggleButton value="excludePrior">Exclude Prior</ToggleButton>
+          </ToggleButtonGroup>
 
           <Tooltip title={sortOrder === 'desc' ? 'Showing newest first — click for oldest first' : 'Showing oldest first — click for newest first'}>
             <IconButton onClick={handleSortToggle} size="small" color={sortOrder === 'asc' ? 'primary' : 'default'}>

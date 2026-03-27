@@ -38,7 +38,7 @@ interface WatchHistoryState {
   sortOrder: 'asc' | 'desc';
   dateFrom: string | null;
   dateTo: string | null;
-  isPriorWatchOnly: boolean;
+  priorWatchFilter: 'all' | 'priorOnly' | 'excludePrior';
   searchQuery: string;
 }
 
@@ -53,7 +53,7 @@ const initialState: WatchHistoryState = {
   sortOrder: 'desc',
   dateFrom: null,
   dateTo: null,
-  isPriorWatchOnly: false,
+  priorWatchFilter: 'all',
   searchQuery: '',
 };
 
@@ -90,14 +90,14 @@ export const fetchWatchHistory = createAsyncThunk<
     sortOrder?: 'asc' | 'desc';
     dateFrom?: string | null;
     dateTo?: string | null;
-    isPriorWatchOnly?: boolean;
+    priorWatchFilter?: 'all' | 'priorOnly' | 'excludePrior';
     searchQuery?: string;
   },
   { rejectValue: ApiErrorResponse }
 >(
   'watchHistory/fetch',
   async (
-    { profileId, page = 1, pageSize = 20, contentType = 'all', sortOrder = 'desc', dateFrom, dateTo, isPriorWatchOnly, searchQuery },
+    { profileId, page = 1, pageSize = 20, contentType = 'all', sortOrder = 'desc', dateFrom, dateTo, priorWatchFilter, searchQuery },
     { getState, rejectWithValue },
   ) => {
     try {
@@ -111,7 +111,8 @@ export const fetchWatchHistory = createAsyncThunk<
       const params: Record<string, string | number | boolean> = { page, pageSize, contentType, sortOrder };
       if (dateFrom) params.dateFrom = dateFrom;
       if (dateTo) params.dateTo = dateTo;
-      if (isPriorWatchOnly) params.isPriorWatchOnly = true;
+      if (priorWatchFilter === 'priorOnly') params.isPriorWatchOnly = true;
+      if (priorWatchFilter === 'excludePrior') params.excludePriorWatch = true;
       if (searchQuery) params.searchQuery = searchQuery;
 
       const response: AxiosResponse<WatchHistoryResponse & { message: string }> = await axiosInstance.get(
@@ -267,7 +268,7 @@ const watchHistorySlice = createSlice({
       state.sortOrder = 'desc';
       state.dateFrom = null;
       state.dateTo = null;
-      state.isPriorWatchOnly = false;
+      state.priorWatchFilter = 'all';
       state.searchQuery = '';
     },
   },
@@ -286,7 +287,7 @@ const watchHistorySlice = createSlice({
         state.sortOrder = action.meta.arg.sortOrder ?? 'desc';
         state.dateFrom = action.meta.arg.dateFrom ?? null;
         state.dateTo = action.meta.arg.dateTo ?? null;
-        state.isPriorWatchOnly = action.meta.arg.isPriorWatchOnly ?? false;
+        state.priorWatchFilter = action.meta.arg.priorWatchFilter ?? 'all';
         state.searchQuery = action.meta.arg.searchQuery ?? '';
         state.loading = false;
         state.error = null;
@@ -358,7 +359,7 @@ export const selectWatchHistoryContentType = (state: RootState) => state.watchHi
 export const selectWatchHistorySortOrder = (state: RootState) => state.watchHistory.sortOrder;
 export const selectWatchHistoryDateFrom = (state: RootState) => state.watchHistory.dateFrom;
 export const selectWatchHistoryDateTo = (state: RootState) => state.watchHistory.dateTo;
-export const selectWatchHistoryIsPriorWatchOnly = (state: RootState) => state.watchHistory.isPriorWatchOnly;
+export const selectWatchHistoryPriorWatchFilter = (state: RootState) => state.watchHistory.priorWatchFilter;
 export const selectWatchHistorySearchQuery = (state: RootState) => state.watchHistory.searchQuery;
 
 export default watchHistorySlice.reducer;
