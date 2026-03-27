@@ -178,7 +178,7 @@ function NotificationIconDropdown() {
         sx={{
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
-          color: theme.palette.primary.contrastText,
+          color: 'inherit',
           transition: 'all 0.3s ease',
         }}
       >
