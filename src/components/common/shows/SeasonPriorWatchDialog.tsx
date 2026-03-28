@@ -33,7 +33,7 @@ const SeasonPriorWatchDialog = ({
       </DialogContent>
       <DialogActions sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, pb: 2, px: 3 }}>
         <Button
-          onClick={() => { onWatchedWhenAired(); onClose(); }}
+          onClick={onWatchedWhenAired}
           variant="contained"
           color="primary"
           fullWidth
@@ -41,7 +41,7 @@ const SeasonPriorWatchDialog = ({
           Previously watched (use air dates)
         </Button>
         <Button
-          onClick={() => { onWatchedNow(); onClose(); }}
+          onClick={onWatchedNow}
           variant="outlined"
           fullWidth
         >

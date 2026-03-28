@@ -53,6 +53,7 @@ import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../.
 import {
   clearActiveShow,
   fetchShowWithDetails,
+  markSeasonIdsAsPriorWatched,
   selectSeasons,
   selectShow,
   selectShowCast,
@@ -66,6 +67,7 @@ import BulkMarkBanner from '../common/shows/BulkMarkBanner';
 import PriorWatchPromptDialog from '../common/shows/PriorWatchPromptDialog';
 import SeasonPriorWatchDialog from '../common/shows/SeasonPriorWatchDialog';
 import SkippedEpisodesDialog from '../common/shows/SkippedEpisodesDialog';
+import SkippedSeasonsDialog from '../common/shows/SkippedSeasonsDialog';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
@@ -120,6 +122,10 @@ function ShowDetails() {
   const [skippedEpisodesDialogOpen, setSkippedEpisodesDialogOpen] = useState(false);
   const [pendingEpisode, setPendingEpisode] = useState<ProfileEpisode | null>(null);
   const [skippedEpisodes, setSkippedEpisodes] = useState<ProfileEpisode[]>([]);
+
+  // Skipped seasons prompt state
+  const [skippedSeasonsDialogOpen, setSkippedSeasonsDialogOpen] = useState(false);
+  const [skippedSeasons, setSkippedSeasons] = useState<ProfileSeason[]>([]);
 
   // Rewatch state
   const [loadingEpisodeRewatches, setLoadingEpisodeRewatches] = useState<Record<number, boolean>>({});
@@ -259,25 +265,76 @@ function ShowDetails() {
 
   const handleSeasonWatchedWhenAired = async () => {
     if (!pendingSeason || !show) return;
-    setLoadingSeasons((prev) => ({ ...prev, [pendingSeason.id]: true }));
+    const seasonToMark = pendingSeason;
+    setSeasonDialogOpen(false);
+    setLoadingSeasons((prev) => ({ ...prev, [seasonToMark.id]: true }));
     try {
       await dispatch(
-        markShowAsPriorWatched({
+        markSeasonIdsAsPriorWatched({
           profileId: Number(profileId),
           showId: show.id,
-          upToSeasonNumber: pendingSeason.seasonNumber,
+          seasonIds: [seasonToMark.id],
+        })
+      );
+
+      const today = new Date();
+      const unwatchedPrior = (seasons ?? []).filter(
+        (s) =>
+          s.seasonNumber > 0 &&
+          s.seasonNumber < seasonToMark.seasonNumber &&
+          s.watchStatus !== 'WATCHED' &&
+          s.watchStatus !== 'UP_TO_DATE' &&
+          s.episodes.length > 0 &&
+          s.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today)
+      );
+
+      if (unwatchedPrior.length > 0) {
+        setSkippedSeasons(unwatchedPrior);
+        setSkippedSeasonsDialogOpen(true);
+      } else {
+        setPendingSeason(null);
+      }
+    } finally {
+      setLoadingSeasons((prev) => ({ ...prev, [seasonToMark.id]: false }));
+    }
+  };
+
+  const handleMarkSkippedSeasonsAsPrior = async () => {
+    if (!show) return;
+    setSkippedSeasonsDialogOpen(false);
+    setPendingSeason(null);
+    const seasonsToMark = skippedSeasons;
+    setSkippedSeasons([]);
+    for (const season of seasonsToMark) {
+      setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
+    }
+    try {
+      await dispatch(
+        markSeasonIdsAsPriorWatched({
+          profileId: Number(profileId),
+          showId: show.id,
+          seasonIds: seasonsToMark.map((s) => s.id),
         })
       );
     } finally {
-      setLoadingSeasons((prev) => ({ ...prev, [pendingSeason.id]: false }));
-      setPendingSeason(null);
+      for (const season of seasonsToMark) {
+        setLoadingSeasons((prev) => ({ ...prev, [season.id]: false }));
+      }
     }
+  };
+
+  const handleSkipPriorSeasons = () => {
+    setSkippedSeasonsDialogOpen(false);
+    setSkippedSeasons([]);
+    setPendingSeason(null);
   };
 
   const handleSeasonWatchedNow = async () => {
     if (!pendingSeason) return;
-    await dispatchSeasonWatchUpdate(pendingSeason, WatchStatus.WATCHED);
+    const seasonToMark = pendingSeason;
+    setSeasonDialogOpen(false);
     setPendingSeason(null);
+    await dispatchSeasonWatchUpdate(seasonToMark, WatchStatus.WATCHED);
   };
 
   const dispatchEpisodeWatchUpdate = async (episode: ProfileEpisode, status: UserWatchStatus) => {
@@ -1159,6 +1216,19 @@ function ShowDetails() {
         }}
         onWatchedWhenAired={handleSeasonWatchedWhenAired}
         onWatchedNow={handleSeasonWatchedNow}
+      />
+
+      <SkippedSeasonsDialog
+        open={skippedSeasonsDialogOpen}
+        skippedSeasons={skippedSeasons}
+        targetSeason={pendingSeason}
+        onMarkAll={handleMarkSkippedSeasonsAsPrior}
+        onMarkJustThis={handleSkipPriorSeasons}
+        onClose={() => {
+          setSkippedSeasonsDialogOpen(false);
+          setSkippedSeasons([]);
+          setPendingSeason(null);
+        }}
       />
 
       <SkippedEpisodesDialog

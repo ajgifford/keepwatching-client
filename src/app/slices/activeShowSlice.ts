@@ -173,6 +173,40 @@ export const updateSeasonWatchStatus = createAsyncThunk<
   }
 );
 
+export const markSeasonIdsAsPriorWatched = createAsyncThunk<
+  WatchStatusUpdate,
+  { profileId: number; showId: number; seasonIds: number[] },
+  { rejectValue: ApiErrorResponse }
+>(
+  'activeShow/markSeasonIdsAsPriorWatched',
+  async ({ profileId, showId, seasonIds }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+
+      if (!accountId) {
+        return rejectWithValue({ message: 'No account found' });
+      }
+
+      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.put(
+        `/accounts/${accountId}/profiles/${profileId}/seasons/priorWatchStatus`,
+        { seasonIds, showId }
+      );
+
+      const showWithSeasons = response.data.statusData.showWithSeasons;
+      const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
+      const watchedEpisodesMap: Record<number, boolean> = buildWatchedEpisodesMap(showWithSeasons);
+
+      return { showWithSeasons, nextUnwatchedEpisodes, watchedEpisodesMap };
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || { message: error.message });
+      }
+      return rejectWithValue({ message: 'An unknown error occurred while marking seasons as prior watched' });
+    }
+  }
+);
+
 export const fetchRecommendedShows = createAsyncThunk<
   SimilarOrRecommendedShow[],
   { profileId: number; showId: number },
@@ -285,6 +319,16 @@ const activeShowSlice = createSlice({
       })
       .addCase(updateSeasonWatchStatus.rejected, (state, action) => {
         state.showDetailsError = action.payload || { message: 'Failed to update season watch status' };
+      })
+      .addCase(markSeasonIdsAsPriorWatched.pending, (state) => {
+        state.showDetailsError = null;
+      })
+      .addCase(markSeasonIdsAsPriorWatched.fulfilled, (state, action) => {
+        state.showWithSeasons = action.payload.showWithSeasons;
+        state.watchedEpisodes = action.payload.watchedEpisodesMap;
+      })
+      .addCase(markSeasonIdsAsPriorWatched.rejected, (state, action) => {
+        state.showDetailsError = action.payload || { message: 'Failed to mark seasons as previously watched' };
       })
       .addCase(updateShowWatchStatus.fulfilled, (state, action) => {
         const { showWithSeasons } = action.payload;
