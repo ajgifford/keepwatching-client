@@ -49,7 +49,6 @@ import {
   selectActiveProfile,
   updateShowWatchStatus,
 } from '../../app/slices/activeProfileSlice';
-import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../../app/slices/watchHistorySlice';
 import {
   clearActiveShow,
   fetchShowWithDetails,
@@ -63,12 +62,13 @@ import {
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
+import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../../app/slices/watchHistorySlice';
+import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import BulkMarkBanner from '../common/shows/BulkMarkBanner';
 import PriorWatchPromptDialog from '../common/shows/PriorWatchPromptDialog';
 import SeasonPriorWatchDialog from '../common/shows/SeasonPriorWatchDialog';
 import SkippedEpisodesDialog from '../common/shows/SkippedEpisodesDialog';
 import SkippedSeasonsDialog from '../common/shows/SkippedSeasonsDialog';
-import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
 import { ShowCastSection } from '../common/shows/showCast';
@@ -87,7 +87,13 @@ import {
   determineNextSeasonWatchStatus,
   getWatchStatusAction,
 } from '../utility/watchStatusUtility';
-import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
+import {
+  ProfileEpisode,
+  ProfileSeason,
+  ProfileShowWithSeasons,
+  UserWatchStatus,
+  WatchStatus,
+} from '@ajgifford/keepwatching-types';
 import { ErrorComponent, LoadingComponent, buildTMDBImagePath, formatUserRating } from '@ajgifford/keepwatching-ui';
 import { getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
@@ -147,18 +153,15 @@ function ShowDetails() {
   const streamingServiceFilter = location.state?.streamingService || '';
   const watchStatusFilter = location.state?.watchStatus || '';
 
-  const getCompletedPriorSeasons = useCallback(
-    (seasons: ProfileSeason[]) => {
-      const today = new Date();
-      return seasons.filter((season) => {
-        if (season.seasonNumber === 0) return false; // skip specials
-        const allAired = season.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today);
-        const noneWatched = season.episodes.every((ep) => ep.watchStatus === WatchStatus.NOT_WATCHED);
-        return allAired && noneWatched && season.episodes.length > 0;
-      });
-    },
-    []
-  );
+  const getCompletedPriorSeasons = useCallback((seasons: ProfileSeason[]) => {
+    const today = new Date();
+    return seasons.filter((season) => {
+      if (season.seasonNumber === 0) return false; // skip specials
+      const allAired = season.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today);
+      const noneWatched = season.episodes.every((ep) => ep.watchStatus === WatchStatus.NOT_WATCHED);
+      return allAired && noneWatched && season.episodes.length > 0;
+    });
+  }, []);
 
   useEffect(() => {
     if (showId && profileId) {
@@ -177,7 +180,11 @@ function ShowDetails() {
 
     // Check for prior watch prompt (only show once per show+profile, and only if never watched before)
     const hasWatchHistory = seasons.some((season) => season.episodes.some((ep) => (ep.watchCount ?? 0) > 0));
-    if (show.watchStatus === WatchStatus.NOT_WATCHED && !hasWatchHistory && !localStorage.getItem(priorPromptShownKey)) {
+    if (
+      show.watchStatus === WatchStatus.NOT_WATCHED &&
+      !hasWatchHistory &&
+      !localStorage.getItem(priorPromptShownKey)
+    ) {
       const completedPriorSeasons = getCompletedPriorSeasons(seasons);
       if (completedPriorSeasons.length > 0) {
         setPriorWatchPromptOpen(true);
@@ -197,7 +204,7 @@ function ShowDetails() {
         })
         .catch(() => {});
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show?.id, showDetailsLoading]);
 
   if (showDetailsLoading) {
@@ -497,7 +504,9 @@ function ShowDetails() {
 
   const handlePriorWatchThrough = async (seasonNumber: number) => {
     if (!show) return;
-    await dispatch(markShowAsPriorWatched({ profileId: Number(profileId), showId: show.id, upToSeasonNumber: seasonNumber }));
+    await dispatch(
+      markShowAsPriorWatched({ profileId: Number(profileId), showId: show.id, upToSeasonNumber: seasonNumber })
+    );
   };
 
   const completedSeasons = seasons ? getCompletedPriorSeasons(seasons) : [];
@@ -508,7 +517,6 @@ function ShowDetails() {
       <Box
         sx={{
           px: 2,
-          bgcolor: 'background.paper',
           position: 'sticky',
           top: 0,
           zIndex: 1,
@@ -851,7 +859,9 @@ function ShowDetails() {
                     </Grid>
                     <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight={500}>
-                        {show?.lastEpisode ? buildEpisodeLineDetails(show?.lastEpisode, formatters.contentDate) : 'No Last Episode'}
+                        {show?.lastEpisode
+                          ? buildEpisodeLineDetails(show?.lastEpisode, formatters.contentDate)
+                          : 'No Last Episode'}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -866,7 +876,9 @@ function ShowDetails() {
                     </Grid>
                     <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight={500}>
-                        {show?.nextEpisode ? buildEpisodeLineDetails(show?.nextEpisode, formatters.contentDate) : 'No Next Episode'}
+                        {show?.nextEpisode
+                          ? buildEpisodeLineDetails(show?.nextEpisode, formatters.contentDate)
+                          : 'No Next Episode'}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -950,7 +962,9 @@ function ShowDetails() {
                               display: 'flex',
                               alignItems: 'center',
                               cursor:
-                                loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 'default' : 'pointer',
+                                loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season)
+                                  ? 'default'
+                                  : 'pointer',
                               opacity: loadingSeasons[season.id] || !canChangeSeasonWatchStatus(season) ? 0.5 : 1,
                               p: 1,
                               borderRadius: 1,
@@ -1087,7 +1101,8 @@ function ShowDetails() {
                                     <Typography variant="body2" color="text.secondary">
                                       {buildEpisodeAirDate(episode.airDate, formatters.contentDate)} •{' '}
                                       {calculateRuntimeDisplay(episode.runtime)}
-                                      {episode.watchedAt && ` • Last Watched: ${formatters.activityDate(episode.watchedAt.slice(0, 10))}`}
+                                      {episode.watchedAt &&
+                                        ` • Last Watched: ${formatters.activityDate(episode.watchedAt.slice(0, 10))}`}
                                     </Typography>
                                   </Box>
 
@@ -1108,7 +1123,9 @@ function ShowDetails() {
                                         <IconButton
                                           color={watchedEpisodes[episode.id] ? 'success' : 'default'}
                                           onClick={() => handleEpisodeWatchStatusChange(episode)}
-                                          disabled={loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)}
+                                          disabled={
+                                            loadingEpisodes[episode.id] || !canChangeEpisodeWatchStatus(episode)
+                                          }
                                         >
                                           <WatchStatusIcon status={episode.watchStatus} />
                                         </IconButton>
@@ -1248,8 +1265,8 @@ function ShowDetails() {
         <DialogTitle>Start Rewatch?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Starting a rewatch of "{show?.title}" will reset all episode statuses so you can track your progress
-            through the show again. Your original watch history will be preserved.
+            Starting a rewatch of "{show?.title}" will reset all episode statuses so you can track your progress through
+            the show again. Your original watch history will be preserved.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -1260,7 +1277,13 @@ function ShowDetails() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={rewatchSeasonConfirmOpen} onClose={() => { setRewatchSeasonConfirmOpen(false); setPendingRewatchSeason(null); }}>
+      <Dialog
+        open={rewatchSeasonConfirmOpen}
+        onClose={() => {
+          setRewatchSeasonConfirmOpen(false);
+          setPendingRewatchSeason(null);
+        }}
+      >
         <DialogTitle>Rewatch Season?</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -1269,7 +1292,14 @@ function ShowDetails() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setRewatchSeasonConfirmOpen(false); setPendingRewatchSeason(null); }}>Cancel</Button>
+          <Button
+            onClick={() => {
+              setRewatchSeasonConfirmOpen(false);
+              setPendingRewatchSeason(null);
+            }}
+          >
+            Cancel
+          </Button>
           <Button onClick={handleStartSeasonRewatch} variant="contained" startIcon={<ReplayIcon />}>
             Rewatch Season
           </Button>

@@ -154,7 +154,6 @@ export default function PersonDetails() {
         <Box
           sx={{
             px: 2,
-            bgcolor: 'background.paper',
             position: 'sticky',
             top: 0,
             zIndex: 1,

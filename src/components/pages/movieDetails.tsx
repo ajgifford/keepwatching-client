@@ -169,7 +169,6 @@ function MovieDetails() {
       <Box
         sx={{
           px: 2,
-          bgcolor: 'background.paper',
           position: 'sticky',
           top: 0,
           zIndex: 1,
@@ -382,13 +381,7 @@ function MovieDetails() {
                     variant="outlined"
                     disabled={loadingMovieRewatch}
                     onClick={() => setRewatchConfirmOpen(true)}
-                    startIcon={
-                      loadingMovieRewatch ? (
-                        <CircularProgress size={20} color="inherit" />
-                      ) : (
-                        <Replay />
-                      )
-                    }
+                    startIcon={loadingMovieRewatch ? <CircularProgress size={20} color="inherit" /> : <Replay />}
                     sx={{
                       mt: 1,
                       ml: 1,
