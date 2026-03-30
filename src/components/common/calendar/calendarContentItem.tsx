@@ -43,7 +43,7 @@ export const CalendarContentItem: React.FC<CalendarContentItemProps> = ({ item, 
     <Box
       component={Link}
       to={linkTo}
-      state={{ returnPath: '/home' }}
+      state={{ returnPath: '/calendar' }}
       sx={{
         display: 'flex',
         alignItems: 'center',
