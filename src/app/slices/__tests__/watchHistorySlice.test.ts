@@ -222,7 +222,7 @@ describe('watchHistorySlice', () => {
       await store.dispatch(fetchWatchHistory({ profileId: 5, page: 2, pageSize: 10, contentType: 'episode' }));
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/accounts/1/profiles/5/watchHistory', {
-        params: { page: 2, pageSize: 10, contentType: 'episode' },
+        params: { page: 2, pageSize: 10, contentType: 'episode', sortOrder: 'desc' },
       });
     });
 
