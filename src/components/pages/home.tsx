@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import { Box, Tab, Tabs } from '@mui/material';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { Box, Button, Tab, Tabs } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
@@ -119,6 +121,11 @@ const Home = () => {
       {/* TV Shows Tab */}
       <TabPanel value={tabValue} index={1}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <Button component={Link} to="/calendar" size="small" variant="outlined" startIcon={<CalendarMonthIcon />}>
+              View Calendar
+            </Button>
+          </Box>
           <EpisodesSection recentEpisodes={recentEpisodes} upcomingEpisodes={upcomingEpisodes} />
         </Box>
       </TabPanel>
@@ -126,6 +133,11 @@ const Home = () => {
       {/* Movies Tab */}
       <TabPanel value={tabValue} index={2}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <Button component={Link} to="/calendar" size="small" variant="outlined" startIcon={<CalendarMonthIcon />}>
+              View Calendar
+            </Button>
+          </Box>
           <MoviesSection recentMovies={recentMovies} upcomingMovies={upcomingMovies} />
         </Box>
       </TabPanel>

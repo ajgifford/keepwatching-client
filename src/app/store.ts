@@ -1,4 +1,5 @@
 import authReducer from './slices/accountSlice';
+import calendarReducer from './slices/calendarSlice';
 import activeMovieReducer from './slices/activeMovieSlice';
 import activeProfileReducer from './slices/activeProfileSlice';
 import activeShowReducer from './slices/activeShowSlice';
@@ -12,6 +13,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  calendar: calendarReducer,
   profiles: profilesReducer,
   activeProfile: activeProfileReducer,
   activeShow: activeShowReducer,

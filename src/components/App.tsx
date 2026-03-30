@@ -15,6 +15,7 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import ActivityNotificationBar from './notification/activityNotificationBar';
+import Calendar from './pages/calendar';
 import Default from './pages/default';
 import Discover from './pages/discover';
 import Home from './pages/home';
@@ -179,6 +180,14 @@ function App() {
                           element={
                             <ErrorBoundary>
                               <WatchHistory />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/calendar"
+                          element={
+                            <ErrorBoundary>
+                              <Calendar />
                             </ErrorBoundary>
                           }
                         />
