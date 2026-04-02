@@ -1070,7 +1070,7 @@ function ShowDetails() {
                                   </Box>
 
                                   <Box sx={{ flexGrow: 1 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' }, gap: 1, flexWrap: 'wrap' }}>
                                       <Typography variant="subtitle1" fontWeight="medium">
                                         {episode.title}
                                       </Typography>
