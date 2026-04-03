@@ -34,7 +34,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
             e.episodeNumber < episode.episodeNumber &&
             !watchedEpisodes[e.id] &&
             e.airDate &&
-            new Date(e.airDate) <= today
+            parseLocalDate(e.airDate) <= today
         );
         if (unwatchedPrior.length > 0) {
           const profileEpisode = currentSeason.episodes.find((e: ProfileEpisode) => e.id === episode.episodeId);

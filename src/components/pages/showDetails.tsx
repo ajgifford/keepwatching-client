@@ -94,7 +94,7 @@ import {
   UserWatchStatus,
   WatchStatus,
 } from '@ajgifford/keepwatching-types';
-import { ErrorComponent, LoadingComponent, buildTMDBImagePath, formatUserRating } from '@ajgifford/keepwatching-ui';
+import { ErrorComponent, LoadingComponent, buildTMDBImagePath, formatUserRating, parseLocalDate } from '@ajgifford/keepwatching-ui';
 import { getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
 function ShowDetails() {
@@ -157,7 +157,7 @@ function ShowDetails() {
     const today = new Date();
     return seasons.filter((season) => {
       if (season.seasonNumber === 0) return false; // skip specials
-      const allAired = season.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today);
+      const allAired = season.episodes.every((ep) => ep.airDate && parseLocalDate(ep.airDate) < today);
       const noneWatched = season.episodes.every((ep) => ep.watchStatus === WatchStatus.NOT_WATCHED);
       return allAired && noneWatched && season.episodes.length > 0;
     });
@@ -244,7 +244,7 @@ function ShowDetails() {
     // If marking a completed season as watched, ask when they watched it
     if (nextStatus === WatchStatus.WATCHED && season.episodes.length > 0) {
       const today = new Date();
-      const allAired = season.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today);
+      const allAired = season.episodes.every((ep) => ep.airDate && parseLocalDate(ep.airDate) < today);
       if (allAired) {
         setPendingSeason(season);
         setSeasonDialogOpen(true);
@@ -292,7 +292,7 @@ function ShowDetails() {
           s.watchStatus !== 'WATCHED' &&
           s.watchStatus !== 'UP_TO_DATE' &&
           s.episodes.length > 0 &&
-          s.episodes.every((ep) => ep.airDate && new Date(ep.airDate) < today)
+          s.episodes.every((ep) => ep.airDate && parseLocalDate(ep.airDate) < today)
       );
 
       if (unwatchedPrior.length > 0) {
@@ -371,7 +371,7 @@ function ShowDetails() {
             e.episodeNumber < episode.episodeNumber &&
             !watchedEpisodes[e.id] &&
             e.airDate &&
-            new Date(e.airDate) <= today
+            parseLocalDate(e.airDate) <= today
         );
         if (unwatchedPrior.length > 0) {
           setPendingEpisode(episode);
