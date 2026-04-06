@@ -82,6 +82,15 @@ export default [
     },
   },
 
+  // Test file overrides — relax type strictness for mocks and assertions
+  {
+    files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '**/*.test.ts', '**/*.test.tsx', 'src/setupTests.ts', 'src/**/__mocks__/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+
   // Prettier config (must be last to override other configs)
   prettier,
 ];
