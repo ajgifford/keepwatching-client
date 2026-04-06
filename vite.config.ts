@@ -65,11 +65,6 @@ export default defineConfig({
       'recharts',
       'lodash',
     ],
-    // Force CommonJS to ESM conversion
-    esbuildOptions: {
-      // Mark these as CommonJS modules that need conversion
-      mainFields: ['module', 'main'],
-    },
   },
   build: {
     outDir: 'build',
@@ -77,27 +72,28 @@ export default defineConfig({
     chunkSizeWarningLimit: 600, // Set to 600 kB to allow current app size while monitoring growth
     rollupOptions: {
       output: {
-        manualChunks: {
-          // React core (including react-is to ensure proper loading order)
-          'react-vendor': ['react', 'react-dom', 'react-router-dom', 'react-is'],
-
-          // MUI and Emotion together (MUI depends on Emotion)
-          'mui-core': ['@mui/material', '@emotion/react', '@emotion/styled'],
-
-          // MUI icons (large package)
-          'mui-icons': ['@mui/icons-material'],
-
-          // Redux
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-
-          // Charts library
-          recharts: ['recharts'],
-
-          // Socket.io
-          socket: ['socket.io-client'],
-
-          // Axios
-          axios: ['axios'],
+        manualChunks: (id) => {
+          if (['react/', 'react-dom/', 'react-router-dom/', 'react-is/'].some((p) => id.includes(`/node_modules/${p}`))) {
+            return 'react-vendor';
+          }
+          if (['@mui/material/', '@emotion/react/', '@emotion/styled/'].some((p) => id.includes(`/node_modules/${p}`))) {
+            return 'mui-core';
+          }
+          if (id.includes('/node_modules/@mui/icons-material/')) {
+            return 'mui-icons';
+          }
+          if (['@reduxjs/toolkit/', 'react-redux/'].some((p) => id.includes(`/node_modules/${p}`))) {
+            return 'redux';
+          }
+          if (id.includes('/node_modules/recharts/')) {
+            return 'recharts';
+          }
+          if (id.includes('/node_modules/socket.io-client/')) {
+            return 'socket';
+          }
+          if (id.includes('/node_modules/axios/')) {
+            return 'axios';
+          }
         },
       },
     },
