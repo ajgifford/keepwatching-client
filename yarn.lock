@@ -7,15 +7,15 @@
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.4.4.tgz#2856c55443d3d461693f32d2b96fb6ea92e1ffa9"
   integrity sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==
 
-"@ajgifford/keepwatching-types@^0.9.0":
-  version "0.9.0"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.9.0/4c1a32f44b0743de37586d656144a9c0a7ac40e1#4c1a32f44b0743de37586d656144a9c0a7ac40e1"
-  integrity sha512-V1g7zWnAR/t3SGvufWqb8incKQm9xDH0461kw/JMxkfCZpHD1H4kyVsdnNfrPkw+f3PxRSx6VmuaA0/00VD4yA==
+"@ajgifford/keepwatching-types@^0.10.0":
+  version "0.10.0"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.10.0/5fcfcf00670b7e3c9060696cb6bf4e8af8b02a8b#5fcfcf00670b7e3c9060696cb6bf4e8af8b02a8b"
+  integrity sha512-vi0AHAGg71xlpvs8m1nZHFTK2Wr0m69NrCiEe/tYLLbSOLbnLn8rmJ9YZdCRyfLRtgb5ypjGoabvShMTDwUS9Q==
 
-"@ajgifford/keepwatching-ui@^0.3.5":
-  version "0.3.5"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.3.5/e421fed225d0ad13d5d69ff3f89af4a7bc670681#e421fed225d0ad13d5d69ff3f89af4a7bc670681"
-  integrity sha512-j5Xx2WtXG5CfuL5K2B61hFJAi54sAEvtZWErSwTCvK4frxMPxt4L+bGVFQ+z8yNepDAvQSq4xD/GurE1E+ypVA==
+"@ajgifford/keepwatching-ui@^0.4.0":
+  version "0.4.0"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.4.0/f8d12b910244213d2bbffb868906eb4100d32108#f8d12b910244213d2bbffb868906eb4100d32108"
+  integrity sha512-BH6A3lWq/WYFa2bJzltCzKId9vmnCFQjm9WyYuUGZ2cesL3hfJLig4UR1cIamgQgZdI2WqgD4/82O0TSCvA8uQ==
 
 "@ampproject/remapping@^2.2.0":
   version "2.3.0"
