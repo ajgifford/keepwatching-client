@@ -1,10 +1,5 @@
 import '@testing-library/jest-dom';
-// Polyfill for TextEncoder/TextDecoder (needed for React Router v7)
-import { TextDecoder, TextEncoder } from 'util';
 import 'whatwg-fetch';
-
-global.TextEncoder = TextEncoder as any;
-global.TextDecoder = TextDecoder as any;
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -22,7 +17,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
+(globalThis as any).IntersectionObserver = class IntersectionObserver {
   constructor() {}
   disconnect() {}
   observe() {}
@@ -30,12 +25,12 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
   unobserve() {}
-} as any;
+};
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+(globalThis as any).ResizeObserver = class ResizeObserver {
   constructor() {}
   disconnect() {}
   observe() {}
   unobserve() {}
-} as any;
+};

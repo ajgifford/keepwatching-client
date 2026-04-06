@@ -130,7 +130,7 @@ function Discover() {
       }
       setIsLoading(true);
 
-      let endpoint = '';
+      let endpoint: string;
       if (discoverMode === 'trending') {
         endpoint = '/discover/trending';
       } else {

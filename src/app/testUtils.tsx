@@ -1,5 +1,5 @@
 import { RenderOptions, render } from '@testing-library/react';
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { Provider } from 'react-redux';
 
 import { AppStore, RootState, setupStore } from './store';
@@ -13,7 +13,7 @@ export function renderWithProviders(
   ui: ReactElement,
   { preloadedState = {}, store = setupStore(preloadedState), ...renderOptions }: ExtendedRenderOptions = {}
 ) {
-  function Wrapper({ children }: { children: React.ReactNode }) {
+  function Wrapper({ children }: { children: ReactNode }) {
     return <Provider store={store}>{children}</Provider>;
   }
   return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };

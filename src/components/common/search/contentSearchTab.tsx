@@ -61,7 +61,7 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
 
   const sortResults = useCallback((results: DiscoverAndSearchResult[], sortBy: string, sortOrder: 'asc' | 'desc') => {
     return results.sort((a, b) => {
-      let comparison = 0;
+      let comparison: number;
       switch (sortBy) {
         case 'popularity.desc':
           comparison = (b.popularity || 0) - (a.popularity || 0);

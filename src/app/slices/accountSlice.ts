@@ -14,6 +14,7 @@ import { FirebaseError } from 'firebase/app';
 import {
   GoogleAuthProvider,
   User,
+  UserCredential,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
@@ -62,7 +63,7 @@ function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownActi
 export const login = createAsyncThunk<Account, LoginData, { rejectValue: ApiErrorResponse }>(
   'account/login',
   async (data: LoginData, { dispatch, rejectWithValue }) => {
-    let userCredential = null;
+    let userCredential: UserCredential;
     try {
       userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
     } catch (error) {
@@ -122,7 +123,7 @@ export const login = createAsyncThunk<Account, LoginData, { rejectValue: ApiErro
 export const register = createAsyncThunk<Account, NewAccountData, { rejectValue: ApiErrorResponse }>(
   'account/register',
   async (data: NewAccountData, { dispatch, rejectWithValue }) => {
-    let userCredential = null;
+    let userCredential: UserCredential;
     try {
       userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.name });
@@ -192,7 +193,7 @@ export const register = createAsyncThunk<Account, NewAccountData, { rejectValue:
 export const googleLogin = createAsyncThunk<Account, void, { rejectValue: ApiErrorResponse }>(
   'account/googleLogin',
   async (_, { dispatch, rejectWithValue }) => {
-    let user = null;
+    let user: User;
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);

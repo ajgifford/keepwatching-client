@@ -24,7 +24,7 @@
     "react-router-dom": "^7.14.0",
     "recharts": "^3.8.1",
     "socket.io-client": "^4.8.3",
-    "typescript": "^5.9.0"
+    "typescript": "^6.0.0"
   },
   "resolutions": {
     "nth-check": "2.1.1",
@@ -41,7 +41,8 @@
     "flatted": ">=3.4.2",
     "lodash-es": ">=4.18.0",
     "socket.io-parser": ">=4.2.6",
-    "yaml": ">=1.10.3"
+    "yaml": ">=1.10.3",
+    "@typescript-eslint/utils": "^8.58.0"
   },
   "scripts": {
     "dev": "vite",
@@ -51,11 +52,12 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "format": "prettier --config ./.prettierrc.cjs . --write",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@eslint/js": "^10.0.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.3.2",
@@ -65,8 +67,9 @@
     "@typescript-eslint/eslint-plugin": "^8.58.0",
     "@typescript-eslint/parser": "^8.58.0",
     "@vitejs/plugin-react": "^5.2.0",
-    "eslint": "^9.39.4",
+    "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.2",
+    "globals": "^17.4.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jest": "^29.15.1",
     "eslint-plugin-react": "^7.37.5",

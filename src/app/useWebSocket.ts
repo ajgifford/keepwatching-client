@@ -16,7 +16,7 @@ export const useWebSocket = () => {
 
   const socketRef = useRef<Socket | null>(null);
   const currentUserRef = useRef<User | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Extract only the account ID to prevent unnecessary re-renders
   const accountId = useMemo(() => account?.id, [account?.id]);

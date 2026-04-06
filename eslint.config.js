@@ -6,6 +6,7 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import prettier from 'eslint-config-prettier';
 import jest from 'eslint-plugin-jest';
+import globals from 'globals';
 
 export default [
   // Global ignores
@@ -27,41 +28,12 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
-        // Browser globals
-        console: 'readonly',
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
-        fetch: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-        // Node globals
-        process: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        module: 'readonly',
-        require: 'readonly',
-        NodeJS: 'readonly',
-        // React globals
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jest,
         React: 'readonly',
-        // Jest globals
-        describe: 'readonly',
-        it: 'readonly',
-        test: 'readonly',
-        expect: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
-        jest: 'readonly',
       },
     },
     plugins: {

@@ -93,7 +93,7 @@ interface ErrorBoundaryFallbackProps {
 function ErrorBoundaryFallback({ error, errorInfo, errorCount, onReset }: ErrorBoundaryFallbackProps) {
   const navigate = useNavigate();
 
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = import.meta.env.DEV;
   const isRecurringError = errorCount > 2;
 
   return (
