@@ -1,7 +1,7 @@
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 98vh;
+  min-height: 100svh;
 }
 
 .header {
@@ -23,6 +23,7 @@
   bottom: 0;
   width: 100%;
   padding: 5px;
+  padding-bottom: max(5px, env(safe-area-inset-bottom));
   z-index: 1001;
   background-color: #1976d2;
 }

@@ -44,8 +44,12 @@ function useFooterHeight() {
 
     updateFooterHeight();
     window.addEventListener('resize', updateFooterHeight);
+    window.visualViewport?.addEventListener('resize', updateFooterHeight);
 
-    return () => window.removeEventListener('resize', updateFooterHeight);
+    return () => {
+      window.removeEventListener('resize', updateFooterHeight);
+      window.visualViewport?.removeEventListener('resize', updateFooterHeight);
+    };
   }, []);
 }
 
