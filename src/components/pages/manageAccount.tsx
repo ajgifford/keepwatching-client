@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import InstallMobileIcon from '@mui/icons-material/InstallMobile';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -28,6 +29,7 @@ import {
 
 import { STATIC_CONTENT_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { usePWAInstall } from '../../app/hooks/usePWAInstall';
 import { useDateFormatters } from '../../app/hooks/useDateFormatters';
 import {
   deleteAccount,
@@ -59,6 +61,7 @@ import { getAuth } from 'firebase/auth';
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
   const formatters = useDateFormatters();
+  const { isInstallable, install } = usePWAInstall();
   const account = useAppSelector(selectCurrentAccount);
   const profiles = useAppSelector(selectAllProfiles);
   const activeProfile = useAppSelector(selectActiveProfile);
@@ -375,6 +378,13 @@ const ManageAccount = () => {
                 <DeleteForeverIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
+            {isInstallable && (
+              <Tooltip title="Install KeepWatching as an app on this device" placement="top">
+                <IconButton size="small" onClick={install} color="primary">
+                  <InstallMobileIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            )}
           </Typography>
           <Typography variant="subtitle1" color="primary" gutterBottom>
             Email: <i>{safeAccount.email}</i>{' '}
