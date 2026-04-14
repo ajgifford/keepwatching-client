@@ -3,6 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { MovieCard } from '../movieCard';
 import { ProfileMovie } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
+import { calculateRuntimeDisplay } from '../../../utility/contentUtility';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -131,7 +133,7 @@ describe('MovieCard', () => {
     beforeEach(() => {
       // Mock the current date to be 2024-01-15
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15T12:00:00Z'));
+      jest.setSystemTime(new Date('2024-01-15T12:00:00Z').getTime());
     });
 
     afterEach(() => {
@@ -229,7 +231,6 @@ describe('MovieCard', () => {
 
   describe('poster image', () => {
     it('should use buildTMDBImagePath with w185 size', () => {
-      const { buildTMDBImagePath } = require('@ajgifford/keepwatching-ui');
       renderMovieCard();
 
       expect(buildTMDBImagePath).toHaveBeenCalledWith('/shawshank.jpg', 'w185');
@@ -238,7 +239,6 @@ describe('MovieCard', () => {
 
   describe('runtime display', () => {
     it('should call calculateRuntimeDisplay with runtime', () => {
-      const { calculateRuntimeDisplay } = require('../../../utility/contentUtility');
       renderMovieCard();
 
       expect(calculateRuntimeDisplay).toHaveBeenCalledWith(142);

@@ -7,7 +7,7 @@ import { ShowCast, ShowCastMember } from '@ajgifford/keepwatching-types';
 jest.mock('../../person/personCard', () => ({
   PersonCard: ({ person, returnPath }: any) => (
     <div data-testid={`person-card-${person.personId}`} data-return-path={returnPath}>
-      {person.personName} as {person.characterName}
+      {person.name} as {person.characterName}
     </div>
   ),
 }));
@@ -16,51 +16,56 @@ describe('ShowCastSection', () => {
   const mockActiveCast: ShowCastMember[] = [
     {
       personId: 1,
-      personName: 'Bryan Cranston',
+      name: 'Bryan Cranston',
       characterName: 'Walter White',
       profileImage: '/bryan.jpg',
       contentId: 123,
       episodeCount: 62,
-      isPast: false,
+      active: true,
+      order: 0,
     },
     {
       personId: 2,
-      personName: 'Aaron Paul',
+      name: 'Aaron Paul',
       characterName: 'Jesse Pinkman',
       profileImage: '/aaron.jpg',
       contentId: 123,
       episodeCount: 62,
-      isPast: false,
+      active: true,
+      order: 0,
     },
     {
       personId: 3,
-      personName: 'Anna Gunn',
+      name: 'Anna Gunn',
       characterName: 'Skyler White',
       profileImage: '/anna.jpg',
       contentId: 123,
       episodeCount: 62,
-      isPast: false,
+      active: true,
+      order: 0,
     },
   ];
 
   const mockPriorCast: ShowCastMember[] = [
     {
       personId: 4,
-      personName: 'Giancarlo Esposito',
+      name: 'Giancarlo Esposito',
       characterName: 'Gus Fring',
       profileImage: '/giancarlo.jpg',
       contentId: 123,
       episodeCount: 26,
-      isPast: true,
+      active: false,
+      order: 0,
     },
     {
       personId: 5,
-      personName: 'Bob Odenkirk',
+      name: 'Bob Odenkirk',
       characterName: 'Saul Goodman',
       profileImage: '/bob.jpg',
       contentId: 123,
       episodeCount: 43,
-      isPast: true,
+      active: false,
+      order: 0,
     },
   ];
 
@@ -235,12 +240,13 @@ describe('ShowCastSection', () => {
     it('should handle large number of cast members', () => {
       const manyCastMembers = Array.from({ length: 20 }, (_, i) => ({
         personId: i,
-        personName: `Actor ${i}`,
+        name: `Actor ${i}`,
         characterName: `Character ${i}`,
         profileImage: `/actor-${i}.jpg`,
         contentId: 123,
         episodeCount: 10,
-        isPast: false,
+        active: true,
+        order: i,
       }));
 
       const largeCast: ShowCast = {
@@ -259,12 +265,13 @@ describe('ShowCastSection', () => {
       const specialCharsCast: ShowCastMember[] = [
         {
           personId: 1,
-          personName: "O'Brien & Smith-Jones",
+          name: "O'Brien & Smith-Jones",
           characterName: "D'Angelo",
           profileImage: '/actor.jpg',
           contentId: 123,
           episodeCount: 10,
-          isPast: false,
+          active: true,
+          order: 1,
         },
       ];
 

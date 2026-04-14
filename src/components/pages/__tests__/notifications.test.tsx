@@ -3,6 +3,16 @@ import { BrowserRouter } from 'react-router-dom';
 
 import Notifications from '../notifications';
 import { AccountNotification } from '@ajgifford/keepwatching-types';
+import { useAppSelector } from '../../../app/hooks';
+import { selectCurrentAccount } from '../../../app/slices/accountSlice';
+import {
+  dismissAllSystemNotifications,
+  dismissSystemNotification,
+  fetchSystemNotifications,
+  markAllSystemNotificationsRead,
+  markSystemNotificationRead,
+  selectSystemNotifications,
+} from '../../../app/slices/systemNotificationsSlice';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -91,11 +101,8 @@ describe('Notifications', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-    const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectCurrentAccount) return mockAccount;
       if (selector === selectSystemNotifications) return mockNotifications;
       return null;
@@ -146,8 +153,6 @@ describe('Notifications', () => {
 
   describe('data loading', () => {
     it('should dispatch fetchSystemNotifications on mount when account exists', () => {
-      const { fetchSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
       renderWithRouter(<Notifications />);
 
       expect(fetchSystemNotifications).toHaveBeenCalledWith(mockAccount.id);
@@ -155,14 +160,7 @@ describe('Notifications', () => {
     });
 
     it('should not dispatch fetchSystemNotifications when account is null', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const {
-        selectSystemNotifications,
-        fetchSystemNotifications,
-      } = require('../../../app/slices/systemNotificationsSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return null;
         if (selector === selectSystemNotifications) return [];
         return null;
@@ -287,8 +285,6 @@ describe('Notifications', () => {
   describe('mark as read/unread', () => {
     it('should dispatch markSystemNotificationRead when mark as read is clicked', async () => {
       const user = userEvent.setup();
-      const { markSystemNotificationRead } = require('../../../app/slices/systemNotificationsSlice');
-
       renderWithRouter(<Notifications />);
 
       const markButtons = screen.getAllByRole('button', { name: /mark as/i });
@@ -298,11 +294,7 @@ describe('Notifications', () => {
     });
 
     it('should display Mark All Unread button when all notifications are read', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return mockNotifications.map((n) => ({ ...n, read: true }));
         return null;
@@ -315,8 +307,6 @@ describe('Notifications', () => {
 
     it('should dispatch markAllSystemNotificationsRead when Mark All Read is clicked', async () => {
       const user = userEvent.setup();
-      const { markAllSystemNotificationsRead } = require('../../../app/slices/systemNotificationsSlice');
-
       renderWithRouter(<Notifications />);
 
       const markAllReadButton = screen.getByRole('button', { name: /mark all read/i });
@@ -332,8 +322,6 @@ describe('Notifications', () => {
   describe('dismiss notifications', () => {
     it('should dispatch dismissSystemNotification when dismiss button is clicked', async () => {
       const user = userEvent.setup();
-      const { dismissSystemNotification } = require('../../../app/slices/systemNotificationsSlice');
-
       renderWithRouter(<Notifications />);
 
       const dismissButtons = screen.getAllByRole('button', { name: /dismiss notification/i });
@@ -344,8 +332,6 @@ describe('Notifications', () => {
 
     it('should dispatch dismissAllSystemNotifications when Dismiss All is clicked', async () => {
       const user = userEvent.setup();
-      const { dismissAllSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
       renderWithRouter(<Notifications />);
 
       const dismissAllButton = screen.getByRole('button', { name: /dismiss all/i });
@@ -357,11 +343,7 @@ describe('Notifications', () => {
     });
 
     it('should disable Dismiss All button when no notifications', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return [];
         return null;
@@ -376,11 +358,7 @@ describe('Notifications', () => {
 
   describe('empty state', () => {
     it('should display empty state when no notifications', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return [];
         return null;
@@ -495,11 +473,7 @@ describe('Notifications', () => {
         },
       ];
 
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return notificationsWithHTML;
         return null;
@@ -523,11 +497,7 @@ describe('Notifications', () => {
         },
       ];
 
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-      const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectCurrentAccount) return mockAccount;
         if (selector === selectSystemNotifications) return oldNotification;
         return null;

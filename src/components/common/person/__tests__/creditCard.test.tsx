@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import { CreditCard } from '../creditCard';
 import { Credit, ShowCredit } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -176,7 +177,6 @@ describe('CreditCard', () => {
 
   describe('image handling', () => {
     it('should call buildTMDBImagePath with w92 size', () => {
-      const { buildTMDBImagePath } = require('@ajgifford/keepwatching-ui');
       render(<CreditCard credit={mockCredit} />);
 
       expect(buildTMDBImagePath).toHaveBeenCalledWith('/shawshank.jpg', 'w92');

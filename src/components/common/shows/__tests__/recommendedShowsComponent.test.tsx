@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import accountSlice from '../../../../app/slices/accountSlice';
 import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
 import activeShowSlice, { fetchRecommendedShows } from '../../../../app/slices/activeShowSlice';
+import preferencesReducer from '../../../../app/slices/preferencesSlice';
 import { RecommendedShowsComponent } from '../recommendedShowsComponent';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 import { configureStore } from '@reduxjs/toolkit';
@@ -43,6 +44,7 @@ const createMockStore = (recommendedShows: SimilarOrRecommendedShow[] = [], reco
       activeShow: activeShowSlice,
       activeProfile: activeProfileSlice,
       auth: accountSlice,
+      preferences: preferencesReducer,
     },
     preloadedState: {
       activeShow: {
@@ -91,7 +93,7 @@ const createMockStore = (recommendedShows: SimilarOrRecommendedShow[] = [], reco
           disabled: false,
           createdDate: '2024-01-01',
           defaultProfileId: 1,
-          image: undefined,
+          image: '',
         },
         loading: false,
         error: null,

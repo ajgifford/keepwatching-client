@@ -29,6 +29,7 @@ const mockEpisode1: NextEpisode = {
   overview: 'First episode',
   posterImage: '/poster.jpg',
   episodeStillImage: '/still.jpg',
+  runtime: 0,
 };
 
 const mockEpisode2: NextEpisode = {

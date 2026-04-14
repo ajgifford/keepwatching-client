@@ -34,24 +34,20 @@ jest.mock('@mui/material', () => ({
 
 describe('SearchResultItem', () => {
   const mockSearchResult: DiscoverAndSearchResult = {
-    id: 1,
+    id: '1',
     title: 'Breaking Bad',
-    tmdbId: 123,
     image: '/breaking-bad.jpg',
     premiered: '2008-01-20',
     summary: 'A high school chemistry teacher turned methamphetamine producer.',
     genres: ['Drama', 'Crime', 'Thriller'],
-    country: 'US',
     rating: 9.5,
     popularity: 95.5,
-    language: 'en',
-    inFavorites: false,
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-01-15T12:00:00Z'));
+    jest.setSystemTime(new Date('2024-01-15T12:00:00Z').getTime());
   });
 
   afterEach(() => {

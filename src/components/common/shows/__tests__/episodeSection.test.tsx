@@ -30,6 +30,7 @@ describe('EpisodesSection', () => {
       network: 'AMC',
       streamingServices: 'Netflix',
       profileId: 123,
+      runtime: 0,
     },
     {
       showId: 2,
@@ -42,6 +43,7 @@ describe('EpisodesSection', () => {
       network: 'AMC',
       streamingServices: 'Netflix',
       profileId: 123,
+      runtime: 0,
     },
   ];
 
@@ -57,6 +59,7 @@ describe('EpisodesSection', () => {
       network: 'HBO',
       streamingServices: 'Max',
       profileId: 123,
+      runtime: 0,
     },
   ];
 

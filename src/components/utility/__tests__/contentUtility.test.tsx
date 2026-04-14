@@ -66,7 +66,7 @@ describe('contentUtility', () => {
   describe('buildEpisodeAirDate', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15'));
+      jest.setSystemTime(new Date('2024-01-15').getTime());
     });
 
     afterEach(() => {
@@ -89,7 +89,7 @@ describe('contentUtility', () => {
   describe('buildSeasonAirDate', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15'));
+      jest.setSystemTime(new Date('2024-01-15').getTime());
     });
 
     afterEach(() => {
@@ -112,7 +112,7 @@ describe('contentUtility', () => {
   describe('buildShowAirDate', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15'));
+      jest.setSystemTime(new Date('2024-01-15').getTime());
     });
 
     afterEach(() => {

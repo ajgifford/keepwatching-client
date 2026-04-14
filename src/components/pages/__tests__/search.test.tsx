@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import Search from '../search';
+import { clearPersonSearch } from '../../../app/slices/personSearchSlice';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -137,7 +138,6 @@ describe('Search', () => {
   describe('person search clear', () => {
     it('should dispatch clearPersonSearch when switching from People tab', async () => {
       const user = userEvent.setup();
-      const { clearPersonSearch } = require('../../../app/slices/personSearchSlice');
       renderWithRouter(<Search />);
 
       // Switch to People tab
@@ -149,7 +149,6 @@ describe('Search', () => {
 
     it('should dispatch clearPersonSearch when switching to Movies tab', async () => {
       const user = userEvent.setup();
-      const { clearPersonSearch } = require('../../../app/slices/personSearchSlice');
       renderWithRouter(<Search />);
 
       const moviesTab = screen.getByRole('tab', { name: /movies/i });
@@ -160,7 +159,6 @@ describe('Search', () => {
 
     it('should dispatch clearPersonSearch when switching between any tabs', async () => {
       const user = userEvent.setup();
-      const { clearPersonSearch } = require('../../../app/slices/personSearchSlice');
       renderWithRouter(<Search />);
 
       // Switch to Movies
@@ -375,7 +373,6 @@ describe('Search', () => {
   describe('edge cases', () => {
     it('should handle clicking on already selected tab', async () => {
       const user = userEvent.setup();
-      const { clearPersonSearch } = require('../../../app/slices/personSearchSlice');
       renderWithRouter(<Search />);
 
       const tvShowsTab = screen.getByRole('tab', { name: /tv shows/i });

@@ -1,6 +1,21 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { useAppSelector } from '../../../app/hooks';
+import {
+  fetchMilestoneStats,
+  selectActiveProfile,
+  selectActiveProfileError,
+  selectActiveProfileLoading,
+  selectMilestoneStats,
+  selectMovieWatchCounts,
+  selectMoviesByIds,
+  selectRecentEpisodes,
+  selectRecentMovies,
+  selectShowWatchCounts,
+  selectUpcomingEpisodes,
+  selectUpcomingMovies,
+} from '../../../app/slices/activeProfileSlice';
 import Home from '../home';
 import userEvent from '@testing-library/user-event';
 
@@ -130,22 +145,8 @@ describe('Home', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const {
-      selectActiveProfile,
-      selectActiveProfileError,
-      selectActiveProfileLoading,
-      selectMilestoneStats,
-      selectMovieWatchCounts,
-      selectMoviesByIds,
-      selectRecentEpisodes,
-      selectRecentMovies,
-      selectShowWatchCounts,
-      selectUpcomingEpisodes,
-      selectUpcomingMovies,
-    } = require('../../../app/slices/activeProfileSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       // These selectors are called before any conditional rendering, so always return valid values
       if (selector === selectShowWatchCounts) return mockShowWatchCounts;
       if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
@@ -208,14 +209,7 @@ describe('Home', () => {
 
   describe('loading and error states', () => {
     it('should render LoadingComponent when activeProfileLoading is true', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectActiveProfileLoading,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return true;
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
         if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
@@ -229,15 +223,7 @@ describe('Home', () => {
     });
 
     it('should render ErrorComponent when activeProfileError exists', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectActiveProfileLoading,
-        selectActiveProfileError,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return 'Error loading profile';
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
@@ -253,16 +239,7 @@ describe('Home', () => {
     });
 
     it('should render LoadingComponent when profile is null', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectActiveProfileLoading,
-        selectActiveProfileError,
-        selectActiveProfile,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return null;
         if (selector === selectActiveProfile) return null;
@@ -361,7 +338,6 @@ describe('Home', () => {
 
   describe('data loading', () => {
     it('should dispatch fetchMilestoneStats on mount when profile exists', () => {
-      const { fetchMilestoneStats } = require('../../../app/slices/activeProfileSlice');
       renderWithRouter(<Home />);
 
       expect(fetchMilestoneStats).toHaveBeenCalled();
@@ -369,17 +345,7 @@ describe('Home', () => {
     });
 
     it('should not dispatch fetchMilestoneStats when profile is null', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        fetchMilestoneStats,
-        selectActiveProfileLoading,
-        selectActiveProfileError,
-        selectActiveProfile,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return null;
         if (selector === selectActiveProfile) return null;
@@ -394,27 +360,12 @@ describe('Home', () => {
     });
 
     it('should re-dispatch fetchMilestoneStats when profile changes', () => {
-      const { fetchMilestoneStats } = require('../../../app/slices/activeProfileSlice');
       const { rerender } = renderWithRouter(<Home />);
 
       expect(fetchMilestoneStats).toHaveBeenCalledTimes(1);
 
       // Change profile
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectActiveProfile,
-        selectActiveProfileLoading,
-        selectActiveProfileError,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-        selectMilestoneStats,
-        selectRecentEpisodes,
-        selectUpcomingEpisodes,
-        selectRecentMovies,
-        selectUpcomingMovies,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectActiveProfile) return { ...mockProfile, id: 2 };
         if (selector === selectActiveProfileLoading) return false;
         if (selector === selectActiveProfileError) return null;
@@ -528,7 +479,7 @@ describe('Home', () => {
       renderWithRouter(<Home />);
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(5);
+      expect(tabs).toHaveLength(6);
     });
 
     it('should have tablist with aria-label', () => {
@@ -565,21 +516,7 @@ describe('Home', () => {
     });
 
     it('should handle empty milestone stats', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectActiveProfile,
-        selectActiveProfileLoading,
-        selectActiveProfileError,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-        selectMilestoneStats,
-        selectRecentEpisodes,
-        selectUpcomingEpisodes,
-        selectRecentMovies,
-        selectUpcomingMovies,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
         if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
         if (selector === selectActiveProfileLoading) return false;
@@ -610,21 +547,7 @@ describe('Home', () => {
     });
 
     it('should handle empty episodes and movies', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectActiveProfile,
-        selectActiveProfileLoading,
-        selectActiveProfileError,
-        selectShowWatchCounts,
-        selectMovieWatchCounts,
-        selectMilestoneStats,
-        selectRecentEpisodes,
-        selectUpcomingEpisodes,
-        selectRecentMovies,
-        selectUpcomingMovies,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShowWatchCounts) return mockShowWatchCounts;
         if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
         if (selector === selectActiveProfileLoading) return false;

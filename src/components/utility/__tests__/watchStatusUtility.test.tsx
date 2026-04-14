@@ -124,7 +124,7 @@ describe('watchStatusUtility', () => {
   describe('canChangeShowWatchStatus', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15'));
+      jest.setSystemTime(new Date('2024-01-15').getTime());
     });
 
     afterEach(() => {
@@ -159,7 +159,7 @@ describe('watchStatusUtility', () => {
   describe('canChangeSeasonWatchStatus', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15'));
+      jest.setSystemTime(new Date('2024-01-15').getTime());
     });
 
     afterEach(() => {
@@ -194,7 +194,7 @@ describe('watchStatusUtility', () => {
   describe('canChangeEpisodeWatchStatus', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15'));
+      jest.setSystemTime(new Date('2024-01-15').getTime());
     });
 
     afterEach(() => {

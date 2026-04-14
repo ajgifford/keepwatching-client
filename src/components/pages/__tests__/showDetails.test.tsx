@@ -3,6 +3,20 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import ShowDetails from '../showDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
+import { useAppSelector } from '../../../app/hooks';
+import {
+  clearActiveShow,
+  fetchShowWithDetails,
+  selectSeasons,
+  selectShow,
+  selectShowCast,
+  selectShowError,
+  selectShowLoading,
+  selectWatchedEpisodes,
+  updateEpisodeWatchStatus,
+  updateSeasonWatchStatus,
+} from '../../../app/slices/activeShowSlice';
+import { updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -101,6 +115,7 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: (path: string) => `https://image.tmdb.org/t/p/w500${path}`,
   formatUserRating: (rating: number) => rating?.toFixed(1) || 'N/A',
   getWatchStatusDisplay: (status: string) => status || 'Unknown',
+  parseLocalDate: (dateStr: string) => new Date(dateStr + 'T00:00:00'),
 }));
 
 jest.mock('../../../app/hooks/useDateFormatters', () => ({
@@ -222,17 +237,7 @@ describe('ShowDetails', () => {
     jest.clearAllMocks();
     mockDispatch.mockResolvedValue({ type: 'mock' });
 
-    const { useAppSelector } = require('../../../app/hooks');
-    const {
-      selectSeasons,
-      selectShow,
-      selectShowCast,
-      selectShowError,
-      selectShowLoading,
-      selectWatchedEpisodes,
-    } = require('../../../app/slices/activeShowSlice');
-
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectShow) return mockShow;
       if (selector === selectSeasons) return mockSeasons;
       if (selector === selectShowCast) return mockCast;
@@ -245,14 +250,12 @@ describe('ShowDetails', () => {
 
   describe('component lifecycle', () => {
     it('dispatches fetchShowWithDetails on mount', () => {
-      const { fetchShowWithDetails } = require('../../../app/slices/activeShowSlice');
       renderShowDetails();
 
       expect(mockDispatch).toHaveBeenCalledWith(fetchShowWithDetails({ profileId: 1, showId: 1 }));
     });
 
     it('dispatches clearActiveShow on unmount', () => {
-      const { clearActiveShow } = require('../../../app/slices/activeShowSlice');
       const { unmount } = renderShowDetails();
 
       unmount();
@@ -263,10 +266,7 @@ describe('ShowDetails', () => {
 
   describe('loading and error states', () => {
     it('renders loading component when loading', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShowLoading } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShowLoading) return true;
         return null;
       });
@@ -277,10 +277,7 @@ describe('ShowDetails', () => {
     });
 
     it('renders error component when there is an error', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShowError } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShowError) return 'Failed to load show';
         return null;
       });
@@ -421,17 +418,13 @@ describe('ShowDetails', () => {
     });
 
     it('shows "Mark Unwatched" for watched/up to date shows', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShow } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.WATCHED };
-        if (selector === require('../../../app/slices/activeShowSlice').selectSeasons) return mockSeasons;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowCast) return mockCast;
-        if (selector === require('../../../app/slices/activeShowSlice').selectWatchedEpisodes)
-          return mockWatchedEpisodes;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowLoading) return false;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowError) return null;
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
         return null;
       });
 
@@ -441,7 +434,6 @@ describe('ShowDetails', () => {
     });
 
     it('dispatches updateShowWatchStatus when watch status button is clicked', async () => {
-      const { updateShowWatchStatus } = require('../../../app/slices/activeProfileSlice');
       renderShowDetails();
 
       const watchButton = screen.getByRole('button', { name: /mark as watched/i });
@@ -459,17 +451,13 @@ describe('ShowDetails', () => {
     });
 
     it('disables watch status button for unaired shows', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShow } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.UNAIRED };
-        if (selector === require('../../../app/slices/activeShowSlice').selectSeasons) return mockSeasons;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowCast) return mockCast;
-        if (selector === require('../../../app/slices/activeShowSlice').selectWatchedEpisodes)
-          return mockWatchedEpisodes;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowLoading) return false;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowError) return null;
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
         return null;
       });
 
@@ -603,8 +591,6 @@ describe('ShowDetails', () => {
       jest.clearAllMocks();
       mockDispatch.mockResolvedValue({ type: 'mock' });
 
-      const { updateSeasonWatchStatus } = require('../../../app/slices/activeShowSlice');
-
       renderShowDetails();
       const seasonsTab = screen.getByRole('tab', { name: /seasons & episodes/i });
       fireEvent.click(seasonsTab);
@@ -650,8 +636,6 @@ describe('ShowDetails', () => {
     it('dispatches updateEpisodeWatchStatus when episode watch button is clicked', async () => {
       jest.clearAllMocks();
       mockDispatch.mockResolvedValue({ type: 'mock' });
-
-      const { updateEpisodeWatchStatus } = require('../../../app/slices/activeShowSlice');
 
       renderShowDetails();
       const seasonsTab = screen.getByRole('tab', { name: /seasons & episodes/i });
@@ -716,17 +700,13 @@ describe('ShowDetails', () => {
 
   describe('formatting helpers', () => {
     it('formats season count correctly for single season', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShow } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShow) return { ...mockShow, seasonCount: 1 };
-        if (selector === require('../../../app/slices/activeShowSlice').selectSeasons) return mockSeasons;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowCast) return mockCast;
-        if (selector === require('../../../app/slices/activeShowSlice').selectWatchedEpisodes)
-          return mockWatchedEpisodes;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowLoading) return false;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowError) return null;
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
         return null;
       });
 
@@ -736,17 +716,13 @@ describe('ShowDetails', () => {
     });
 
     it('shows "No seasons" when season count is undefined', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShow } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShow) return { ...mockShow, seasonCount: undefined };
-        if (selector === require('../../../app/slices/activeShowSlice').selectSeasons) return mockSeasons;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowCast) return mockCast;
-        if (selector === require('../../../app/slices/activeShowSlice').selectWatchedEpisodes)
-          return mockWatchedEpisodes;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowLoading) return false;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowError) return null;
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
         return null;
       });
 
@@ -756,17 +732,13 @@ describe('ShowDetails', () => {
     });
 
     it('filters out "Unknown" from streaming services', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectShow } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShow) return { ...mockShow, streamingServices: 'Netflix, Unknown, Hulu' };
-        if (selector === require('../../../app/slices/activeShowSlice').selectSeasons) return mockSeasons;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowCast) return mockCast;
-        if (selector === require('../../../app/slices/activeShowSlice').selectWatchedEpisodes)
-          return mockWatchedEpisodes;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowLoading) return false;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowError) return null;
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
         return null;
       });
 
@@ -779,17 +751,13 @@ describe('ShowDetails', () => {
 
   describe('empty states', () => {
     it('shows message when no seasons available', async () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectSeasons } = require('../../../app/slices/activeShowSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
-        if (selector === require('../../../app/slices/activeShowSlice').selectShow) return mockShow;
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectShow) return mockShow;
         if (selector === selectSeasons) return null;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowCast) return mockCast;
-        if (selector === require('../../../app/slices/activeShowSlice').selectWatchedEpisodes)
-          return mockWatchedEpisodes;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowLoading) return false;
-        if (selector === require('../../../app/slices/activeShowSlice').selectShowError) return null;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
         return null;
       });
 

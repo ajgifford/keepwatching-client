@@ -2,6 +2,10 @@ import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import ManageAccount from '../manageAccount';
+import { useAppSelector } from '../../../app/hooks';
+import { selectCurrentAccount } from '../../../app/slices/accountSlice';
+import { selectAllProfiles } from '../../../app/slices/profilesSlice';
+import { selectActiveProfile, selectLastUpdated } from '../../../app/slices/activeProfileSlice';
 
 // Mock Firebase Auth
 const mockCurrentUser = {
@@ -133,12 +137,8 @@ describe('ManageAccount - Snapshots', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
-    const { selectAllProfiles, selectProfileById } = require('../../../app/slices/profilesSlice');
-    const { selectActiveProfile, selectLastUpdated } = require('../../../app/slices/activeProfileSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectCurrentAccount) return mockAccount;
       if (selector === selectAllProfiles) return mockProfiles;
       if (selector === selectActiveProfile) return mockActiveProfile;

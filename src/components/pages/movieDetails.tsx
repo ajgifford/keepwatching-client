@@ -3,7 +3,11 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AccessTime, CalendarToday, Replay, Star } from '@mui/icons-material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Card,
@@ -41,6 +45,10 @@ import {
 } from '../../app/slices/activeMovieSlice';
 import { updateMovieWatchStatus } from '../../app/slices/activeProfileSlice';
 import { startMovieRewatch } from '../../app/slices/watchHistorySlice';
+import { fetchRatings } from '../../app/slices/ratingsSlice';
+import { fetchProfileRecommendations } from '../../app/slices/communityRecommendationsSlice';
+import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
+import { RecommendButton } from '../common/recommendations/recommendButton';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { MovieCastSection } from '../common/movies/movieCast';
@@ -89,6 +97,8 @@ function MovieDetails() {
   useEffect(() => {
     if (movieId && profileId) {
       dispatch(fetchMovieWithDetails({ profileId: Number(profileId), movieId: Number(movieId) }));
+      dispatch(fetchRatings({ profileId: Number(profileId) }));
+      dispatch(fetchProfileRecommendations({ profileId: Number(profileId) }));
     }
 
     return () => {
@@ -376,6 +386,16 @@ function MovieDetails() {
                       ? 'Mark Unwatched'
                       : 'Mark as Watched'}
                 </Button>
+                {movie && profileId && (
+                  <Box sx={{ mt: 1 }}>
+                    <RecommendButton
+                      profileId={Number(profileId)}
+                      contentType="movie"
+                      contentId={movie.id}
+                      contentTitle={movie.title}
+                    />
+                  </Box>
+                )}
                 {movie?.watchStatus === WatchStatus.WATCHED && (
                   <Button
                     variant="outlined"
@@ -466,6 +486,26 @@ function MovieDetails() {
                 </Typography>
               </Grid>
             </Grid>
+
+            {/* Your Rating & Notes */}
+            {movie && profileId && (
+              <Accordion sx={{ mb: 2 }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="subtitle1" fontWeight="medium">
+                    Your Rating &amp; Notes
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <ContentRatingWidget
+                    profileId={Number(profileId)}
+                    contentType="movie"
+                    contentId={movie.id}
+                    contentTitle={movie.title}
+                    posterImage={movie.posterImage}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            )}
 
             {/* Tab Navigation */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>

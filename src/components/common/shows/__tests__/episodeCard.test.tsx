@@ -43,6 +43,12 @@ describe('EpisodeCard', () => {
     airDate: '2013-09-15',
     network: 'AMC',
     streamingServices: 'Netflix',
+    episodeId: 0,
+    overview: '',
+    runtime: 0,
+    seasonId: 0,
+    posterImage: '',
+    profileId: 0,
   };
 
   const mockOnWatchStatusChange = jest.fn();
@@ -50,7 +56,7 @@ describe('EpisodeCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-01-15T12:00:00Z')); // Set current date to future from episode
+    jest.setSystemTime(new Date('2024-01-15T12:00:00Z').getTime()); // Set current date to future from episode
   });
 
   afterEach(() => {
@@ -439,7 +445,7 @@ describe('EpisodeCard', () => {
 
   describe('date comparison edge cases', () => {
     it('should handle airDate exactly equal to current date', () => {
-      jest.setSystemTime(new Date('2013-09-15T12:00:00Z'));
+      jest.setSystemTime(new Date('2013-09-15T12:00:00Z').getTime());
 
       const todayEpisode = {
         ...mockEpisode,

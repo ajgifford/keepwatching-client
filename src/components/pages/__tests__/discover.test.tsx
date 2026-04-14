@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { showActivityNotification } from '../../../app/slices/activityNotificationSlice';
 import Discover from '../discover';
 import userEvent from '@testing-library/user-event';
 import { AxiosResponse } from 'axios';
@@ -384,7 +385,7 @@ describe('Discover', () => {
 
   describe('error handling', () => {
     it('should show error notification when API fails on mount', async () => {
-      const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
+
       mockAxiosGet.mockRejectedValue(new Error('API Error'));
 
       renderWithRouter(<Discover />);
@@ -398,7 +399,7 @@ describe('Discover', () => {
     });
 
     it('should show default error message for non-axios errors', async () => {
-      const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
+
       // The component checks instanceof AxiosError, which a plain object won't satisfy,
       // so it falls back to the default error message
       const axiosError: any = {
@@ -448,10 +449,10 @@ describe('Discover', () => {
   });
 
   describe('accessibility', () => {
-    it('should have two accessible tabs', async () => {
+    it('should have accessible tabs', async () => {
       renderWithRouter(<Discover />);
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(2);
+      expect(tabs).toHaveLength(3);
       await waitFor(() => expect(mockAxiosGet).toHaveBeenCalled());
     });
 

@@ -44,7 +44,7 @@ describe('DashboardEpisodeCard', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date(2024, 0, 15, 12, 0, 0)); // Set current date to match episode air date (local time)
+    jest.setSystemTime(new Date(2024, 0, 15, 12, 0, 0).getTime()); // Set current date to match episode air date (local time)
   });
 
   afterEach(() => {
@@ -429,7 +429,7 @@ describe('DashboardEpisodeCard', () => {
     });
 
     it('should handle date at midnight boundary', () => {
-      jest.setSystemTime(new Date(2024, 0, 15, 0, 0, 0)); // Local midnight
+      jest.setSystemTime(new Date(2024, 0, 15, 0, 0, 0).getTime()); // Local midnight
 
       renderWithRouter(<DashboardEpisodeCard episode={mockEpisode} />);
 
@@ -437,7 +437,7 @@ describe('DashboardEpisodeCard', () => {
     });
 
     it('should handle date at end of day boundary', () => {
-      jest.setSystemTime(new Date(2024, 0, 15, 23, 59, 59)); // Local end of day
+      jest.setSystemTime(new Date(2024, 0, 15, 23, 59, 59).getTime()); // Local end of day
 
       renderWithRouter(<DashboardEpisodeCard episode={mockEpisode} />);
 

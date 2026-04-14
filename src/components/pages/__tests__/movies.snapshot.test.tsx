@@ -2,6 +2,15 @@ import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import Movies from '../movies';
+import { useAppSelector } from '../../../app/hooks';
+import {
+  selectActiveProfile,
+  selectMovies,
+  selectActiveProfileLoading,
+  selectActiveProfileError,
+  selectMovieGenres,
+  selectMovieStreamingServices,
+} from '../../../app/slices/activeProfileSlice';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -62,17 +71,8 @@ describe('Movies - Snapshots', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const {
-      selectActiveProfile,
-      selectMovies,
-      selectActiveProfileLoading,
-      selectActiveProfileError,
-      selectMovieGenres,
-      selectMovieStreamingServices,
-    } = require('../../../app/slices/activeProfileSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectActiveProfile) return mockProfile;
       if (selector === selectMovies) return mockMovies;
       if (selector === selectActiveProfileLoading) return false;

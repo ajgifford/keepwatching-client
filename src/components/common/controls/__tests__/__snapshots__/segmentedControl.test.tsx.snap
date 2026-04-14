@@ -6,7 +6,7 @@ exports[`SegmentedControl snapshot tests should match snapshot with default prop
     class="MuiBox-root css-1baulvz"
   >
     <div
-      class="MuiButtonGroup-root MuiButtonGroup-outlined MuiButtonGroup-horizontal MuiButtonGroup-colorPrimary css-1hd13ye-MuiButtonGroup-root"
+      class="MuiButtonGroup-root MuiButtonGroup-outlined MuiButtonGroup-horizontal MuiButtonGroup-colorPrimary css-394ku1-MuiButtonGroup-root"
       role="group"
     >
       <button

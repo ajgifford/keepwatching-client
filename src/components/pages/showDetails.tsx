@@ -63,6 +63,10 @@ import {
   updateSeasonWatchStatus,
 } from '../../app/slices/activeShowSlice';
 import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../../app/slices/watchHistorySlice';
+import { fetchRatings } from '../../app/slices/ratingsSlice';
+import { fetchProfileRecommendations } from '../../app/slices/communityRecommendationsSlice';
+import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
+import { RecommendButton } from '../common/recommendations/recommendButton';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import BulkMarkBanner from '../common/shows/BulkMarkBanner';
 import PriorWatchPromptDialog from '../common/shows/PriorWatchPromptDialog';
@@ -166,6 +170,8 @@ function ShowDetails() {
   useEffect(() => {
     if (showId && profileId) {
       dispatch(fetchShowWithDetails({ profileId: Number(profileId), showId: Number(showId) }));
+      dispatch(fetchRatings({ profileId: Number(profileId) }));
+      dispatch(fetchProfileRecommendations({ profileId: Number(profileId) }));
     }
 
     // Cleanup function to clear the active show when component unmounts
@@ -683,6 +689,7 @@ function ShowDetails() {
                   <Chip label={show?.contentRating} size="small" color="primary" sx={{ fontWeight: 500 }} />
                 </Box>
 
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1, mt: 1 }}>
                 <Button
                   variant="contained"
                   disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
@@ -695,7 +702,6 @@ function ShowDetails() {
                     )
                   }
                   sx={{
-                    mt: 1,
                     // Enhanced styling for better visibility
                     backgroundColor: 'rgba(0, 0, 0, 0.8)', // Darker, more opaque background
                     backdropFilter: 'blur(12px)', // Increased blur
@@ -747,6 +753,15 @@ function ShowDetails() {
                       ? 'Mark Unwatched'
                       : 'Mark as Watched'}
                 </Button>
+                  {show && profileId && (
+                    <RecommendButton
+                      profileId={Number(profileId)}
+                      contentType="show"
+                      contentId={show.id}
+                      contentTitle={show.title}
+                    />
+                  )}
+                </Box>
                 {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
                   <Button
                     variant="outlined"
@@ -885,6 +900,26 @@ function ShowDetails() {
                 </Paper>
               </Grid>
             </Grid>
+
+            {/* Your Rating & Notes */}
+            {show && profileId && (
+              <Accordion sx={{ mb: 2 }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="subtitle1" fontWeight="medium">
+                    Your Rating &amp; Notes
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <ContentRatingWidget
+                    profileId={Number(profileId)}
+                    contentType="show"
+                    contentId={show.id}
+                    contentTitle={show.title}
+                    posterImage={show.posterImage}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            )}
 
             {/* Tab Navigation */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>

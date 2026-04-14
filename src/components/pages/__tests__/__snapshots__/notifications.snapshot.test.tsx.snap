@@ -213,7 +213,7 @@ exports[`Notifications - Snapshots should match snapshot for initial render 1`] 
             </div>
           </div>
           <div
-            class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+            class="MuiListItemText-root MuiListItemText-multiline css-1tmwyiv-MuiListItemText-root"
           >
             <span
               class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
@@ -329,7 +329,7 @@ exports[`Notifications - Snapshots should match snapshot for initial render 1`] 
             </div>
           </div>
           <div
-            class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+            class="MuiListItemText-root MuiListItemText-multiline css-1tmwyiv-MuiListItemText-root"
           >
             <span
               class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
@@ -628,7 +628,7 @@ exports[`Notifications - Snapshots should match snapshot of notifications list 1
           </div>
         </div>
         <div
-          class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+          class="MuiListItemText-root MuiListItemText-multiline css-1tmwyiv-MuiListItemText-root"
         >
           <span
             class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"
@@ -744,7 +744,7 @@ exports[`Notifications - Snapshots should match snapshot of notifications list 1
           </div>
         </div>
         <div
-          class="MuiListItemText-root MuiListItemText-multiline css-21iez8-MuiListItemText-root"
+          class="MuiListItemText-root MuiListItemText-multiline css-1tmwyiv-MuiListItemText-root"
         >
           <span
             class="MuiTypography-root MuiTypography-body1 MuiListItemText-primary css-rizt0-MuiTypography-root"

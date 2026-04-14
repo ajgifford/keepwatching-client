@@ -11,7 +11,7 @@ import globals from 'globals';
 export default [
   // Global ignores
   {
-    ignores: ['node_modules/**', 'build/**', 'dist/**', 'coverage/**', '.vite/**', '*.config.js', '*.config.ts'],
+    ignores: ['node_modules/**', 'build/**', 'dist/**', 'dev-dist/**', 'coverage/**', '.vite/**', '*.config.js', '*.config.ts'],
   },
 
   // Base config for all files

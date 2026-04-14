@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import Shows from '../shows';
+import { useAppSelector } from '../../../app/hooks';
+import { selectShows, selectShowGenres, selectShowStreamingServices } from '../../../app/slices/activeProfileSlice';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -62,14 +64,8 @@ const renderWithRouter = (component: React.ReactElement) => {
 describe('Shows', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const {
-      selectShows,
-      selectShowGenres,
-      selectShowStreamingServices,
-    } = require('../../../app/slices/activeProfileSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectShows) return mockShows;
       if (selector === selectShowGenres) return ['Action', 'Comedy', 'Crime', 'Drama', 'Horror', 'Sci-Fi'];
       if (selector === selectShowStreamingServices) return ['Netflix', 'Disney+', 'HBO Max', 'Hulu'];
@@ -367,14 +363,7 @@ describe('Shows', () => {
 
   describe('empty state', () => {
     it('should display message when no shows match filters', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectShows,
-        selectShowGenres,
-        selectShowStreamingServices,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShows) return [];
         if (selector === selectShowGenres) return ['Comedy', 'Drama'];
         if (selector === selectShowStreamingServices) return ['Netflix', 'Hulu'];
@@ -387,14 +376,7 @@ describe('Shows', () => {
     });
 
     it('should show count as 0 when no shows', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectShows,
-        selectShowGenres,
-        selectShowStreamingServices,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShows) return [];
         if (selector === selectShowGenres) return [];
         if (selector === selectShowStreamingServices) return [];
@@ -469,14 +451,7 @@ describe('Shows', () => {
 
   describe('edge cases', () => {
     it('should handle empty genre list', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectShows,
-        selectShowGenres,
-        selectShowStreamingServices,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShows) return mockShows;
         if (selector === selectShowGenres) return [];
         if (selector === selectShowStreamingServices) return ['Netflix'];
@@ -489,14 +464,7 @@ describe('Shows', () => {
     });
 
     it('should handle empty streaming services list', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectShows,
-        selectShowGenres,
-        selectShowStreamingServices,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShows) return mockShows;
         if (selector === selectShowGenres) return ['Comedy'];
         if (selector === selectShowStreamingServices) return [];
@@ -519,14 +487,7 @@ describe('Shows', () => {
         },
       ];
 
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectShows,
-        selectShowGenres,
-        selectShowStreamingServices,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShows) return showsWithNoGenres;
         if (selector === selectShowGenres) return [];
         if (selector === selectShowStreamingServices) return ['Netflix'];
@@ -550,14 +511,7 @@ describe('Shows', () => {
         },
       ];
 
-      const { useAppSelector } = require('../../../app/hooks');
-      const {
-        selectShows,
-        selectShowGenres,
-        selectShowStreamingServices,
-      } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShows) return showsWithMultipleServices;
         if (selector === selectShowGenres) return ['Comedy'];
         if (selector === selectShowStreamingServices) return ['Netflix', 'Hulu'];

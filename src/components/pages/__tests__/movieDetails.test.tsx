@@ -3,6 +3,18 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import MovieDetails from '../movieDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
+import { useAppSelector } from '../../../app/hooks';
+import {
+  clearActiveMovie,
+  fetchMovieWithDetails,
+  selectCastMembers,
+  selectMovie,
+  selectMovieError,
+  selectMovieLoading,
+  selectRecommendedMovies,
+  selectSimilarMovies,
+} from '../../../app/slices/activeMovieSlice';
+import { updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -141,17 +153,7 @@ describe('MovieDetails', () => {
     jest.clearAllMocks();
     mockDispatch.mockResolvedValue({ type: 'mock' });
 
-    const { useAppSelector } = require('../../../app/hooks');
-    const {
-      selectCastMembers,
-      selectMovie,
-      selectMovieError,
-      selectMovieLoading,
-      selectRecommendedMovies,
-      selectSimilarMovies,
-    } = require('../../../app/slices/activeMovieSlice');
-
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectMovie) return mockMovie;
       if (selector === selectCastMembers) return mockCastMembers;
       if (selector === selectRecommendedMovies) return mockRecommendedMovies;
@@ -164,14 +166,12 @@ describe('MovieDetails', () => {
 
   describe('component lifecycle', () => {
     it('dispatches fetchMovieWithDetails on mount', () => {
-      const { fetchMovieWithDetails } = require('../../../app/slices/activeMovieSlice');
       renderMovieDetails();
 
       expect(mockDispatch).toHaveBeenCalledWith(fetchMovieWithDetails({ profileId: 1, movieId: 1 }));
     });
 
     it('dispatches clearActiveMovie on unmount', () => {
-      const { clearActiveMovie } = require('../../../app/slices/activeMovieSlice');
       const { unmount } = renderMovieDetails();
 
       unmount();
@@ -182,10 +182,7 @@ describe('MovieDetails', () => {
 
   describe('loading and error states', () => {
     it('renders loading component when loading', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovieLoading } = require('../../../app/slices/activeMovieSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovieLoading) return true;
         return null;
       });
@@ -196,10 +193,7 @@ describe('MovieDetails', () => {
     });
 
     it('renders error component when there is an error', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovieError } = require('../../../app/slices/activeMovieSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovieError) return 'Failed to load movie';
         return null;
       });
@@ -394,17 +388,13 @@ describe('MovieDetails', () => {
     });
 
     it('shows "Mark Unwatched" for watched movies', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovie } = require('../../../app/slices/activeMovieSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.WATCHED };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
-          return mockRecommendedMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieLoading) return false;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieError) return null;
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
         return null;
       });
 
@@ -414,7 +404,6 @@ describe('MovieDetails', () => {
     });
 
     it('dispatches updateMovieWatchStatus when watch status button is clicked', async () => {
-      const { updateMovieWatchStatus } = require('../../../app/slices/activeProfileSlice');
       renderMovieDetails();
 
       const watchButton = screen.getByRole('button', { name: /mark as watched/i });
@@ -432,17 +421,13 @@ describe('MovieDetails', () => {
     });
 
     it('disables watch status button for unaired movies', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovie } = require('../../../app/slices/activeMovieSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.UNAIRED };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
-          return mockRecommendedMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieLoading) return false;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieError) return null;
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
         return null;
       });
 
@@ -536,17 +521,13 @@ describe('MovieDetails', () => {
     });
 
     it('handles missing poster image with placeholder', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovie } = require('../../../app/slices/activeMovieSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, posterImage: null };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
-          return mockRecommendedMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieLoading) return false;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieError) return null;
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
         return null;
       });
 
@@ -571,20 +552,16 @@ describe('MovieDetails', () => {
     });
 
     it('formats release date as absolute date for dates beyond the relative threshold', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovie } = require('../../../app/slices/activeMovieSlice');
-
       // Use a fixed past date that is always beyond the 7-day threshold
       const pastDate = '2025-11-15';
 
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, releaseDate: pastDate };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
-          return mockRecommendedMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieLoading) return false;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieError) return null;
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
         return null;
       });
 
@@ -594,17 +571,13 @@ describe('MovieDetails', () => {
     });
 
     it('shows fallback for missing release date', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectMovie } = require('../../../app/slices/activeMovieSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectMovie) return { ...mockMovie, releaseDate: undefined };
-        if (selector === require('../../../app/slices/activeMovieSlice').selectCastMembers) return mockCastMembers;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectRecommendedMovies)
-          return mockRecommendedMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectSimilarMovies) return mockSimilarMovies;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieLoading) return false;
-        if (selector === require('../../../app/slices/activeMovieSlice').selectMovieError) return null;
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
         return null;
       });
 

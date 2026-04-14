@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { login, googleLogin } from '../../../app/slices/accountSlice';
+import { showActivityNotification } from '../../../app/slices/activityNotificationSlice';
 import Login from '../login';
 import userEvent from '@testing-library/user-event';
 
@@ -216,7 +218,6 @@ describe('Login', () => {
   describe('login functionality', () => {
     it('should dispatch login action when login button clicked with valid credentials', async () => {
       const user = userEvent.setup();
-      const { login } = require('../../../app/slices/accountSlice');
       renderWithRouter(<Login />);
 
       const emailField = screen.getByLabelText(/email/i);
@@ -233,7 +234,6 @@ describe('Login', () => {
 
     it('should show notification when login clicked with empty email', async () => {
       const user = userEvent.setup();
-      const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
       renderWithRouter(<Login />);
 
       const passwordField = screen.getByLabelText(/password/i);
@@ -250,7 +250,6 @@ describe('Login', () => {
 
     it('should show notification when login clicked with empty password', async () => {
       const user = userEvent.setup();
-      const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
       renderWithRouter(<Login />);
 
       const emailField = screen.getByLabelText(/email/i);
@@ -267,7 +266,6 @@ describe('Login', () => {
 
     it('should show notification when login clicked with both fields empty', async () => {
       const user = userEvent.setup();
-      const { showActivityNotification } = require('../../../app/slices/activityNotificationSlice');
       renderWithRouter(<Login />);
 
       const loginButton = screen.getByRole('button', { name: /^login$/i });
@@ -282,7 +280,6 @@ describe('Login', () => {
 
     it('should handle Enter key press to submit form', async () => {
       const user = userEvent.setup();
-      const { login } = require('../../../app/slices/accountSlice');
       renderWithRouter(<Login />);
 
       const emailField = screen.getByLabelText(/email/i);
@@ -322,7 +319,6 @@ describe('Login', () => {
   describe('Google sign-in', () => {
     it('should dispatch googleLogin action when Google button clicked', async () => {
       const user = userEvent.setup();
-      const { googleLogin } = require('../../../app/slices/accountSlice');
       renderWithRouter(<Login />);
 
       const googleButton = screen.getByRole('button', { name: /sign in\/register with google/i });
@@ -470,7 +466,6 @@ describe('Login', () => {
   describe('edge cases', () => {
     it('should handle rapid button clicks', async () => {
       const user = userEvent.setup();
-      const { login } = require('../../../app/slices/accountSlice');
       renderWithRouter(<Login />);
 
       const emailField = screen.getByLabelText(/email/i);
@@ -519,7 +514,8 @@ describe('Login', () => {
       const emailField = screen.getByLabelText(/email/i) as HTMLInputElement;
       const longEmail = 'a'.repeat(100) + '@example.com';
 
-      await user.type(emailField, longEmail);
+      await user.click(emailField);
+      await user.paste(longEmail);
 
       expect(emailField.value).toBe(longEmail);
     });

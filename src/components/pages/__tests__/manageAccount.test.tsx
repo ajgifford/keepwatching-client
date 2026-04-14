@@ -2,6 +2,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import ManageAccount from '../manageAccount';
+import { useAppSelector } from '../../../app/hooks';
+import { selectCurrentAccount } from '../../../app/slices/accountSlice';
+import { selectActiveProfile, selectLastUpdated } from '../../../app/slices/activeProfileSlice';
+import { selectAllProfiles, selectProfileById } from '../../../app/slices/profilesSlice';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -135,19 +139,14 @@ describe('ManageAccount', () => {
     jest.clearAllMocks();
 
     // Mock the selector functions directly
-    const accountSlice = require('../../../app/slices/accountSlice');
-    const activeProfileSlice = require('../../../app/slices/activeProfileSlice');
-    const profilesSlice = require('../../../app/slices/profilesSlice');
-
-    accountSlice.selectCurrentAccount.mockReturnValue(mockAccount);
-    activeProfileSlice.selectActiveProfile.mockReturnValue(mockActiveProfile);
-    activeProfileSlice.selectLastUpdated.mockReturnValue('2025-01-01 12:00:00');
-    profilesSlice.selectAllProfiles.mockReturnValue(mockProfiles);
-    profilesSlice.selectProfileById.mockReturnValue(mockProfiles[0]);
+    jest.mocked(selectCurrentAccount).mockReturnValue(mockAccount as any);
+    jest.mocked(selectActiveProfile).mockReturnValue(mockActiveProfile as any);
+    jest.mocked(selectLastUpdated).mockReturnValue('2025-01-01 12:00:00');
+    jest.mocked(selectAllProfiles).mockReturnValue(mockProfiles as any);
+    jest.mocked(selectProfileById).mockReturnValue(mockProfiles[0] as any);
 
     // Mock useAppSelector to call the selector with a mock state
-    const { useAppSelector } = require('../../../app/hooks');
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       return selector({});
     });
   });
@@ -197,8 +196,7 @@ describe('ManageAccount', () => {
 
   describe('error states', () => {
     it('should render error when account is null', () => {
-      const accountSlice = require('../../../app/slices/accountSlice');
-      accountSlice.selectCurrentAccount.mockReturnValue(null);
+      jest.mocked(selectCurrentAccount).mockReturnValue(null);
 
       renderWithRouter(<ManageAccount />);
 
@@ -206,8 +204,7 @@ describe('ManageAccount', () => {
     });
 
     it('should render error when active profile is null', () => {
-      const activeProfileSlice = require('../../../app/slices/activeProfileSlice');
-      activeProfileSlice.selectActiveProfile.mockReturnValue(null);
+      jest.mocked(selectActiveProfile).mockReturnValue(null);
 
       renderWithRouter(<ManageAccount />);
 
@@ -467,8 +464,7 @@ describe('ManageAccount', () => {
 
   describe('edge cases', () => {
     it('should handle empty profiles list', () => {
-      const profilesSlice = require('../../../app/slices/profilesSlice');
-      profilesSlice.selectAllProfiles.mockReturnValue([]);
+      jest.mocked(selectAllProfiles).mockReturnValue([]);
 
       renderWithRouter(<ManageAccount />);
 
@@ -477,8 +473,7 @@ describe('ManageAccount', () => {
     });
 
     it('should handle account without custom image', () => {
-      const accountSlice = require('../../../app/slices/accountSlice');
-      accountSlice.selectCurrentAccount.mockReturnValue({ ...mockAccount, image: 'https://placehold.co/400' });
+      jest.mocked(selectCurrentAccount).mockReturnValue({ ...mockAccount, image: 'https://placehold.co/400' } as any);
 
       renderWithRouter(<ManageAccount />);
 
@@ -494,8 +489,7 @@ describe('ManageAccount', () => {
     });
 
     it('should not display last updated when not available', () => {
-      const activeProfileSlice = require('../../../app/slices/activeProfileSlice');
-      activeProfileSlice.selectLastUpdated.mockReturnValue(null);
+      jest.mocked(selectLastUpdated).mockReturnValue(null);
 
       renderWithRouter(<ManageAccount />);
 

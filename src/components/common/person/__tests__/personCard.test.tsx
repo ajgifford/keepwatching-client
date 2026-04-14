@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { PersonCard } from '../personCard';
 import { CastMember, ShowCastMember } from '@ajgifford/keepwatching-types';
+import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -155,7 +156,6 @@ describe('PersonCard', () => {
 
   describe('image handling', () => {
     it('should call buildTMDBImagePath with w185 size', () => {
-      const { buildTMDBImagePath } = require('@ajgifford/keepwatching-ui');
       renderPersonCard(mockCastMember);
 
       expect(buildTMDBImagePath).toHaveBeenCalledWith('/tom-hanks.jpg', 'w185');

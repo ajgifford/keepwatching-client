@@ -1,5 +1,7 @@
 import authReducer from './slices/accountSlice';
 import calendarReducer from './slices/calendarSlice';
+import communityRecommendationsReducer from './slices/communityRecommendationsSlice';
+import ratingsReducer from './slices/ratingsSlice';
 import activeMovieReducer from './slices/activeMovieSlice';
 import activeProfileReducer from './slices/activeProfileSlice';
 import activeShowReducer from './slices/activeShowSlice';
@@ -23,6 +25,8 @@ const rootReducer = combineReducers({
   personSearch: personSearchReducer,
   preferences: preferencesReducer,
   watchHistory: watchHistoryReducer,
+  ratings: ratingsReducer,
+  communityRecommendations: communityRecommendationsReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -2,6 +2,9 @@ import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import Notifications from '../notifications';
+import { useAppSelector } from '../../../app/hooks';
+import { selectSystemNotifications } from '../../../app/slices/systemNotificationsSlice';
+import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -84,11 +87,8 @@ describe('Notifications - Snapshots', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const { selectSystemNotifications } = require('../../../app/slices/systemNotificationsSlice');
-    const { selectCurrentAccount } = require('../../../app/slices/accountSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectSystemNotifications) return mockNotifications;
       if (selector === selectCurrentAccount) return mockAccount;
       return null;

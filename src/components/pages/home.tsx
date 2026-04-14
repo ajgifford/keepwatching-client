@@ -5,6 +5,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { Box, Button, Tab, Tabs } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { fetchCommunityRecommendations } from '../../app/slices/communityRecommendationsSlice';
 import {
   fetchMilestoneStats,
   selectActiveProfile,
@@ -20,6 +21,7 @@ import {
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
 import StreamingServiceSection from '../common/media/streamingServiceSection';
+import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
 import { EpisodesSection } from '../common/shows/episodeSection';
@@ -59,12 +61,13 @@ const Home = () => {
   };
 
   const handleNavigateToStats = () => {
-    setTabValue(4); // Navigate to Statistics tab
+    setTabValue(5); // Navigate to Statistics tab
   };
 
   useEffect(() => {
     if (profile) {
       dispatch(fetchMilestoneStats());
+      dispatch(fetchCommunityRecommendations({}));
     }
   }, [dispatch, profile]);
 
@@ -109,7 +112,8 @@ const Home = () => {
           <Tab label="TV Shows" {...a11yProps(1)} />
           <Tab label="Movies" {...a11yProps(2)} />
           <Tab label="By Service" {...a11yProps(3)} />
-          <Tab label="Statistics" {...a11yProps(4)} />
+          <Tab label="Community" {...a11yProps(4)} />
+          <Tab label="Statistics" {...a11yProps(5)} />
         </Tabs>
       </Box>
 
@@ -147,8 +151,15 @@ const Home = () => {
         <StreamingServiceSection />
       </TabPanel>
 
-      {/* Statistics Tab */}
+      {/* Community Tab */}
       <TabPanel value={tabValue} index={4}>
+        <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
+          <CommunityRecommendationsSection />
+        </Box>
+      </TabPanel>
+
+      {/* Statistics Tab */}
+      <TabPanel value={tabValue} index={5}>
         <ProfileStatisticsComponent accountId={profile.accountId} profileId={profile.id} />
       </TabPanel>
     </Box>

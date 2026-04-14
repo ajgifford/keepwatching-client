@@ -28,6 +28,7 @@ describe('EpisodeTile', () => {
     airDate: '2013-09-15',
     network: 'AMC',
     streamingServices: 'Netflix',
+    runtime: 0,
   };
 
   const renderWithRouter = (component: React.ReactElement) => {

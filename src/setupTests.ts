@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom';
 import 'whatwg-fetch';
+import { TextDecoder, TextEncoder } from 'util';
+
+// Polyfill TextEncoder/TextDecoder for react-router v7 in jsdom
+Object.defineProperty(globalThis, 'TextEncoder', { value: TextEncoder });
+Object.defineProperty(globalThis, 'TextDecoder', { value: TextDecoder });
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

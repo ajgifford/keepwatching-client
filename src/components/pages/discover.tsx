@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ExploreIcon from '@mui/icons-material/Explore';
+import GroupsIcon from '@mui/icons-material/Groups';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import {
   Box,
@@ -18,6 +19,7 @@ import {
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
+import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
 import {
   DISCOVER_TYPE_OPTIONS,
@@ -29,7 +31,7 @@ import SearchResults from '../common/search/searchResults';
 import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 import { AxiosError, AxiosResponse } from 'axios';
 
-type DiscoverMode = 'byService' | 'trending';
+type DiscoverMode = 'byService' | 'trending' | 'community';
 
 interface DiscoverParams {
   showType: string;
@@ -88,7 +90,7 @@ function Discover() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    const newMode: DiscoverMode = newValue === 0 ? 'trending' : 'byService';
+    const newMode: DiscoverMode = newValue === 0 ? 'trending' : newValue === 1 ? 'byService' : 'community';
     setTabValue(newValue);
     setDiscoverMode(newMode);
     setSelectedService(defaultService);
@@ -125,6 +127,7 @@ function Discover() {
 
   const findContent = useCallback(
     async (pageToLoad: number) => {
+      if (discoverMode === 'community') return;
       if (pageToLoad === 1) {
         setSearchPerformed(false);
       }
@@ -226,6 +229,7 @@ function Discover() {
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="discover content tabs" variant="fullWidth">
               <Tab label="Trending Content" icon={<TrendingUpIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(0)} />
               <Tab label="By Service" icon={<ExploreIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(1)} />
+              <Tab label="Community" icon={<GroupsIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(2)} />
             </Tabs>
           </Box>
 
@@ -348,28 +352,34 @@ function Discover() {
               </Stack>
             </Stack>
           </TabPanel>
+
+          <TabPanel value={tabValue} index={2}>
+            <CommunityRecommendationsSection returnPath="/discover" />
+          </TabPanel>
         </CardContent>
       </Card>
 
-      {results.length > 0 && (
+      {discoverMode !== 'community' && results.length > 0 && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Showing {results.length} {totalResults > 0 ? `of ${totalResults}` : ''} results
         </Typography>
       )}
 
-      <SearchResults
-        results={results}
-        searchType={selectedType === 'movies' ? 'movies' : 'shows'}
-        source="discover"
-        isLoading={isLoading}
-        searchPerformed={searchPerformed}
-        lastResultElementRef={lastResultElementRef}
-      />
+      {discoverMode !== 'community' && (
+        <SearchResults
+          results={results}
+          searchType={selectedType === 'movies' ? 'movies' : 'shows'}
+          source="discover"
+          isLoading={isLoading}
+          searchPerformed={searchPerformed}
+          lastResultElementRef={lastResultElementRef}
+        />
+      )}
 
-      {isLoading && page > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+      {discoverMode !== 'community' && isLoading && page > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: '20px' }}>
           <CircularProgress size={30} />
-        </div>
+        </Box>
       )}
     </>
   );

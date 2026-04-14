@@ -2,6 +2,20 @@ import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import Home from '../home';
+import { useAppSelector } from '../../../app/hooks';
+import {
+  selectActiveProfile,
+  selectActiveProfileError,
+  selectActiveProfileLoading,
+  selectMilestoneStats,
+  selectMovieWatchCounts,
+  selectMoviesByIds,
+  selectRecentEpisodes,
+  selectRecentMovies,
+  selectShowWatchCounts,
+  selectUpcomingEpisodes,
+  selectUpcomingMovies,
+} from '../../../app/slices/activeProfileSlice';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -129,22 +143,8 @@ describe('Home - Snapshots', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useAppSelector } = require('../../../app/hooks');
-    const {
-      selectActiveProfile,
-      selectActiveProfileError,
-      selectActiveProfileLoading,
-      selectMilestoneStats,
-      selectMovieWatchCounts,
-      selectMoviesByIds,
-      selectRecentEpisodes,
-      selectRecentMovies,
-      selectShowWatchCounts,
-      selectUpcomingEpisodes,
-      selectUpcomingMovies,
-    } = require('../../../app/slices/activeProfileSlice');
 
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectShowWatchCounts) return mockShowWatchCounts;
       if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
 

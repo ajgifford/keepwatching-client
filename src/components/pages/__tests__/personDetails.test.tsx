@@ -2,6 +2,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import PersonDetails from '../personDetails';
+import { useAppSelector } from '../../../app/hooks';
+import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
 
 // Mock dependencies
 const mockNavigate = jest.fn();
@@ -116,10 +118,7 @@ describe('PersonDetails', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const { useAppSelector } = require('../../../app/hooks');
-    const { selectActiveProfile } = require('../../../app/slices/activeProfileSlice');
-
-    useAppSelector.mockImplementation((selector: any) => {
+    jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectActiveProfile) return mockProfile;
       return null;
     });
@@ -504,10 +503,7 @@ describe('PersonDetails', () => {
     });
 
     it('does not render when profile is not available', () => {
-      const { useAppSelector } = require('../../../app/hooks');
-      const { selectActiveProfile } = require('../../../app/slices/activeProfileSlice');
-
-      useAppSelector.mockImplementation((selector: any) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectActiveProfile) return null;
         return null;
       });

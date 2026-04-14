@@ -310,7 +310,7 @@ describe('SearchResults', () => {
     it('should handle large number of results', () => {
       const manyResults = Array.from({ length: 50 }, (_, i) => ({
         ...mockResults[0],
-        id: i,
+        id: i.toString(),
         title: `Show ${i}`,
       }));
 

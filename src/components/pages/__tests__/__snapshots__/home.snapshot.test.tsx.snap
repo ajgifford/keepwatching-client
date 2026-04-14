@@ -84,6 +84,17 @@ exports[`Home - Snapshots should match snapshot for initial render 1`] = `
               tabindex="-1"
               type="button"
             >
+              Community
+            </button>
+            <button
+              aria-controls="home-tabpanel-5"
+              aria-selected="false"
+              class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary css-1usuzwp-MuiButtonBase-root-MuiTab-root"
+              id="home-tab-5"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
               Statistics
             </button>
           </div>
@@ -103,6 +114,10 @@ exports[`Home - Snapshots should match snapshot for initial render 1`] = `
         KeepWatchingProfileComponent
       </div>
     </div>
+    <div
+      hidden=""
+      role="tabpanel"
+    />
     <div
       hidden=""
       role="tabpanel"
