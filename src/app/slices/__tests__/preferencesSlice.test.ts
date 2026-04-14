@@ -37,7 +37,7 @@ describe('preferencesSlice', () => {
   describe('fetchAccountPreferences', () => {
     it('should fetch preferences successfully', async () => {
       const mockPreferences = {
-        email: { dailyDigest: true, weeklyDigest: false },
+        email: { weeklyDigest: false },
         display: { theme: 'dark' },
         notification: { push: true },
         privacy: { shareData: false },
@@ -73,7 +73,7 @@ describe('preferencesSlice', () => {
 
     it('should save preferences to localStorage on success', async () => {
       const mockPreferences = {
-        email: { dailyDigest: true },
+        email: { weeklyDigest: true },
       };
 
       mockAxiosInstance.get.mockResolvedValueOnce({
@@ -102,7 +102,7 @@ describe('preferencesSlice', () => {
   describe('updatePreferences', () => {
     it('should update preferences successfully', async () => {
       const mockUpdatedPreferences = {
-        email: { dailyDigest: false },
+        email: { weeklyDigest: false },
       };
 
       mockAxiosInstance.put.mockResolvedValueOnce({
@@ -114,7 +114,7 @@ describe('preferencesSlice', () => {
         updatePreferences({
           accountId: 1,
           preferenceType: 'email',
-          updates: { dailyDigest: false },
+          updates: { weeklyDigest: false },
         })
       );
 
@@ -134,7 +134,7 @@ describe('preferencesSlice', () => {
         updatePreferences({
           accountId: 1,
           preferenceType: 'email',
-          updates: { dailyDigest: false },
+          updates: { weeklyDigest: false },
         })
       );
 
@@ -144,7 +144,7 @@ describe('preferencesSlice', () => {
 
     it('should save preferences to localStorage on success', async () => {
       const mockUpdatedPreferences = {
-        email: { dailyDigest: false },
+        email: { weeklyDigest: false },
       };
 
       mockAxiosInstance.put.mockResolvedValueOnce({
@@ -156,7 +156,7 @@ describe('preferencesSlice', () => {
         updatePreferences({
           accountId: 1,
           preferenceType: 'email',
-          updates: { dailyDigest: false },
+          updates: { weeklyDigest: false },
         })
       );
 
@@ -172,7 +172,7 @@ describe('preferencesSlice', () => {
         updatePreferences({
           accountId: 1,
           preferenceType: 'email',
-          updates: { dailyDigest: false },
+          updates: { weeklyDigest: false },
         })
       );
 
@@ -184,7 +184,7 @@ describe('preferencesSlice', () => {
   describe('updateMultiplePreferences', () => {
     it('should update multiple preferences successfully', async () => {
       const mockUpdatedPreferences = {
-        email: { dailyDigest: false },
+        email: { weeklyDigest: false },
         display: { theme: 'light' },
         notification: { push: false },
       };
@@ -198,7 +198,7 @@ describe('preferencesSlice', () => {
         updateMultiplePreferences({
           accountId: 1,
           preferences: {
-            email: { dailyDigest: false },
+            email: { weeklyDigest: false },
             display: { theme: 'light' },
           },
         })
@@ -219,7 +219,7 @@ describe('preferencesSlice', () => {
       await store.dispatch(
         updateMultiplePreferences({
           accountId: 1,
-          preferences: { email: { dailyDigest: false } },
+          preferences: { email: { weeklyDigest: false } },
         })
       );
 
@@ -229,8 +229,8 @@ describe('preferencesSlice', () => {
 
     it('should save preferences to localStorage on success', async () => {
       const mockUpdatedPreferences = {
-        email: { dailyDigest: false },
-        display: { theme: 'light' },
+        email: { weeklyDigest: false },
+        display: { theme: 'light' as const },
       };
 
       mockAxiosInstance.put.mockResolvedValueOnce({
@@ -256,7 +256,7 @@ describe('preferencesSlice', () => {
       await store.dispatch(
         updateMultiplePreferences({
           accountId: 1,
-          preferences: { email: { dailyDigest: false } },
+          preferences: { email: { weeklyDigest: false } },
         })
       );
 
@@ -268,7 +268,7 @@ describe('preferencesSlice', () => {
   describe('updateEmailPreferences', () => {
     it('should update email preferences successfully', async () => {
       const mockUpdatedPreferences = {
-        email: { dailyDigest: false, weeklyDigest: true },
+        email: { weeklyDigest: true },
       };
 
       mockAxiosInstance.put.mockResolvedValueOnce({
@@ -279,7 +279,7 @@ describe('preferencesSlice', () => {
       await store.dispatch(
         updateEmailPreferences({
           accountId: 1,
-          emailPreferences: { dailyDigest: false, weeklyDigest: true },
+          emailPreferences: { weeklyDigest: true },
         })
       );
 
@@ -298,7 +298,7 @@ describe('preferencesSlice', () => {
       await store.dispatch(
         updateEmailPreferences({
           accountId: 1,
-          emailPreferences: { dailyDigest: false },
+          emailPreferences: { weeklyDigest: false },
         })
       );
 
@@ -310,7 +310,7 @@ describe('preferencesSlice', () => {
   describe('logout and deleteAccount', () => {
     it('should clear preferences from localStorage on logout', async () => {
       // Set some preferences in localStorage first
-      const mockPreferences = { email: { dailyDigest: true } };
+      const mockPreferences = { email: { weeklyDigest: true } };
       localStorage.setItem('preferences', JSON.stringify(mockPreferences));
 
       const store = createMockStore({
@@ -333,7 +333,7 @@ describe('preferencesSlice', () => {
 
     it('should clear preferences from localStorage on deleteAccount', async () => {
       // Set some preferences in localStorage first
-      const mockPreferences = { email: { dailyDigest: true } };
+      const mockPreferences = { email: { weeklyDigest: true } };
       localStorage.setItem('preferences', JSON.stringify(mockPreferences));
 
       const store = createMockStore({
@@ -357,7 +357,7 @@ describe('preferencesSlice', () => {
 
   describe('selectors', () => {
     it('should select preferences', () => {
-      const mockPreferences = { email: { dailyDigest: true } };
+      const mockPreferences = { email: { weeklyDigest: true } };
       const store = createMockStore({
         preferences: {
           preferences: mockPreferences,

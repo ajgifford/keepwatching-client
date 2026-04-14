@@ -30,31 +30,29 @@ jest.mock('@mui/icons-material/Movie', () => ({
 }));
 
 describe('ProfileContentCard', () => {
-  const mockShow: ProfileShow = {
+  const mockShow = {
     id: 1,
     tmdbId: 123,
     title: 'Breaking Bad',
     posterImage: '/breaking-bad.jpg',
     backdropImage: '/breaking-bad-backdrop.jpg',
     watchStatus: 'In Progress',
-    isFavorite: true,
     userRating: 9.5,
     genres: 'Drama, Crime',
     streamingServices: 'Netflix',
-  };
+  } as unknown as ProfileShow;
 
-  const mockMovie: ProfileMovie = {
+  const mockMovie = {
     id: 2,
     tmdbId: 456,
     title: 'The Shawshank Redemption',
     posterImage: '/shawshank.jpg',
     backdropImage: '/shawshank-backdrop.jpg',
     watchStatus: 'Watched',
-    isFavorite: true,
     userRating: 9.3,
     genres: 'Drama',
     streamingServices: 'Hulu',
-  };
+  } as unknown as ProfileMovie;
 
   const mockOnClick = jest.fn();
 
@@ -96,7 +94,7 @@ describe('ProfileContentCard', () => {
     });
 
     it('should not render user rating when not provided', () => {
-      const showWithoutRating = { ...mockShow, userRating: undefined };
+      const showWithoutRating = { ...mockShow, userRating: undefined } as unknown as ProfileShow;
       render(<ProfileContentCard content={showWithoutRating} contentType="show" onClick={mockOnClick} />);
 
       expect(screen.queryByText(/⭐/)).not.toBeInTheDocument();
@@ -177,28 +175,28 @@ describe('ProfileContentCard', () => {
 
   describe('watch status', () => {
     it('should display Watched status', () => {
-      const watchedShow = { ...mockShow, watchStatus: 'Watched' as const };
+      const watchedShow = { ...mockShow, watchStatus: 'Watched' } as unknown as ProfileShow;
       render(<ProfileContentCard content={watchedShow} contentType="show" onClick={mockOnClick} />);
 
       expect(screen.getByText('Watched')).toBeInTheDocument();
     });
 
     it('should display In Progress status', () => {
-      const inProgressShow = { ...mockShow, watchStatus: 'In Progress' as const };
+      const inProgressShow = { ...mockShow, watchStatus: 'In Progress' } as unknown as ProfileShow;
       render(<ProfileContentCard content={inProgressShow} contentType="show" onClick={mockOnClick} />);
 
       expect(screen.getByText('In Progress')).toBeInTheDocument();
     });
 
     it('should display Unwatched status', () => {
-      const unwatchedShow = { ...mockShow, watchStatus: 'Unwatched' as const };
+      const unwatchedShow = { ...mockShow, watchStatus: 'Unwatched' } as unknown as ProfileShow;
       render(<ProfileContentCard content={unwatchedShow} contentType="show" onClick={mockOnClick} />);
 
       expect(screen.getByText('Unwatched')).toBeInTheDocument();
     });
 
     it('should display Continuing status', () => {
-      const continuingShow = { ...mockShow, watchStatus: 'Continuing' as const };
+      const continuingShow = { ...mockShow, watchStatus: 'Continuing' } as unknown as ProfileShow;
       render(<ProfileContentCard content={continuingShow} contentType="show" onClick={mockOnClick} />);
 
       expect(screen.getByText('Continuing')).toBeInTheDocument();

@@ -94,7 +94,7 @@ describe('PersonFilmographyDisplay', () => {
   ];
 
   const mockPerson: PersonSearchDetails = {
-    tmdbId: 31,
+    id: 31,
     name: 'Tom Hanks',
     profileImage: '/tom-hanks.jpg',
     department: 'Acting',
@@ -103,7 +103,7 @@ describe('PersonFilmographyDisplay', () => {
     biography: 'Biography text',
     birthday: '1956-07-09',
     birthplace: 'Concord, California, USA',
-    deathday: undefined,
+    deathday: null,
     movieCredits: mockMovieCredits,
     tvCredits: mockTvCredits,
     totalCredits: 5,
@@ -512,6 +512,7 @@ describe('PersonFilmographyDisplay', () => {
         releaseDate: '2023-01-01',
         character: 'Character',
         job: 'Actor',
+        mediaType: 'movie' as const,
       }));
 
       const personWithManyCredits = {

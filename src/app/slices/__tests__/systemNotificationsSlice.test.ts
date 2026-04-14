@@ -34,12 +34,14 @@ describe('systemNotificationsSlice', () => {
   const mockNotifications: AccountNotification[] = [
     {
       id: 1,
-      accountId: 1,
       title: 'Test Notification',
       message: 'Test message',
-      hasBeenRead: false,
-      createdAt: '2024-01-01',
-    } as AccountNotification,
+      startDate: new Date('2024-01-01'),
+      endDate: new Date('2024-12-31'),
+      type: 'general',
+      dismissed: false,
+      read: false,
+    },
   ];
 
   describe('fetchSystemNotifications', () => {

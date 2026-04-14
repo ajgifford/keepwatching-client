@@ -274,10 +274,9 @@ describe('personSearchSlice', () => {
         title: 'Forrest Gump',
         mediaType: 'movie',
         releaseDate: '1994-07-06',
-        posterPath: 'poster.jpg',
+        posterImage: 'poster.jpg',
         character: 'Forrest Gump',
         job: '',
-        department: '',
         isCast: true,
       };
 
@@ -286,10 +285,9 @@ describe('personSearchSlice', () => {
         title: 'Band of Brothers',
         mediaType: 'tv',
         releaseDate: '2001-09-09',
-        posterPath: 'poster2.jpg',
+        posterImage: 'poster2.jpg',
         character: '',
         job: 'Producer',
-        department: 'Production',
         isCast: false,
       };
 
@@ -308,12 +306,25 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
         activeProfile: {
-          profile: { id: 1, accountId: 1, name: 'Profile', avatar: null },
+          profile: { id: 1, accountId: 1, name: 'Profile', image: undefined },
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
           loading: false,
           error: null,
         },
@@ -335,10 +346,9 @@ describe('personSearchSlice', () => {
         title: 'The Green Mile',
         mediaType: 'movie',
         releaseDate: '1999-12-10',
-        posterPath: 'poster.jpg',
+        posterImage: 'poster.jpg',
         character: 'Paul Edgecomb',
         job: '',
-        department: '',
         isCast: true,
       };
 
@@ -347,10 +357,9 @@ describe('personSearchSlice', () => {
         title: 'The Green Mile',
         mediaType: 'movie',
         releaseDate: '1999-12-10',
-        posterPath: 'poster.jpg',
+        posterImage: 'poster.jpg',
         character: '',
         job: 'Executive Producer',
-        department: 'Production',
         isCast: false,
       };
 
@@ -369,12 +378,25 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
         activeProfile: {
-          profile: { id: 1, accountId: 1, name: 'Profile', avatar: null },
+          profile: { id: 1, accountId: 1, name: 'Profile', image: undefined },
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
           loading: false,
           error: null,
         },
@@ -395,10 +417,9 @@ describe('personSearchSlice', () => {
         title: 'Old Movie',
         mediaType: 'movie',
         releaseDate: '1990-01-01',
-        posterPath: 'old.jpg',
+        posterImage: 'old.jpg',
         character: 'Character',
         job: '',
-        department: '',
         isCast: true,
       };
 
@@ -407,10 +428,9 @@ describe('personSearchSlice', () => {
         title: 'New Movie',
         mediaType: 'movie',
         releaseDate: '2023-01-01',
-        posterPath: 'new.jpg',
+        posterImage: 'new.jpg',
         character: 'Character',
         job: '',
-        department: '',
         isCast: true,
       };
 
@@ -429,12 +449,25 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
         activeProfile: {
-          profile: { id: 1, accountId: 1, name: 'Profile', avatar: null },
+          profile: { id: 1, accountId: 1, name: 'Profile', image: undefined },
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
           loading: false,
           error: null,
         },
@@ -465,12 +498,25 @@ describe('personSearchSlice', () => {
     it('should handle error when no active profile found', async () => {
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
         activeProfile: {
           profile: null,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
           loading: false,
           error: null,
         },
@@ -489,12 +535,25 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
         activeProfile: {
-          profile: { id: 1, accountId: 1, name: 'Profile', avatar: null },
+          profile: { id: 1, accountId: 1, name: 'Profile', image: undefined },
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
           loading: false,
           error: null,
         },

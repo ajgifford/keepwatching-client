@@ -7,7 +7,7 @@ import { CastMember } from '@ajgifford/keepwatching-types';
 jest.mock('../../person/personCard', () => ({
   PersonCard: ({ person, returnPath }: any) => (
     <div data-testid={`person-card-${person.personId}`} data-return-path={returnPath}>
-      {person.personName} as {person.characterName}
+      {person.name} as {person.characterName}
     </div>
   ),
 }));
@@ -15,27 +15,27 @@ jest.mock('../../person/personCard', () => ({
 describe('MovieCastSection', () => {
   const mockCastMembers: CastMember[] = [
     {
-      personId: 1,
-      personName: 'Tom Hanks',
-      characterName: 'Forrest Gump',
-      personTmdbId: 31,
       contentId: 13,
+      personId: 1,
+      characterName: 'Forrest Gump',
+      order: 0,
+      name: 'Tom Hanks',
       profileImage: '/tom-hanks.jpg',
     },
     {
-      personId: 2,
-      personName: 'Robin Wright',
-      characterName: 'Jenny Curran',
-      personTmdbId: 32,
       contentId: 13,
+      personId: 2,
+      characterName: 'Jenny Curran',
+      order: 0,
+      name: 'Robin Wright',
       profileImage: '/robin-wright.jpg',
     },
     {
-      personId: 3,
-      personName: 'Gary Sinise',
-      characterName: 'Lieutenant Dan',
-      personTmdbId: 33,
       contentId: 13,
+      personId: 3,
+      characterName: 'Lieutenant Dan',
+      order: 0,
+      name: 'Gary Sinise',
       profileImage: '/gary-sinise.jpg',
     },
   ];
@@ -85,9 +85,9 @@ describe('MovieCastSection', () => {
     it('should render many cast members', () => {
       const manyCast = Array.from({ length: 20 }, (_, i) => ({
         personId: i + 1,
-        personName: `Actor ${i + 1}`,
+        name: `Actor ${i + 1}`,
         characterName: `Character ${i + 1}`,
-        personTmdbId: i + 100,
+        order: 0,
         contentId: 13,
         profileImage: `/actor-${i + 1}.jpg`,
       }));
@@ -161,9 +161,9 @@ describe('MovieCastSection', () => {
       const longNameCast = [
         {
           personId: 1,
-          personName: 'A Very Long Actor Name That Goes On And On',
+          name: 'A Very Long Actor Name That Goes On And On',
           characterName: 'A Very Long Character Name That Goes On And On',
-          personTmdbId: 31,
+          order: 0,
           contentId: 13,
           profileImage: '/actor.jpg',
         },
@@ -210,9 +210,9 @@ describe('MovieCastSection', () => {
       const minimalCast: CastMember[] = [
         {
           personId: 1,
-          personName: 'Actor',
+          name: 'Actor',
           characterName: 'Character',
-          personTmdbId: 1,
+          order: 0,
           contentId: 1,
           profileImage: '',
         },
@@ -227,9 +227,9 @@ describe('MovieCastSection', () => {
       const specialCharCast: CastMember[] = [
         {
           personId: 1,
-          personName: "O'Brien & Smith",
+          name: "O'Brien & Smith",
           characterName: 'Lt. Dan "Danny" O\'Reilly',
-          personTmdbId: 1,
+          order: 0,
           contentId: 1,
           profileImage: '/actor.jpg',
         },

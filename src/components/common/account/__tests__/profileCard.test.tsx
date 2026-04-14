@@ -101,7 +101,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -112,7 +117,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -125,7 +135,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -140,7 +155,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -154,7 +174,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -168,7 +193,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -182,7 +212,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -196,7 +231,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -210,7 +250,13 @@ describe('ProfileCard', () => {
     const store = createMockStore(mockActiveProfile, mockActiveProfile);
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} profile={mockActiveProfile} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+          profile={mockActiveProfile}
+        />
       </Provider>
     );
 
@@ -223,7 +269,13 @@ describe('ProfileCard', () => {
     const store = createMockStore(defaultProfile);
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} profile={defaultProfile} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+          profile={defaultProfile}
+        />
       </Provider>
     );
 
@@ -236,7 +288,13 @@ describe('ProfileCard', () => {
     const store = createMockStore(defaultProfile);
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} profile={defaultProfile} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+          profile={defaultProfile}
+        />
       </Provider>
     );
 
@@ -248,7 +306,13 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} isLoading={true} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+          isLoading={true}
+        />
       </Provider>
     );
 
@@ -259,7 +323,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -281,7 +350,13 @@ describe('ProfileCard', () => {
     const store = createMockStore(customImageProfile);
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} profile={customImageProfile} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+          profile={customImageProfile}
+        />
       </Provider>
     );
 
@@ -338,7 +413,12 @@ describe('ProfileCard', () => {
 
     render(
       <Provider store={storeWithoutAccount}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 
@@ -349,7 +429,12 @@ describe('ProfileCard', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
-        <ProfileCard {...defaultProps} />
+        <ProfileCard
+          handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          {...defaultProps}
+        />
       </Provider>
     );
 

@@ -17,6 +17,7 @@ import {
   MovieDetailsResponse,
   ProfileMovieWithDetails,
   SimilarOrRecommendedMovie,
+  WatchStatus,
 } from '@ajgifford/keepwatching-types';
 
 // Mock axios
@@ -41,31 +42,38 @@ describe('activeMovieSlice', () => {
     id: 1,
     tmdbId: 550,
     title: 'Fight Club',
-    overview: 'An insomniac office worker...',
+    description: 'An insomniac office worker...',
     releaseDate: '1999-10-15',
     runtime: 139,
-    posterPath: 'poster.jpg',
-    backdropPath: 'backdrop.jpg',
-    voteAverage: 8.4,
-    watchStatus: 'Unwatched',
-    isFavorite: false,
-    genres: [{ id: 1, name: 'Drama' }],
-    streamingServices: [],
+    posterImage: 'poster.jpg',
+    backdropImage: 'backdrop.jpg',
+    userRating: 8.4,
+    mpaRating: 'R',
+    genres: 'Drama',
+    streamingServices: '',
+    director: 'David Fincher',
+    productionCompanies: '',
+    budget: 0,
+    revenue: 0,
+    profileId: 1,
+    watchStatus: WatchStatus.NOT_WATCHED,
   };
 
   const mockCastMembers: CastMember[] = [
     {
-      id: 1,
+      contentId: 1,
+      personId: 1,
       name: 'Brad Pitt',
-      character: 'Tyler Durden',
-      profilePath: 'brad.jpg',
+      characterName: 'Tyler Durden',
+      profileImage: 'brad.jpg',
       order: 0,
     },
     {
-      id: 2,
+      contentId: 1,
+      personId: 2,
       name: 'Edward Norton',
-      character: 'The Narrator',
-      profilePath: 'edward.jpg',
+      characterName: 'The Narrator',
+      profileImage: 'edward.jpg',
       order: 1,
     },
   ];
@@ -73,26 +81,37 @@ describe('activeMovieSlice', () => {
   const mockSimilarMovies: SimilarOrRecommendedMovie[] = [
     {
       id: 2,
-      tmdbId: 680,
       title: 'Pulp Fiction',
-      posterPath: 'pulp.jpg',
-      voteAverage: 8.5,
-      releaseDate: '1994-10-14',
+      genres: ['Drama', 'Crime'],
+      premiered: '1994-10-14',
+      summary: '',
+      image: 'pulp.jpg',
+      rating: 8.5,
+      popularity: 0,
+      country: '',
+      language: '',
+      inFavorites: false,
     },
   ];
 
   const mockRecommendedMovies: SimilarOrRecommendedMovie[] = [
     {
       id: 3,
-      tmdbId: 13,
       title: 'Forrest Gump',
-      posterPath: 'forrest.jpg',
-      voteAverage: 8.8,
-      releaseDate: '1994-07-06',
+      genres: ['Drama'],
+      premiered: '1994-07-06',
+      summary: '',
+      image: 'forrest.jpg',
+      rating: 8.8,
+      popularity: 0,
+      country: '',
+      language: '',
+      inFavorites: false,
     },
   ];
 
   const mockMovieDetailsResponse: MovieDetailsResponse = {
+    message: '',
     movie: mockMovie,
     castMembers: mockCastMembers,
     similarMovies: mockSimilarMovies,
@@ -107,7 +126,7 @@ describe('activeMovieSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -146,7 +165,7 @@ describe('activeMovieSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -169,7 +188,7 @@ describe('activeMovieSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -286,7 +305,7 @@ describe('activeMovieSlice', () => {
       });
 
       const movie = selectMovie(store.getState());
-      expect(movie?.watchStatus).toBe('Unwatched');
+      expect(movie?.watchStatus).toBe(WatchStatus.NOT_WATCHED);
     });
 
     it('should not crash when updating watch status with no active movie', () => {

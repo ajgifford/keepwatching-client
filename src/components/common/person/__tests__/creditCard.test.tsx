@@ -13,20 +13,18 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
 
 describe('CreditCard', () => {
   const mockCredit: Credit = {
-    tmdbId: 278,
     name: 'The Shawshank Redemption',
     poster: '/shawshank.jpg',
     character: 'Andy Dufresne',
-    year: 1994,
+    year: '1994',
     rating: 9.3,
   };
 
   const mockShowCredit: ShowCredit = {
-    tmdbId: 1396,
     name: 'Breaking Bad',
     poster: '/breaking-bad.jpg',
     character: 'Walter White',
-    year: 2008,
+    year: '2008',
     rating: 9.5,
     episodeCount: 62,
   };
@@ -300,14 +298,14 @@ describe('CreditCard', () => {
     });
 
     it('should handle very old year', () => {
-      const oldYear = { ...mockCredit, year: 1920 };
+      const oldYear = { ...mockCredit, year: '1920' };
       render(<CreditCard credit={oldYear} />);
 
       expect(screen.getByText('1920')).toBeInTheDocument();
     });
 
     it('should handle future year', () => {
-      const futureYear = { ...mockCredit, year: 2050 };
+      const futureYear = { ...mockCredit, year: '2050' };
       render(<CreditCard credit={futureYear} />);
 
       expect(screen.getByText('2050')).toBeInTheDocument();

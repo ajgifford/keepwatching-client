@@ -3,7 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import * as personSearchSlice from '../../../../app/slices/personSearchSlice';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { PersonDisambiguationModal } from '../personDisambiguationModal';
-import { PersonSearch, PersonSearchResult } from '@ajgifford/keepwatching-types';
+import { PersonSearchResult } from '@ajgifford/keepwatching-types';
+import { PersonSearchDetails } from '../../../../app/model/personSearchTypes';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -48,8 +49,7 @@ describe('PersonDisambiguationModal', () => {
     },
   ];
 
-  const mockSelectedPerson: PersonSearch = {
-    tmdbId: 31,
+  const mockSelectedPerson: PersonSearchDetails = {
     id: 31,
     name: 'Tom Hanks',
     profileImage: '/tom-hanks.jpg',
@@ -59,7 +59,10 @@ describe('PersonDisambiguationModal', () => {
     biography: 'Biography text',
     birthday: '1956-07-09',
     birthplace: 'Concord, California, USA',
-    deathday: undefined,
+    deathday: null,
+    movieCredits: [],
+    tvCredits: [],
+    totalCredits: 0,
   };
 
   const mockState = {
@@ -72,6 +75,9 @@ describe('PersonDisambiguationModal', () => {
       showDisambiguation: true,
       loading: false,
       error: null,
+      page: 1,
+      totalResults: 3,
+      hasMore: false,
     },
   };
 

@@ -49,6 +49,9 @@ const mockMovieHistoryItem: WatchHistoryItem = {
   contentType: 'movie',
   contentId: 200,
   title: 'Test Movie',
+  parentTitle: null,
+  seasonNumber: null,
+  episodeNumber: null,
   posterImage: '/movie-poster.jpg',
   watchedAt: '2024-02-10T20:00:00Z',
   watchNumber: 1,
@@ -114,7 +117,7 @@ describe('watchHistorySlice', () => {
 
   const accountState = {
     auth: {
-      account: { id: 1, email: 'test@example.com', name: 'Test User', defaultProfileId: 1 },
+      account: { id: 1, email: 'test@example.com', name: 'Test User', defaultProfileId: 1, uid: 'test-uid', image: '' },
       loading: false,
       error: null,
     },
@@ -145,6 +148,12 @@ describe('watchHistorySlice', () => {
           pageSize: 20,
           loading: false,
           error: null,
+          contentType: 'all' as const,
+          sortOrder: 'desc' as const,
+          dateFrom: null,
+          dateTo: null,
+          priorWatchFilter: 'all' as const,
+          searchQuery: '',
         },
       });
 
@@ -490,6 +499,12 @@ describe('watchHistorySlice', () => {
         pageSize: 10,
         loading: true,
         error: { message: 'Something went wrong' },
+        contentType: 'all' as const,
+        sortOrder: 'desc' as const,
+        dateFrom: null,
+        dateTo: null,
+        priorWatchFilter: 'all' as const,
+        searchQuery: '',
       },
     };
 

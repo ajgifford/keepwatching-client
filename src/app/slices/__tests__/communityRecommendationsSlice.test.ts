@@ -1,21 +1,19 @@
-import { configureStore } from '@reduxjs/toolkit';
-import axiosInstance from '../api/axiosInstance';
-import communityRecommendationsReducer, {
+import axiosInstance from '../../api/axiosInstance';
+import { createMockStore } from '../../testUtils';
+import {
   addRecommendation,
   fetchCommunityRecommendations,
   fetchProfileRecommendations,
   removeRecommendation,
   selectCommunityLoading,
-  selectCommunityRecommendations,
   selectContentTypeFilter,
   selectHasRecommended,
   selectProfileRecommendations,
   selectSendLoading,
-} from './communityRecommendationsSlice';
-import accountReducer from './accountSlice';
+} from '../communityRecommendationsSlice';
 import { CommunityRecommendation, ProfileRecommendation } from '@ajgifford/keepwatching-types';
 
-jest.mock('../api/axiosInstance');
+jest.mock('../../api/axiosInstance');
 
 const mockProfileRec: ProfileRecommendation = {
   id: 1,
@@ -45,21 +43,28 @@ const mockCommunityRec: CommunityRecommendation = {
   posterImage: '/poster.jpg',
   releaseDate: '2008-01-20',
   genres: 'Drama',
-  rating: 5,
-  message: 'Must watch!',
   recommendationCount: 3,
   createdAt: '2026-04-01T00:00:00.000Z',
+  tmdbId: 0,
+  averageRating: null,
+  ratingCount: 0,
+  messageCount: 0,
 };
 
-const makeStore = (preloaded?: any) =>
-  configureStore({
-    reducer: { communityRecommendations: communityRecommendationsReducer, auth: accountReducer },
-    preloadedState: preloaded,
-  });
-
 const storeWithAccount = (partialCommunity: any = {}) =>
-  makeStore({
-    auth: { account: { id: 123 }, loading: false, error: null },
+  createMockStore({
+    auth: {
+      account: {
+        id: 123,
+        uid: '',
+        image: '',
+        defaultProfileId: 0,
+        name: '',
+        email: '',
+      },
+      loading: false,
+      error: null,
+    },
     communityRecommendations: {
       communityRecommendations: [],
       communityLoading: false,
@@ -79,7 +84,7 @@ describe('communityRecommendationsSlice', () => {
 
   describe('reducer', () => {
     it('should return initial state', () => {
-      const store = makeStore();
+      const store = createMockStore();
       const state = store.getState().communityRecommendations;
       expect(state.communityRecommendations).toEqual([]);
       expect(state.profileRecommendations).toEqual([]);
@@ -221,7 +226,7 @@ describe('communityRecommendationsSlice', () => {
 
   describe('thunks — error paths', () => {
     it('fetchCommunityRecommendations rejects when no account (returns rejected action)', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       (axiosInstance.get as jest.Mock).mockResolvedValue({ data: { recommendations: [] } });
       const result = await store.dispatch(fetchCommunityRecommendations({}) as any);
       // No account means axios will be called but state will show error from server
@@ -230,25 +235,25 @@ describe('communityRecommendationsSlice', () => {
     });
 
     it('fetchProfileRecommendations rejects when no account', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       const result = await store.dispatch(fetchProfileRecommendations({ profileId: 10 }) as any);
       expect(result.type).toBe(fetchProfileRecommendations.rejected.type);
       expect(result.payload).toEqual({ message: 'No account found' });
     });
 
     it('addRecommendation rejects when no account', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       const result = await store.dispatch(
-        addRecommendation({ profileId: 10, contentType: 'show', contentId: 42 }) as any,
+        addRecommendation({ profileId: 10, contentType: 'show', contentId: 42 }) as any
       );
       expect(result.type).toBe(addRecommendation.rejected.type);
       expect(result.payload).toEqual({ message: 'No account found' });
     });
 
     it('removeRecommendation rejects when no account', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       const result = await store.dispatch(
-        removeRecommendation({ profileId: 10, contentType: 'show', contentId: 42 }) as any,
+        removeRecommendation({ profileId: 10, contentType: 'show', contentId: 42 }) as any
       );
       expect(result.type).toBe(removeRecommendation.rejected.type);
       expect(result.payload).toEqual({ message: 'No account found' });
@@ -274,7 +279,7 @@ describe('communityRecommendationsSlice', () => {
       (axiosInstance.post as jest.Mock).mockRejectedValue(axiosError);
 
       const result = await store.dispatch(
-        addRecommendation({ profileId: 10, contentType: 'show', contentId: 42 }) as any,
+        addRecommendation({ profileId: 10, contentType: 'show', contentId: 42 }) as any
       );
       expect(result.type).toBe(addRecommendation.rejected.type);
     });
@@ -314,7 +319,13 @@ describe('communityRecommendationsSlice', () => {
       (axiosInstance.post as jest.Mock).mockResolvedValue({ data: { recommendation: mockProfileRec } });
 
       await store.dispatch(
-        addRecommendation({ profileId: 10, contentType: 'show', contentId: 42, rating: 5, message: 'Must watch!' }) as any,
+        addRecommendation({
+          profileId: 10,
+          contentType: 'show',
+          contentId: 42,
+          rating: 5,
+          message: 'Must watch!',
+        }) as any
       );
 
       expect(axiosInstance.post).toHaveBeenCalledWith('/accounts/123/profiles/10/recommendations', {

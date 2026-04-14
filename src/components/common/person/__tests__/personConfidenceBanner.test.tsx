@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react';
 import * as personSearchSlice from '../../../../app/slices/personSearchSlice';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { PersonConfidenceBanner } from '../personConfidenceBanner';
-import { PersonSearch } from '@ajgifford/keepwatching-types';
+import { PersonSearchResult } from '@ajgifford/keepwatching-types';
+import { PersonSearchDetails } from '../../../../app/model/personSearchTypes';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -19,8 +20,8 @@ jest.mock('../../../../app/hooks/useDateFormatters', () => ({
 }));
 
 describe('PersonConfidenceBanner', () => {
-  const mockSelectedPerson: PersonSearch = {
-    tmdbId: 31,
+  const mockSelectedPerson: PersonSearchDetails = {
+    id: 31,
     name: 'Tom Hanks',
     profileImage: '/tom-hanks.jpg',
     department: 'Acting',
@@ -30,11 +31,15 @@ describe('PersonConfidenceBanner', () => {
       'Thomas Jeffrey Hanks is an American actor and filmmaker. Known for both his comedic and dramatic roles, he is one of the most popular and recognizable film stars worldwide.',
     birthday: '1956-07-09',
     birthplace: 'Concord, California, USA',
-    deathday: undefined,
+    deathday: null,
+    movieCredits: [],
+    tvCredits: [],
+    totalCredits: 0,
   };
 
   const mockState = {
     personSearch: {
+      results: [],
       selectedPerson: mockSelectedPerson,
       alternativePersons: [],
       autoSelectedConfidence: 'high' as const,
@@ -42,6 +47,9 @@ describe('PersonConfidenceBanner', () => {
       showDisambiguation: false,
       loading: false,
       error: null,
+      page: 1,
+      totalResults: 0,
+      hasMore: false,
     },
   };
 
@@ -257,7 +265,7 @@ describe('PersonConfidenceBanner', () => {
           ...mockState.personSearch,
           selectedPerson: {
             ...mockSelectedPerson,
-            knownFor: undefined,
+            knownFor: null,
           },
         },
       };
@@ -303,7 +311,7 @@ describe('PersonConfidenceBanner', () => {
           ...mockState.personSearch,
           selectedPerson: {
             ...mockSelectedPerson,
-            biography: undefined,
+            biography: null,
           },
         },
       };
@@ -366,7 +374,7 @@ describe('PersonConfidenceBanner', () => {
           ...mockState.personSearch,
           selectedPerson: {
             ...mockSelectedPerson,
-            birthday: undefined,
+            birthday: null,
           },
         },
       };
@@ -384,7 +392,7 @@ describe('PersonConfidenceBanner', () => {
           ...mockState.personSearch,
           selectedPerson: {
             ...mockSelectedPerson,
-            birthplace: undefined,
+            birthplace: null,
           },
         },
       };
@@ -411,8 +419,8 @@ describe('PersonConfidenceBanner', () => {
         personSearch: {
           ...mockState.personSearch,
           alternativePersons: [
-            { tmdbId: 1, name: 'Other Person 1', department: 'Acting', popularity: 50 } as PersonSearch,
-            { tmdbId: 2, name: 'Other Person 2', department: 'Acting', popularity: 40 } as PersonSearch,
+            { id: 1, name: 'Other Person 1', department: 'Acting', popularity: 50 } as PersonSearchResult,
+            { id: 2, name: 'Other Person 2', department: 'Acting', popularity: 40 } as PersonSearchResult,
           ],
         },
       };
@@ -429,8 +437,8 @@ describe('PersonConfidenceBanner', () => {
         personSearch: {
           ...mockState.personSearch,
           alternativePersons: [
-            { tmdbId: 1, name: 'Other Person 1' } as PersonSearch,
-            { tmdbId: 2, name: 'Other Person 2' } as PersonSearch,
+            { id: 1, name: 'Other Person 1' } as PersonSearchResult,
+            { id: 2, name: 'Other Person 2' } as PersonSearchResult,
           ],
         },
       };
@@ -446,7 +454,7 @@ describe('PersonConfidenceBanner', () => {
       const withOneAlternative = {
         personSearch: {
           ...mockState.personSearch,
-          alternativePersons: [{ tmdbId: 1, name: 'Other Person' } as PersonSearch],
+          alternativePersons: [{ id: 1, name: 'Other Person' } as PersonSearchResult],
         },
       };
 
@@ -471,7 +479,7 @@ describe('PersonConfidenceBanner', () => {
         personSearch: {
           ...mockState.personSearch,
           query: 'director',
-          alternativePersons: [{ tmdbId: 1, name: 'Other Person' } as PersonSearch],
+          alternativePersons: [{ id: 1, name: 'Other Person' } as PersonSearchResult],
         },
       };
 
@@ -489,7 +497,7 @@ describe('PersonConfidenceBanner', () => {
       const withAlternatives = {
         personSearch: {
           ...mockState.personSearch,
-          alternativePersons: [{ tmdbId: 1, name: 'Other Person' } as PersonSearch],
+          alternativePersons: [{ id: 1, name: 'Other Person' } as PersonSearchResult],
         },
       };
 
@@ -575,7 +583,7 @@ describe('PersonConfidenceBanner', () => {
           ...mockState.personSearch,
           selectedPerson: {
             ...mockSelectedPerson,
-            popularity: undefined,
+            popularity: null,
           },
         },
       };
@@ -646,7 +654,7 @@ describe('PersonConfidenceBanner', () => {
         personSearch: {
           ...mockState.personSearch,
           query: '',
-          alternativePersons: [{ tmdbId: 1, name: 'Other Person' } as PersonSearch],
+          alternativePersons: [{ id: 1, name: 'Other Person' } as PersonSearchResult],
         },
       };
 

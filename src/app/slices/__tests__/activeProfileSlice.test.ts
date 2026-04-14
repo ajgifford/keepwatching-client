@@ -76,7 +76,7 @@ describe('activeProfileSlice', () => {
     id: 1,
     accountId: 1,
     name: 'Test Profile',
-    avatar: null,
+    image: undefined,
   };
 
   const mockProfileWithContent = {
@@ -142,7 +142,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -201,7 +201,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -253,8 +253,8 @@ describe('activeProfileSlice', () => {
         totalEpisodesWatched: 100,
         totalMoviesWatched: 50,
         totalHoursWatched: 200,
-        favoriteGenres: ['Drama', 'Action'],
-        favoriteStreamingService: 'Netflix',
+        milestones: [],
+        recentAchievements: [],
       };
 
       mockAxiosInstance.get.mockResolvedValueOnce({
@@ -263,7 +263,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -331,7 +331,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -359,7 +359,7 @@ describe('activeProfileSlice', () => {
 
       const shows = selectShows(store.getState());
       expect(shows).toHaveLength(1);
-      expect(shows[0].isFavorite).toBe(true);
+      expect((shows[0] as any).isFavorite).toBe(true);
     });
 
     it('should handle error when no account found', async () => {
@@ -384,7 +384,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -443,7 +443,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -526,7 +526,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -596,7 +596,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -624,7 +624,7 @@ describe('activeProfileSlice', () => {
 
       const movies = selectMovies(store.getState());
       expect(movies).toHaveLength(1);
-      expect(movies[0].isFavorite).toBe(true);
+      expect((movies[0] as any).isFavorite).toBe(true);
     });
 
     it('should handle error when no account found', async () => {
@@ -671,7 +671,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -738,14 +738,14 @@ describe('activeProfileSlice', () => {
         id: 1,
         tmdbId: 456,
         title: 'Test Movie',
-        watchStatus: WatchStatus.UNWATCHED,
+        watchStatus: WatchStatus.NOT_WATCHED,
         genres: 'Action',
         streamingServices: 'Disney+',
       };
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -812,7 +812,7 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -836,7 +836,7 @@ describe('activeProfileSlice', () => {
         },
       });
 
-      await store.dispatch(updateNextEpisodeWatchStatus({ profileId: 1, showId: 1, status: WatchStatus.WATCHED }));
+      await store.dispatch(updateNextEpisodeWatchStatus({ profileId: 1, episodeId: 1, episodeStatus: WatchStatus.WATCHED }));
 
       const nextUnwatched = selectNextUnwatchedEpisodes(store.getState());
       expect(nextUnwatched).toEqual([]);
@@ -852,7 +852,7 @@ describe('activeProfileSlice', () => {
       });
 
       const result = await store.dispatch(
-        updateNextEpisodeWatchStatus({ profileId: 1, showId: 1, status: WatchStatus.WATCHED })
+        updateNextEpisodeWatchStatus({ profileId: 1, episodeId: 1, episodeStatus: WatchStatus.WATCHED })
       );
 
       expect(result.meta.requestStatus).toBe('rejected');

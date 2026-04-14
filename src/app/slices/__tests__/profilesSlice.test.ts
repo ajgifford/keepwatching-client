@@ -38,7 +38,7 @@ describe('profilesSlice', () => {
     id: 1,
     accountId: 1,
     name: 'Test Profile',
-    avatar: 'avatar.png',
+    image: 'avatar.png',
   };
 
   describe('fetchProfiles', () => {

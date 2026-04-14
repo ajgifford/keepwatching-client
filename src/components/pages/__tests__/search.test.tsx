@@ -378,7 +378,7 @@ describe('Search', () => {
       const tvShowsTab = screen.getByRole('tab', { name: /tv shows/i });
 
       // Clear the mock to check if it gets called again
-      clearPersonSearch.mockClear();
+      (clearPersonSearch as unknown as jest.Mock).mockClear();
 
       await user.click(tvShowsTab);
 

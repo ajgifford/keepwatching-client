@@ -82,7 +82,6 @@ const mockCreateUser = createUserWithEmailAndPassword as jest.Mock;
 const mockUpdateProfile = updateProfile as jest.Mock;
 const mockSendEmailVerification = sendEmailVerification as jest.Mock;
 const mockSignInWithPopup = signInWithPopup as jest.Mock;
-const mockGoogleAuthProvider = GoogleAuthProvider as jest.Mock;
 
 describe('accountSlice', () => {
   beforeEach(() => {
@@ -95,7 +94,7 @@ describe('accountSlice', () => {
     uid: 'firebase-uid-123',
     email: 'test@test.com',
     name: 'Test User',
-    image: null,
+    image: '',
     defaultProfileId: 1,
   };
 

@@ -52,50 +52,73 @@ describe('activeShowSlice', () => {
 
   const mockEpisode: ProfileEpisode = {
     id: 1,
+    tmdbId: 1001,
+    seasonId: 1,
+    showId: 1,
     seasonNumber: 1,
     episodeNumber: 1,
-    name: 'Pilot',
-    airDate: '2020-01-01',
+    episodeType: 'regular',
+    title: 'Pilot',
     overview: 'First episode',
-    stillPath: 'still.jpg',
-    watchStatus: WatchStatus.UNWATCHED,
+    runtime: 45,
+    airDate: '2020-01-01',
+    stillImage: 'still.jpg',
+    profileId: 1,
+    watchStatus: WatchStatus.NOT_WATCHED,
   };
 
   const mockSeason: ProfileSeason = {
     id: 1,
+    showId: 1,
+    tmdbId: 101,
     seasonNumber: 1,
     name: 'Season 1',
     overview: 'First season',
-    airDate: '2020-01-01',
-    posterPath: 'poster.jpg',
+    releaseDate: '2020-01-01',
+    posterImage: 'poster.jpg',
+    numberOfEpisodes: 2,
+    profileId: 1,
+    watchStatus: WatchStatus.NOT_WATCHED,
     episodes: [mockEpisode, { ...mockEpisode, id: 2, episodeNumber: 2 }],
   };
 
   const mockShow: ProfileShowWithSeasons = {
     id: 1,
     tmdbId: 123,
-    name: 'Test Show',
-    overview: 'A test show',
-    firstAirDate: '2020-01-01',
-    posterPath: 'poster.jpg',
-    backdropPath: 'backdrop.jpg',
-    voteAverage: 8.5,
-    isFavorite: false,
+    title: 'Test Show',
+    description: 'A test show',
+    releaseDate: '2020-01-01',
+    posterImage: 'poster.jpg',
+    backdropImage: 'backdrop.jpg',
+    userRating: 8.5,
+    contentRating: 'TV-14',
+    streamingServices: '',
+    genres: 'Drama',
+    seasonCount: 1,
+    episodeCount: 2,
+    status: 'Continuing',
+    type: 'Scripted',
+    inProduction: true,
+    lastAirDate: null,
+    network: null,
+    profileId: 1,
     watchStatus: WatchStatus.WATCHING,
-    genres: [{ id: 1, name: 'Drama' }],
-    streamingServices: [],
+    lastEpisode: null,
+    nextEpisode: null,
     seasons: [mockSeason],
   };
 
   const mockShowCast: ShowCast = {
     activeCast: [
       {
-        id: 1,
+        contentId: 1,
+        personId: 1,
         name: 'Actor One',
-        character: 'Character One',
-        profilePath: 'actor1.jpg',
+        characterName: 'Character One',
+        profileImage: 'actor1.jpg',
         order: 0,
-        seasons: [1],
+        episodeCount: 5,
+        active: true,
       },
     ],
     priorCast: [],
@@ -104,22 +127,32 @@ describe('activeShowSlice', () => {
   const mockSimilarShows: SimilarOrRecommendedShow[] = [
     {
       id: 2,
-      tmdbId: 456,
-      name: 'Similar Show',
-      posterPath: 'similar.jpg',
-      voteAverage: 8.0,
-      firstAirDate: '2021-01-01',
+      title: 'Similar Show',
+      genres: ['Drama'],
+      premiered: '2021-01-01',
+      summary: '',
+      image: 'similar.jpg',
+      rating: 8.0,
+      popularity: 0,
+      country: '',
+      language: '',
+      inFavorites: false,
     },
   ];
 
   const mockRecommendedShows: SimilarOrRecommendedShow[] = [
     {
       id: 3,
-      tmdbId: 789,
-      name: 'Recommended Show',
-      posterPath: 'recommended.jpg',
-      voteAverage: 8.2,
-      firstAirDate: '2021-06-01',
+      title: 'Recommended Show',
+      genres: ['Drama'],
+      premiered: '2021-06-01',
+      summary: '',
+      image: 'recommended.jpg',
+      rating: 8.2,
+      popularity: 0,
+      country: '',
+      language: '',
+      inFavorites: false,
     },
   ];
 
@@ -134,7 +167,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -158,7 +191,7 @@ describe('activeShowSlice', () => {
             ...mockSeason,
             episodes: [
               { ...mockEpisode, id: 1, watchStatus: WatchStatus.WATCHED },
-              { ...mockEpisode, id: 2, watchStatus: WatchStatus.UNWATCHED },
+              { ...mockEpisode, id: 2, watchStatus: WatchStatus.NOT_WATCHED },
             ],
           },
         ],
@@ -173,7 +206,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -206,7 +239,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -233,7 +266,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -272,7 +305,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -300,7 +333,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -337,7 +370,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -358,7 +391,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -394,7 +427,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -416,7 +449,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },
@@ -452,7 +485,7 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com' },
+          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
           error: null,
         },

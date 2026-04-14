@@ -15,20 +15,18 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
 describe('PersonCard', () => {
   const mockCastMember: CastMember = {
     personId: 1,
-    personName: 'Tom Hanks',
     name: 'Tom Hanks',
     characterName: 'Forrest Gump',
-    personTmdbId: 31,
+    order: 0,
     contentId: 13,
     profileImage: '/tom-hanks.jpg',
   };
 
   const mockShowCastMember: ShowCastMember = {
     personId: 2,
-    personName: 'Bryan Cranston',
     name: 'Bryan Cranston',
     characterName: 'Walter White',
-    personTmdbId: 17419,
+    order: 0,
     contentId: 1396,
     profileImage: '/bryan-cranston.jpg',
     episodeCount: 62,
@@ -268,7 +266,6 @@ describe('PersonCard', () => {
       const longNamePerson = {
         ...mockCastMember,
         name: 'A Very Long Name That Goes On And On And On',
-        personName: 'A Very Long Name That Goes On And On And On',
       };
 
       renderPersonCard(longNamePerson);
@@ -280,6 +277,7 @@ describe('PersonCard', () => {
       const longCharacterPerson = {
         ...mockCastMember,
         characterName: 'A Very Long Character Name With Many Words',
+    order: 0,
       };
 
       renderPersonCard(longCharacterPerson);
@@ -291,8 +289,8 @@ describe('PersonCard', () => {
       const specialCharPerson = {
         ...mockCastMember,
         name: "O'Brien & Smith",
-        personName: "O'Brien & Smith",
         characterName: 'Lt. Dan "Danny" O\'Reilly',
+    order: 0,
       };
 
       renderPersonCard(specialCharPerson);
@@ -305,6 +303,7 @@ describe('PersonCard', () => {
       const noCharacterPerson = {
         ...mockCastMember,
         characterName: '',
+    order: 0,
       };
 
       renderPersonCard(noCharacterPerson);

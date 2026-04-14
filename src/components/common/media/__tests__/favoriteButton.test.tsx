@@ -25,7 +25,7 @@ describe('FavoritesButton', () => {
     id: 1,
     accountId: 1,
     name: 'Test Profile',
-    avatar: null,
+    image: '',
   };
 
   describe('rendering', () => {

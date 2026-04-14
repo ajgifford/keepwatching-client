@@ -1,17 +1,16 @@
-import { configureStore } from '@reduxjs/toolkit';
-import axiosInstance from '../api/axiosInstance';
-import ratingsReducer, {
+import axiosInstance from '../../api/axiosInstance';
+import { createMockStore } from '../../testUtils';
+import {
   deleteRating,
   fetchRatings,
   selectRatingForContent,
   selectRatings,
   selectRatingsLoading,
   upsertRating,
-} from './ratingsSlice';
-import accountReducer from './accountSlice';
+} from '../ratingsSlice';
 import { ContentRating } from '@ajgifford/keepwatching-types';
 
-jest.mock('../api/axiosInstance');
+jest.mock('../../api/axiosInstance');
 
 const mockRating: ContentRating = {
   id: 1,
@@ -39,15 +38,26 @@ const mockMovieRating: ContentRating = {
   updatedAt: '2026-04-01T00:00:00.000Z',
 };
 
-const makeStore = (preloaded?: any) =>
-  configureStore({
-    reducer: { ratings: ratingsReducer, auth: accountReducer },
-    preloadedState: preloaded,
-  });
+// const makeStore = (preloaded?: any) =>
+//   configureStore({
+//     reducer: { ratings: ratingsReducer, auth: accountReducer },
+//     preloadedState: preloaded,
+//   });
 
 const storeWithAccount = (ratings: ContentRating[] = []) =>
-  makeStore({
-    auth: { account: { id: 123 }, loading: false, error: null },
+  createMockStore({
+    auth: {
+      account: {
+        id: 123,
+        uid: '',
+        image: '',
+        defaultProfileId: 0,
+        name: '',
+        email: '',
+      },
+      loading: false,
+      error: null,
+    },
     ratings: { ratings, loading: false, error: null },
   });
 
@@ -58,12 +68,12 @@ describe('ratingsSlice', () => {
 
   describe('reducer', () => {
     it('should return initial state', () => {
-      const store = makeStore();
+      const store = createMockStore();
       expect(store.getState().ratings).toEqual({ ratings: [], loading: false, error: null });
     });
 
     it('fetchRatings.pending sets loading to true', () => {
-      const store = makeStore();
+      const store = createMockStore();
       store.dispatch({ type: fetchRatings.pending.type });
       expect(store.getState().ratings.loading).toBe(true);
       expect(store.getState().ratings.error).toBeNull();
@@ -121,28 +131,28 @@ describe('ratingsSlice', () => {
 
   describe('loading/error states', () => {
     it('upsertRating.pending sets loading', () => {
-      const store = makeStore();
+      const store = createMockStore();
       store.dispatch({ type: upsertRating.pending.type });
       expect(store.getState().ratings.loading).toBe(true);
       expect(store.getState().ratings.error).toBeNull();
     });
 
     it('upsertRating.rejected sets error', () => {
-      const store = makeStore();
+      const store = createMockStore();
       store.dispatch({ type: upsertRating.rejected.type, payload: { message: 'Failed to save' } });
       expect(store.getState().ratings.loading).toBe(false);
       expect(store.getState().ratings.error).toEqual({ message: 'Failed to save' });
     });
 
     it('deleteRating.pending sets loading', () => {
-      const store = makeStore();
+      const store = createMockStore();
       store.dispatch({ type: deleteRating.pending.type });
       expect(store.getState().ratings.loading).toBe(true);
       expect(store.getState().ratings.error).toBeNull();
     });
 
     it('deleteRating.rejected sets error', () => {
-      const store = makeStore();
+      const store = createMockStore();
       store.dispatch({ type: deleteRating.rejected.type, payload: { message: 'Failed to delete' } });
       expect(store.getState().ratings.loading).toBe(false);
       expect(store.getState().ratings.error).toEqual({ message: 'Failed to delete' });
@@ -151,30 +161,37 @@ describe('ratingsSlice', () => {
 
   describe('additional selectors', () => {
     it('selectRatingsLoading returns loading state', () => {
-      const store = makeStore({ ratings: { ratings: [], loading: true, error: null } } as any);
+      const store = createMockStore({ ratings: { ratings: [], loading: true, error: null } } as any);
       expect(selectRatingsLoading(store.getState() as any)).toBe(true);
     });
   });
 
   describe('thunks — error paths', () => {
     it('fetchRatings rejects when no account', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       const result = await store.dispatch(fetchRatings({ profileId: 10 }) as any);
       expect(result.type).toBe(fetchRatings.rejected.type);
       expect(result.payload).toEqual({ message: 'No account found' });
     });
 
     it('upsertRating rejects when no account', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       const result = await store.dispatch(
-        upsertRating({ profileId: 10, contentType: 'show', contentId: 42, rating: 5, contentTitle: 'Test', posterImage: '/img.jpg' }) as any,
+        upsertRating({
+          profileId: 10,
+          contentType: 'show',
+          contentId: 42,
+          rating: 5,
+          contentTitle: 'Test',
+          posterImage: '/img.jpg',
+        }) as any
       );
       expect(result.type).toBe(upsertRating.rejected.type);
       expect(result.payload).toEqual({ message: 'No account found' });
     });
 
     it('deleteRating rejects when no account', async () => {
-      const store = makeStore();
+      const store = createMockStore();
       const result = await store.dispatch(deleteRating({ profileId: 10, ratingId: 1 }) as any);
       expect(result.type).toBe(deleteRating.rejected.type);
       expect(result.payload).toEqual({ message: 'No account found' });
@@ -201,7 +218,14 @@ describe('ratingsSlice', () => {
       (axiosInstance.post as jest.Mock).mockRejectedValue(axiosError);
 
       const result = await store.dispatch(
-        upsertRating({ profileId: 10, contentType: 'show', contentId: 42, rating: 5, contentTitle: 'Test', posterImage: '/img.jpg' }) as any,
+        upsertRating({
+          profileId: 10,
+          contentType: 'show',
+          contentId: 42,
+          rating: 5,
+          contentTitle: 'Test',
+          posterImage: '/img.jpg',
+        }) as any
       );
       expect(result.type).toBe(upsertRating.rejected.type);
       expect(store.getState().ratings.error).toEqual({ message: 'Save failed' });
@@ -232,7 +256,7 @@ describe('ratingsSlice', () => {
           note: 'Amazing!',
           contentTitle: 'Breaking Bad',
           posterImage: '/poster.jpg',
-        }) as any,
+        }) as any
       );
 
       expect(axiosInstance.post).toHaveBeenCalledWith('/accounts/123/profiles/10/ratings', {

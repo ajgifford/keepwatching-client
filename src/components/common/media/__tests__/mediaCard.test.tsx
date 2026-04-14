@@ -29,7 +29,6 @@ jest.mock('../../../../app/hooks/useDateFormatters', () => ({
 describe('MediaCard', () => {
   const mockItem: SimilarOrRecommendedShow = {
     id: 123,
-    tmdbId: 456,
     title: 'Test Show Title',
     image: '/test-poster.jpg',
     genres: ['Drama', 'Thriller'],
@@ -53,7 +52,7 @@ describe('MediaCard', () => {
     });
 
     it('should render without summary if not provided', () => {
-      const itemWithoutSummary = { ...mockItem, summary: undefined };
+      const itemWithoutSummary = { ...mockItem, summary: undefined } as any;
       render(<MediaCard item={itemWithoutSummary} searchType="shows" />);
 
       expect(screen.getByText('Test Show Title')).toBeInTheDocument();

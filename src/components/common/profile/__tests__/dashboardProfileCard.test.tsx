@@ -47,6 +47,8 @@ describe('DashboardProfileCard', () => {
     totalEpisodesWatched: 500,
     totalMoviesWatched: 100,
     totalHoursWatched: 250,
+    milestones: [],
+    recentAchievements: [],
   };
 
   const mockOnNavigateToStats = jest.fn();
@@ -231,6 +233,8 @@ describe('DashboardProfileCard', () => {
       const achievedMilestone: Milestone = {
         type: 'episodes',
         threshold: 500,
+        achieved: true,
+        progress: 100,
       };
       mockGetLastAchievedMilestone.mockReturnValue(achievedMilestone);
 
@@ -245,6 +249,8 @@ describe('DashboardProfileCard', () => {
       const nextMilestone: Milestone = {
         type: 'movies',
         threshold: 150,
+        achieved: false,
+        progress: 67,
       };
       mockGetNextMilestone.mockReturnValue(nextMilestone);
 
@@ -259,10 +265,14 @@ describe('DashboardProfileCard', () => {
       const achievedMilestone: Milestone = {
         type: 'episodes',
         threshold: 500,
+        achieved: true,
+        progress: 100,
       };
       const nextMilestone: Milestone = {
         type: 'movies',
         threshold: 150,
+        achieved: false,
+        progress: 67,
       };
       mockGetLastAchievedMilestone.mockReturnValue(achievedMilestone);
       mockGetNextMilestone.mockReturnValue(nextMilestone);
@@ -278,6 +288,8 @@ describe('DashboardProfileCard', () => {
       const achievedMilestone: Milestone = {
         type: 'episodes',
         threshold: 500,
+        achieved: true,
+        progress: 100,
       };
       mockGetLastAchievedMilestone.mockReturnValue(achievedMilestone);
 
@@ -294,6 +306,8 @@ describe('DashboardProfileCard', () => {
       const nextMilestone: Milestone = {
         type: 'movies',
         threshold: 150,
+        achieved: false,
+        progress: 67,
       };
       mockGetNextMilestone.mockReturnValue(nextMilestone);
 
@@ -309,6 +323,8 @@ describe('DashboardProfileCard', () => {
       const achievedMilestone: Milestone = {
         type: 'episodes',
         threshold: 500,
+        achieved: true,
+        progress: 100,
       };
       mockGetLastAchievedMilestone.mockReturnValue(achievedMilestone);
 
@@ -325,6 +341,8 @@ describe('DashboardProfileCard', () => {
       const nextMilestone: Milestone = {
         type: 'movies',
         threshold: 150,
+        achieved: false,
+        progress: 67,
       };
       mockGetNextMilestone.mockReturnValue(nextMilestone);
 
@@ -341,6 +359,8 @@ describe('DashboardProfileCard', () => {
       const achievedMilestone: Milestone = {
         type: 'hours',
         threshold: 200,
+        achieved: true,
+        progress: 100,
       };
       mockGetLastAchievedMilestone.mockReturnValue(achievedMilestone);
 

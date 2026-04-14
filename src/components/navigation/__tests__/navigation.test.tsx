@@ -141,9 +141,7 @@ const createMockStore = (
         error: null,
       },
       systemNotifications: {
-        ids: [],
-        entities: {},
-        unreadCount: 0,
+        systemNotifications: [],
         loading: false,
         error: null,
       },

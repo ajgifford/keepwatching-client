@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { MovieCard } from '../movieCard';
-import { ProfileMovie } from '@ajgifford/keepwatching-types';
+import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 import { calculateRuntimeDisplay } from '../../../utility/contentUtility';
 
@@ -41,8 +41,8 @@ describe('MovieCard', () => {
     runtime: 142,
     genres: 'Drama, Crime',
     streamingServices: 'Netflix, Hulu',
-    watchStatus: 'Watched' as const,
-    isFavorite: true,
+    mpaRating: 'R',
+    watchStatus: WatchStatus.WATCHED,
     userRating: 9.3,
     profileId: 1,
   };
@@ -392,8 +392,8 @@ describe('MovieCard', () => {
         runtime: 90,
         genres: 'Drama',
         streamingServices: 'Netflix',
-        watchStatus: 'Unwatched' as const,
-        isFavorite: false,
+        mpaRating: '',
+        watchStatus: WatchStatus.NOT_WATCHED,
         userRating: 0,
         profileId: 1,
       };

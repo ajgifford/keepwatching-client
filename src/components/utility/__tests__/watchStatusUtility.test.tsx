@@ -229,7 +229,7 @@ describe('watchStatusUtility', () => {
       const episode = {
         watchStatus: WatchStatus.UNAIRED,
         airDate: null,
-      } as ProfileEpisode;
+      } as unknown as ProfileEpisode;
       // The function returns null when airDate is null, which is falsy
       expect(canChangeEpisodeWatchStatus(episode)).toBeFalsy();
     });

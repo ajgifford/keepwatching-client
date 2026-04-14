@@ -2,6 +2,7 @@ import { act, render, screen, within } from '@testing-library/react';
 
 import { StreamingServiceContent } from '../../../../app/slices/activeProfileSlice';
 import StreamingServiceSection from '../streamingServiceSection';
+import { ProfileMovie, ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -68,31 +69,45 @@ jest.mock('../profileContentCard', () => ({
 }));
 
 describe('StreamingServiceSection', () => {
-  const mockShow = {
+  const mockShow: ProfileShow = {
     id: 1,
     tmdbId: 123,
     title: 'Breaking Bad',
+    description: 'A chemistry teacher turned drug manufacturer.',
+    releaseDate: '2008-01-20',
     posterImage: '/breaking-bad.jpg',
     backdropImage: '/breaking-bad-backdrop.jpg',
-    watchStatus: 'Watched' as const,
-    isFavorite: true,
     userRating: 9.5,
-    genres: 'Drama, Crime',
+    contentRating: 'TV-MA',
     streamingServices: 'Netflix',
+    genres: 'Drama, Crime',
+    seasonCount: 5,
+    episodeCount: 62,
+    status: 'Ended',
+    type: 'Scripted',
+    inProduction: false,
+    lastAirDate: '2013-09-29',
+    network: 'AMC',
+    watchStatus: WatchStatus.WATCHED,
     profileId: 1,
+    lastEpisode: null,
+    nextEpisode: null,
   };
 
-  const mockMovie = {
+  const mockMovie: ProfileMovie = {
     id: 2,
     tmdbId: 456,
     title: 'The Matrix',
+    description: 'A computer hacker learns the truth about reality.',
+    releaseDate: '1999-03-31',
     posterImage: '/matrix.jpg',
     backdropImage: '/matrix-backdrop.jpg',
-    watchStatus: 'Watched' as const,
-    isFavorite: true,
+    runtime: 136,
     userRating: 8.7,
+    mpaRating: 'R',
     genres: 'Sci-Fi, Action',
     streamingServices: 'Netflix',
+    watchStatus: WatchStatus.WATCHED,
     profileId: 1,
   };
 

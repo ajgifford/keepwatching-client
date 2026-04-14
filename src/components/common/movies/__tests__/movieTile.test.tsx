@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import { MovieTile } from '../movieTile';
-import { ProfileMovie } from '@ajgifford/keepwatching-types';
+import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock buildTMDBImagePath
 jest.mock('@ajgifford/keepwatching-ui', () => ({
@@ -18,16 +18,17 @@ jest.mock('../../../../app/hooks/useDateFormatters', () => ({
 describe('MovieTile', () => {
   const mockMovie: ProfileMovie = {
     id: 1,
-    movieId: 550,
+    tmdbId: 550,
     title: 'Fight Club',
     releaseDate: '1999-10-15',
     posterImage: '/poster.jpg',
     backdropImage: '/backdrop.jpg',
-    overview: 'A ticking-time-bomb insomniac and a slippery soap salesman...',
+    description: 'A ticking-time-bomb insomniac and a slippery soap salesman...',
     runtime: 139,
-    voteAverage: 8.4,
+    userRating: 8.4,
+    mpaRating: 'R',
     streamingServices: 'Netflix, Amazon Prime',
-    watched: false,
+    watchStatus: WatchStatus.NOT_WATCHED,
     profileId: 1,
     genres: 'Drama, Thriller',
   };
