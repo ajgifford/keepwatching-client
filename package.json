@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@ajgifford/keepwatching-types": "^0.11.1",
+    "@ajgifford/keepwatching-types": "^0.11.2",
     "@ajgifford/keepwatching-ui": "^0.4.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

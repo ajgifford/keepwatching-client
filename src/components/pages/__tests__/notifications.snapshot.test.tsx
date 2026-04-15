@@ -62,8 +62,8 @@ describe('Notifications - Snapshots', () => {
       message: 'Test notification 1',
       type: 'tv' as const,
       read: false,
-      startDate: new Date('2024-01-01T00:00:00Z'),
-      endDate: new Date('2024-12-31T00:00:00Z'),
+      startDate: '2024-01-01T00:00:00Z',
+      endDate: '2024-12-31T00:00:00Z',
       active: true,
     },
     {
@@ -73,8 +73,8 @@ describe('Notifications - Snapshots', () => {
       message: 'Test notification 2',
       type: 'feature' as const,
       read: true,
-      startDate: new Date('2024-01-02T00:00:00Z'),
-      endDate: new Date('2024-12-31T00:00:00Z'),
+      startDate: '2024-01-02T00:00:00Z',
+      endDate: '2024-12-31T00:00:00Z',
       active: true,
     },
   ];

@@ -52,9 +52,9 @@ const mockNotifications: AccountNotification[] = [
     message: 'Season 5, Episode 3 of Breaking Bad is now available',
     type: 'tv',
     read: false,
-    startDate: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+    startDate: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60),
+    endDate: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
   },
   {
     id: 2,
@@ -62,9 +62,9 @@ const mockNotifications: AccountNotification[] = [
     message: 'Inception is now available to watch',
     type: 'movie',
     read: true,
-    startDate: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    startDate: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60),
+    endDate: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
   },
   {
     id: 3,
@@ -72,9 +72,9 @@ const mockNotifications: AccountNotification[] = [
     message: 'New features have been added to the application',
     type: 'feature',
     read: false,
-    startDate: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+    startDate: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60),
+    endDate: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
   },
   {
     id: 4,
@@ -82,9 +82,9 @@ const mockNotifications: AccountNotification[] = [
     message: 'There was a problem updating your watchlist',
     type: 'issue',
     read: true,
-    startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
+    startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
     dismissed: false,
-    endDate: new Date(Date.now() + 1000 * 60 * 60),
+    endDate: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
   },
 ];
 
@@ -468,7 +468,7 @@ describe('Notifications', () => {
           message: '<p>This is a <strong>test</strong> message</p>',
           type: 'tv' as const,
           read: false,
-          startDate: new Date(),
+          startDate: new Date().toISOString(),
           dismissed: false,
         },
       ];
@@ -492,7 +492,7 @@ describe('Notifications', () => {
           message: 'This is an old notification',
           type: 'tv' as const,
           read: true,
-          startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), // 30 days ago
+          startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(), // 30 days ago
           dismissed: false,
         },
       ];
