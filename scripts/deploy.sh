@@ -88,6 +88,7 @@ log "Client Deployment Starting..."
 # Navigate to repo and pull latest
 cd "$REPO_DIR" || exit 1
 log "Pulling latest from Git..."
+info "Current branch: $(git branch --show-current)"
 git pull
 
 # Get new commit hash
@@ -95,11 +96,19 @@ NEW_COMMIT=$(git rev-parse HEAD)
 NEW_COMMIT_MSG=$(git log -1 --pretty=%B)
 info "Deploying commit: ${NEW_COMMIT:0:8} - $NEW_COMMIT_MSG"
 
+if [ "$CURRENT_COMMIT" = "$NEW_COMMIT" ]; then
+    warning "No new commits were pulled — deploying the same code as before."
+    warning "If you expected new changes, make sure they are pushed to the remote."
+fi
+
 # Install dependencies
 log "Installing dependencies..."
 yarn install
 
-# Build project
+# Build project (clear Vite cache first to ensure a clean build)
+log "Clearing Vite cache..."
+rm -rf node_modules/.vite
+
 log "Building project..."
 yarn build
 
