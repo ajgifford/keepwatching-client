@@ -33,6 +33,10 @@ All global state lives in Redux slices under `src/app/slices/`:
 - `systemNotificationsSlice` - System notifications
 - `personSearchSlice` - Person search and details
 - `preferencesSlice` - User preferences (persisted to localStorage)
+- `calendarSlice` - Calendar content (episodes/movies by date) with smart date-range caching
+- `watchHistorySlice` - Paginated watch history with filters; rewatch thunks
+- `ratingsSlice` - Per-profile star ratings and notes for shows/movies
+- `communityRecommendationsSlice` - Community-wide recommendations and profile recommendations
 
 **Important patterns:**
 - Use `createAsyncThunk` for all async operations
@@ -50,7 +54,7 @@ Firebase Authentication is used for user management:
 ### Routing
 React Router v7 with two layout types:
 - `DefaultLayout` - Public pages (login, register, default)
-- `ProtectedLayout` - Authenticated pages (home, shows, movies, discover, search, notifications, manage account, person details)
+- `ProtectedLayout` - Authenticated pages (home, shows, movies, discover, search, notifications, manage account, person details, calendar, history)
 
 Main routes:
 - `/home` - Dashboard with keep watching, profiles, and recent activity
@@ -63,6 +67,8 @@ Main routes:
 - `/person/:personId` - Person details and filmography
 - `/notifications` - System notifications
 - `/manageAccount` - Account and profile management
+- `/calendar` - Content calendar (upcoming and recently aired episodes/movies)
+- `/history` - Watch history with filtering, prior-watch tracking, and rewatch management
 
 ### Component Organization
 - `src/components/pages/` - Top-level page components
