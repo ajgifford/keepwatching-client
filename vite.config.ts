@@ -19,8 +19,8 @@ export default defineConfig({
       include: '**/*.svg',
     }),
     VitePWA({
-      registerType: 'prompt',
-      injectRegister: null,
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
       strategies: 'generateSW',
       outDir: 'build',
 
@@ -69,8 +69,8 @@ export default defineConfig({
         globDirectory: 'build',
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
-        skipWaiting: false,
-        clientsClaim: false,
+        skipWaiting: true,
+        clientsClaim: true,
 
         runtimeCaching: [
           {

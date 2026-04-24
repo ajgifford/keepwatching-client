@@ -6,9 +6,11 @@ import { registerSW } from 'virtual:pwa-register';
 import App from './components/App';
 import './index.css';
 
-const updateSW = registerSW({
-  onNeedRefresh() {
-    window.dispatchEvent(new CustomEvent('sw-update-available', { detail: { updateSW } }));
+registerSW({
+  onRegistered(registration) {
+    if (registration) {
+      setInterval(() => registration.update(), 60 * 60 * 1000);
+    }
   },
   onOfflineReady() {
     window.dispatchEvent(new CustomEvent('sw-offline-ready'));
