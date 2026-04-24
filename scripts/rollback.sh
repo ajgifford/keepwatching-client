@@ -218,6 +218,16 @@ ROLLBACK_FROM=$CURRENT_BACKUP
 ROLLBACK_SOURCE=$BACKUP_PATH
 EOF"
 
+        # Fix file permissions so NGINX can read the restored files
+        log "Setting file permissions..."
+        sudo chown -R www-data:www-data "$PROD_DIR"
+        sudo find "$PROD_DIR" -type f -exec chmod 644 {} \;
+        sudo find "$PROD_DIR" -type d -exec chmod 755 {} \;
+
+        # Reload NGINX to serve restored content
+        log "Reloading NGINX..."
+        sudo systemctl reload nginx
+
         log "Rollback completed successfully!"
         info "Production restored to commit: ${BACKUP_COMMIT:0:8}"
         info "Previous production saved to: $CURRENT_BACKUP"

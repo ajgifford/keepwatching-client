@@ -122,6 +122,16 @@ DEPLOYMENT_DATE=$(date '+%Y-%m-%d %H:%M:%S')
 DEPLOYED_BY=$(whoami)
 EOF"
 
+# Fix file permissions so NGINX can read the deployed files
+log "Setting file permissions..."
+sudo chown -R www-data:www-data "$PROD_DIR"
+sudo find "$PROD_DIR" -type f -exec chmod 644 {} \;
+sudo find "$PROD_DIR" -type d -exec chmod 755 {} \;
+
+# Reload NGINX to serve new content
+log "Reloading NGINX..."
+sudo systemctl reload nginx
+
 log "Client Deployment Successful!"
 info "Deployed: ${NEW_COMMIT:0:8}"
 info "Backup: $BACKUP_PATH"
