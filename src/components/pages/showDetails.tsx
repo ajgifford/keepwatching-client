@@ -689,102 +689,38 @@ function ShowDetails() {
                   <Chip label={show?.contentRating} size="small" color="primary" sx={{ fontWeight: 500 }} />
                 </Box>
 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1, mt: 1 }}>
-                <Button
-                  variant="contained"
-                  disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
-                  onClick={(event) => show && handleShowWatchStatusChange(show, event)}
-                  startIcon={
-                    loadingShowWatchStatus ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} />
-                    )
-                  }
+                <Box
                   sx={{
-                    // Enhanced styling for better visibility
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Darker, more opaque background
-                    backdropFilter: 'blur(12px)', // Increased blur
-                    border: '2px solid rgba(255, 255, 255, 0.4)', // More prominent border
-                    color: 'white',
-                    fontWeight: 600,
-                    textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)', // Text shadow for readability
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)', // Drop shadow
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                      border: '2px solid rgba(255, 255, 255, 0.6)',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
-                    },
-                    '&:disabled': {
-                      backgroundColor: 'rgba(128, 128, 128, 0.8)',
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      border: '2px solid rgba(255, 255, 255, 0.2)',
-                    },
-                    // Add a subtle gradient overlay for extra depth
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background:
-                        'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
-                      pointerEvents: 'none',
-                      zIndex: 1,
-                    },
-                    // Ensure content is above the gradient
-                    '& .MuiButton-startIcon, & .MuiButton-endIcon': {
-                      position: 'relative',
-                      zIndex: 2,
-                    },
-                    '& .MuiButton-label': {
-                      position: 'relative',
-                      zIndex: 2,
-                    },
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 1,
+                    mt: 1,
+                    alignItems: 'flex-start',
                   }}
                 >
-                  {loadingShowWatchStatus
-                    ? 'Loading...'
-                    : show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE
-                      ? 'Mark Unwatched'
-                      : 'Mark as Watched'}
-                </Button>
-                  {show && profileId && (
-                    <RecommendButton
-                      profileId={Number(profileId)}
-                      contentType="show"
-                      contentId={show.id}
-                      contentTitle={show.title}
-                    />
-                  )}
-                </Box>
-                {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
                   <Button
-                    variant="outlined"
-                    disabled={loadingShowRewatch}
-                    onClick={() => setRewatchConfirmOpen(true)}
+                    variant="contained"
+                    disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
+                    onClick={(event) => show && handleShowWatchStatusChange(show, event)}
                     startIcon={
-                      loadingShowRewatch ? (
+                      loadingShowWatchStatus ? (
                         <CircularProgress size={20} color="inherit" />
                       ) : (
-                        <ReplayIcon sx={{ color: 'rewatch.main' }} />
+                        <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} />
                       )
                     }
                     sx={{
-                      mt: 1,
-                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
                       backdropFilter: 'blur(12px)',
                       border: '2px solid rgba(255, 255, 255, 0.4)',
                       color: 'white',
                       fontWeight: 600,
                       textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
                       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                      position: 'relative',
+                      overflow: 'hidden',
                       '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
                         border: '2px solid rgba(255, 255, 255, 0.6)',
                         transform: 'translateY(-1px)',
                         boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
@@ -794,10 +730,80 @@ function ShowDetails() {
                         color: 'rgba(255, 255, 255, 0.7)',
                         border: '2px solid rgba(255, 255, 255, 0.2)',
                       },
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background:
+                          'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
+                        pointerEvents: 'none',
+                        zIndex: 1,
+                      },
+                      '& .MuiButton-startIcon, & .MuiButton-endIcon': {
+                        position: 'relative',
+                        zIndex: 2,
+                      },
+                      '& .MuiButton-label': {
+                        position: 'relative',
+                        zIndex: 2,
+                      },
                     }}
                   >
-                    {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
+                    {loadingShowWatchStatus
+                      ? 'Loading...'
+                      : show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE
+                        ? 'Mark Unwatched'
+                        : 'Mark as Watched'}
                   </Button>
+                  {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
+                    <Button
+                      variant="outlined"
+                      disabled={loadingShowRewatch}
+                      onClick={() => setRewatchConfirmOpen(true)}
+                      startIcon={
+                        loadingShowRewatch ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <ReplayIcon sx={{ color: 'rewatch.main' }} />
+                        )
+                      }
+                      sx={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        backdropFilter: 'blur(12px)',
+                        border: '2px solid rgba(255, 255, 255, 0.4)',
+                        color: 'white',
+                        fontWeight: 600,
+                        textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                          border: '2px solid rgba(255, 255, 255, 0.6)',
+                          transform: 'translateY(-1px)',
+                          boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                        },
+                        '&:disabled': {
+                          backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                          color: 'rgba(255, 255, 255, 0.7)',
+                          border: '2px solid rgba(255, 255, 255, 0.2)',
+                        },
+                      }}
+                    >
+                      {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
+                    </Button>
+                  )}
+                </Box>
+                {show && profileId && (
+                  <Box sx={{ mt: 1 }}>
+                    <RecommendButton
+                      profileId={Number(profileId)}
+                      contentType="show"
+                      contentId={show.id}
+                      contentTitle={show.title}
+                    />
+                  </Box>
                 )}
               </Box>
             </Box>
