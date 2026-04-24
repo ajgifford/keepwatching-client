@@ -15,6 +15,7 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import ActivityNotificationBar from './notification/activityNotificationBar';
+import OfflineBanner from './pwa/OfflineBanner';
 import UpdatePrompt from './pwa/UpdatePrompt';
 import Calendar from './pages/calendar';
 import Default from './pages/default';
@@ -92,6 +93,7 @@ function App() {
                 <Navigation />
                 <ActivityNotificationBar />
                 <UpdatePrompt />
+                <OfflineBanner />
                 <div className="content">
                   <Container maxWidth="xl" sx={{ p: 1 }}>
                     <Routes>
