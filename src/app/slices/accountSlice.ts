@@ -249,8 +249,7 @@ export const googleLogin = createAsyncThunk<Account, void, { rejectValue: ApiErr
           type: ActivityNotificationType.Error,
         })
       );
-
-      return rejectWithValue({ message: 'Register: Unexpected Error' });
+      return rejectWithValue({ message: 'Google Login: Unexpected Error' });
     }
   }
 );
