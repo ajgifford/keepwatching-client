@@ -359,7 +359,7 @@ describe('accountSlice', () => {
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
-      expect(state.error?.message).toBe('Register: Unexpected Error');
+      expect(state.error?.message).toBe('Google Login: Unexpected Error');
     });
   });
 
