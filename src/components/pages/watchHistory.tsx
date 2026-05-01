@@ -68,8 +68,10 @@ function WatchHistory() {
   const priorWatchFilter = useAppSelector(selectWatchHistoryPriorWatchFilter);
   const searchQuery = useAppSelector(selectWatchHistorySearchQuery);
 
-  // Local state for the search input — debounced before dispatching
+  // Local state for inputs — date inputs only dispatch when year is complete (>= 1000)
   const [searchInput, setSearchInput] = useState(searchQuery);
+  const [dateFromInput, setDateFromInput] = useState(dateFrom ?? '');
+  const [dateToInput, setDateToInput] = useState(dateTo ?? '');
   const [dateError, setDateError] = useState<string | null>(null);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -156,23 +158,37 @@ function WatchHistory() {
   };
 
   const handleDateFromChange = (value: string) => {
-    const newDateFrom = value || null;
-    if (newDateFrom && dateTo && newDateFrom > dateTo) {
+    setDateFromInput(value);
+    if (!value) {
+      setDateError(null);
+      dispatchWithFilters({ dateFrom: null });
+      return;
+    }
+    const year = parseInt(value.split('-')[0], 10);
+    if (year < 1000) return;
+    if (dateTo && value > dateTo) {
       setDateError('Start date must be on or before end date');
       return;
     }
     setDateError(null);
-    dispatchWithFilters({ dateFrom: newDateFrom });
+    dispatchWithFilters({ dateFrom: value });
   };
 
   const handleDateToChange = (value: string) => {
-    const newDateTo = value || null;
-    if (dateFrom && newDateTo && dateFrom > newDateTo) {
+    setDateToInput(value);
+    if (!value) {
+      setDateError(null);
+      dispatchWithFilters({ dateTo: null });
+      return;
+    }
+    const year = parseInt(value.split('-')[0], 10);
+    if (year < 1000) return;
+    if (dateFrom && dateFrom > value) {
       setDateError('End date must be on or after start date');
       return;
     }
     setDateError(null);
-    dispatchWithFilters({ dateTo: newDateTo });
+    dispatchWithFilters({ dateTo: value });
   };
 
   const handleSearchChange = (value: string) => {
@@ -195,6 +211,8 @@ function WatchHistory() {
 
   const handleClearAllFilters = () => {
     setSearchInput('');
+    setDateFromInput('');
+    setDateToInput('');
     setDateError(null);
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
     dispatchWithFilters({
@@ -270,7 +288,7 @@ function WatchHistory() {
             label="From"
             type="date"
             size="small"
-            value={dateFrom ?? ''}
+            value={dateFromInput}
             onChange={(e) => handleDateFromChange(e.target.value)}
             slotProps={{ inputLabel: { shrink: true }, input: { endAdornment: dateFrom ? (
               <InputAdornment position="end">
@@ -286,7 +304,7 @@ function WatchHistory() {
             label="To"
             type="date"
             size="small"
-            value={dateTo ?? ''}
+            value={dateToInput}
             onChange={(e) => handleDateToChange(e.target.value)}
             slotProps={{ inputLabel: { shrink: true }, input: { endAdornment: dateTo ? (
               <InputAdornment position="end">
