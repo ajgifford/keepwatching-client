@@ -168,6 +168,7 @@ function ShowDetails() {
   }, []);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (showId && profileId) {
       dispatch(fetchShowWithDetails({ profileId: Number(profileId), showId: Number(showId) }));
       dispatch(fetchRatings({ profileId: Number(profileId) }));
