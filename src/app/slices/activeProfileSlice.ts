@@ -513,12 +513,12 @@ export const removeMovieFavorite = createAsyncThunk<
 
 export const updateMovieWatchStatus = createAsyncThunk<
   { movieId: number; status: UserWatchStatus },
-  { profileId: number; movieId: number; status: UserWatchStatus },
+  { profileId: number; movieId: number; status: UserWatchStatus; isPriorWatch?: boolean; watchedAt?: string },
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/updateMovieWatchStatus',
   async (
-    { profileId, movieId, status }: { profileId: number; movieId: number; status: UserWatchStatus },
+    { profileId, movieId, status, isPriorWatch, watchedAt }: { profileId: number; movieId: number; status: UserWatchStatus; isPriorWatch?: boolean; watchedAt?: string },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -530,8 +530,10 @@ export const updateMovieWatchStatus = createAsyncThunk<
       }
 
       await axiosInstance.put(`/accounts/${accountId}/profiles/${profileId}/movies/watchStatus`, {
-        movieId: movieId,
-        status: status,
+        movieId,
+        status,
+        isPriorWatch,
+        watchedAt,
       });
       return { movieId, status };
     } catch (error: unknown) {

@@ -718,22 +718,7 @@ describe('activeProfileSlice', () => {
   });
 
   describe('updateMovieWatchStatus', () => {
-    it('should update movie watch status successfully', async () => {
-      const updatedMovie: any = {
-        id: 1,
-        tmdbId: 456,
-        title: 'Test Movie',
-        watchStatus: WatchStatus.WATCHED,
-        genres: 'Action',
-        streamingServices: 'Disney+',
-      };
-
-      mockAxiosInstance.put.mockResolvedValueOnce({
-        data: {
-          movie: updatedMovie,
-        },
-      });
-
+    const makeStoreWithMovie = (initialMovieOverrides: any = {}) => {
       const initialMovie: any = {
         id: 1,
         tmdbId: 456,
@@ -741,9 +726,10 @@ describe('activeProfileSlice', () => {
         watchStatus: WatchStatus.NOT_WATCHED,
         genres: 'Action',
         streamingServices: 'Disney+',
+        ...initialMovieOverrides,
       };
 
-      const store = createMockStore({
+      return createMockStore({
         auth: {
           account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
           loading: false,
@@ -768,11 +754,41 @@ describe('activeProfileSlice', () => {
           error: null,
         },
       });
+    };
 
+    it('should update movie watch status successfully', async () => {
+      mockAxiosInstance.put.mockResolvedValueOnce({ data: {} });
+
+      const store = makeStoreWithMovie();
       await store.dispatch(updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED }));
 
       const movies = selectMovies(store.getState());
       expect(movies[0].watchStatus).toBe(WatchStatus.WATCHED);
+    });
+
+    it('should include isPriorWatch and watchedAt in the request body when provided', async () => {
+      mockAxiosInstance.put.mockResolvedValueOnce({ data: {} });
+
+      const store = makeStoreWithMovie();
+      await store.dispatch(
+        updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED, isPriorWatch: true, watchedAt: '2001-07-27' })
+      );
+
+      expect(mockAxiosInstance.put).toHaveBeenCalledWith(
+        expect.stringContaining('/movies/watchStatus'),
+        expect.objectContaining({ movieId: 1, status: WatchStatus.WATCHED, isPriorWatch: true, watchedAt: '2001-07-27' }),
+      );
+    });
+
+    it('should omit isPriorWatch and watchedAt from the body when not provided', async () => {
+      mockAxiosInstance.put.mockResolvedValueOnce({ data: {} });
+
+      const store = makeStoreWithMovie();
+      await store.dispatch(updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED }));
+
+      const [, body] = mockAxiosInstance.put.mock.calls[0];
+      expect(body.isPriorWatch).toBeUndefined();
+      expect(body.watchedAt).toBeUndefined();
     });
 
     it('should handle error when no account found', async () => {

@@ -52,6 +52,7 @@ import { RecommendButton } from '../common/recommendations/recommendButton';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import { MovieCastSection } from '../common/movies/movieCast';
+import MoviePriorWatchDialog from '../common/movies/MoviePriorWatchDialog';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { WatchStatusIcon } from '../utility/watchStatusUtility';
 import { ProfileMovie, SimilarOrRecommendedMovie, WatchStatus } from '@ajgifford/keepwatching-types';
@@ -89,12 +90,15 @@ function MovieDetails() {
   const [loadingWatchStatus, setLoadingWatchStatus] = useState<boolean>(false);
   const [rewatchConfirmOpen, setRewatchConfirmOpen] = useState(false);
   const [loadingMovieRewatch, setLoadingMovieRewatch] = useState(false);
+  const [priorWatchDialogOpen, setPriorWatchDialogOpen] = useState(false);
+  const [pendingWatchMovie, setPendingWatchMovie] = useState<ProfileMovie | null>(null);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (movieId && profileId) {
       dispatch(fetchMovieWithDetails({ profileId: Number(profileId), movieId: Number(movieId) }));
       dispatch(fetchRatings({ profileId: Number(profileId) }));
@@ -114,21 +118,38 @@ function MovieDetails() {
   }
 
   const handleMovieWatchStatusChange = async (movie: ProfileMovie, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const nextStatus = movie.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
+
+    if (nextStatus === WatchStatus.WATCHED) {
+      setPendingWatchMovie(movie);
+      setPriorWatchDialogOpen(true);
+    } else {
+      setLoadingWatchStatus(true);
+      try {
+        await dispatch(updateMovieWatchStatus({ profileId: Number(profileId), movieId: movie.id, status: nextStatus }));
+      } finally {
+        setLoadingWatchStatus(false);
+      }
+    }
+  };
+
+  const handleDispatchWatched = async (isPriorWatch: boolean, watchedAt?: string) => {
+    if (!pendingWatchMovie) return;
     setLoadingWatchStatus(true);
     try {
-      event.stopPropagation();
-
-      const nextStatus = movie.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED;
-
       await dispatch(
         updateMovieWatchStatus({
           profileId: Number(profileId),
-          movieId: movie.id,
-          status: nextStatus,
+          movieId: pendingWatchMovie.id,
+          status: WatchStatus.WATCHED,
+          isPriorWatch,
+          watchedAt,
         })
       );
     } finally {
       setLoadingWatchStatus(false);
+      setPendingWatchMovie(null);
     }
   };
 
@@ -576,6 +597,18 @@ function MovieDetails() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <MoviePriorWatchDialog
+        open={priorWatchDialogOpen}
+        movieTitle={pendingWatchMovie?.title ?? ''}
+        releaseDate={pendingWatchMovie?.releaseDate ?? ''}
+        onJustWatched={() => handleDispatchWatched(false)}
+        onPriorWatch={(watchedAt) => handleDispatchWatched(true, watchedAt)}
+        onClose={() => {
+          setPriorWatchDialogOpen(false);
+          setPendingWatchMovie(null);
+        }}
+      />
     </Box>
   );
 }

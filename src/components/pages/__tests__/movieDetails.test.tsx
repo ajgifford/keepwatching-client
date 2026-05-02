@@ -72,6 +72,25 @@ jest.mock('../../common/movies/movieCast', () => ({
   ),
 }));
 
+jest.mock('../../common/movies/MoviePriorWatchDialog', () => ({
+  __esModule: true,
+  default: ({ open, onJustWatched, onPriorWatch, onClose, movieTitle }: any) =>
+    open ? (
+      <div data-testid="prior-watch-dialog">
+        <span data-testid="dialog-movie-title">{movieTitle}</span>
+        <button data-testid="just-watched-btn" onClick={onJustWatched}>
+          Just Watched
+        </button>
+        <button data-testid="prior-watch-btn" onClick={() => onPriorWatch('2024-01-15')}>
+          Prior Watch
+        </button>
+        <button data-testid="close-dialog-btn" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
+    ) : null,
+}));
+
 jest.mock('../../common/tabs/tabPanel', () => ({
   TabPanel: ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => (
     <div role="tabpanel" hidden={value !== index}>
@@ -403,11 +422,22 @@ describe('MovieDetails', () => {
       expect(screen.getByRole('button', { name: /mark unwatched/i })).toBeInTheDocument();
     });
 
-    it('dispatches updateMovieWatchStatus when watch status button is clicked', async () => {
+    it('opens prior watch dialog when marking unwatched movie as watched', async () => {
       renderMovieDetails();
 
-      const watchButton = screen.getByRole('button', { name: /mark as watched/i });
-      fireEvent.click(watchButton);
+      fireEvent.click(screen.getByRole('button', { name: /mark as watched/i }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('prior-watch-dialog')).toBeInTheDocument();
+      });
+    });
+
+    it('dispatches updateMovieWatchStatus with isPriorWatch false when confirming just watched', async () => {
+      renderMovieDetails();
+
+      fireEvent.click(screen.getByRole('button', { name: /mark as watched/i }));
+      await waitFor(() => expect(screen.getByTestId('prior-watch-dialog')).toBeInTheDocument());
+      fireEvent.click(screen.getByTestId('just-watched-btn'));
 
       await waitFor(() => {
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -415,6 +445,54 @@ describe('MovieDetails', () => {
             profileId: 1,
             movieId: 1,
             status: WatchStatus.WATCHED,
+            isPriorWatch: false,
+            watchedAt: undefined,
+          })
+        );
+      });
+    });
+
+    it('dispatches updateMovieWatchStatus with isPriorWatch true when confirming prior watch', async () => {
+      renderMovieDetails();
+
+      fireEvent.click(screen.getByRole('button', { name: /mark as watched/i }));
+      await waitFor(() => expect(screen.getByTestId('prior-watch-dialog')).toBeInTheDocument());
+      fireEvent.click(screen.getByTestId('prior-watch-btn'));
+
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith(
+          updateMovieWatchStatus({
+            profileId: 1,
+            movieId: 1,
+            status: WatchStatus.WATCHED,
+            isPriorWatch: true,
+            watchedAt: '2024-01-15',
+          })
+        );
+      });
+    });
+
+    it('dispatches updateMovieWatchStatus directly when marking watched movie as unwatched', async () => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.WATCHED };
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
+        return null;
+      });
+
+      renderMovieDetails();
+
+      fireEvent.click(screen.getByRole('button', { name: /mark unwatched/i }));
+
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith(
+          updateMovieWatchStatus({
+            profileId: 1,
+            movieId: 1,
+            status: WatchStatus.NOT_WATCHED,
           })
         );
       });
