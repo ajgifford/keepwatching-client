@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import Replay from '@mui/icons-material/Replay';
 import StarIcon from '@mui/icons-material/Star';
 import {
   Avatar,
@@ -20,6 +21,7 @@ import {
 import { useAppDispatch } from '../../../app/hooks';
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { removeMovieFavorite, updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
+import { startMovieRewatch } from '../../../app/slices/watchHistorySlice';
 import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { WatchStatusIcon, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
@@ -47,6 +49,7 @@ export const MovieListItem = (props: MovieListItemProps) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [expanded, setExpanded] = useState<boolean>(false);
   const [isUpdatingWatchStatus, setIsUpdatingWatchStatus] = useState<boolean>(false);
+  const [isRewatching, setIsRewatching] = useState<boolean>(false);
 
   const handleWatchStatusChange = async (currentStatus: SimpleWatchStatus) => {
     setIsUpdatingWatchStatus(true);
@@ -77,6 +80,16 @@ export const MovieListItem = (props: MovieListItemProps) => {
         movieId: movie.id,
       })
     );
+  };
+
+  const handleRewatch = async (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setIsRewatching(true);
+    try {
+      await dispatch(startMovieRewatch({ profileId: movie.profileId, movieId: movie.id }));
+    } finally {
+      setIsRewatching(false);
+    }
   };
 
   return (
@@ -116,7 +129,8 @@ export const MovieListItem = (props: MovieListItemProps) => {
                 <b>Streaming Service: </b> {movie.streamingServices}
                 <br />
                 <b>Release Date: </b>
-                {movie.releaseDate ? formatters.contentDate(movie.releaseDate) : 'TBD'} • <b>Rated: </b> {movie.mpaRating}
+                {movie.releaseDate ? formatters.contentDate(movie.releaseDate) : 'TBD'} • <b>Rated: </b>{' '}
+                {movie.mpaRating}
                 <br />
                 <b>Runtime: </b>
                 {calculateRuntimeDisplay(movie.runtime)}
@@ -147,6 +161,29 @@ export const MovieListItem = (props: MovieListItemProps) => {
           <StarIcon color="primary" />
         </IconButton>
       </Tooltip>
+      {movie.watchStatus === WatchStatus.WATCHED && (
+        <Box sx={{ position: 'relative' }}>
+          <Tooltip title="Mark Rewatched">
+            <span>
+              <IconButton disabled={isRewatching} onClick={handleRewatch} color="rewatch">
+                <Replay />
+              </IconButton>
+            </span>
+          </Tooltip>
+          {isRewatching && (
+            <CircularProgress
+              size={24}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-12px',
+                marginLeft: '-12px',
+              }}
+            />
+          )}
+        </Box>
+      )}
       <Box sx={{ position: 'relative' }}>
         <OptionalTooltipControl
           identifier={`watchStatusTooltip_${movie.id}`}

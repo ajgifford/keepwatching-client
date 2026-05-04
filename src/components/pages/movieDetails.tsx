@@ -15,11 +15,6 @@ import {
   CardMedia,
   Chip,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -44,15 +39,15 @@ import {
   selectSimilarMovies,
 } from '../../app/slices/activeMovieSlice';
 import { updateMovieWatchStatus } from '../../app/slices/activeProfileSlice';
-import { startMovieRewatch } from '../../app/slices/watchHistorySlice';
-import { fetchRatings } from '../../app/slices/ratingsSlice';
 import { fetchProfileRecommendations } from '../../app/slices/communityRecommendationsSlice';
-import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
-import { RecommendButton } from '../common/recommendations/recommendButton';
+import { fetchRatings } from '../../app/slices/ratingsSlice';
+import { startMovieRewatch } from '../../app/slices/watchHistorySlice';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
-import { MovieCastSection } from '../common/movies/movieCast';
 import MoviePriorWatchDialog from '../common/movies/MoviePriorWatchDialog';
+import { MovieCastSection } from '../common/movies/movieCast';
+import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
+import { RecommendButton } from '../common/recommendations/recommendButton';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { WatchStatusIcon } from '../utility/watchStatusUtility';
 import { ProfileMovie, SimilarOrRecommendedMovie, WatchStatus } from '@ajgifford/keepwatching-types';
@@ -88,7 +83,6 @@ function MovieDetails() {
 
   const [tabValue, setTabValue] = useState(0);
   const [loadingWatchStatus, setLoadingWatchStatus] = useState<boolean>(false);
-  const [rewatchConfirmOpen, setRewatchConfirmOpen] = useState(false);
   const [loadingMovieRewatch, setLoadingMovieRewatch] = useState(false);
   const [priorWatchDialogOpen, setPriorWatchDialogOpen] = useState(false);
   const [pendingWatchMovie, setPendingWatchMovie] = useState<ProfileMovie | null>(null);
@@ -155,7 +149,6 @@ function MovieDetails() {
 
   const handleStartMovieRewatch = async () => {
     if (!movie) return;
-    setRewatchConfirmOpen(false);
     setLoadingMovieRewatch(true);
     try {
       await dispatch(startMovieRewatch({ profileId: Number(profileId), movieId: movie.id }));
@@ -416,8 +409,8 @@ function MovieDetails() {
                     <Button
                       variant="outlined"
                       disabled={loadingMovieRewatch}
-                      onClick={() => setRewatchConfirmOpen(true)}
-                      startIcon={loadingMovieRewatch ? <CircularProgress size={20} color="inherit" /> : <Replay />}
+                      onClick={handleStartMovieRewatch}
+                      startIcon={loadingMovieRewatch ? <CircularProgress size={20} color="inherit" /> : <Replay sx={{ color: 'rewatch.main' }} />}
                       sx={{
                         backgroundColor: 'rgba(0, 0, 0, 0.6)',
                         backdropFilter: 'blur(12px)',
@@ -439,7 +432,7 @@ function MovieDetails() {
                         },
                       }}
                     >
-                      {loadingMovieRewatch ? 'Loading...' : 'Watch Again'}
+                      {loadingMovieRewatch ? 'Loading...' : 'Mark Rewatched'}
                     </Button>
                   )}
                 </Box>
@@ -581,22 +574,6 @@ function MovieDetails() {
           </CardContent>
         </Card>
       </Box>
-
-      <Dialog open={rewatchConfirmOpen} onClose={() => setRewatchConfirmOpen(false)}>
-        <DialogTitle>Watch Again?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Watching "{movie?.title}" again will be recorded in your watch history. Your original watch date will be
-            preserved.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRewatchConfirmOpen(false)}>Cancel</Button>
-          <Button onClick={handleStartMovieRewatch} variant="contained" startIcon={<Replay />}>
-            Watch Again
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <MoviePriorWatchDialog
         open={priorWatchDialogOpen}

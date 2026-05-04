@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import * as activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+import * as watchHistorySlice from '../../../../app/slices/watchHistorySlice';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { FilterProps, MovieListItem } from '../movieListItem';
 import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
@@ -278,7 +279,8 @@ describe('MovieListItem', () => {
         </BrowserRouter>
       );
 
-      const watchStatusButton = screen.getAllByRole('button')[1];
+      // For WATCHED movies: button[0]=favorite, button[1]=rewatch, button[2]=watch status
+      const watchStatusButton = screen.getAllByRole('button')[2];
       await user.click(watchStatusButton);
 
       await waitFor(() => {
@@ -399,6 +401,81 @@ describe('MovieListItem', () => {
       await user.click(showMoreButton);
 
       // Navigation should not be called
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('rewatch button', () => {
+    const watchedMovie: ProfileMovie = { ...mockMovie, watchStatus: WatchStatus.WATCHED as any };
+    const unairedMovie: ProfileMovie = { ...mockMovie, watchStatus: WatchStatus.UNAIRED as any };
+
+    beforeEach(() => {
+      mockUseMediaQuery.mockReturnValue(false);
+    });
+
+    it('should show rewatch button for watched movies', () => {
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={watchedMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      expect(screen.getByTestId('ReplayIcon')).toBeInTheDocument();
+    });
+
+    it('should not show rewatch button for not-watched movies', () => {
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={mockMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      expect(screen.queryByTestId('ReplayIcon')).not.toBeInTheDocument();
+    });
+
+    it('should not show rewatch button for unaired movies', () => {
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={unairedMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      expect(screen.queryByTestId('ReplayIcon')).not.toBeInTheDocument();
+    });
+
+    it('should dispatch startMovieRewatch when clicking rewatch button', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(watchHistorySlice, 'startMovieRewatch');
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={watchedMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      const rewatchButton = screen.getByTestId('ReplayIcon').closest('button')!;
+      await user.click(rewatchButton);
+
+      await waitFor(() => {
+        expect(dispatchSpy).toHaveBeenCalledWith({
+          profileId: 1,
+          movieId: 1,
+        });
+      });
+    });
+
+    it('should stop propagation when clicking rewatch button', async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={watchedMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      const rewatchButton = screen.getByTestId('ReplayIcon').closest('button')!;
+      await user.click(rewatchButton);
+
       expect(mockNavigate).not.toHaveBeenCalled();
     });
   });

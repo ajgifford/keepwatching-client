@@ -15,6 +15,7 @@ import {
   selectSimilarMovies,
 } from '../../../app/slices/activeMovieSlice';
 import { updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
+import { startMovieRewatch } from '../../../app/slices/watchHistorySlice';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -47,6 +48,13 @@ jest.mock('../../../app/slices/activeMovieSlice', () => ({
 jest.mock('../../../app/slices/activeProfileSlice', () => ({
   updateMovieWatchStatus: jest.fn((params) => ({
     type: 'activeProfile/updateMovieWatchStatus',
+    payload: params,
+  })),
+}));
+
+jest.mock('../../../app/slices/watchHistorySlice', () => ({
+  startMovieRewatch: jest.fn((params) => ({
+    type: 'watchHistory/startMovieRewatch',
     payload: params,
   })),
 }));
@@ -618,6 +626,57 @@ describe('MovieDetails', () => {
       fireEvent.error(posterImage);
 
       expect(posterImage.src).toContain('placehold.co');
+    });
+  });
+
+  describe('watch again (rewatch)', () => {
+    const watchedMovieSelector = (selector: any) => {
+      if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.WATCHED };
+      if (selector === selectCastMembers) return mockCastMembers;
+      if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+      if (selector === selectSimilarMovies) return mockSimilarMovies;
+      if (selector === selectMovieLoading) return false;
+      if (selector === selectMovieError) return null;
+      return null;
+    };
+
+    it('shows Watch Again button for watched movies', () => {
+      jest.mocked(useAppSelector).mockImplementation(watchedMovieSelector);
+
+      renderMovieDetails();
+
+      expect(screen.getByRole('button', { name: /watch again/i })).toBeInTheDocument();
+    });
+
+    it('does not show Watch Again button for unwatched movies', () => {
+      renderMovieDetails();
+
+      expect(screen.queryByRole('button', { name: /watch again/i })).not.toBeInTheDocument();
+    });
+
+    it('dispatches startMovieRewatch immediately when Watch Again is clicked', async () => {
+      jest.mocked(useAppSelector).mockImplementation(watchedMovieSelector);
+
+      renderMovieDetails();
+
+      fireEvent.click(screen.getByRole('button', { name: /watch again/i }));
+
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith(
+          startMovieRewatch({ profileId: 1, movieId: 1 })
+        );
+      });
+    });
+
+    it('does not open a confirmation dialog when Watch Again is clicked', async () => {
+      jest.mocked(useAppSelector).mockImplementation(watchedMovieSelector);
+
+      renderMovieDetails();
+
+      fireEvent.click(screen.getByRole('button', { name: /watch again/i }));
+
+      // No dialog should appear
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 

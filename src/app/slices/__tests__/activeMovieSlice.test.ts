@@ -12,6 +12,7 @@ import {
   selectSimilarMovies,
 } from '../activeMovieSlice';
 import { updateMovieWatchStatus } from '../activeProfileSlice';
+import { startMovieRewatch } from '../watchHistorySlice';
 import {
   CastMember,
   MovieDetailsResponse,
@@ -306,6 +307,59 @@ describe('activeMovieSlice', () => {
 
       const movie = selectMovie(store.getState());
       expect(movie?.watchStatus).toBe(WatchStatus.NOT_WATCHED);
+    });
+
+    it('should update movie watch status when startMovieRewatch matches', () => {
+      const store = createMockStore({
+        activeMovie: {
+          movie: mockMovie,
+          castMembers: mockCastMembers,
+          similarMovies: mockSimilarMovies,
+          recommendedMovies: mockRecommendedMovies,
+          movieDetailsLoading: false,
+          movieDetailsError: null,
+        },
+      });
+
+      store.dispatch({
+        type: startMovieRewatch.fulfilled.type,
+        payload: { ...mockMovie, watchStatus: WatchStatus.WATCHED },
+      });
+
+      const movie = selectMovie(store.getState());
+      expect(movie?.watchStatus).toBe(WatchStatus.WATCHED);
+    });
+
+    it('should not update movie watch status when startMovieRewatch id does not match', () => {
+      const store = createMockStore({
+        activeMovie: {
+          movie: mockMovie,
+          castMembers: mockCastMembers,
+          similarMovies: mockSimilarMovies,
+          recommendedMovies: mockRecommendedMovies,
+          movieDetailsLoading: false,
+          movieDetailsError: null,
+        },
+      });
+
+      store.dispatch({
+        type: startMovieRewatch.fulfilled.type,
+        payload: { ...mockMovie, id: 999, watchStatus: WatchStatus.WATCHED },
+      });
+
+      const movie = selectMovie(store.getState());
+      expect(movie?.watchStatus).toBe(WatchStatus.NOT_WATCHED);
+    });
+
+    it('should not crash when startMovieRewatch fires with no active movie', () => {
+      const store = createMockStore();
+
+      store.dispatch({
+        type: startMovieRewatch.fulfilled.type,
+        payload: { ...mockMovie, watchStatus: WatchStatus.WATCHED },
+      });
+
+      expect(selectMovie(store.getState())).toBeNull();
     });
 
     it('should not crash when updating watch status with no active movie', () => {

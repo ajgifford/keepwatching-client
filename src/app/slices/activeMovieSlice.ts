@@ -2,6 +2,7 @@ import axiosInstance from '../api/axiosInstance';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
 import { updateMovieWatchStatus } from './activeProfileSlice';
+import { startMovieRewatch } from './watchHistorySlice';
 import {
   CastMember,
   MovieDetailsResponse,
@@ -96,6 +97,12 @@ const activeMovieSlice = createSlice({
         const movie = state.movie;
         if (movie && movie.id === movieId) {
           movie.watchStatus = status;
+        }
+      })
+      .addCase(startMovieRewatch.fulfilled, (state, action) => {
+        const movie = state.movie;
+        if (movie && movie.id === action.payload.id) {
+          movie.watchStatus = action.payload.watchStatus;
         }
       });
   },
