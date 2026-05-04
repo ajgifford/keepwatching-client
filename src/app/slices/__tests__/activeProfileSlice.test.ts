@@ -786,7 +786,7 @@ describe('activeProfileSlice', () => {
       const store = makeStoreWithMovie();
       await store.dispatch(updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED }));
 
-      const [, body] = mockAxiosInstance.put.mock.calls[0];
+      const [, body] = mockAxiosInstance.put.mock.calls[0] as [string, Record<string, unknown>];
       expect(body.isPriorWatch).toBeUndefined();
       expect(body.watchedAt).toBeUndefined();
     });
