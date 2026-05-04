@@ -1,9 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import ShowDetails from '../showDetails';
-import { WatchStatus } from '@ajgifford/keepwatching-types';
 import { useAppSelector } from '../../../app/hooks';
+import { updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 import {
   clearActiveShow,
   fetchShowWithDetails,
@@ -16,7 +15,8 @@ import {
   updateEpisodeWatchStatus,
   updateSeasonWatchStatus,
 } from '../../../app/slices/activeShowSlice';
-import { updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
+import ShowDetails from '../showDetails';
+import { WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock dependencies
 const mockDispatch = jest.fn();
@@ -236,6 +236,7 @@ describe('ShowDetails', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockDispatch.mockResolvedValue({ type: 'mock' });
+    window.scrollTo = jest.fn();
 
     jest.mocked(useAppSelector).mockImplementation((selector: any) => {
       if (selector === selectShow) return mockShow;
