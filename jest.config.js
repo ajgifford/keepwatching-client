@@ -43,7 +43,11 @@ export default {
   },
   transformIgnorePatterns: ['node_modules/(?!(@ajgifford|@mui|@babel|@emotion)/)'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/vite-env.d.ts', '!src/main.tsx', '!src/index.tsx'],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'json-summary'],
+  coverageProvider: 'v8',
   coverageThreshold: {
     global: {
       branches: 70,
@@ -52,5 +56,6 @@ export default {
       statements: 70,
     },
   },
+
   testMatch: ['**/__tests__/**/*.+(ts|tsx|js)', '**/?(*.)+(spec|test).+(ts|tsx|js)'],
 };
