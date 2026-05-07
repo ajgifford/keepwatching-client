@@ -24,18 +24,14 @@ export const CalendarContentItem: React.FC<CalendarContentItemProps> = ({ item, 
   const theme = useTheme();
 
   const isEpisode = item.type === 'episode';
-  const linkTo = isEpisode
-    ? `/shows/${item.data.showId}/${profileId}`
-    : `/movies/${item.data.id}/${profileId}`;
+  const linkTo = isEpisode ? `/shows/${item.data.showId}/${profileId}` : `/movies/${item.data.id}/${profileId}`;
 
   const primaryText = isEpisode ? item.data.showName : item.data.title;
   const secondaryText = isEpisode
     ? `S${item.data.seasonNumber}E${item.data.episodeNumber} · ${item.data.episodeTitle}`
     : item.data.streamingServices;
 
-  const service = isEpisode
-    ? item.data.network || item.data.streamingServices
-    : item.data.streamingServices;
+  const service = isEpisode ? item.data.network || item.data.streamingServices : item.data.streamingServices;
 
   const badge = getPremiereBadge(item);
 
@@ -68,9 +64,7 @@ export const CalendarContentItem: React.FC<CalendarContentItemProps> = ({ item, 
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          background: isEpisode
-            ? alpha(theme.palette.primary.main, 0.12)
-            : alpha(theme.palette.secondary.main, 0.12),
+          background: isEpisode ? alpha(theme.palette.primary.main, 0.12) : alpha(theme.palette.secondary.main, 0.12),
           color: isEpisode ? theme.palette.primary.main : theme.palette.secondary.main,
         }}
       >

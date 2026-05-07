@@ -15,7 +15,6 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import ActivityNotificationBar from './notification/activityNotificationBar';
-import OfflineBanner from './pwa/OfflineBanner';
 import Calendar from './pages/calendar';
 import Default from './pages/default';
 import Discover from './pages/discover';
@@ -31,6 +30,7 @@ import Search from './pages/search';
 import ShowDetails from './pages/showDetails';
 import Shows from './pages/shows';
 import WatchHistory from './pages/watchHistory';
+import OfflineBanner from './pwa/OfflineBanner';
 import { onAuthStateChanged } from 'firebase/auth';
 
 function useFooterHeight() {
@@ -91,7 +91,7 @@ function App() {
               <ErrorBoundary>
                 <Navigation />
                 <ActivityNotificationBar />
-<OfflineBanner />
+                <OfflineBanner />
                 <div className="content">
                   <Container maxWidth="xl" sx={{ p: 1 }}>
                     <Routes>

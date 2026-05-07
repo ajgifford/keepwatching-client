@@ -1,6 +1,6 @@
+import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
 import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 
 import ReviewWatchHistoryPanel from './ReviewWatchHistoryPanel';
 
@@ -17,12 +17,7 @@ const ReviewWatchHistoryDialog = ({ open, profileName, profileId, onClose }: Rev
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <HistoryIcon color="primary" fontSize="small" />
         Review Watch History — {profileName}
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{ ml: 'auto' }}
-          size="small"
-        >
+        <IconButton aria-label="close" onClick={onClose} sx={{ ml: 'auto' }} size="small">
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>

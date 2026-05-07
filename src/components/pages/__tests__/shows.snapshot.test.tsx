@@ -1,16 +1,16 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Shows from '../shows';
 import { useAppSelector } from '../../../app/hooks';
 import {
   selectActiveProfile,
-  selectShows,
-  selectActiveProfileLoading,
   selectActiveProfileError,
+  selectActiveProfileLoading,
   selectShowGenres,
   selectShowStreamingServices,
+  selectShows,
 } from '../../../app/slices/activeProfileSlice';
+import Shows from '../shows';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

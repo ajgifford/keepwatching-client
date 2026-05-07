@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import Movies from '../movies';
 import { useAppSelector } from '../../../app/hooks';
-import { selectMovies, selectMovieGenres, selectMovieStreamingServices } from '../../../app/slices/activeProfileSlice';
+import { selectMovieGenres, selectMovieStreamingServices, selectMovies } from '../../../app/slices/activeProfileSlice';
+import Movies from '../movies';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies

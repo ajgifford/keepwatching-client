@@ -15,10 +15,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import {
-  ActivityNotificationType,
-  showActivityNotification,
-} from '../../../app/slices/activityNotificationSlice';
+import { ActivityNotificationType, showActivityNotification } from '../../../app/slices/activityNotificationSlice';
 import {
   addRecommendation,
   removeRecommendation,
@@ -62,14 +59,14 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
         showActivityNotification({
           message: `Removed recommendation for ${contentTitle}.`,
           type: ActivityNotificationType.Info,
-        }),
+        })
       );
     } catch {
       dispatch(
         showActivityNotification({
           message: 'Failed to remove recommendation.',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
     }
   };
@@ -83,7 +80,7 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
           contentId,
           rating: includeRating && existingRating ? existingRating.rating : null,
           message: message.trim() || null,
-        }),
+        })
       ).unwrap();
       setDialogOpen(false);
       setMessage('');
@@ -91,14 +88,14 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
         showActivityNotification({
           message: `Recommended ${contentTitle} to the community!`,
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
     } catch {
       dispatch(
         showActivityNotification({
           message: 'Failed to add recommendation.',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
     }
   };
@@ -135,12 +132,7 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
           />
           {existingRating && (
             <FormControlLabel
-              control={
-                <Checkbox
-                  checked={includeRating}
-                  onChange={(e) => setIncludeRating(e.target.checked)}
-                />
-              }
+              control={<Checkbox checked={includeRating} onChange={(e) => setIncludeRating(e.target.checked)} />}
               label={`Include my rating (${existingRating.rating} stars)`}
             />
           )}

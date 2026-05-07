@@ -142,7 +142,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -201,7 +208,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -263,7 +277,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -331,7 +352,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -384,7 +412,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -443,7 +478,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -526,7 +568,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -596,7 +645,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -671,7 +727,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -731,7 +794,14 @@ describe('activeProfileSlice', () => {
 
       return createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -771,12 +841,23 @@ describe('activeProfileSlice', () => {
 
       const store = makeStoreWithMovie();
       await store.dispatch(
-        updateMovieWatchStatus({ profileId: 1, movieId: 1, status: WatchStatus.WATCHED, isPriorWatch: true, watchedAt: '2001-07-27' })
+        updateMovieWatchStatus({
+          profileId: 1,
+          movieId: 1,
+          status: WatchStatus.WATCHED,
+          isPriorWatch: true,
+          watchedAt: '2001-07-27',
+        })
       );
 
       expect(mockAxiosInstance.put).toHaveBeenCalledWith(
         expect.stringContaining('/movies/watchStatus'),
-        expect.objectContaining({ movieId: 1, status: WatchStatus.WATCHED, isPriorWatch: true, watchedAt: '2001-07-27' }),
+        expect.objectContaining({
+          movieId: 1,
+          status: WatchStatus.WATCHED,
+          isPriorWatch: true,
+          watchedAt: '2001-07-27',
+        })
       );
     });
 
@@ -828,7 +909,14 @@ describe('activeProfileSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -852,7 +940,9 @@ describe('activeProfileSlice', () => {
         },
       });
 
-      await store.dispatch(updateNextEpisodeWatchStatus({ profileId: 1, episodeId: 1, episodeStatus: WatchStatus.WATCHED }));
+      await store.dispatch(
+        updateNextEpisodeWatchStatus({ profileId: 1, episodeId: 1, episodeStatus: WatchStatus.WATCHED })
+      );
 
       const nextUnwatched = selectNextUnwatchedEpisodes(store.getState());
       expect(nextUnwatched).toEqual([]);

@@ -6,7 +6,13 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectShow, selectWatchedEpisodes, updateEpisodeWatchStatus } from '../../../app/slices/activeShowSlice';
 import SkippedEpisodesDialog from './SkippedEpisodesDialog';
 import { EpisodeCard } from './episodeCard';
-import { NextEpisode, ProfileEpisode, ProfileSeason, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
+import {
+  NextEpisode,
+  ProfileEpisode,
+  ProfileSeason,
+  UserWatchStatus,
+  WatchStatus,
+} from '@ajgifford/keepwatching-types';
 import { parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) => {

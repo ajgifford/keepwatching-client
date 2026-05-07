@@ -63,16 +63,52 @@ const initialState: WatchHistoryState = {
 
 function toProfileShow(show: ProfileShowWithSeasons): ProfileShow {
   const {
-    id, tmdbId, title, description, releaseDate, posterImage, backdropImage,
-    userRating, contentRating, streamingServices, genres, seasonCount, episodeCount,
-    status, type, inProduction, lastAirDate, network, profileId, watchStatus,
-    lastEpisode, nextEpisode,
+    id,
+    tmdbId,
+    title,
+    description,
+    releaseDate,
+    posterImage,
+    backdropImage,
+    userRating,
+    contentRating,
+    streamingServices,
+    genres,
+    seasonCount,
+    episodeCount,
+    status,
+    type,
+    inProduction,
+    lastAirDate,
+    network,
+    profileId,
+    watchStatus,
+    lastEpisode,
+    nextEpisode,
   } = show;
   return {
-    id, tmdbId, title, description, releaseDate, posterImage, backdropImage,
-    userRating, contentRating, streamingServices, genres, seasonCount, episodeCount,
-    status, type, inProduction, lastAirDate, network, profileId, watchStatus,
-    lastEpisode, nextEpisode,
+    id,
+    tmdbId,
+    title,
+    description,
+    releaseDate,
+    posterImage,
+    backdropImage,
+    userRating,
+    contentRating,
+    streamingServices,
+    genres,
+    seasonCount,
+    episodeCount,
+    status,
+    type,
+    inProduction,
+    lastAirDate,
+    network,
+    profileId,
+    watchStatus,
+    lastEpisode,
+    nextEpisode,
   };
 }
 
@@ -97,8 +133,18 @@ export const fetchWatchHistory = createAsyncThunk<
 >(
   'watchHistory/fetch',
   async (
-    { profileId, page = 1, pageSize = 20, contentType = 'all', sortOrder = 'desc', dateFrom, dateTo, priorWatchFilter, searchQuery },
-    { getState, rejectWithValue },
+    {
+      profileId,
+      page = 1,
+      pageSize = 20,
+      contentType = 'all',
+      sortOrder = 'desc',
+      dateFrom,
+      dateTo,
+      priorWatchFilter,
+      searchQuery,
+    },
+    { getState, rejectWithValue }
   ) => {
     try {
       const state = getState() as RootState;
@@ -117,7 +163,7 @@ export const fetchWatchHistory = createAsyncThunk<
 
       const response: AxiosResponse<WatchHistoryResponse & { message: string }> = await axiosInstance.get(
         `/accounts/${accountId}/profiles/${profileId}/watchHistory`,
-        { params },
+        { params }
       );
 
       const { items, totalCount } = response.data;
@@ -128,129 +174,121 @@ export const fetchWatchHistory = createAsyncThunk<
       }
       return rejectWithValue({ message: 'An unknown error occurred fetching watch history' });
     }
-  },
+  }
 );
 
 export const startShowRewatch = createAsyncThunk<
   RewatchShowResult,
   { profileId: number; showId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'watchHistory/startShowRewatch',
-  async ({ profileId, showId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('watchHistory/startShowRewatch', async ({ profileId, showId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.post(
-        `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/rewatch`
-      );
-
-      const showWithSeasons = response.data.statusData.showWithSeasons;
-      const show = toProfileShow(showWithSeasons);
-      const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
-      return { show, showWithSeasons, nextUnwatchedEpisodes };
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred starting show rewatch' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
+
+    const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.post(
+      `/accounts/${accountId}/profiles/${profileId}/shows/${showId}/rewatch`
+    );
+
+    const showWithSeasons = response.data.statusData.showWithSeasons;
+    const show = toProfileShow(showWithSeasons);
+    const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
+    return { show, showWithSeasons, nextUnwatchedEpisodes };
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred starting show rewatch' });
   }
-);
+});
 
 export const startSeasonRewatch = createAsyncThunk<
   RewatchShowResult,
   { profileId: number; seasonId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'watchHistory/startSeasonRewatch',
-  async ({ profileId, seasonId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('watchHistory/startSeasonRewatch', async ({ profileId, seasonId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.post(
-        `/accounts/${accountId}/profiles/${profileId}/seasons/${seasonId}/rewatch`
-      );
-
-      const showWithSeasons = response.data.statusData.showWithSeasons;
-      const show = toProfileShow(showWithSeasons);
-      const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
-      return { show, showWithSeasons, nextUnwatchedEpisodes };
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred starting season rewatch' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
+
+    const response: AxiosResponse<UpdateWatchStatusResponse> = await axiosInstance.post(
+      `/accounts/${accountId}/profiles/${profileId}/seasons/${seasonId}/rewatch`
+    );
+
+    const showWithSeasons = response.data.statusData.showWithSeasons;
+    const show = toProfileShow(showWithSeasons);
+    const nextUnwatchedEpisodes = response.data.statusData.nextUnwatchedEpisodes;
+    return { show, showWithSeasons, nextUnwatchedEpisodes };
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred starting season rewatch' });
   }
-);
+});
 
 export const startMovieRewatch = createAsyncThunk<
   ProfileMovie,
   { profileId: number; movieId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'watchHistory/startMovieRewatch',
-  async ({ profileId, movieId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('watchHistory/startMovieRewatch', async ({ profileId, movieId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      const response: AxiosResponse<{ message: string; movie: ProfileMovie }> = await axiosInstance.post(
-        `/accounts/${accountId}/profiles/${profileId}/movies/${movieId}/rewatch`
-      );
-
-      return response.data.movie;
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred starting movie rewatch' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
+
+    const response: AxiosResponse<{ message: string; movie: ProfileMovie }> = await axiosInstance.post(
+      `/accounts/${accountId}/profiles/${profileId}/movies/${movieId}/rewatch`
+    );
+
+    return response.data.movie;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred starting movie rewatch' });
   }
-);
+});
 
 export const recordEpisodeRewatch = createAsyncThunk<
   { episodeId: number; watchCount: number; watchedAt: string },
   { profileId: number; episodeId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'watchHistory/recordEpisodeRewatch',
-  async ({ profileId, episodeId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('watchHistory/recordEpisodeRewatch', async ({ profileId, episodeId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      const response: AxiosResponse<{ message: string; episodeId: number; watchCount: number; watchedAt: string }> =
-        await axiosInstance.post(`/accounts/${accountId}/profiles/${profileId}/episodes/${episodeId}/rewatch`);
-
-      return { episodeId: response.data.episodeId, watchCount: response.data.watchCount, watchedAt: response.data.watchedAt };
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred recording episode rewatch' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
+
+    const response: AxiosResponse<{ message: string; episodeId: number; watchCount: number; watchedAt: string }> =
+      await axiosInstance.post(`/accounts/${accountId}/profiles/${profileId}/episodes/${episodeId}/rewatch`);
+
+    return {
+      episodeId: response.data.episodeId,
+      watchCount: response.data.watchCount,
+      watchedAt: response.data.watchedAt,
+    };
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred recording episode rewatch' });
   }
-);
+});
 
 // ---------------------------------------------------------------------------
 // Slice

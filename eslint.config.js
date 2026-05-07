@@ -11,7 +11,16 @@ import globals from 'globals';
 export default [
   // Global ignores
   {
-    ignores: ['node_modules/**', 'build/**', 'dist/**', 'dev-dist/**', 'coverage/**', '.vite/**', '*.config.js', '*.config.ts'],
+    ignores: [
+      'node_modules/**',
+      'build/**',
+      'dist/**',
+      'dev-dist/**',
+      'coverage/**',
+      '.vite/**',
+      '*.config.js',
+      '*.config.ts',
+    ],
   },
 
   // Base config for all files
@@ -84,7 +93,14 @@ export default [
 
   // Test file overrides — relax type strictness for mocks and assertions
   {
-    files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '**/*.test.ts', '**/*.test.tsx', 'src/setupTests.ts', 'src/**/__mocks__/**/*.ts'],
+    files: [
+      '**/__tests__/**/*.ts',
+      '**/__tests__/**/*.tsx',
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      'src/setupTests.ts',
+      'src/**/__mocks__/**/*.ts',
+    ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',

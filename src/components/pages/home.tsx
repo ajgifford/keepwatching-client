@@ -5,7 +5,6 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { Box, Button, Tab, Tabs } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { fetchCommunityRecommendations } from '../../app/slices/communityRecommendationsSlice';
 import {
   fetchMilestoneStats,
   selectActiveProfile,
@@ -20,10 +19,11 @@ import {
   selectUpcomingEpisodes,
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
+import { fetchCommunityRecommendations } from '../../app/slices/communityRecommendationsSlice';
 import StreamingServiceSection from '../common/media/streamingServiceSection';
-import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
+import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import ProfileStatisticsComponent from '../common/statistics/profileStatisticsComponent';

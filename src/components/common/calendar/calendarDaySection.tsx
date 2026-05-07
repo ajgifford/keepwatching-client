@@ -56,9 +56,7 @@ export const CalendarDaySection: React.FC<CalendarDaySectionProps> = ({ day, pro
           px: 2,
           py: 1,
           borderRadius: 2,
-          background: today
-            ? alpha(theme.palette.primary.main, 0.08)
-            : 'transparent',
+          background: today ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
           borderLeft: today ? `3px solid ${theme.palette.primary.main}` : '3px solid transparent',
         }}
       >
@@ -69,14 +67,7 @@ export const CalendarDaySection: React.FC<CalendarDaySectionProps> = ({ day, pro
         >
           {formatDayLabel(day.date)}
         </Typography>
-        {today && (
-          <Chip
-            label="Today"
-            size="small"
-            color="primary"
-            sx={{ height: 18, fontSize: '0.65rem' }}
-          />
-        )}
+        {today && <Chip label="Today" size="small" color="primary" sx={{ height: 18, fontSize: '0.65rem' }} />}
         <Typography variant="caption" color="text.disabled" sx={{ ml: 'auto' }}>
           {today ? '' : monthYear}
         </Typography>

@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Search from '../search';
 import { clearPersonSearch } from '../../../app/slices/personSearchSlice';
+import Search from '../search';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies

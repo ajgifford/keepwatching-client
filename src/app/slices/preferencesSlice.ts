@@ -238,7 +238,7 @@ export const selectEmailPreferences = (state: RootState) =>
   state.preferences.preferences.email || DEFAULT_PREFERENCES.email;
 export const selectDisplayPreferences = createSelector(
   (state: RootState) => state.preferences.preferences.display,
-  (display) => ({ ...DEFAULT_PREFERENCES.display, ...display }),
+  (display) => ({ ...DEFAULT_PREFERENCES.display, ...display })
 );
 export const selectNotificationPreferences = (state: RootState) =>
   state.preferences.preferences.notification || DEFAULT_PREFERENCES.notification;

@@ -89,37 +89,36 @@ export const fetchCalendarContent = createAsyncThunk<
   CalendarFetchResult,
   { profileId: number; startDate?: string; endDate?: string },
   { rejectValue: ApiErrorResponse }
->(
-  'calendar/fetchContent',
-  async ({ profileId, startDate, endDate }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('calendar/fetchContent', async ({ profileId, startDate, endDate }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      const resolvedStartDate = startDate ?? defaultCalendarStart();
-      const resolvedEndDate = endDate ?? defaultCalendarEnd();
-
-      const params: Record<string, string> = {
-        startDate: resolvedStartDate,
-        endDate: resolvedEndDate,
-      };
-
-      const response: AxiosResponse<{ message: string; results: CalendarContentResponse }> =
-        await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/calendar`, { params });
-
-      return { ...response.data.results, resolvedStartDate, resolvedEndDate };
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred fetching calendar content' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
-  },
-);
+
+    const resolvedStartDate = startDate ?? defaultCalendarStart();
+    const resolvedEndDate = endDate ?? defaultCalendarEnd();
+
+    const params: Record<string, string> = {
+      startDate: resolvedStartDate,
+      endDate: resolvedEndDate,
+    };
+
+    const response: AxiosResponse<{ message: string; results: CalendarContentResponse }> = await axiosInstance.get(
+      `/accounts/${accountId}/profiles/${profileId}/calendar`,
+      { params }
+    );
+
+    return { ...response.data.results, resolvedStartDate, resolvedEndDate };
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred fetching calendar content' });
+  }
+});
 
 // ---------------------------------------------------------------------------
 // Slice
@@ -168,7 +167,7 @@ export const selectCalendarLastFetched = (state: RootState) => state.calendar.la
 export const selectCalendarFetchedRange = createSelector(
   (state: RootState) => state.calendar.fetchedStartDate,
   (state: RootState) => state.calendar.fetchedEndDate,
-  (startDate, endDate) => ({ startDate, endDate }),
+  (startDate, endDate) => ({ startDate, endDate })
 );
 
 function groupByDate(items: CalendarItem[]): CalendarDay[] {
@@ -203,5 +202,5 @@ export const selectCalendarDays = createSelector(
     }
 
     return groupByDate(items);
-  },
+  }
 );

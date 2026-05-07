@@ -35,11 +35,11 @@ import {
   selectWatchHistoryDateFrom,
   selectWatchHistoryDateTo,
   selectWatchHistoryError,
-  selectWatchHistoryPriorWatchFilter,
   selectWatchHistoryItems,
   selectWatchHistoryLoading,
   selectWatchHistoryPage,
   selectWatchHistoryPageSize,
+  selectWatchHistoryPriorWatchFilter,
   selectWatchHistorySearchQuery,
   selectWatchHistorySortOrder,
   selectWatchHistoryTotalCount,
@@ -102,7 +102,7 @@ function WatchHistory() {
         dateTo,
         priorWatchFilter,
         searchQuery,
-      }),
+      })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProfile, dispatch, pageSize]);
@@ -128,7 +128,7 @@ function WatchHistory() {
         priorWatchFilter,
         searchQuery,
         ...overrides,
-      }),
+      })
     );
   };
 
@@ -145,7 +145,7 @@ function WatchHistory() {
         dateTo,
         priorWatchFilter,
         searchQuery,
-      }),
+      })
     );
   };
 
@@ -205,7 +205,10 @@ function WatchHistory() {
     dispatchWithFilters({ searchQuery: '' });
   };
 
-  const handlePriorWatchFilterChange = (_: React.MouseEvent<HTMLElement>, value: 'all' | 'priorOnly' | 'excludePrior' | null) => {
+  const handlePriorWatchFilterChange = (
+    _: React.MouseEvent<HTMLElement>,
+    value: 'all' | 'priorOnly' | 'excludePrior' | null
+  ) => {
     if (value !== null) dispatchWithFilters({ priorWatchFilter: value });
   };
 
@@ -267,12 +270,7 @@ function WatchHistory() {
 
         {/* Filters: single row on md+, wraps on smaller screens */}
         <Stack direction="row" spacing={1} alignItems="flex-start" flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
-          <ToggleButtonGroup
-            value={contentType}
-            exclusive
-            onChange={handleContentTypeChange}
-            size="small"
-          >
+          <ToggleButtonGroup value={contentType} exclusive onChange={handleContentTypeChange} size="small">
             <ToggleButton value="all">All</ToggleButton>
             <ToggleButton value="episode">
               <TvIcon fontSize="small" sx={{ mr: 0.5 }} />
@@ -290,13 +288,18 @@ function WatchHistory() {
             size="small"
             value={dateFromInput}
             onChange={(e) => handleDateFromChange(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true }, input: { endAdornment: dateFrom ? (
-              <InputAdornment position="end">
-                <IconButton size="small" onClick={() => handleDateFromChange('')} edge="end">
-                  <ClearIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : undefined } }}
+            slotProps={{
+              inputLabel: { shrink: true },
+              input: {
+                endAdornment: dateFrom ? (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => handleDateFromChange('')} edge="end">
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ) : undefined,
+              },
+            }}
             error={!!dateError}
             sx={{ width: 170 }}
           />
@@ -306,13 +309,18 @@ function WatchHistory() {
             size="small"
             value={dateToInput}
             onChange={(e) => handleDateToChange(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true }, input: { endAdornment: dateTo ? (
-              <InputAdornment position="end">
-                <IconButton size="small" onClick={() => handleDateToChange('')} edge="end">
-                  <ClearIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : undefined } }}
+            slotProps={{
+              inputLabel: { shrink: true },
+              input: {
+                endAdornment: dateTo ? (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => handleDateToChange('')} edge="end">
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ) : undefined,
+              },
+            }}
             error={!!dateError}
             helperText={dateError ?? undefined}
             sx={{ width: 170 }}
@@ -337,18 +345,19 @@ function WatchHistory() {
             sx={{ width: { xs: '100%', sm: 260 } }}
           />
 
-          <ToggleButtonGroup
-            value={priorWatchFilter}
-            exclusive
-            onChange={handlePriorWatchFilterChange}
-            size="small"
-          >
+          <ToggleButtonGroup value={priorWatchFilter} exclusive onChange={handlePriorWatchFilterChange} size="small">
             <ToggleButton value="all">All</ToggleButton>
             <ToggleButton value="priorOnly">Prior Only</ToggleButton>
             <ToggleButton value="excludePrior">Exclude Prior</ToggleButton>
           </ToggleButtonGroup>
 
-          <Tooltip title={sortOrder === 'desc' ? 'Showing newest first — click for oldest first' : 'Showing oldest first — click for newest first'}>
+          <Tooltip
+            title={
+              sortOrder === 'desc'
+                ? 'Showing newest first — click for oldest first'
+                : 'Showing oldest first — click for newest first'
+            }
+          >
             <IconButton onClick={handleSortToggle} size="small" color={sortOrder === 'asc' ? 'primary' : 'default'}>
               {sortOrder === 'desc' ? <ArrowDownwardIcon fontSize="small" /> : <ArrowUpwardIcon fontSize="small" />}
             </IconButton>
@@ -375,7 +384,13 @@ function WatchHistory() {
           <>
             <List disablePadding>
               {items.map((item, index) => (
-                <HistoryListItem key={item.historyId} item={item} index={index} formatters={formatters} buildItemTitle={buildItemTitle} />
+                <HistoryListItem
+                  key={item.historyId}
+                  item={item}
+                  index={index}
+                  formatters={formatters}
+                  buildItemTitle={buildItemTitle}
+                />
               ))}
             </List>
 
@@ -449,9 +464,7 @@ function HistoryListItem({ item, index, formatters, buildItemTitle }: HistoryLis
                 />
               </Tooltip>
             )}
-            {item.isPriorWatch && (
-              <Chip label="Prior Watch" size="small" variant="outlined" color="default" />
-            )}
+            {item.isPriorWatch && <Chip label="Prior Watch" size="small" variant="outlined" color="default" />}
           </Box>
 
           <Typography variant="body2" color="text.secondary">

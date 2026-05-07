@@ -14,6 +14,7 @@ import {
   RadioGroup,
   Select,
 } from '@mui/material';
+
 import { ProfileSeason } from '@ajgifford/keepwatching-types';
 
 type WatchHistoryChoice = 'fresh' | 'all' | 'through';
@@ -58,32 +59,16 @@ const PriorWatchPromptDialog = ({
       <DialogTitle>Have you watched {showTitle} before?</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ mb: 2 }}>
-          {showTitle} has completed seasons available. Let us know your watch history so your
-          statistics stay accurate.
+          {showTitle} has completed seasons available. Let us know your watch history so your statistics stay accurate.
         </DialogContentText>
         <RadioGroup value={choice} onChange={(e) => setChoice(e.target.value as WatchHistoryChoice)}>
-          <FormControlLabel
-            value="fresh"
-            control={<Radio />}
-            label="Starting fresh — I haven't watched it"
-          />
-          <FormControlLabel
-            value="all"
-            control={<Radio />}
-            label="I've watched everything up to the current season"
-          />
-          <FormControlLabel
-            value="through"
-            control={<Radio />}
-            label="I've watched through a specific season"
-          />
+          <FormControlLabel value="fresh" control={<Radio />} label="Starting fresh — I haven't watched it" />
+          <FormControlLabel value="all" control={<Radio />} label="I've watched everything up to the current season" />
+          <FormControlLabel value="through" control={<Radio />} label="I've watched through a specific season" />
         </RadioGroup>
         {choice === 'through' && completedSeasons.length > 0 && (
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <Select
-              value={selectedSeasonNumber}
-              onChange={(e) => setSelectedSeasonNumber(Number(e.target.value))}
-            >
+            <Select value={selectedSeasonNumber} onChange={(e) => setSelectedSeasonNumber(Number(e.target.value))}>
               {completedSeasons.map((season) => (
                 <MenuItem key={season.id} value={season.seasonNumber}>
                   {season.name || `Season ${season.seasonNumber}`}

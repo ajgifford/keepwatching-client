@@ -18,7 +18,11 @@ import {
 
 import { useAppDispatch } from '../../../app/hooks';
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
-import { dismissBulkMarkedShow, getBulkMarkedShows, retroactivelyMarkShowAsPrior } from '../../../app/slices/activeProfileSlice';
+import {
+  dismissBulkMarkedShow,
+  getBulkMarkedShows,
+  retroactivelyMarkShowAsPrior,
+} from '../../../app/slices/activeProfileSlice';
 import { BulkMarkedShow } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 

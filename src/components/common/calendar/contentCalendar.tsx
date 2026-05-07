@@ -43,7 +43,7 @@ function monthEnd(year: number, month: number): string {
 /** Expand a range to cover a target month, with a one-month buffer on each side */
 function expandedRange(year: number, month: number): { startDate: string; endDate: string } {
   const start = new Date(year, month - 1, 1); // one month before
-  const end = new Date(year, month + 2, 0);   // one month after (last day)
+  const end = new Date(year, month + 2, 0); // one month after (last day)
   return { startDate: toISODate(start), endDate: toISODate(end) };
 }
 
@@ -83,8 +83,7 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
     const viewedMonthStart = monthStart(viewYear, viewMonth);
     const viewedMonthEnd = monthEnd(viewYear, viewMonth);
 
-    const outsideRange =
-      viewedMonthStart < fetchedRange.startDate || viewedMonthEnd > fetchedRange.endDate;
+    const outsideRange = viewedMonthStart < fetchedRange.startDate || viewedMonthEnd > fetchedRange.endDate;
 
     if (outsideRange) {
       const { startDate, endDate } = expandedRange(viewYear, viewMonth);
@@ -129,7 +128,9 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <CalendarMonthIcon color="primary" />
           <Typography variant="h6" fontWeight={600}>
@@ -140,12 +141,7 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {!compact && (
-            <ToggleButtonGroup
-              value={viewMode}
-              exclusive
-              onChange={handleViewChange}
-              size="small"
-            >
+            <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange} size="small">
               <ToggleButton value="agenda" aria-label="agenda view">
                 <ViewListIcon fontSize="small" />
               </ToggleButton>

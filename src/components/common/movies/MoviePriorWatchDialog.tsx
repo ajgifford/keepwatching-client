@@ -59,11 +59,7 @@ const MoviePriorWatchDialog = ({
         </DialogContentText>
         <RadioGroup value={choice} onChange={(e) => setChoice(e.target.value as WatchChoice)}>
           <FormControlLabel value="now" control={<Radio />} label="I just watched it" />
-          <FormControlLabel
-            value="prior"
-            control={<Radio />}
-            label="I've seen it before (prior watch)"
-          />
+          <FormControlLabel value="prior" control={<Radio />} label="I've seen it before (prior watch)" />
         </RadioGroup>
         {choice === 'prior' && (
           <Box sx={{ mt: 2 }}>

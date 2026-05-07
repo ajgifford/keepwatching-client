@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Search from '../search';
 import { useAppSelector } from '../../../app/hooks';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
+import Search from '../search';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

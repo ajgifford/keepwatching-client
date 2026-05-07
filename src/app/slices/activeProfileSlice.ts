@@ -4,9 +4,9 @@ import { RootState } from '../store';
 import { clearActivityTimestamp } from '../utils/activityTracker';
 import { deleteAccount, logout } from './accountSlice';
 import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
-import { startMovieRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
+import { startMovieRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
 import {
   AddShowFavoriteResponse,
   BulkMarkedShow,
@@ -317,10 +317,7 @@ export const markShowAsPriorWatched = createAsyncThunk<
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/markShowAsPriorWatched',
-  async (
-    { profileId, showId, upToSeasonNumber },
-    { getState, rejectWithValue }
-  ) => {
+  async ({ profileId, showId, upToSeasonNumber }, { getState, rejectWithValue }) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -352,57 +349,46 @@ export const getBulkMarkedShows = createAsyncThunk<
   BulkMarkedShow[],
   { profileId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'activeProfile/getBulkMarkedShows',
-  async ({ profileId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('activeProfile/getBulkMarkedShows', async ({ profileId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      const response = await axiosInstance.get(
-        `/accounts/${accountId}/profiles/${profileId}/watchHistory/bulkMarked`
-      );
-      return response.data.shows;
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred fetching bulk marked shows' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
+
+    const response = await axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/watchHistory/bulkMarked`);
+    return response.data.shows;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred fetching bulk marked shows' });
   }
-);
+});
 
 export const dismissBulkMarkedShow = createAsyncThunk<
   void,
   { profileId: number; showId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'activeProfile/dismissBulkMarkedShow',
-  async ({ profileId, showId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
+>('activeProfile/dismissBulkMarkedShow', async ({ profileId, showId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
 
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-
-      await axiosInstance.post(
-        `/accounts/${accountId}/profiles/${profileId}/watchHistory/dismiss`,
-        { showId }
-      );
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || error.message);
-      }
-      return rejectWithValue({ message: 'An unknown error occurred dismissing show from review' });
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
+
+    await axiosInstance.post(`/accounts/${accountId}/profiles/${profileId}/watchHistory/dismiss`, { showId });
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+    return rejectWithValue({ message: 'An unknown error occurred dismissing show from review' });
   }
-);
+});
 
 export const retroactivelyMarkShowAsPrior = createAsyncThunk<
   void,
@@ -419,10 +405,10 @@ export const retroactivelyMarkShowAsPrior = createAsyncThunk<
         return rejectWithValue({ message: 'No account found' });
       }
 
-      await axiosInstance.post(
-        `/accounts/${accountId}/profiles/${profileId}/watchHistory/markAsPrior`,
-        { showId, seasonIds }
-      );
+      await axiosInstance.post(`/accounts/${accountId}/profiles/${profileId}/watchHistory/markAsPrior`, {
+        showId,
+        seasonIds,
+      });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data || error.message);
@@ -518,7 +504,13 @@ export const updateMovieWatchStatus = createAsyncThunk<
 >(
   'activeProfile/updateMovieWatchStatus',
   async (
-    { profileId, movieId, status, isPriorWatch, watchedAt }: { profileId: number; movieId: number; status: UserWatchStatus; isPriorWatch?: boolean; watchedAt?: string },
+    {
+      profileId,
+      movieId,
+      status,
+      isPriorWatch,
+      watchedAt,
+    }: { profileId: number; movieId: number; status: UserWatchStatus; isPriorWatch?: boolean; watchedAt?: string },
     { getState, rejectWithValue }
   ) => {
     try {

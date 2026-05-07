@@ -410,7 +410,13 @@ function MovieDetails() {
                       variant="outlined"
                       disabled={loadingMovieRewatch}
                       onClick={handleStartMovieRewatch}
-                      startIcon={loadingMovieRewatch ? <CircularProgress size={20} color="inherit" /> : <Replay sx={{ color: 'rewatch.main' }} />}
+                      startIcon={
+                        loadingMovieRewatch ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <Replay sx={{ color: 'rewatch.main' }} />
+                        )
+                      }
                       sx={{
                         backgroundColor: 'rgba(0, 0, 0, 0.6)',
                         backdropFilter: 'blur(12px)',

@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { login, googleLogin } from '../../../app/slices/accountSlice';
+import { googleLogin, login } from '../../../app/slices/accountSlice';
 import { showActivityNotification } from '../../../app/slices/activityNotificationSlice';
 import Login from '../login';
 import userEvent from '@testing-library/user-event';

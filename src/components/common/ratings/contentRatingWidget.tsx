@@ -6,15 +6,8 @@ import { Box, Button, IconButton, TextField, Tooltip, Typography } from '@mui/ma
 import Rating from '@mui/material/Rating';
 
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import {
-  ActivityNotificationType,
-  showActivityNotification,
-} from '../../../app/slices/activityNotificationSlice';
-import {
-  deleteRating,
-  selectRatingForContent,
-  upsertRating,
-} from '../../../app/slices/ratingsSlice';
+import { ActivityNotificationType, showActivityNotification } from '../../../app/slices/activityNotificationSlice';
+import { deleteRating, selectRatingForContent, upsertRating } from '../../../app/slices/ratingsSlice';
 import { RatingContentType } from '@ajgifford/keepwatching-types';
 
 interface ContentRatingWidgetProps {
@@ -55,20 +48,20 @@ export const ContentRatingWidget = ({
           note: note.trim() || null,
           contentTitle,
           posterImage,
-        }),
+        })
       ).unwrap();
       dispatch(
         showActivityNotification({
           message: 'Rating saved!',
           type: ActivityNotificationType.Success,
-        }),
+        })
       );
     } catch {
       dispatch(
         showActivityNotification({
           message: 'Failed to save rating.',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
     }
   };
@@ -83,14 +76,14 @@ export const ContentRatingWidget = ({
         showActivityNotification({
           message: 'Rating removed.',
           type: ActivityNotificationType.Info,
-        }),
+        })
       );
     } catch {
       dispatch(
         showActivityNotification({
           message: 'Failed to remove rating.',
           type: ActivityNotificationType.Error,
-        }),
+        })
       );
     }
   };
@@ -100,11 +93,7 @@ export const ContentRatingWidget = ({
       <Typography variant="body2" color="text.secondary">
         Your rating
       </Typography>
-      <Rating
-        value={starValue}
-        onChange={(_, newValue) => setStarValue(newValue)}
-        size="large"
-      />
+      <Rating value={starValue} onChange={(_, newValue) => setStarValue(newValue)} size="large" />
       <TextField
         label="Notes (optional)"
         multiline
@@ -117,13 +106,7 @@ export const ContentRatingWidget = ({
         fullWidth
       />
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<SaveIcon />}
-          onClick={handleSave}
-          disabled={!starValue}
-        >
+        <Button variant="contained" size="small" startIcon={<SaveIcon />} onClick={handleSave} disabled={!starValue}>
           Save
         </Button>
         {existingRating && (

@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import ManageAccount from '../manageAccount';
 import { useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectActiveProfile, selectLastUpdated } from '../../../app/slices/activeProfileSlice';
 import { selectAllProfiles, selectProfileById } from '../../../app/slices/profilesSlice';
+import ManageAccount from '../manageAccount';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies

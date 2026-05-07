@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { calculateRuntimeDisplay } from '../../../utility/contentUtility';
 import { MovieCard } from '../movieCard';
 import { ProfileMovie, WatchStatus } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
-import { calculateRuntimeDisplay } from '../../../utility/contentUtility';
 
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({

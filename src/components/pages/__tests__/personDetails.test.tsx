@@ -1,9 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import PersonDetails from '../personDetails';
 import { useAppSelector } from '../../../app/hooks';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
+import PersonDetails from '../personDetails';
 
 // Mock dependencies
 const mockNavigate = jest.fn();

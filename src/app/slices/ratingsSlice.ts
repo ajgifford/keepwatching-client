@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
-import { ContentRating, RatingContentType, RatingsResponse, RatingResponse } from '@ajgifford/keepwatching-types';
+import { ContentRating, RatingContentType, RatingResponse, RatingsResponse } from '@ajgifford/keepwatching-types';
 import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -28,7 +28,7 @@ export const fetchRatings = createAsyncThunk<ContentRating[], { profileId: numbe
         return rejectWithValue({ message: 'No account found' });
       }
       const response: AxiosResponse<RatingsResponse> = await axiosInstance.get(
-        `/accounts/${accountId}/profiles/${profileId}/ratings`,
+        `/accounts/${accountId}/profiles/${profileId}/ratings`
       );
       return response.data.ratings;
     } catch (error: unknown) {
@@ -37,7 +37,7 @@ export const fetchRatings = createAsyncThunk<ContentRating[], { profileId: numbe
       }
       return rejectWithValue({ message: 'An unknown error occurred fetching ratings' });
     }
-  },
+  }
 );
 
 export const upsertRating = createAsyncThunk<
@@ -54,7 +54,10 @@ export const upsertRating = createAsyncThunk<
   { rejectValue: ApiErrorResponse }
 >(
   'ratings/upsertRating',
-  async ({ profileId, contentType, contentId, rating, note, contentTitle, posterImage }, { getState, rejectWithValue }) => {
+  async (
+    { profileId, contentType, contentId, rating, note, contentTitle, posterImage },
+    { getState, rejectWithValue }
+  ) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -63,7 +66,7 @@ export const upsertRating = createAsyncThunk<
       }
       const response: AxiosResponse<RatingResponse> = await axiosInstance.post(
         `/accounts/${accountId}/profiles/${profileId}/ratings`,
-        { contentType, contentId, rating, note, contentTitle, posterImage },
+        { contentType, contentId, rating, note, contentTitle, posterImage }
       );
       return response.data.rating;
     } catch (error: unknown) {
@@ -72,32 +75,29 @@ export const upsertRating = createAsyncThunk<
       }
       return rejectWithValue({ message: 'An unknown error occurred saving rating' });
     }
-  },
+  }
 );
 
 export const deleteRating = createAsyncThunk<
   number,
   { profileId: number; ratingId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'ratings/deleteRating',
-  async ({ profileId, ratingId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-      await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}/ratings/${ratingId}`);
-      return ratingId;
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || { message: error.message });
-      }
-      return rejectWithValue({ message: 'An unknown error occurred deleting rating' });
+>('ratings/deleteRating', async ({ profileId, ratingId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
-  },
-);
+    await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}/ratings/${ratingId}`);
+    return ratingId;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || { message: error.message });
+    }
+    return rejectWithValue({ message: 'An unknown error occurred deleting rating' });
+  }
+});
 
 const ratingsSlice = createSlice({
   name: 'ratings',
@@ -129,7 +129,7 @@ const ratingsSlice = createSlice({
         state.loading = false;
         state.error = null;
         const idx = state.ratings.findIndex(
-          (r) => r.contentType === action.payload.contentType && r.contentId === action.payload.contentId,
+          (r) => r.contentType === action.payload.contentType && r.contentId === action.payload.contentId
         );
         if (idx >= 0) {
           state.ratings[idx] = action.payload;
@@ -162,7 +162,7 @@ export const selectRatingsLoading = (state: RootState) => state.ratings.loading;
 
 export const selectRatingForContent = (contentType: RatingContentType, contentId: number) =>
   createSelector(selectRatings, (ratings) =>
-    ratings.find((r) => r.contentType === contentType && r.contentId === contentId),
+    ratings.find((r) => r.contentType === contentType && r.contentId === contentId)
   );
 
 export default ratingsSlice.reducer;

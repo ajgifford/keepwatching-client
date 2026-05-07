@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import {
   Badge,
   Box,
@@ -35,9 +35,9 @@ import {
   selectContentTypeFilter,
   setContentTypeFilter,
 } from '../../../app/slices/communityRecommendationsSlice';
+import RecommendationDetailsDialog from './recommendationDetailsDialog';
 import { CommunityRecommendation, RatingContentType } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
-import RecommendationDetailsDialog from './recommendationDetailsDialog';
 
 interface CommunityRecommendationsSectionProps {
   returnPath?: string;
@@ -107,19 +107,14 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
         });
       }
     },
-    [dispatch, activeProfile],
+    [dispatch, activeProfile]
   );
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
         <Typography variant="h6">Community Picks</Typography>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          value={contentTypeFilter}
-          onChange={handleFilterChange}
-        >
+        <ToggleButtonGroup size="small" exclusive value={contentTypeFilter} onChange={handleFilterChange}>
           <ToggleButton value={null as any}>All</ToggleButton>
           <ToggleButton value="show">Shows</ToggleButton>
           <ToggleButton value="movie">Movies</ToggleButton>
@@ -161,11 +156,7 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
                       disabled={!favorited}
                       sx={{ '&.Mui-disabled': { opacity: 1 } }}
                     >
-                      <Badge
-                        badgeContent={rec.recommendationCount}
-                        color="primary"
-                        sx={{ width: '100%' }}
-                      >
+                      <Badge badgeContent={rec.recommendationCount} color="primary" sx={{ width: '100%' }}>
                         <CardMedia
                           component="img"
                           height="200"

@@ -1,8 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Notifications from '../notifications';
-import { AccountNotification } from '@ajgifford/keepwatching-types';
 import { useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import {
@@ -13,6 +11,8 @@ import {
   markSystemNotificationRead,
   selectSystemNotifications,
 } from '../../../app/slices/systemNotificationsSlice';
+import Notifications from '../notifications';
+import { AccountNotification } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies

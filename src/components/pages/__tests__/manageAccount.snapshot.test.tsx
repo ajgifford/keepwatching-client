@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import ManageAccount from '../manageAccount';
 import { useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
-import { selectAllProfiles } from '../../../app/slices/profilesSlice';
 import { selectActiveProfile, selectLastUpdated } from '../../../app/slices/activeProfileSlice';
+import { selectAllProfiles } from '../../../app/slices/profilesSlice';
+import ManageAccount from '../manageAccount';
 
 // Mock Firebase Auth
 const mockCurrentUser = {

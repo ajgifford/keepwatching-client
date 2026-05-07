@@ -1,14 +1,14 @@
 import authReducer from './slices/accountSlice';
-import calendarReducer from './slices/calendarSlice';
-import communityRecommendationsReducer from './slices/communityRecommendationsSlice';
-import ratingsReducer from './slices/ratingsSlice';
 import activeMovieReducer from './slices/activeMovieSlice';
 import activeProfileReducer from './slices/activeProfileSlice';
 import activeShowReducer from './slices/activeShowSlice';
 import activityNotificationReducer from './slices/activityNotificationSlice';
+import calendarReducer from './slices/calendarSlice';
+import communityRecommendationsReducer from './slices/communityRecommendationsSlice';
 import personSearchReducer from './slices/personSearchSlice';
 import preferencesReducer from './slices/preferencesSlice';
 import profilesReducer from './slices/profilesSlice';
+import ratingsReducer from './slices/ratingsSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
 import watchHistoryReducer from './slices/watchHistorySlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';

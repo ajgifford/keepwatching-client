@@ -277,7 +277,7 @@ describe('PersonCard', () => {
       const longCharacterPerson = {
         ...mockCastMember,
         characterName: 'A Very Long Character Name With Many Words',
-    order: 0,
+        order: 0,
       };
 
       renderPersonCard(longCharacterPerson);
@@ -290,7 +290,7 @@ describe('PersonCard', () => {
         ...mockCastMember,
         name: "O'Brien & Smith",
         characterName: 'Lt. Dan "Danny" O\'Reilly',
-    order: 0,
+        order: 0,
       };
 
       renderPersonCard(specialCharPerson);
@@ -303,7 +303,7 @@ describe('PersonCard', () => {
       const noCharacterPerson = {
         ...mockCastMember,
         characterName: '',
-    order: 0,
+        order: 0,
       };
 
       renderPersonCard(noCharacterPerson);

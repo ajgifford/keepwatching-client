@@ -43,7 +43,9 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
   // Local state for preferences (not saved until user clicks Save)
   const [localTheme, setLocalTheme] = useState<'light' | 'dark' | 'auto'>('auto');
   const [localDateFormat, setLocalDateFormat] = useState<'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD'>('MM/DD/YYYY');
-  const [localRelativeDate, setLocalRelativeDate] = useState<'relative-recent' | 'always-relative' | 'always-absolute'>('relative-recent');
+  const [localRelativeDate, setLocalRelativeDate] = useState<'relative-recent' | 'always-relative' | 'always-absolute'>(
+    'relative-recent'
+  );
   const [localTimeFormat, setLocalTimeFormat] = useState<'12h' | '24h'>('12h');
   const [localWeeklyDigest, setLocalWeeklyDigest] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -60,7 +62,12 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
   }, [open, displayPreferences, preferences.email?.weeklyDigest]);
 
   const previewFormatters = useMemo(
-    () => createDateFormatters({ dateFormat: localDateFormat, relativeDate: localRelativeDate, timeFormat: localTimeFormat }),
+    () =>
+      createDateFormatters({
+        dateFormat: localDateFormat,
+        relativeDate: localRelativeDate,
+        timeFormat: localTimeFormat,
+      }),
     [localDateFormat, localRelativeDate, localTimeFormat]
   );
 

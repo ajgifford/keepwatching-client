@@ -29,8 +29,8 @@ import {
 
 import { STATIC_CONTENT_URL } from '../../app/constants/constants';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { usePWAInstall } from '../../app/hooks/usePWAInstall';
 import { useDateFormatters } from '../../app/hooks/useDateFormatters';
+import { usePWAInstall } from '../../app/hooks/usePWAInstall';
 import {
   deleteAccount,
   removeAccountImage,
@@ -47,10 +47,10 @@ import {
   selectAllProfiles,
   selectProfileById,
 } from '../../app/slices/profilesSlice';
+import ReviewWatchHistoryDialog from '../common/account/ReviewWatchHistoryDialog';
 import NameEditDialog from '../common/account/nameEditDialog';
 import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
-import ReviewWatchHistoryDialog from '../common/account/ReviewWatchHistoryDialog';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { Profile } from '@ajgifford/keepwatching-types';

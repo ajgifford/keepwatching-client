@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   CircularProgress,
@@ -11,7 +12,6 @@ import {
   Rating,
   Typography,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 
 import axiosInstance from '../../../app/api/axiosInstance';
 import { RatingContentType, RecommendationDetail, RecommendationDetailsResponse } from '@ajgifford/keepwatching-types';
@@ -68,7 +68,14 @@ function RecommendationDetailsDialog({
                 {index > 0 && <Divider />}
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                   {detail.rating && (
-                    <Rating value={detail.rating} max={5} readOnly size="small" precision={0.5} sx={{ flexShrink: 0, pt: 0.25 }} />
+                    <Rating
+                      value={detail.rating}
+                      max={5}
+                      readOnly
+                      size="small"
+                      precision={0.5}
+                      sx={{ flexShrink: 0, pt: 0.25 }}
+                    />
                   )}
                   {detail.message && (
                     <Typography variant="body2" color="text.secondary">

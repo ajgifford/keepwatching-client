@@ -4,18 +4,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
-import {
-  Box,
-  Chip,
-  IconButton,
-  List,
-  ListItem,
-  Popover,
-  Tooltip,
-  Typography,
-  alpha,
-  useTheme,
-} from '@mui/material';
+import { Box, Chip, IconButton, List, ListItem, Popover, Tooltip, Typography, alpha, useTheme } from '@mui/material';
 
 import { CalendarDay, CalendarItem } from '../../../app/slices/calendarSlice';
 import { CalendarContentItem } from './calendarContentItem';
@@ -174,13 +163,9 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
                     : hasContent
                       ? alpha(theme.palette.action.hover, 0.5)
                       : 'transparent',
-                  border: isToday
-                    ? `2px solid ${theme.palette.primary.main}`
-                    : '2px solid transparent',
+                  border: isToday ? `2px solid ${theme.palette.primary.main}` : '2px solid transparent',
                   transition: 'background 0.15s ease',
-                  '&:hover': hasContent
-                    ? { background: alpha(theme.palette.primary.main, 0.08) }
-                    : {},
+                  '&:hover': hasContent ? { background: alpha(theme.palette.primary.main, 0.08) } : {},
                 }}
               >
                 <Typography
@@ -200,10 +185,7 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
                           width: 6,
                           height: 6,
                           borderRadius: '50%',
-                          bgcolor:
-                            dot.type === 'episode'
-                              ? theme.palette.primary.main
-                              : theme.palette.secondary.main,
+                          bgcolor: dot.type === 'episode' ? theme.palette.primary.main : theme.palette.secondary.main,
                         }}
                       />
                     ))}

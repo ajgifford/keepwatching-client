@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Notifications from '../notifications';
 import { useAppSelector } from '../../../app/hooks';
-import { selectSystemNotifications } from '../../../app/slices/systemNotificationsSlice';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
+import { selectSystemNotifications } from '../../../app/slices/systemNotificationsSlice';
+import Notifications from '../notifications';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

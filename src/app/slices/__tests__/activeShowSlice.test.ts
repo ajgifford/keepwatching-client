@@ -167,7 +167,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -206,7 +213,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -239,7 +253,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -266,7 +287,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -305,7 +333,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -333,7 +368,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -370,7 +412,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -391,7 +440,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -427,7 +483,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -449,7 +512,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -485,7 +555,14 @@ describe('activeShowSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },

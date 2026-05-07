@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import Shows from '../shows';
 import { useAppSelector } from '../../../app/hooks';
-import { selectShows, selectShowGenres, selectShowStreamingServices } from '../../../app/slices/activeProfileSlice';
+import { selectShowGenres, selectShowStreamingServices, selectShows } from '../../../app/slices/activeProfileSlice';
+import Shows from '../shows';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies

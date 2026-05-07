@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Register from '../register';
 import { register } from '../../../app/slices/accountSlice';
 import { showActivityNotification } from '../../../app/slices/activityNotificationSlice';
+import Register from '../register';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies
@@ -258,7 +258,7 @@ describe('Register', () => {
   describe('register functionality', () => {
     it('should dispatch register action when register button clicked with valid credentials', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const nameField = screen.getByLabelText(/^name/i);
       const emailField = screen.getByLabelText(/email address/i);
@@ -280,7 +280,7 @@ renderWithRouter(<Register />);
 
     it('should show notification when register clicked with empty name', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const emailField = screen.getByLabelText(/email address/i);
       const passwordField = screen.getByLabelText(/password/i);
@@ -298,7 +298,7 @@ renderWithRouter(<Register />);
 
     it('should show notification when register clicked with empty email', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const nameField = screen.getByLabelText(/^name/i);
       const passwordField = screen.getByLabelText(/password/i);
@@ -316,7 +316,7 @@ renderWithRouter(<Register />);
 
     it('should show notification when register clicked with empty password', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const nameField = screen.getByLabelText(/^name/i);
       const emailField = screen.getByLabelText(/email address/i);
@@ -334,7 +334,7 @@ renderWithRouter(<Register />);
 
     it('should show notification when register clicked with all fields empty', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const registerButton = screen.getByRole('button', { name: /register/i });
 
@@ -348,7 +348,7 @@ renderWithRouter(<Register />);
 
     it('should handle Enter key press to submit form', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const nameField = screen.getByLabelText(/^name/i);
       const emailField = screen.getByLabelText(/email address/i);
@@ -520,7 +520,7 @@ renderWithRouter(<Register />);
   describe('edge cases', () => {
     it('should handle rapid button clicks', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const nameField = screen.getByLabelText(/^name/i);
       const emailField = screen.getByLabelText(/email address/i);
@@ -601,7 +601,7 @@ renderWithRouter(<Register />);
 
     it('should handle empty string submission', async () => {
       const user = userEvent.setup();
-renderWithRouter(<Register />);
+      renderWithRouter(<Register />);
 
       const registerButton = screen.getByRole('button', { name: /register/i });
 

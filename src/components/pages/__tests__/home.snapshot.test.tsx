@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Home from '../home';
 import { useAppSelector } from '../../../app/hooks';
 import {
   selectActiveProfile,
@@ -16,6 +15,7 @@ import {
   selectUpcomingEpisodes,
   selectUpcomingMovies,
 } from '../../../app/slices/activeProfileSlice';
+import Home from '../home';
 
 // Mock dependencies
 const mockDispatch = jest.fn();

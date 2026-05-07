@@ -19,7 +19,6 @@ import {
 
 import axiosInstance from '../../app/api/axiosInstance';
 import { useAppDispatch } from '../../app/hooks';
-import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import { ActivityNotificationType, showActivityNotification } from '../../app/slices/activityNotificationSlice';
 import {
   DISCOVER_TYPE_OPTIONS,
@@ -27,6 +26,7 @@ import {
   SERVICE_OPTIONS,
   SegmentedControl,
 } from '../common/controls/segmentedControl';
+import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import SearchResults from '../common/search/searchResults';
 import { DiscoverAndSearchResponse, DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -227,9 +227,24 @@ function Discover() {
         <CardContent sx={{ p: '8px' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="discover content tabs" variant="fullWidth">
-              <Tab label="Trending Content" icon={<TrendingUpIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(0)} />
-              <Tab label="By Service" icon={<ExploreIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(1)} />
-              <Tab label="Community" icon={<GroupsIcon />} iconPosition={isMobile ? 'top' : 'start'} {...a11yProps(2)} />
+              <Tab
+                label="Trending Content"
+                icon={<TrendingUpIcon />}
+                iconPosition={isMobile ? 'top' : 'start'}
+                {...a11yProps(0)}
+              />
+              <Tab
+                label="By Service"
+                icon={<ExploreIcon />}
+                iconPosition={isMobile ? 'top' : 'start'}
+                {...a11yProps(1)}
+              />
+              <Tab
+                label="Community"
+                icon={<GroupsIcon />}
+                iconPosition={isMobile ? 'top' : 'start'}
+                {...a11yProps(2)}
+              />
             </Tabs>
           </Box>
 
@@ -265,11 +280,7 @@ function Discover() {
               alignItems={{ xs: 'stretch', md: 'center' }}
               sx={{ p: '8px', m: '1px' }}
             >
-              <Stack
-                direction={{ xs: 'column', md: 'row' }}
-                spacing={2}
-                sx={{ width: { xs: '100%', md: 'auto' } }}
-              >
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: { xs: '100%', md: 'auto' } }}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -294,7 +305,11 @@ function Discover() {
                   />
                 </Box>
 
-                {isMobile ? <Divider orientation="horizontal" flexItem /> : <Divider orientation="vertical" flexItem sx={{ height: 56 }} />}
+                {isMobile ? (
+                  <Divider orientation="horizontal" flexItem />
+                ) : (
+                  <Divider orientation="vertical" flexItem sx={{ height: 56 }} />
+                )}
 
                 <Box
                   sx={{
@@ -322,7 +337,11 @@ function Discover() {
                   />
                 </Box>
 
-                {isMobile ? <Divider orientation="horizontal" flexItem /> : <Divider orientation="vertical" flexItem sx={{ height: 56 }} />}
+                {isMobile ? (
+                  <Divider orientation="horizontal" flexItem />
+                ) : (
+                  <Divider orientation="vertical" flexItem sx={{ height: 56 }} />
+                )}
 
                 <Box
                   sx={{

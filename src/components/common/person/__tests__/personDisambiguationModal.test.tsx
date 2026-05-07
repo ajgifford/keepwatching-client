@@ -1,10 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 
+import { PersonSearchDetails } from '../../../../app/model/personSearchTypes';
 import * as personSearchSlice from '../../../../app/slices/personSearchSlice';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { PersonDisambiguationModal } from '../personDisambiguationModal';
 import { PersonSearchResult } from '@ajgifford/keepwatching-types';
-import { PersonSearchDetails } from '../../../../app/model/personSearchTypes';
 import userEvent from '@testing-library/user-event';
 
 // Mock dependencies

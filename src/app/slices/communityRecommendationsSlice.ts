@@ -10,7 +10,7 @@ import {
   RatingContentType,
 } from '@ajgifford/keepwatching-types';
 import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
-import { createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 
 interface CommunityRecommendationsState {
@@ -43,7 +43,7 @@ export const fetchCommunityRecommendations = createAsyncThunk<
   try {
     const params = contentType ? `?contentType=${contentType}` : '';
     const response: AxiosResponse<CommunityRecommendationsResponse> = await axiosInstance.get(
-      `/community/recommendations${params}`,
+      `/community/recommendations${params}`
     );
     return response.data.recommendations;
   } catch (error: unknown) {
@@ -66,7 +66,7 @@ export const fetchProfileRecommendations = createAsyncThunk<
       return rejectWithValue({ message: 'No account found' });
     }
     const response: AxiosResponse<ProfileRecommendationsResponse> = await axiosInstance.get(
-      `/accounts/${accountId}/profiles/${profileId}/recommendations`,
+      `/accounts/${accountId}/profiles/${profileId}/recommendations`
     );
     return response.data.recommendations;
   } catch (error: unknown) {
@@ -98,7 +98,7 @@ export const addRecommendation = createAsyncThunk<
       }
       const response: AxiosResponse<ProfileRecommendationResponse> = await axiosInstance.post(
         `/accounts/${accountId}/profiles/${profileId}/recommendations`,
-        { contentType, contentId, rating, message },
+        { contentType, contentId, rating, message }
       );
       return response.data.recommendation;
     } catch (error: unknown) {
@@ -107,34 +107,31 @@ export const addRecommendation = createAsyncThunk<
       }
       return rejectWithValue({ message: 'An unknown error occurred adding recommendation' });
     }
-  },
+  }
 );
 
 export const removeRecommendation = createAsyncThunk<
   { contentType: RatingContentType; contentId: number },
   { profileId: number; contentType: RatingContentType; contentId: number },
   { rejectValue: ApiErrorResponse }
->(
-  'communityRecommendations/remove',
-  async ({ profileId, contentType, contentId }, { getState, rejectWithValue }) => {
-    try {
-      const state = getState() as RootState;
-      const accountId = state.auth.account?.id;
-      if (!accountId) {
-        return rejectWithValue({ message: 'No account found' });
-      }
-      await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}/recommendations`, {
-        data: { contentType, contentId },
-      });
-      return { contentType, contentId };
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data || { message: error.message });
-      }
-      return rejectWithValue({ message: 'An unknown error occurred removing recommendation' });
+>('communityRecommendations/remove', async ({ profileId, contentType, contentId }, { getState, rejectWithValue }) => {
+  try {
+    const state = getState() as RootState;
+    const accountId = state.auth.account?.id;
+    if (!accountId) {
+      return rejectWithValue({ message: 'No account found' });
     }
-  },
-);
+    await axiosInstance.delete(`/accounts/${accountId}/profiles/${profileId}/recommendations`, {
+      data: { contentType, contentId },
+    });
+    return { contentType, contentId };
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(error.response?.data || { message: error.message });
+    }
+    return rejectWithValue({ message: 'An unknown error occurred removing recommendation' });
+  }
+});
 
 const communityRecommendationsSlice = createSlice({
   name: 'communityRecommendations',
@@ -195,7 +192,7 @@ const communityRecommendationsSlice = createSlice({
       .addCase(removeRecommendation.fulfilled, (state, action) => {
         state.sendLoading = false;
         state.profileRecommendations = state.profileRecommendations.filter(
-          (r) => !(r.contentType === action.payload.contentType && r.contentId === action.payload.contentId),
+          (r) => !(r.contentType === action.payload.contentType && r.contentId === action.payload.contentId)
         );
       })
       .addCase(removeRecommendation.rejected, (state) => {
@@ -210,13 +207,12 @@ export const selectCommunityRecommendations = (state: RootState) =>
   state.communityRecommendations.communityRecommendations;
 export const selectCommunityLoading = (state: RootState) => state.communityRecommendations.communityLoading;
 export const selectContentTypeFilter = (state: RootState) => state.communityRecommendations.contentTypeFilter;
-export const selectProfileRecommendations = (state: RootState) =>
-  state.communityRecommendations.profileRecommendations;
+export const selectProfileRecommendations = (state: RootState) => state.communityRecommendations.profileRecommendations;
 export const selectSendLoading = (state: RootState) => state.communityRecommendations.sendLoading;
 
 export const selectHasRecommended = (contentType: RatingContentType, contentId: number) =>
   createSelector(selectProfileRecommendations, (recs) =>
-    recs.some((r) => r.contentType === contentType && r.contentId === contentId),
+    recs.some((r) => r.contentType === contentType && r.contentId === contentId)
   );
 
 export default communityRecommendationsSlice.reducer;

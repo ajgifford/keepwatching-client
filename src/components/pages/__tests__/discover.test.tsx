@@ -385,7 +385,6 @@ describe('Discover', () => {
 
   describe('error handling', () => {
     it('should show error notification when API fails on mount', async () => {
-
       mockAxiosGet.mockRejectedValue(new Error('API Error'));
 
       renderWithRouter(<Discover />);
@@ -399,7 +398,6 @@ describe('Discover', () => {
     });
 
     it('should show default error message for non-axios errors', async () => {
-
       // The component checks instanceof AxiosError, which a plain object won't satisfy,
       // so it falls back to the default error message
       const axiosError: any = {

@@ -306,7 +306,14 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -378,7 +385,14 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -449,7 +463,14 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -498,7 +519,14 @@ describe('personSearchSlice', () => {
     it('should handle error when no active profile found', async () => {
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
@@ -535,7 +563,14 @@ describe('personSearchSlice', () => {
 
       const store = createMockStore({
         auth: {
-          account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
           loading: false,
           error: null,
         },
