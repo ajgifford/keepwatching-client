@@ -52,6 +52,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "format": "prettier --config ./.prettierrc.cjs . --write",
+    "format:check": "prettier --config ./.prettierrc.cjs . --check",
+    "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
