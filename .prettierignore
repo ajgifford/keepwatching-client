@@ -1,5 +1,7 @@
 node_modules/
 build/
+dist/
+dev-dist/
 yarn.lock
 README.md
 __snapshots__
