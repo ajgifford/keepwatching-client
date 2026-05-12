@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import BulkMarkBanner from '../BulkMarkBanner';
+import userEvent from '@testing-library/user-event';
 
 describe('BulkMarkBanner', () => {
   const mockOnFix = jest.fn();
@@ -26,7 +26,9 @@ describe('BulkMarkBanner', () => {
     it('renders the body text', () => {
       render(<BulkMarkBanner {...defaultProps} />);
 
-      expect(screen.getByText(/many episodes of this show were marked as watched on the same day/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/many episodes of this show were marked as watched on the same day/i)
+      ).toBeInTheDocument();
     });
 
     it('renders the Fix watch dates button', () => {

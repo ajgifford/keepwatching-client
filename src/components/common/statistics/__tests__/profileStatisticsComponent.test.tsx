@@ -75,10 +75,9 @@ describe('ProfileStatisticsComponent', () => {
       render(<ProfileStatisticsComponent {...defaultProps} />);
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          '/accounts/42/profiles/7/statistics/velocity',
-          { params: { days: 30 } },
-        );
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
+          params: { days: 30 },
+        });
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/activity/timeline');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/binge');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/streaks');

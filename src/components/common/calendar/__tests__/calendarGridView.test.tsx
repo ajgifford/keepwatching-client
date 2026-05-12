@@ -1,10 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import userEvent from '@testing-library/user-event';
-
 import { CalendarDay } from '../../../../app/slices/calendarSlice';
 import { CalendarGridView } from '../calendarGridView';
+import userEvent from '@testing-library/user-event';
 
 const renderWithRouter = (component: React.ReactElement) => render(<BrowserRouter>{component}</BrowserRouter>);
 

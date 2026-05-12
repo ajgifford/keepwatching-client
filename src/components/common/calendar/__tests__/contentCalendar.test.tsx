@@ -1,9 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import userEvent from '@testing-library/user-event';
-
 import { useAppSelector } from '../../../../app/hooks';
+import { selectActiveProfile } from '../../../../app/slices/activeProfileSlice';
 import {
   fetchCalendarContent,
   selectCalendarDays,
@@ -12,8 +11,8 @@ import {
   selectCalendarLastFetched,
   selectCalendarLoading,
 } from '../../../../app/slices/calendarSlice';
-import { selectActiveProfile } from '../../../../app/slices/activeProfileSlice';
 import { ContentCalendar } from '../contentCalendar';
+import userEvent from '@testing-library/user-event';
 
 const mockDispatch = jest.fn();
 

@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import userEvent from '@testing-library/user-event';
-
 import Calendar from '../calendar';
+import userEvent from '@testing-library/user-event';
 
 const mockNavigate = jest.fn();
 
@@ -20,8 +19,7 @@ jest.mock('../../common/calendar/contentCalendar', () => ({
   ),
 }));
 
-const renderWithRouter = (component: React.ReactElement) =>
-  render(<BrowserRouter>{component}</BrowserRouter>);
+const renderWithRouter = (component: React.ReactElement) => render(<BrowserRouter>{component}</BrowserRouter>);
 
 describe('Calendar', () => {
   beforeEach(() => {

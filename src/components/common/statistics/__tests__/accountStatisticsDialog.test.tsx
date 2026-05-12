@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import AccountStatisticsDialog from '../accountStatisticsDialog';
+import userEvent from '@testing-library/user-event';
 
 const mockAxiosGet = jest.fn();
 

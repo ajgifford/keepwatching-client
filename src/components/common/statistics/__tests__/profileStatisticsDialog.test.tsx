@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import ProfileStatisticsDialog from '../profileStatisticsDialog';
+import userEvent from '@testing-library/user-event';
 
 const mockAxiosGet = jest.fn();
 
@@ -114,10 +114,9 @@ describe('ProfileStatisticsDialog', () => {
       render(<ProfileStatisticsDialog {...defaultProps} />);
 
       await waitFor(() => {
-        expect(mockAxiosGet).toHaveBeenCalledWith(
-          '/accounts/42/profiles/7/statistics/velocity',
-          { params: { days: 30 } },
-        );
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
+          params: { days: 30 },
+        });
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/activity/timeline');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/binge');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/streaks');

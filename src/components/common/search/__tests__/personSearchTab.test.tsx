@@ -1,12 +1,12 @@
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import React from 'react';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
 import { PersonSearchDetails } from '../../../../app/model/personSearchTypes';
 import * as personSearchSlice from '../../../../app/slices/personSearchSlice';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { PersonSearchTab } from '../personSearchTab';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../../../app/api/axiosInstance', () => ({
   __esModule: true,

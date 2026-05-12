@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { useAppSelector } from '../../../app/hooks';
@@ -22,6 +21,7 @@ import {
 } from '../../../app/slices/watchHistorySlice';
 import WatchHistory from '../watchHistory';
 import { WatchHistoryItem } from '@ajgifford/keepwatching-types';
+import userEvent from '@testing-library/user-event';
 
 const mockDispatch = jest.fn();
 
@@ -168,7 +168,12 @@ const setupMocks = (overrides: MockOverrides = {}) => {
   });
 };
 
-const renderComponent = () => render(<BrowserRouter><WatchHistory /></BrowserRouter>);
+const renderComponent = () =>
+  render(
+    <BrowserRouter>
+      <WatchHistory />
+    </BrowserRouter>
+  );
 
 describe('WatchHistory', () => {
   beforeEach(() => {
@@ -372,16 +377,12 @@ describe('WatchHistory', () => {
 
     it('dispatches fetchWatchHistory with the active profile id', () => {
       renderComponent();
-      expect(fetchWatchHistory).toHaveBeenCalledWith(
-        expect.objectContaining({ profileId: mockActiveProfile.id })
-      );
+      expect(fetchWatchHistory).toHaveBeenCalledWith(expect.objectContaining({ profileId: mockActiveProfile.id }));
     });
 
     it('dispatches fetchWatchHistory starting at page 1', () => {
       renderComponent();
-      expect(fetchWatchHistory).toHaveBeenCalledWith(
-        expect.objectContaining({ page: 1 })
-      );
+      expect(fetchWatchHistory).toHaveBeenCalledWith(expect.objectContaining({ page: 1 }));
     });
 
     it('does not dispatch fetchWatchHistory when there is no active profile', () => {
@@ -403,18 +404,14 @@ describe('WatchHistory', () => {
       const user = userEvent.setup();
       renderComponent();
       await user.click(screen.getByRole('button', { name: /shows/i }));
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ contentType: 'episode' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ contentType: 'episode' }));
     });
 
     it('dispatches fetchWatchHistory with contentType "movie" when Movies is clicked', async () => {
       const user = userEvent.setup();
       renderComponent();
       await user.click(screen.getByRole('button', { name: /movies/i }));
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ contentType: 'movie' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ contentType: 'movie' }));
     });
   });
 
@@ -426,9 +423,7 @@ describe('WatchHistory', () => {
       const sortButton = allButtons.find((btn) => !btn.textContent?.trim());
       expect(sortButton).toBeDefined();
       await user.click(sortButton!);
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ sortOrder: 'asc' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ sortOrder: 'asc' }));
     });
 
     it('dispatches fetchWatchHistory with sortOrder "desc" when the sort button is clicked while asc', async () => {
@@ -438,9 +433,7 @@ describe('WatchHistory', () => {
       const allButtons = screen.getAllByRole('button');
       const sortButton = allButtons.find((btn) => !btn.textContent?.trim());
       await user.click(sortButton!);
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ sortOrder: 'desc' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ sortOrder: 'desc' }));
     });
   });
 
@@ -449,18 +442,14 @@ describe('WatchHistory', () => {
       const user = userEvent.setup();
       renderComponent();
       await user.click(screen.getByRole('button', { name: /prior only/i }));
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ priorWatchFilter: 'priorOnly' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ priorWatchFilter: 'priorOnly' }));
     });
 
     it('dispatches fetchWatchHistory with priorWatchFilter "excludePrior" when Exclude Prior is clicked', async () => {
       const user = userEvent.setup();
       renderComponent();
       await user.click(screen.getByRole('button', { name: /exclude prior/i }));
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ priorWatchFilter: 'excludePrior' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ priorWatchFilter: 'excludePrior' }));
     });
   });
 
@@ -484,9 +473,7 @@ describe('WatchHistory', () => {
       jest.runAllTimers();
 
       await waitFor(() => {
-        expect(fetchWatchHistory).toHaveBeenCalledWith(
-          expect.objectContaining({ searchQuery: 'Inception' })
-        );
+        expect(fetchWatchHistory).toHaveBeenCalledWith(expect.objectContaining({ searchQuery: 'Inception' }));
       });
       jest.useRealTimers();
     });
@@ -547,18 +534,14 @@ describe('WatchHistory', () => {
 
       fireEvent.change(dateFromInput, { target: { value: '' } });
       expect(screen.queryByText('Start date must be on or before end date')).not.toBeInTheDocument();
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ dateFrom: null })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ dateFrom: null }));
     });
 
     it('dispatches fetchWatchHistory with dateFrom when a valid date is entered', () => {
       renderComponent();
       const dateFromInput = screen.getByLabelText(/^from$/i);
       fireEvent.change(dateFromInput, { target: { value: '2024-01-01' } });
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ dateFrom: '2024-01-01' })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ dateFrom: '2024-01-01' }));
     });
   });
 
@@ -610,9 +593,7 @@ describe('WatchHistory', () => {
       const nextPageButton = screen.getByRole('button', { name: /go to page 2/i });
       await user.click(nextPageButton);
 
-      expect(fetchWatchHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ page: 2 })
-      );
+      expect(fetchWatchHistory).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2 }));
     });
   });
 
