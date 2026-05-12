@@ -84,6 +84,15 @@ const mockSendEmailVerification = sendEmailVerification as jest.Mock;
 const mockSignInWithPopup = signInWithPopup as jest.Mock;
 
 describe('accountSlice', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.clear();

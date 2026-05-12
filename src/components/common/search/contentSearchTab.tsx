@@ -33,7 +33,7 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
 
   const [searchText, setSearchText] = useState<string>('');
   const [year, setYear] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('popularity.desc');
+  const [sortBy, setSortBy] = useState<string>('popularity');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [results, setResults] = useState<DiscoverAndSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -63,13 +63,13 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
     return results.sort((a, b) => {
       let comparison: number;
       switch (sortBy) {
-        case 'popularity.desc':
+        case 'popularity':
           comparison = (b.popularity || 0) - (a.popularity || 0);
           break;
-        case 'title.asc':
+        case 'title':
           comparison = a.title.localeCompare(b.title);
           break;
-        case 'release_date.desc':
+        case 'first_air_date':
           comparison = new Date(b.premiered || '').getTime() - new Date(a.premiered || '').getTime();
           break;
         default:
@@ -165,7 +165,7 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
   useEffect(() => {
     setSearchText('');
     setYear('');
-    setSortBy('popularity.desc');
+    setSortBy('popularity');
     setSortOrder('desc');
     setResults([]);
     setPage(1);

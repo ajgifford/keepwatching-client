@@ -367,6 +367,7 @@ function NotificationIconDropdown() {
                         </ListItemIcon>
 
                         <ListItemText
+                          disableTypography
                           sx={{
                             pr: 8,
                             mr: 0,
