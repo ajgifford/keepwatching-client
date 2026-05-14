@@ -536,11 +536,11 @@ function ShowDetails() {
         }}
       >
         <Box
-          display="flex"
-          alignItems="center"
-          mb={2}
-          mt={1}
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mb: 2,
+            mt: 1,
             position: 'relative',
             zIndex: 1,
           }}
@@ -558,7 +558,6 @@ function ShowDetails() {
           </Tooltip>
         </Box>
       </Box>
-
       {bulkMarkBannerVisible && (
         <Box sx={{ px: 2, pt: 1 }}>
           <BulkMarkBanner
@@ -578,7 +577,6 @@ function ShowDetails() {
           />
         </Box>
       )}
-
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         {/* Show Details Card */}
         <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
@@ -649,8 +647,8 @@ function ShowDetails() {
               <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
                 <Typography
                   variant={isMobile ? 'h5' : 'h4'}
-                  fontWeight="bold"
                   sx={{
+                    fontWeight: 'bold',
                     textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                     mb: 1,
                   }}
@@ -822,7 +820,13 @@ function ShowDetails() {
               <Grid size={{ xs: 12, md: 8 }}>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      gutterBottom
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Genres
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -834,7 +838,13 @@ function ShowDetails() {
 
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Network • Streaming On
                       </Typography>
                       <Typography variant="body2">
@@ -845,7 +855,13 @@ function ShowDetails() {
 
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Watch Status
                       </Typography>
                       <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -857,7 +873,13 @@ function ShowDetails() {
 
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Show Status
                       </Typography>
                       <Typography variant="body2">{`${show?.type} • ${show?.status}`}</Typography>
@@ -875,18 +897,35 @@ function ShowDetails() {
                     backgroundColor: theme.palette.background.default,
                   }}
                 >
-                  <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
+                  <Typography
+                    variant="subtitle1"
+                    gutterBottom
+                    sx={{
+                      fontWeight: 'medium',
+                    }}
+                  >
                     Episodes
                   </Typography>
 
                   <Grid container sx={{ mb: 1 }}>
                     <Grid size={{ xs: 4, sm: 3 }}>
-                      <Typography variant="body2" color="text.secondary" noWrap>
+                      <Typography
+                        variant="body2"
+                        noWrap
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Last Episode
                       </Typography>
                     </Grid>
                     <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
-                      <Typography variant="body2" fontWeight={500}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 500,
+                        }}
+                      >
                         {show?.lastEpisode
                           ? buildEpisodeLineDetails(show?.lastEpisode, formatters.contentDate)
                           : 'No Last Episode'}
@@ -898,12 +937,23 @@ function ShowDetails() {
 
                   <Grid container>
                     <Grid size={{ xs: 4, sm: 3 }}>
-                      <Typography variant="body2" color="text.secondary" noWrap>
+                      <Typography
+                        variant="body2"
+                        noWrap
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Next Episode
                       </Typography>
                     </Grid>
                     <Grid size={{ xs: 8, sm: 9 }} sx={{ textAlign: 'right' }}>
-                      <Typography variant="body2" fontWeight={500}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 500,
+                        }}
+                      >
                         {show?.nextEpisode
                           ? buildEpisodeLineDetails(show?.nextEpisode, formatters.contentDate)
                           : 'No Next Episode'}
@@ -918,7 +968,12 @@ function ShowDetails() {
             {show && profileId && (
               <Accordion sx={{ mb: 2 }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="subtitle1" fontWeight="medium">
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 'medium',
+                    }}
+                  >
                     Your Rating &amp; Notes
                   </Typography>
                 </AccordionSummary>
@@ -995,10 +1050,20 @@ function ShowDetails() {
                           <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                             {season.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.secondary',
+                            }}
+                          >
                             Season {season.seasonNumber} • {season.numberOfEpisodes} Episodes
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.secondary',
+                            }}
+                          >
                             {buildSeasonAirDate(season.releaseDate, formatters.contentDate)}
                           </Typography>
                         </Box>
@@ -1127,7 +1192,12 @@ function ShowDetails() {
                                         flexWrap: 'wrap',
                                       }}
                                     >
-                                      <Typography variant="subtitle1" fontWeight="medium">
+                                      <Typography
+                                        variant="subtitle1"
+                                        sx={{
+                                          fontWeight: 'medium',
+                                        }}
+                                      >
                                         {episode.title}
                                       </Typography>
                                       {(episode.watchCount ?? 0) >= 2 && (
@@ -1142,8 +1212,8 @@ function ShowDetails() {
                                     </Box>
                                     <Typography
                                       variant="body2"
-                                      color="text.secondary"
                                       sx={{
+                                        color: 'text.secondary',
                                         display: '-webkit-box',
                                         WebkitLineClamp: 2,
                                         WebkitBoxOrient: 'vertical',
@@ -1154,7 +1224,12 @@ function ShowDetails() {
                                     >
                                       <i>{episode.overview || 'No description available.'}</i>
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        color: 'text.secondary',
+                                      }}
+                                    >
                                       {buildEpisodeAirDate(episode.airDate, formatters.contentDate)} •{' '}
                                       {calculateRuntimeDisplay(episode.runtime)}
                                       {episode.watchedAt &&
@@ -1237,7 +1312,12 @@ function ShowDetails() {
                           </List>
                         ) : (
                           <Box sx={{ p: 3, textAlign: 'center' }}>
-                            <Typography variant="body1" color="text.secondary">
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: 'text.secondary',
+                              }}
+                            >
                               No Episodes Available
                             </Typography>
                           </Box>
@@ -1248,7 +1328,12 @@ function ShowDetails() {
                 </Box>
               ) : (
                 <Box sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     No seasons available for this show
                   </Typography>
                 </Box>
@@ -1268,7 +1353,6 @@ function ShowDetails() {
           </CardContent>
         </Card>
       </Box>
-
       {/* Prior watch history dialogs */}
       <PriorWatchPromptDialog
         open={priorWatchPromptOpen}
@@ -1279,7 +1363,6 @@ function ShowDetails() {
         onWatchedAll={handlePriorWatchAll}
         onWatchedThrough={handlePriorWatchThrough}
       />
-
       <SeasonPriorWatchDialog
         open={seasonDialogOpen}
         seasonName={pendingSeason?.name || ''}
@@ -1290,7 +1373,6 @@ function ShowDetails() {
         onWatchedWhenAired={handleSeasonWatchedWhenAired}
         onWatchedNow={handleSeasonWatchedNow}
       />
-
       <SkippedSeasonsDialog
         open={skippedSeasonsDialogOpen}
         skippedSeasons={skippedSeasons}
@@ -1303,7 +1385,6 @@ function ShowDetails() {
           setPendingSeason(null);
         }}
       />
-
       <SkippedEpisodesDialog
         open={skippedEpisodesDialogOpen}
         skippedEpisodes={skippedEpisodes}
@@ -1316,7 +1397,6 @@ function ShowDetails() {
           setSkippedEpisodes([]);
         }}
       />
-
       <Dialog open={rewatchConfirmOpen} onClose={() => setRewatchConfirmOpen(false)}>
         <DialogTitle>Start Rewatch?</DialogTitle>
         <DialogContent>
@@ -1332,7 +1412,6 @@ function ShowDetails() {
           </Button>
         </DialogActions>
       </Dialog>
-
       <Dialog
         open={rewatchSeasonConfirmOpen}
         onClose={() => {

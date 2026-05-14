@@ -224,7 +224,13 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
   return (
     <>
       <Box sx={{ mb: 3 }}>
-        <Box display="flex" alignItems="center" marginBottom="16px">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
           <TextField
             id={searchField}
             label={getSearchLabel()}
@@ -253,7 +259,13 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
           </Button>
         </Box>
 
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel id={yearField}>{getYearLabel()}</InputLabel>
             <Select
@@ -306,7 +318,6 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
           )}
         </Box>
       </Box>
-
       {isLoading && page === 1 ? (
         <LoadingComponent />
       ) : (

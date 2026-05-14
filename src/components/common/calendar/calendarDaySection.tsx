@@ -62,13 +62,21 @@ export const CalendarDaySection: React.FC<CalendarDaySectionProps> = ({ day, pro
       >
         <Typography
           variant="subtitle2"
-          fontWeight={today ? 700 : 600}
           color={past && !today ? 'text.secondary' : 'text.primary'}
+          sx={{
+            fontWeight: today ? 700 : 600,
+          }}
         >
           {formatDayLabel(day.date)}
         </Typography>
         {today && <Chip label="Today" size="small" color="primary" sx={{ height: 18, fontSize: '0.65rem' }} />}
-        <Typography variant="caption" color="text.disabled" sx={{ ml: 'auto' }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.disabled',
+            ml: 'auto',
+          }}
+        >
           {today ? '' : monthYear}
         </Typography>
         <Chip
@@ -78,7 +86,6 @@ export const CalendarDaySection: React.FC<CalendarDaySectionProps> = ({ day, pro
           sx={{ height: 18, fontSize: '0.65rem' }}
         />
       </Box>
-
       {/* Content items */}
       <Box sx={{ opacity: past && !today ? 0.7 : 1 }}>
         {day.items.map((item, idx) => (
@@ -89,7 +96,6 @@ export const CalendarDaySection: React.FC<CalendarDaySectionProps> = ({ day, pro
           />
         ))}
       </Box>
-
       <Divider sx={{ mt: 1, opacity: 0.4 }} />
     </Box>
   );

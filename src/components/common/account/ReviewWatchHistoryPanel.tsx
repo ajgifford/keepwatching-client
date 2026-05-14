@@ -140,7 +140,12 @@ const ReviewWatchHistoryPanel = ({ profileId }: ReviewWatchHistoryPanelProps) =>
               <ListItemText
                 primary={show.title}
                 secondary={
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {show.episodeCount} episodes marked on {formatters.activityDate(show.markDate)}
                   </Typography>
                 }

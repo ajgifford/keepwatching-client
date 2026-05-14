@@ -199,11 +199,11 @@ function MovieDetails() {
         }}
       >
         <Box
-          display="flex"
-          alignItems="center"
-          mb={2}
-          mt={1}
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mb: 2,
+            mt: 1,
             position: 'relative',
             zIndex: 1,
           }}
@@ -221,7 +221,6 @@ function MovieDetails() {
           </Tooltip>
         </Box>
       </Box>
-
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         {/* Movie Details Card */}
         <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
@@ -293,8 +292,8 @@ function MovieDetails() {
               <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
                 <Typography
                   variant={isMobile ? 'h5' : 'h4'}
-                  fontWeight="bold"
                   sx={{
+                    fontWeight: 'bold',
                     textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                     mb: 1,
                   }}
@@ -460,7 +459,13 @@ function MovieDetails() {
           <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
             <Grid container spacing={3} sx={{ mb: 6 }}>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Streaming On
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -468,7 +473,13 @@ function MovieDetails() {
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Director
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -476,7 +487,13 @@ function MovieDetails() {
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Production Companies
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -484,7 +501,13 @@ function MovieDetails() {
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Genres
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -494,7 +517,13 @@ function MovieDetails() {
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Box Office
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -502,7 +531,13 @@ function MovieDetails() {
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Budget
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -515,7 +550,12 @@ function MovieDetails() {
             {movie && profileId && (
               <Accordion sx={{ mb: 2 }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="subtitle1" fontWeight="medium">
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 'medium',
+                    }}
+                  >
                     Your Rating &amp; Notes
                   </Typography>
                 </AccordionSummary>
@@ -580,7 +620,6 @@ function MovieDetails() {
           </CardContent>
         </Card>
       </Box>
-
       <MoviePriorWatchDialog
         open={priorWatchDialogOpen}
         movieTitle={pendingWatchMovie?.title ?? ''}

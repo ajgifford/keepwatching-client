@@ -68,11 +68,20 @@ const MoviePriorWatchDialog = ({
               type="date"
               value={watchedAt}
               onChange={(e) => setWatchedAt(e.target.value)}
-              inputProps={{ max: today }}
-              InputLabelProps={{ shrink: true }}
               fullWidth
+              slotProps={{
+                htmlInput: { max: today },
+                inputLabel: { shrink: true },
+              }}
             />
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                mt: 0.5,
+                display: 'block',
+              }}
+            >
               Release date: {releaseDate}
               {!isUsingReleaseDate && (
                 <>

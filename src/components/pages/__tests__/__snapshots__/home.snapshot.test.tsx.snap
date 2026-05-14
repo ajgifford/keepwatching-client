@@ -20,7 +20,7 @@ exports[`Home - Snapshots should match snapshot for initial render 1`] = `
       >
         <div
           class="MuiTabs-scrollableX MuiTabs-hideScrollbar css-i8yde5"
-          style="width: 99px; height: 99px; position: absolute; top: -9999px; overflow: scroll;"
+          style="width: 99px; height: 99px; position: absolute; top: -9999px; overflow: scroll; pointer-events: none;"
         />
         <div
           class="MuiTabs-scroller MuiTabs-hideScrollbar MuiTabs-scrollableX css-1fr578y-MuiTabs-scroller"
@@ -28,7 +28,7 @@ exports[`Home - Snapshots should match snapshot for initial render 1`] = `
         >
           <div
             aria-label="home content tabs"
-            class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+            class="MuiTabs-list css-hzcega-MuiTabs-list"
             role="tablist"
           >
             <button

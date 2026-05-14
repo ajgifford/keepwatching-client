@@ -66,7 +66,6 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
           </Typography>
         </Box>
       </Box>
-
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="subtitle1" gutterBottom>
@@ -101,10 +100,21 @@ export const EpisodeCard = ({ episode, onWatchStatusChange }: EpisodeCardProps) 
             </Box>
           </Tooltip>
         </Box>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {formatters.contentDate(episode.airDate)}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mt: 1,
+          }}
+        >
           {`${episode.network || episode.streamingServices} • ${calculateRuntimeDisplay(episode.runtime)}`}
         </Typography>
       </CardContent>

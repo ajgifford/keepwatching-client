@@ -46,7 +46,7 @@ describe('BulkMarkBanner', () => {
     it('renders as an info alert', () => {
       const { container } = render(<BulkMarkBanner {...defaultProps} />);
 
-      const alert = container.querySelector('.MuiAlert-standardInfo');
+      const alert = container.querySelector('.MuiAlert-colorInfo');
       expect(alert).toBeInTheDocument();
     });
   });

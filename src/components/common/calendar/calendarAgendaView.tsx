@@ -34,7 +34,12 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({ days, pr
     if (visibleDays.length === 0) {
       return (
         <Box sx={{ textAlign: 'center', py: 6 }}>
-          <Typography variant="body1" color="text.secondary">
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             No upcoming content scheduled
           </Typography>
         </Box>
@@ -54,7 +59,12 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({ days, pr
   if (days.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No content scheduled in this date range
         </Typography>
       </Box>
@@ -70,13 +80,17 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({ days, pr
             <CalendarDaySection key={day.date} day={day} profileId={profileId} />
           ))}
           <Divider sx={{ my: 2 }}>
-            <Typography variant="caption" color="text.disabled">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.disabled',
+              }}
+            >
               {pastDays.length} past day{pastDays.length !== 1 ? 's' : ''}
             </Typography>
           </Divider>
         </Box>
       )}
-
       {/* Today and future — todayRef anchors scroll position here */}
       <Box ref={todayRef}>
         {todayAndFutureDays.map((day) => (

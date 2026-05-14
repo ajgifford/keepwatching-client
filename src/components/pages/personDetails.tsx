@@ -73,8 +73,8 @@ const ExpandableBiography: React.FC<ExpandableBiographyProps> = ({ biography, ma
     <Box>
       <Typography
         variant="body1"
-        fontStyle="italic"
         sx={{
+          fontStyle: 'italic',
           maxWidth: '100%',
           color: 'white',
           opacity: 0.95,
@@ -160,11 +160,11 @@ export default function PersonDetails() {
           }}
         >
           <Box
-            display="flex"
-            alignItems="center"
-            mb={2}
-            mt={1}
             sx={{
+              display: 'flex',
+              alignItems: 'center',
+              mb: 2,
+              mt: 1,
               position: 'relative',
               zIndex: 1,
             }}
@@ -253,10 +253,12 @@ export default function PersonDetails() {
                     <Stack
                       direction={isMobile ? 'column' : 'row'}
                       spacing={isMobile ? 1 : 2}
-                      alignItems={isMobile ? 'center' : 'flex-start'}
-                      sx={{ mb: 2 }}
                       useFlexGap
-                      flexWrap="wrap"
+                      sx={{
+                        alignItems: isMobile ? 'center' : 'flex-start',
+                        flexWrap: 'wrap',
+                        mb: 2,
+                      }}
                     >
                       <Chip
                         icon={getGenderIcon(person.gender)}

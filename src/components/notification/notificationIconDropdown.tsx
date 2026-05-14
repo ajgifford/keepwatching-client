@@ -186,7 +186,6 @@ function NotificationIconDropdown() {
           {unreadCount > 0 ? <NotificationsActiveIcon /> : <NotificationsIcon />}
         </Badge>
       </IconButton>
-
       <Popper
         open={open}
         anchorEl={anchorRef.current}
@@ -214,7 +213,12 @@ function NotificationIconDropdown() {
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                  }}
+                >
                   Notifications
                 </Typography>
                 <Chip label={`${notifications.length} total`} size="small" color="primary" variant="outlined" />
@@ -442,7 +446,13 @@ function NotificationIconDropdown() {
                       borderTop: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
                     }}
                   >
-                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        fontStyle: 'italic',
+                      }}
+                    >
                       +{notifications.length - 10} more notifications...
                     </Typography>
                   </ListItem>
@@ -462,7 +472,13 @@ function NotificationIconDropdown() {
                     mb: 1,
                   }}
                 />
-                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    fontStyle: 'italic',
+                  }}
+                >
                   No notifications yet
                 </Typography>
               </Box>

@@ -70,10 +70,15 @@ export const CalendarContentItem: React.FC<CalendarContentItemProps> = ({ item, 
       >
         {isEpisode ? <TvIcon sx={{ fontSize: 16 }} /> : <MovieIcon sx={{ fontSize: 16 }} />}
       </Box>
-
       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="body2" fontWeight={600} noWrap>
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              fontWeight: 600,
+            }}
+          >
             {primaryText}
           </Typography>
           {badge && (
@@ -86,17 +91,28 @@ export const CalendarContentItem: React.FC<CalendarContentItemProps> = ({ item, 
             />
           )}
         </Box>
-        <Typography variant="caption" color="text.secondary" noWrap display="block">
+        <Typography
+          variant="caption"
+          noWrap
+          sx={{
+            color: 'text.secondary',
+            display: 'block',
+          }}
+        >
           {secondaryText}
         </Typography>
       </Box>
-
       {service && (
         <Typography
           variant="caption"
-          color="text.disabled"
-          sx={{ flexShrink: 0, fontSize: '0.7rem', maxWidth: 90, textAlign: 'right' }}
           noWrap
+          sx={{
+            color: 'text.disabled',
+            flexShrink: 0,
+            fontSize: '0.7rem',
+            maxWidth: 90,
+            textAlign: 'right',
+          }}
         >
           {service}
         </Typography>

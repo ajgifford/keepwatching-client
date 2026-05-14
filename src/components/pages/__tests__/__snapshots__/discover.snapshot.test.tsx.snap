@@ -25,7 +25,7 @@ exports[`Discover - Snapshots should match snapshot after initial auto-load 1`] 
           >
             <div
               aria-label="discover content tabs"
-              class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+              class="MuiTabs-list css-hzcega-MuiTabs-list"
               role="tablist"
             >
               <button
@@ -39,7 +39,7 @@ exports[`Discover - Snapshots should match snapshot after initial auto-load 1`] 
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
                   data-testid="TrendingUpIcon"
                   focusable="false"
                   viewBox="0 0 24 24"
@@ -61,7 +61,7 @@ exports[`Discover - Snapshots should match snapshot after initial auto-load 1`] 
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
                   data-testid="ExploreIcon"
                   focusable="false"
                   viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ exports[`Discover - Snapshots should match snapshot after initial auto-load 1`] 
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
                   data-testid="GroupsIcon"
                   focusable="false"
                   viewBox="0 0 24 24"
@@ -140,29 +140,9 @@ exports[`Discover - Snapshots should match snapshot after initial auto-load 1`] 
       />
     </div>
   </div>
-  <p
-    class="MuiTypography-root MuiTypography-body2 css-19b5ozw-MuiTypography-root"
-  >
-    Showing 
-    2
-     
-    of 20
-     results
-  </p>
   <div
     data-testid="search-results"
-  >
-    <div
-      data-testid="search-result-item"
-    >
-      Trending Show 1
-    </div>
-    <div
-      data-testid="search-result-item"
-    >
-      Trending Show 2
-    </div>
-  </div>
+  />
 </div>
 `;
 

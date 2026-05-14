@@ -126,7 +126,13 @@ const Login = () => {
             <Button id="loginButton" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={handleLogin}>
               Login
             </Button>
-            <Grid container justifyContent="center" sx={{ gap: 2 }}>
+            <Grid
+              container
+              sx={{
+                justifyContent: 'center',
+                gap: 2,
+              }}
+            >
               <Button variant="outlined" startIcon={<HowToRegIcon />} component={Link} to="/register">
                 No Account? Register
               </Button>

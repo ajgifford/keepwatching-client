@@ -112,11 +112,15 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
       >
         {hasRecommended ? 'Recommended' : 'Recommend'}
       </Button>
-
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Recommend {contentTitle}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Share this with the community. Attribution is kept anonymous.
           </Typography>
           <TextField
@@ -126,9 +130,11 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
             maxRows={4}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            inputProps={{ maxLength: 500 }}
             size="small"
             fullWidth
+            slotProps={{
+              htmlInput: { maxLength: 500 },
+            }}
           />
           {existingRating && (
             <FormControlLabel

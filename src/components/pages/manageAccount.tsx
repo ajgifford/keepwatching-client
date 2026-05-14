@@ -254,7 +254,14 @@ const ManageAccount = () => {
 
   return (
     <>
-      <Grid container spacing={2} alignItems="center" justifyContent={{ xs: 'center', md: 'left' }}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          alignItems: 'center',
+          justifyContent: { xs: 'center', md: 'left' },
+        }}
+      >
         <Grid>
           <Box
             sx={{
@@ -350,7 +357,7 @@ const ManageAccount = () => {
           />
         </Grid>
 
-        <Grid
+        <Stack
           direction="column"
           sx={{
             textAlign: { xs: 'center', sm: 'left' },
@@ -409,9 +416,8 @@ const ManageAccount = () => {
               Last Updated: <i>{formatters.dateTime(lastUpdated)}</i>
             </Typography>
           )}
-        </Grid>
+        </Stack>
       </Grid>
-
       <Box sx={{ p: 2 }}>
         <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 1 }}>
           <Typography variant="h4">Profiles</Typography>
@@ -501,7 +507,6 @@ const ManageAccount = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Confirm Account Delete Dialog */}
       <Dialog
         open={deleteAccountDialogOpen}

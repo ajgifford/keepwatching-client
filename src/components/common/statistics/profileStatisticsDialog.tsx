@@ -99,10 +99,12 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      PaperProps={{
-        sx: {
-          minHeight: '80vh',
-          maxHeight: '90vh',
+      slotProps={{
+        paper: {
+          sx: {
+            minHeight: '80vh',
+            maxHeight: '90vh',
+          },
         },
       }}
     >

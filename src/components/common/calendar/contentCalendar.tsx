@@ -133,7 +133,12 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <CalendarMonthIcon color="primary" />
-          <Typography variant="h6" fontWeight={600}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+            }}
+          >
             Content Calendar
           </Typography>
           <Chip label={`${totalItems} items`} size="small" color="primary" variant="outlined" />
@@ -158,7 +163,6 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
           )}
         </Box>
       </Box>
-
       {/* Content */}
       {viewMode === 'agenda' || compact ? (
         <CalendarAgendaView days={days} profileId={profile?.id ?? 0} compact={compact} />

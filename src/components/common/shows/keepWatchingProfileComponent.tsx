@@ -40,10 +40,21 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: number 
   if (!nextUnwatchedEpisodes || nextUnwatchedEpisodes.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No shows to keep watching
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mt: 1,
+          }}
+        >
           Add shows to your watchlist from the <Link to="/discover">Discover</Link> or <Link to="/search">Search</Link>{' '}
           pages
         </Typography>

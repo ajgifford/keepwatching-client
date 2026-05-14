@@ -81,7 +81,12 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
   if (!show || !show.seasons) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           No episodes available to watch
         </Typography>
       </Box>
@@ -159,10 +164,21 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
   if (nextEpisodes.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {`You've watched all available episodes!`}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mt: 1,
+          }}
+        >
           Check back later for new episodes
         </Typography>
       </Box>

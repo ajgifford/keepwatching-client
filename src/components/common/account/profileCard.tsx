@@ -4,7 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import HistoryIcon from '@mui/icons-material/History';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
@@ -55,7 +55,7 @@ export function ProfileCard({
   if (!account || !activeProfile) {
     return (
       <Box sx={{ p: 2, border: '1px solid #f44336', minWidth: '250px', maxWidth: '300px', textAlign: 'center' }}>
-        <Alert severity="error" icon={<ErrorOutlineIcon />}>
+        <Alert severity="error" icon={<ErrorOutlinedIcon />}>
           Unable to load profile data
         </Alert>
       </Box>
@@ -105,7 +105,15 @@ export function ProfileCard({
       key={profile.id}
       sx={{ p: 2, border: '1px solid #4caf50', minWidth: '250px', maxWidth: '300px', textAlign: 'center' }}
     >
-      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" sx={{ pb: '10px' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          pb: '10px',
+        }}
+      >
         <Box
           className="image-upload-area"
           sx={{
@@ -199,7 +207,6 @@ export function ProfileCard({
           {profile.name}
         </Typography>
       </Box>
-
       <Stack direction="column" spacing={2} sx={{ pt: '8px' }}>
         <Button
           variant="outlined"

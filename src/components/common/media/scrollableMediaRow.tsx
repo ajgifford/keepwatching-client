@@ -84,7 +84,13 @@ export function ScrollableMediaRow<T>({
         <Typography variant="h5" gutterBottom>
           {title}
         </Typography>
-        <Box display="flex" justifyContent="center" p={4}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            p: 4,
+          }}
+        >
           <CircularProgress />
         </Box>
       </Box>
@@ -97,7 +103,13 @@ export function ScrollableMediaRow<T>({
         <Typography variant="h5" gutterBottom>
           {title}
         </Typography>
-        <Typography variant="body1" color="text.secondary" textAlign="center">
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+            textAlign: 'center',
+          }}
+        >
           {emptyMessage}
         </Typography>
       </Box>

@@ -136,7 +136,6 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
           />
         </Tabs>
       </Box>
-
       <TabPanel value={tabValue} index={0}>
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -183,7 +182,6 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
           </Box>
         )}
       </TabPanel>
-
       <TabPanel value={tabValue} index={1}>
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -230,7 +228,6 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
           </Box>
         )}
       </TabPanel>
-
       <Box
         sx={{
           mt: 4,
@@ -240,7 +237,13 @@ export const PersonFilmographyDisplay: React.FC<PersonFilmographyDisplayProps> =
           border: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Career Summary
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>

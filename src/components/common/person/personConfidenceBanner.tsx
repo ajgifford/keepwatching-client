@@ -99,13 +99,25 @@ export const PersonConfidenceBanner: React.FC = () => {
               variant="outlined"
               sx={{ borderColor: theme.palette.divider }}
             />
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Popularity: {selectedPerson.popularity ? selectedPerson.popularity.toFixed(1) : 0}
             </Typography>
           </Box>
 
           {knownForText && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontStyle: 'italic' }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mb: 1.5,
+                fontStyle: 'italic',
+              }}
+            >
               Known for: {knownForText}
             </Typography>
           )}
@@ -113,8 +125,8 @@ export const PersonConfidenceBanner: React.FC = () => {
           {selectedPerson.biography && (
             <Typography
               variant="body2"
-              color="text.secondary"
               sx={{
+                color: 'text.secondary',
                 mb: 1.5,
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -129,17 +141,32 @@ export const PersonConfidenceBanner: React.FC = () => {
           {/* Personal Details */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
             {selectedPerson.birthday && (
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Born: {formatters.contentDate(selectedPerson.birthday)}
               </Typography>
             )}
             {selectedPerson.birthplace && (
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Birthplace: {selectedPerson.birthplace}
               </Typography>
             )}
             {selectedPerson.deathday && (
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Died: {formatters.contentDate(selectedPerson.deathday)}
               </Typography>
             )}
@@ -165,7 +192,12 @@ export const PersonConfidenceBanner: React.FC = () => {
                 {`Not who you're looking for? See other ${query}s`}
               </Button>
 
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {alternatives.length} other {alternatives.length === 1 ? 'person' : 'people'} found
               </Typography>
             </Box>

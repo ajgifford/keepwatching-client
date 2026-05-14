@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Alert, Box, Button, Divider, Paper, Typography } from '@mui/material';
@@ -127,7 +127,7 @@ function ErrorBoundaryFallback({ error, errorInfo, errorCount, onReset }: ErrorB
             gap: 2,
           }}
         >
-          <ErrorOutlineIcon
+          <ErrorOutlinedIcon
             color="error"
             sx={{
               fontSize: 64,
@@ -149,7 +149,14 @@ function ErrorBoundaryFallback({ error, errorInfo, errorCount, onReset }: ErrorB
             </Alert>
           )}
 
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{
+              color: 'text.secondary',
+              mt: 1,
+            }}
+          >
             We apologize for the inconvenience. You can try one of the options below to recover.
           </Typography>
 
@@ -193,7 +200,13 @@ function ErrorBoundaryFallback({ error, errorInfo, errorCount, onReset }: ErrorB
           {isDevelopment && error && (
             <Box sx={{ width: '100%', mt: 3 }}>
               <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Error Details (Development Mode):
               </Typography>
               <Alert severity="info" variant="outlined" sx={{ width: '100%', mt: 1 }}>

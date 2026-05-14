@@ -69,7 +69,15 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="h6" fontWeight={600} noWrap sx={{ flexGrow: 1, mr: 1 }}>
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 600,
+                  flexGrow: 1,
+                  mr: 1,
+                }}
+              >
                 {movie.title}
               </Typography>
               <Chip
@@ -80,14 +88,20 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
               />
             </Box>
 
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography
+              variant="body2"
+              gutterBottom
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               {formatters.yearOnly(movie.releaseDate)} • {movie.streamingServices}
             </Typography>
 
             <Typography
               variant="body2"
-              color="text.secondary"
               sx={{
+                color: 'text.secondary',
                 mb: 2,
                 display: '-webkit-box',
                 WebkitLineClamp: 2,

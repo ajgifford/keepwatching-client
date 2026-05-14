@@ -22,7 +22,13 @@ function SearchResults(props: SearchResultProps) {
   // Show loading spinner for initial search
   if (isLoading && results.length === 0) {
     return (
-      <Box display="flex" justifyContent="center" p={4}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          p: 4,
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -45,7 +51,13 @@ function SearchResults(props: SearchResultProps) {
         ))}
         {/* Loading indicator for pagination */}
         {isLoading && (
-          <Box display="flex" justifyContent="center" p={2}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              p: 2,
+            }}
+          >
             <CircularProgress />
           </Box>
         )}

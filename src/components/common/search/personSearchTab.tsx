@@ -107,7 +107,12 @@ export const PersonSearchTab: React.FC = () => {
   return (
     <>
       <Box sx={{ mb: 3 }}>
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           <TextField
             id="personSearchTextField"
             label="Search for actors, directors, writers..."
@@ -136,13 +141,11 @@ export const PersonSearchTab: React.FC = () => {
           </Button>
         </Box>
       </Box>
-
       {personError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {personError}
         </Alert>
       )}
-
       {renderSearchResults()}
     </>
   );

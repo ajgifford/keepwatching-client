@@ -26,7 +26,12 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ icon, title, subtitle, co
   const content = (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
       {icon}
-      <Typography variant="h5" fontWeight={600}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 600,
+        }}
+      >
         {title}
       </Typography>
       <Chip label={subtitle} color={color} variant="outlined" size="small" />

@@ -122,9 +122,12 @@ const Movies = () => {
         <Stack
           spacing={{ xs: 1, sm: 2 }}
           direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
           useFlexGap
-          sx={{ flexWrap: 'wrap', mt: 2 }}
+          sx={{
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            flexWrap: 'wrap',
+            mt: 2,
+          }}
         >
           <Button
             id="moviesFilterButton"

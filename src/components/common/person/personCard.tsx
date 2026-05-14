@@ -73,7 +73,15 @@ export const PersonCard = <T extends CastMember = CastMember>({ person, returnPa
 
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="h6" fontWeight={600} noWrap sx={{ flexGrow: 1, mr: 1 }}>
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 600,
+                  flexGrow: 1,
+                  mr: 1,
+                }}
+              >
                 {person.name}
               </Typography>
 
@@ -107,7 +115,13 @@ export const PersonCard = <T extends CastMember = CastMember>({ person, returnPa
               )}
             </Box>
 
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography
+              variant="body2"
+              gutterBottom
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               {person.characterName}
             </Typography>
           </Box>

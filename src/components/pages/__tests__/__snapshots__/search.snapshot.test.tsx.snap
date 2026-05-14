@@ -20,7 +20,7 @@ exports[`Search - Snapshots should match snapshot for initial render 1`] = `
         >
           <div
             aria-label="search type tabs"
-            class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+            class="MuiTabs-list css-hzcega-MuiTabs-list"
             role="tablist"
           >
             <button
@@ -34,7 +34,7 @@ exports[`Search - Snapshots should match snapshot for initial render 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
                 data-testid="TvIcon"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -56,7 +56,7 @@ exports[`Search - Snapshots should match snapshot for initial render 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
                 data-testid="MovieIcon"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -78,7 +78,7 @@ exports[`Search - Snapshots should match snapshot for initial render 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
                 data-testid="PersonIcon"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -131,7 +131,7 @@ exports[`Search - Snapshots should match snapshot for initial render 1`] = `
 exports[`Search - Snapshots should match snapshot of search tabs 1`] = `
 <div
   aria-label="search type tabs"
-  class="MuiTabs-list MuiTabs-flexContainer css-hzcega-MuiTabs-list"
+  class="MuiTabs-list css-hzcega-MuiTabs-list"
   role="tablist"
 >
   <button
@@ -145,7 +145,7 @@ exports[`Search - Snapshots should match snapshot of search tabs 1`] = `
   >
     <svg
       aria-hidden="true"
-      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
       data-testid="TvIcon"
       focusable="false"
       viewBox="0 0 24 24"
@@ -167,7 +167,7 @@ exports[`Search - Snapshots should match snapshot of search tabs 1`] = `
   >
     <svg
       aria-hidden="true"
-      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
       data-testid="MovieIcon"
       focusable="false"
       viewBox="0 0 24 24"
@@ -189,7 +189,7 @@ exports[`Search - Snapshots should match snapshot of search tabs 1`] = `
   >
     <svg
       aria-hidden="true"
-      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-iconWrapper MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTab-icon css-1umw9bq-MuiSvgIcon-root"
       data-testid="PersonIcon"
       focusable="false"
       viewBox="0 0 24 24"

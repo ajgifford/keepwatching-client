@@ -109,21 +109,47 @@ export const DashboardEpisodeCard: React.FC<DashboardEpisodeCardProps> = ({ epis
           </Typography>
         </Box>
       </Box>
-
       <CardContent sx={{ p: 2.5, height: 155, display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h6" fontWeight={600} gutterBottom noWrap>
+        <Typography
+          variant="h6"
+          gutterBottom
+          noWrap
+          sx={{
+            fontWeight: 600,
+          }}
+        >
           {episode.showName}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography
+          variant="body2"
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           S{episode.seasonNumber} E{episode.episodeNumber}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
+        <Typography
+          variant="body2"
+          gutterBottom
+          noWrap
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {episode.episodeTitle}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
+        <Typography
+          variant="body2"
+          gutterBottom
+          noWrap
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {calculateRuntimeDisplay(episode.runtime)}
         </Typography>
       </CardContent>

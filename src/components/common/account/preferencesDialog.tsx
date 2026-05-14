@@ -246,16 +246,39 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
 
         {/* Live Preview */}
         <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1, mb: 3 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontWeight: 500 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              display: 'block',
+              mb: 1,
+              fontWeight: 500,
+            }}
+          >
             Preview (July 4, 2024)
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Content date: <strong>{previewFormatters.contentDate(previewDate)}</strong>
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Milestone date: <strong>{previewFormatters.milestoneDate(previewDate)}</strong>
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Date & time: <strong>{previewFormatters.dateTime(new Date(2024, 6, 4, 14, 30))}</strong>
           </Typography>
         </Box>
@@ -285,7 +308,15 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
           }}
         />
         {!user?.emailVerified && (
-          <Typography variant="caption" color="text.secondary" sx={{ ml: 2, display: 'block', mt: 1 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              ml: 2,
+              display: 'block',
+              mt: 1,
+            }}
+          >
             Email must be verified to enable email preferences
           </Typography>
         )}

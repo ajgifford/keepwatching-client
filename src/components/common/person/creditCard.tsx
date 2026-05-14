@@ -39,8 +39,8 @@ export const CreditCard = <T extends Credit = Credit>({ credit }: CreditCardProp
             <Stack spacing={1} sx={{ height: '100%' }}>
               <Typography
                 variant="subtitle1"
-                fontWeight="bold"
                 sx={{
+                  fontWeight: 'bold',
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: 'vertical',
@@ -50,12 +50,29 @@ export const CreditCard = <T extends Credit = Credit>({ credit }: CreditCardProp
                 {credit.name}
               </Typography>
 
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 as {credit.character}
               </Typography>
 
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                <Typography variant="body2" color="text.secondary">
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   {credit.year}
                 </Typography>
 
@@ -75,7 +92,14 @@ export const CreditCard = <T extends Credit = Credit>({ credit }: CreditCardProp
                 )}
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 'auto' }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  alignItems: 'center',
+                  mt: 'auto',
+                }}
+              >
                 <Rating
                   value={credit.rating / 2}
                   max={5}
@@ -88,7 +112,13 @@ export const CreditCard = <T extends Credit = Credit>({ credit }: CreditCardProp
                     },
                   }}
                 />
-                <Typography variant="body2" fontWeight="medium" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 'medium',
+                    color: 'text.secondary',
+                  }}
+                >
                   {credit.rating.toFixed(1)}
                 </Typography>
               </Stack>

@@ -84,7 +84,7 @@ describe('ActivityNotificationBar', () => {
 
       const { container } = render(<ActivityNotificationBar />);
 
-      const alert = container.querySelector('.MuiAlert-filledSuccess');
+      const alert = container.querySelector('.MuiAlert-colorSuccess');
       expect(alert).toBeInTheDocument();
     });
 
@@ -97,7 +97,7 @@ describe('ActivityNotificationBar', () => {
 
       const { container } = render(<ActivityNotificationBar />);
 
-      const alert = container.querySelector('.MuiAlert-filledError');
+      const alert = container.querySelector('.MuiAlert-colorError');
       expect(alert).toBeInTheDocument();
     });
 
@@ -110,7 +110,7 @@ describe('ActivityNotificationBar', () => {
 
       const { container } = render(<ActivityNotificationBar />);
 
-      const alert = container.querySelector('.MuiAlert-filledWarning');
+      const alert = container.querySelector('.MuiAlert-colorWarning');
       expect(alert).toBeInTheDocument();
     });
 
@@ -123,7 +123,7 @@ describe('ActivityNotificationBar', () => {
 
       const { container } = render(<ActivityNotificationBar />);
 
-      const alert = container.querySelector('.MuiAlert-filledInfo');
+      const alert = container.querySelector('.MuiAlert-colorInfo');
       expect(alert).toBeInTheDocument();
     });
   });

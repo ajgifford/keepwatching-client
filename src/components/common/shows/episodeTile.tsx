@@ -35,7 +35,13 @@ export function EpisodeTile({ episode }: PropTypes) {
           {episode.showName}
         </Link>
       </Typography>
-      <Grid container spacing={2} alignItems="center">
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          alignItems: 'center',
+        }}
+      >
         <Grid>
           <Avatar
             alt={episode.episodeTitle}

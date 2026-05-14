@@ -111,7 +111,13 @@ export const ProfileContentCard = ({ content, contentType, onClick }: ProfileCon
         </Box>
 
         {content.userRating && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              mt: 1,
+            }}
+          >
             ⭐ {content.userRating.toFixed(1)}
           </Typography>
         )}

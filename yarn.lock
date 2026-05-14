@@ -12,10 +12,10 @@
   resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.11.7/3cc210c8ab9a2ee54e28769fb36797a9ac48e9c0#3cc210c8ab9a2ee54e28769fb36797a9ac48e9c0"
   integrity sha512-ywYvD8uNYmAEV4m9LvLy7BOoxprZK69XJBE3eoa0iS9Ydgvv4jY3Nur6knijW9SkWB4Ie0p1KAkeIMveFky2tA==
 
-"@ajgifford/keepwatching-ui@^0.4.2":
-  version "0.4.2"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.4.2/364e955a4ae83c3f6eba3597d576d78ac959ddbb#364e955a4ae83c3f6eba3597d576d78ac959ddbb"
-  integrity sha512-g6tk/gjTs+dLr5iFYo4RFvnQjx+az9yKYrJ3d7yT2BVA5jtVlez4YqcZQ3BehvBwUeJgpcgY/6Uy2/KCqcozgA==
+"@ajgifford/keepwatching-ui@^0.5.0":
+  version "0.5.0"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.5.0/8161260c096005034783a7feeed6f92a795f04a7#8161260c096005034783a7feeed6f92a795f04a7"
+  integrity sha512-zl0OarcmEeJxI+me6UC62ie3CoBotdZDzsdQ3j2cdjaETpxjTvIivVVnHzSLJB/EwrpZMJUi0s+ghvpiXt7M/A==
 
 "@ampproject/remapping@^2.2.0":
   version "2.3.0"

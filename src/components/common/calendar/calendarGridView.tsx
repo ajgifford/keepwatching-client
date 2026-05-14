@@ -92,7 +92,12 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
           <ChevronLeftIcon />
         </IconButton>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="h6" fontWeight={600}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+            }}
+          >
             {monthLabel}
           </Typography>
           <Chip label="Today" size="small" onClick={onJumpToToday} sx={{ cursor: 'pointer' }} />
@@ -101,7 +106,6 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
           <ChevronRightIcon />
         </IconButton>
       </Box>
-
       {/* Day-of-week headers */}
       <Box
         sx={{
@@ -112,13 +116,18 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
       >
         {DAY_LABELS.map((label) => (
           <Box key={label} sx={{ textAlign: 'center', py: 0.5 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 600,
+              }}
+            >
               {label}
             </Typography>
           </Box>
         ))}
       </Box>
-
       {/* Calendar grid */}
       <Box
         sx={{
@@ -170,8 +179,10 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
               >
                 <Typography
                   variant="caption"
-                  fontWeight={isToday ? 700 : 400}
                   color={isToday ? 'primary' : 'text.primary'}
+                  sx={{
+                    fontWeight: isToday ? 700 : 400,
+                  }}
                 >
                   {isCurrentMonth ? dayNum : ''}
                 </Typography>
@@ -201,25 +212,33 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
           );
         })}
       </Box>
-
       {/* Legend */}
       <Box sx={{ display: 'flex', gap: 2, mt: 2, px: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: theme.palette.primary.main }} />
           <TvIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Episode
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: theme.palette.secondary.main }} />
           <MovieIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Movie
           </Typography>
         </Box>
       </Box>
-
       {/* Day popover */}
       <Popover
         open={Boolean(anchorEl)}
@@ -227,12 +246,19 @@ export const CalendarGridView: React.FC<CalendarGridViewProps> = ({
         onClose={handlePopoverClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-        PaperProps={{ sx: { width: 320, maxHeight: 400, overflow: 'auto', borderRadius: 2 } }}
+        slotProps={{
+          paper: { sx: { width: 320, maxHeight: 400, overflow: 'auto', borderRadius: 2 } },
+        }}
       >
         {popoverDate && (
           <Box>
             <Box sx={{ px: 2, pt: 1.5, pb: 1, borderBottom: 1, borderColor: 'divider' }}>
-              <Typography variant="subtitle2" fontWeight={600}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 600,
+                }}
+              >
                 {new Date(`${popoverDate}T00:00:00`).toLocaleDateString('en-US', {
                   weekday: 'long',
                   month: 'long',

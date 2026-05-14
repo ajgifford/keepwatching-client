@@ -12,7 +12,13 @@ export function MovieTile({ movie }: PropTypes) {
   const formatters = useDateFormatters();
   return (
     <Box id={`movieCard_${movie.id}`} key={movie.title} sx={{ p: '10px', minWidth: '200px', textAlign: 'left' }}>
-      <Grid container spacing={2} alignItems="center">
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          alignItems: 'center',
+        }}
+      >
         <Grid>
           <Avatar
             alt={movie.title}

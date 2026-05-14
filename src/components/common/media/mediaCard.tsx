@@ -79,12 +79,24 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
         </Tooltip>
 
         <Tooltip title={item.genres.join(', ')} placement="top" slotProps={{ tooltip: { sx: tooltipStyles.tooltip } }}>
-          <Typography variant="body2" color="text.secondary" noWrap>
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {item.genres.join(', ')}
           </Typography>
         </Tooltip>
 
-        <Typography variant="body2" color="text.secondary" noWrap>
+        <Typography
+          variant="body2"
+          noWrap
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {formatPremiered(item.premiered)}
         </Typography>
 
@@ -92,8 +104,8 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
           <Tooltip title={item.summary} placement="top" slotProps={{ tooltip: { sx: tooltipStyles.tooltip } }}>
             <Typography
               variant="body2"
-              color="text.secondary"
               sx={{
+                color: 'text.secondary',
                 mt: 1,
                 display: '-webkit-box',
                 WebkitLineClamp: 3,

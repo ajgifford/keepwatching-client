@@ -212,13 +212,17 @@ const Notifications: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h4" fontWeight={600}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 600,
+              }}
+            >
               Notifications
             </Typography>
           </Box>
         </Box>
       </Box>
-
       {/* Filters and Search */}
       <Card
         sx={{
@@ -228,7 +232,13 @@ const Notifications: React.FC = () => {
           WebkitBackdropFilter: 'blur(12px)',
         }}
       >
-        <Grid container spacing={2} alignItems="center">
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
@@ -236,16 +246,18 @@ const Notifications: React.FC = () => {
               placeholder="Search notifications..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.secondary' }} />
-                  </InputAdornment>
-                ),
-              }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: 'background.paper',
+                },
+              }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
                 },
               }}
             />
@@ -269,7 +281,13 @@ const Notifications: React.FC = () => {
             </FormControl>
           </Grid>
           <Grid size={{ xs: 12, md: 5 }}>
-            <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                justifyContent: 'flex-end',
+              }}
+            >
               {unreadCount === 0 ? (
                 <Button
                   size="small"
@@ -297,7 +315,6 @@ const Notifications: React.FC = () => {
           </Grid>
         </Grid>
       </Card>
-
       {/* Notifications List */}
       <Card
         sx={{
@@ -418,8 +435,10 @@ const Notifications: React.FC = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                           <Typography
                             variant="subtitle1"
-                            fontWeight={isUnread ? 600 : 400}
-                            sx={{ color: theme.palette.text.primary }}
+                            sx={{
+                              fontWeight: isUnread ? 600 : 400,
+                              color: theme.palette.text.primary,
+                            }}
                           >
                             {notification.title}
                           </Typography>
@@ -442,8 +461,8 @@ const Notifications: React.FC = () => {
                           <Typography
                             component="span"
                             variant="body2"
-                            color="text.secondary"
                             sx={{
+                              color: 'text.secondary',
                               display: 'block',
                               mb: 0.5,
                               lineHeight: 1.4,
@@ -468,7 +487,6 @@ const Notifications: React.FC = () => {
                       }
                     />
                   </ListItem>
-
                   {index < filteredNotifications.length - 1 && (
                     <Divider
                       sx={{
@@ -495,10 +513,22 @@ const Notifications: React.FC = () => {
                 mb: 2,
               }}
             />
-            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'text.secondary',
+                mb: 1,
+              }}
+            >
               No notifications found
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                fontStyle: 'italic',
+              }}
+            >
               {searchTerm || filter !== 'all'
                 ? 'Try adjusting your filters or search terms'
                 : "You're all caught up! New notifications will appear here."}

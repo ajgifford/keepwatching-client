@@ -234,17 +234,36 @@ function WatchHistory() {
     if (item.contentType === 'episode' && item.parentTitle) {
       return (
         <>
-          <Typography variant="subtitle1" fontWeight="medium" component="span">
+          <Typography
+            variant="subtitle1"
+            component="span"
+            sx={{
+              fontWeight: 'medium',
+            }}
+          >
             {item.parentTitle}
           </Typography>
-          <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+          <Typography
+            variant="body2"
+            component="span"
+            sx={{
+              color: 'text.secondary',
+              ml: 0.5,
+            }}
+          >
             {` • S${item.seasonNumber}E${item.episodeNumber} • ${item.title}`}
           </Typography>
         </>
       );
     }
     return (
-      <Typography variant="subtitle1" fontWeight="medium" component="span">
+      <Typography
+        variant="subtitle1"
+        component="span"
+        sx={{
+          fontWeight: 'medium',
+        }}
+      >
         {item.title}
       </Typography>
     );
@@ -258,18 +277,38 @@ function WatchHistory() {
       <Box sx={{ px: { xs: 2, md: 3 }, pt: 3, pb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
           <HistoryIcon />
-          <Typography variant="h5" fontWeight="bold">
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Watch History
           </Typography>
           {totalCount > 0 && (
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                ml: 1,
+              }}
+            >
               ({totalCount} entries)
             </Typography>
           )}
         </Box>
 
         {/* Filters: single row on md+, wraps on smaller screens */}
-        <Stack direction="row" spacing={1} alignItems="flex-start" flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          useFlexGap
+          sx={{
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            mb: 2,
+          }}
+        >
           <ToggleButtonGroup value={contentType} exclusive onChange={handleContentTypeChange} size="small">
             <ToggleButton value="all">All</ToggleButton>
             <ToggleButton value="episode">
@@ -373,10 +412,21 @@ function WatchHistory() {
         {items.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <HistoryIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary">
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               No watch history yet
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mt: 1,
+              }}
+            >
               Episodes and movies you watch will appear here.
             </Typography>
           </Box>
@@ -467,7 +517,12 @@ function HistoryListItem({ item, index, formatters, buildItemTitle }: HistoryLis
             {item.isPriorWatch && <Chip label="Prior Watch" size="small" variant="outlined" color="default" />}
           </Box>
 
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {formatters.activityDate(item.watchedAt.slice(0, 10))}
             {item.runtime ? ` • ${calculateRuntimeDisplay(item.runtime)}` : ''}
           </Typography>

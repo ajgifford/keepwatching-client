@@ -9,7 +9,7 @@ exports[`Register - Snapshots should match snapshot for initial render 1`] = `
       class="MuiBox-root css-hordx"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1js0k52-MuiAvatar-root"
+        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1fak08a-MuiAvatar-root"
       >
         <svg
           aria-hidden="true"
@@ -202,7 +202,7 @@ exports[`Register - Snapshots should match snapshot for initial render 1`] = `
           </div>
         </div>
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth css-3yo4hs-MuiButtonBase-root-MuiButton-root"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-sizeMedium MuiButton-colorPrimary MuiButton-fullWidth css-3yo4hs-MuiButtonBase-root-MuiButton-root"
           tabindex="0"
           type="button"
         >

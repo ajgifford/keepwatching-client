@@ -79,10 +79,12 @@ export const PersonDisambiguationModal: React.FC = () => {
       fullScreen={fullScreen}
       maxWidth="md"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: fullScreen ? 0 : 2,
-          maxHeight: '90vh',
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: fullScreen ? 0 : 2,
+            maxHeight: '90vh',
+          },
         },
       }}
     >
@@ -102,7 +104,6 @@ export const PersonDisambiguationModal: React.FC = () => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-
       <DialogContent dividers sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
           {results.map((person: PersonSearchResult, index: number) => (
@@ -165,7 +166,12 @@ export const PersonDisambiguationModal: React.FC = () => {
                           color={getDepartmentColor(person.department)}
                           variant="outlined"
                         />
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                          }}
+                        >
                           Popularity: {person.popularity.toFixed(1)}
                         </Typography>
                       </Box>
@@ -173,8 +179,8 @@ export const PersonDisambiguationModal: React.FC = () => {
                       {person.knownFor.length > 0 && (
                         <Typography
                           variant="caption"
-                          color="text.secondary"
                           sx={{
+                            color: 'text.secondary',
                             display: 'block',
                             mt: 0.5,
                             fontStyle: 'italic',
@@ -210,16 +216,27 @@ export const PersonDisambiguationModal: React.FC = () => {
             }}
           >
             <PersonIcon sx={{ fontSize: 64, color: theme.palette.grey[400], mb: 2 }} />
-            <Typography variant="h6" color="text.secondary" gutterBottom>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               No people found
             </Typography>
-            <Typography variant="body2" color="text.secondary" textAlign="center">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                textAlign: 'center',
+              }}
+            >
               Try adjusting your search terms or check the spelling.
             </Typography>
           </Box>
         )}
       </DialogContent>
-
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={handleClose} variant="outlined">
           Cancel

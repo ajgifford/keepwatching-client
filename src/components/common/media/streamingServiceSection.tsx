@@ -46,7 +46,13 @@ const StreamingServiceSection = () => {
   if (serviceContent.length === 0) {
     return (
       <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
-        <Typography variant="body1" color="text.secondary" textAlign="center">
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'text.secondary',
+            textAlign: 'center',
+          }}
+        >
           No content available. Add shows or movies to your favorites to see them organized by streaming service.
         </Typography>
       </Box>
@@ -105,7 +111,13 @@ const StreamingServiceSection = () => {
           borderColor: 'divider',
         }}
       >
-        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: 'text.secondary',
+            mb: 1,
+          }}
+        >
           Quick Jump:
         </Typography>
         <Breadcrumbs
@@ -176,7 +188,6 @@ const StreamingServiceSection = () => {
           })}
         </Breadcrumbs>
       </Box>
-
       {/* Service Sections */}
       {serviceContent.map((service) => {
         const serviceConfig = getServiceConfig(service.service);

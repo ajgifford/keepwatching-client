@@ -90,7 +90,12 @@ export const ContentRatingWidget = ({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         Your rating
       </Typography>
       <Rating value={starValue} onChange={(_, newValue) => setStarValue(newValue)} size="large" />
@@ -101,9 +106,11 @@ export const ContentRatingWidget = ({
         maxRows={5}
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        inputProps={{ maxLength: 1000 }}
         size="small"
         fullWidth
+        slotProps={{
+          htmlInput: { maxLength: 1000 },
+        }}
       />
       <Box sx={{ display: 'flex', gap: 1 }}>
         <Button variant="contained" size="small" startIcon={<SaveIcon />} onClick={handleSave} disabled={!starValue}>

@@ -120,13 +120,18 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
           <ToggleButton value="movie">Movies</ToggleButton>
         </ToggleButtonGroup>
       </Box>
-
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
           <CircularProgress />
         </Box>
       ) : recommendations.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            py: 2,
+          }}
+        >
           No community recommendations yet. Be the first to recommend something!
         </Typography>
       ) : (
@@ -168,17 +173,24 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
                       <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
                         <Typography
                           variant="caption"
-                          display="block"
                           noWrap
                           title={rec.contentTitle}
-                          fontWeight="medium"
+                          sx={{
+                            display: 'block',
+                            fontWeight: 'medium',
+                          }}
                         >
                           {rec.contentTitle}
                         </Typography>
                         {rec.averageRating !== null && rec.ratingCount > 0 && (
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
                             <Rating value={rec.averageRating} max={5} readOnly size="small" precision={0.5} />
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: 'text.secondary',
+                              }}
+                            >
                               ({rec.ratingCount})
                             </Typography>
                           </Box>
@@ -187,7 +199,6 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
                     </CardActionArea>
                   </span>
                 </Tooltip>
-
                 <Box sx={{ px: 1, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   {rec.messageCount > 0 ? (
                     <Link
@@ -229,7 +240,6 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
           })}
         </Box>
       )}
-
       {detailsRec && (
         <RecommendationDetailsDialog
           open={true}

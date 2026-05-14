@@ -26,7 +26,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
       />
     </div>
     <div
-      class="MuiGrid-root MuiGrid-direction-xs-column css-x77fn2-MuiGrid-root"
+      class="MuiStack-root css-12djm86-MuiStack-root"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3 MuiTypography-gutterBottom css-b1n1zz-MuiTypography-root"
@@ -34,7 +34,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
         Test User
         <button
           aria-label="Edit Account Name"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-10rc6rd-MuiButtonBase-root-MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-19v7k3k-MuiButtonBase-root-MuiIconButton-root"
           data-mui-internal-clone-element="true"
           tabindex="0"
           type="button"
@@ -53,7 +53,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
         </button>
         <button
           aria-label="View Account Stats"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-10rc6rd-MuiButtonBase-root-MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-19v7k3k-MuiButtonBase-root-MuiIconButton-root"
           data-mui-internal-clone-element="true"
           tabindex="0"
           type="button"
@@ -72,7 +72,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
         </button>
         <button
           aria-label="Preferences"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-10rc6rd-MuiButtonBase-root-MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-19v7k3k-MuiButtonBase-root-MuiIconButton-root"
           data-mui-internal-clone-element="true"
           tabindex="0"
           type="button"
@@ -91,7 +91,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
         </button>
         <button
           aria-label="Delete Account"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorError MuiIconButton-sizeSmall css-195ve3w-MuiButtonBase-root-MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorError MuiIconButton-sizeSmall css-1up0zo2-MuiButtonBase-root-MuiIconButton-root"
           data-mui-internal-clone-element="true"
           tabindex="0"
           type="button"
@@ -118,7 +118,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
         </i>
          
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-1ccsd5i-MuiButtonBase-root-MuiButton-root"
+          class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-text MuiButton-sizeSmall MuiButton-colorPrimary css-1ccsd5i-MuiButtonBase-root-MuiButton-root"
           disabled=""
           tabindex="-1"
           type="button"
@@ -165,14 +165,14 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
         Profiles
       </h4>
       <div
-        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorPrimary MuiChip-clickable MuiChip-clickableColorPrimary MuiChip-outlinedPrimary css-s419k8-MuiButtonBase-root-MuiChip-root"
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorPrimary MuiChip-clickable css-83dd1h-MuiButtonBase-root-MuiChip-root"
         id="addProfile"
         role="button"
         tabindex="0"
       >
         <svg
           aria-hidden="true"
-          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-icon MuiChip-iconMedium MuiChip-iconColorPrimary css-1umw9bq-MuiSvgIcon-root"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-icon css-1umw9bq-MuiSvgIcon-root"
           data-testid="AddIcon"
           focusable="false"
           viewBox="0 0 24 24"
@@ -182,7 +182,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
           />
         </svg>
         <span
-          class="MuiChip-label MuiChip-labelMedium css-16cgrcw-MuiChip-label"
+          class="MuiChip-label css-16cgrcw-MuiChip-label"
         >
           Add
         </span>
@@ -256,7 +256,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
     />
   </div>
   <div
-    class="MuiGrid-root MuiGrid-direction-xs-column css-x77fn2-MuiGrid-root"
+    class="MuiStack-root css-12djm86-MuiStack-root"
   >
     <h3
       class="MuiTypography-root MuiTypography-h3 MuiTypography-gutterBottom css-b1n1zz-MuiTypography-root"
@@ -264,7 +264,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
       Test User
       <button
         aria-label="Edit Account Name"
-        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-10rc6rd-MuiButtonBase-root-MuiIconButton-root"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-19v7k3k-MuiButtonBase-root-MuiIconButton-root"
         data-mui-internal-clone-element="true"
         tabindex="0"
         type="button"
@@ -283,7 +283,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
       </button>
       <button
         aria-label="View Account Stats"
-        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-10rc6rd-MuiButtonBase-root-MuiIconButton-root"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-19v7k3k-MuiButtonBase-root-MuiIconButton-root"
         data-mui-internal-clone-element="true"
         tabindex="0"
         type="button"
@@ -302,7 +302,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
       </button>
       <button
         aria-label="Preferences"
-        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-10rc6rd-MuiButtonBase-root-MuiIconButton-root"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeSmall css-19v7k3k-MuiButtonBase-root-MuiIconButton-root"
         data-mui-internal-clone-element="true"
         tabindex="0"
         type="button"
@@ -321,7 +321,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
       </button>
       <button
         aria-label="Delete Account"
-        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorError MuiIconButton-sizeSmall css-195ve3w-MuiButtonBase-root-MuiIconButton-root"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorError MuiIconButton-sizeSmall css-1up0zo2-MuiButtonBase-root-MuiIconButton-root"
         data-mui-internal-clone-element="true"
         tabindex="0"
         type="button"
@@ -348,7 +348,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
       </i>
        
       <button
-        class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-1ccsd5i-MuiButtonBase-root-MuiButton-root"
+        class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-text MuiButton-sizeSmall MuiButton-colorPrimary css-1ccsd5i-MuiButtonBase-root-MuiButton-root"
         disabled=""
         tabindex="-1"
         type="button"

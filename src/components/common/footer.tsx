@@ -20,7 +20,13 @@ export function Footer() {
         px: '4px',
       }}
     >
-      <Typography variant="caption" color="common.white" gutterBottom>
+      <Typography
+        variant="caption"
+        gutterBottom
+        sx={{
+          color: 'common.white',
+        }}
+      >
         Gifford Family Dev |{' '}
         <a
           style={{ color: 'white' }}
@@ -32,7 +38,6 @@ export function Footer() {
         </a>
       </Typography>
       <br />
-
       {!isLargeScreen && (
         <Button
           onClick={() => setExpanded(!expanded)}
@@ -46,7 +51,6 @@ export function Footer() {
           {expanded ? 'Show Less' : 'Show More'}
         </Button>
       )}
-
       <Collapse in={isLargeScreen || expanded}>
         {' '}
         <Box
@@ -62,8 +66,8 @@ export function Footer() {
           <TMDBIcon />
           <Typography
             variant="caption"
-            color="common.white"
             sx={{
+              color: 'common.white',
               textAlign: 'center',
               maxWidth: '90%',
               wordBreak: 'break-word',

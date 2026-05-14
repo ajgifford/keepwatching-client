@@ -19,7 +19,12 @@ const MovieCastGrid: React.FC<MovieCastGridProps> = ({ castMembers, emptyMessage
     return (
       <Grid size={12}>
         <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="body1" color="text.secondary">
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {emptyMessage}
           </Typography>
         </Box>

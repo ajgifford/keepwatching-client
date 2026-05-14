@@ -25,11 +25,11 @@ const Calendar: React.FC = () => {
         }}
       >
         <Box
-          display="flex"
-          alignItems="center"
-          mb={2}
-          mt={1}
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mb: 2,
+            mt: 1,
             position: 'relative',
             zIndex: 1,
           }}
@@ -41,7 +41,6 @@ const Calendar: React.FC = () => {
           </Tooltip>
         </Box>
       </Box>
-
       <ContentCalendar compact={false} />
     </Container>
   );

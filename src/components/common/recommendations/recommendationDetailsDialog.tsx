@@ -58,7 +58,12 @@ function RecommendationDetailsDialog({
             <CircularProgress />
           </Box>
         ) : details.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             No reviews found.
           </Typography>
         ) : (
@@ -78,7 +83,12 @@ function RecommendationDetailsDialog({
                     />
                   )}
                   {detail.message && (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       "{detail.message}"
                     </Typography>
                   )}

@@ -222,7 +222,6 @@ function Discover() {
       <Typography variant="h4" sx={{ mb: 2 }}>
         Discover
       </Typography>
-
       <Card variant="outlined">
         <CardContent sx={{ p: '8px' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -252,9 +251,12 @@ function Discover() {
             <Stack
               direction={{ xs: 'column', md: 'row' }}
               spacing={2}
-              justifyContent="center"
-              alignItems={{ xs: 'stretch', md: 'center' }}
-              sx={{ p: '8px', m: '1px' }}
+              sx={{
+                justifyContent: 'center',
+                alignItems: { xs: 'stretch', md: 'center' },
+                p: '8px',
+                m: '1px',
+              }}
             >
               <SegmentedControl
                 options={DISCOVER_TYPE_OPTIONS}
@@ -276,9 +278,12 @@ function Discover() {
             <Stack
               direction={{ xs: 'column', md: 'row' }}
               spacing={2}
-              justifyContent="center"
-              alignItems={{ xs: 'stretch', md: 'center' }}
-              sx={{ p: '8px', m: '1px' }}
+              sx={{
+                justifyContent: 'center',
+                alignItems: { xs: 'stretch', md: 'center' },
+                p: '8px',
+                m: '1px',
+              }}
             >
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: { xs: '100%', md: 'auto' } }}>
                 <Box
@@ -377,13 +382,17 @@ function Discover() {
           </TabPanel>
         </CardContent>
       </Card>
-
       {discoverMode !== 'community' && results.length > 0 && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mb: 2,
+          }}
+        >
           Showing {results.length} {totalResults > 0 ? `of ${totalResults}` : ''} results
         </Typography>
       )}
-
       {discoverMode !== 'community' && (
         <SearchResults
           results={results}
@@ -394,7 +403,6 @@ function Discover() {
           lastResultElementRef={lastResultElementRef}
         />
       )}
-
       {discoverMode !== 'community' && isLoading && page > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: '20px' }}>
           <CircularProgress size={30} />

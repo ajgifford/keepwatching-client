@@ -9,7 +9,7 @@ exports[`Login - Snapshots should match snapshot for initial render 1`] = `
       class="MuiBox-root css-hordx"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1js0k52-MuiAvatar-root"
+        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1fak08a-MuiAvatar-root"
       >
         <svg
           aria-hidden="true"
@@ -132,7 +132,7 @@ exports[`Login - Snapshots should match snapshot for initial render 1`] = `
           </p>
         </div>
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth css-3yo4hs-MuiButtonBase-root-MuiButton-root"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-sizeMedium MuiButton-colorPrimary MuiButton-fullWidth css-3yo4hs-MuiButtonBase-root-MuiButton-root"
           id="loginButton"
           tabindex="0"
           type="button"
@@ -143,13 +143,13 @@ exports[`Login - Snapshots should match snapshot for initial render 1`] = `
           class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-1924cfw-MuiGrid-root"
         >
           <a
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-1blvszr-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-sizeMedium MuiButton-colorPrimary css-14ca1rq-MuiButtonBase-root-MuiButton-root"
             data-discover="true"
             href="/register"
             tabindex="0"
           >
             <span
-              class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"
+              class="MuiButton-icon MuiButton-startIcon css-1sh91j5-MuiButton-startIcon"
             >
               <svg
                 aria-hidden="true"
@@ -167,12 +167,12 @@ exports[`Login - Snapshots should match snapshot for initial render 1`] = `
             No Account? Register
           </a>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-1blvszr-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-sizeMedium MuiButton-colorPrimary css-14ca1rq-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
             type="button"
           >
             <span
-              class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"
+              class="MuiButton-icon MuiButton-startIcon css-1sh91j5-MuiButton-startIcon"
             >
               <svg
                 aria-hidden="true"
