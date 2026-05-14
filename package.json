@@ -58,7 +58,8 @@
     "format:check": "prettier --config ./.prettierrc.cjs . --check",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "ci": "yarn format:check && yarn lint && yarn type-check && yarn test:coverage && yarn audit --level high"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
