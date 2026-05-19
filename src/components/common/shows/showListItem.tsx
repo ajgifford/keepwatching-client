@@ -26,10 +26,10 @@ import { useAppDispatch } from '../../../app/hooks';
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { removeShowFavorite, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine, buildShowAirDate } from '../../utility/contentUtility';
-import { WatchStatusIcon, determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
+import { determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
+import { WatchStatusIcon, buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
 export type FilterProps = {
   genre: string;

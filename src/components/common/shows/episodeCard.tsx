@@ -4,9 +4,8 @@ import { Box, Card, CardContent, CircularProgress, IconButton, Tooltip, Typograp
 
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { calculateRuntimeDisplay } from '../../../components/utility/contentUtility';
-import { WatchStatusIcon } from '../../utility/watchStatusUtility';
 import { NextEpisode, UserWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath, parseLocalDate } from '@ajgifford/keepwatching-ui';
+import { WatchStatusIcon, buildTMDBImagePath, parseLocalDate } from '@ajgifford/keepwatching-ui';
 
 interface EpisodeCardProps {
   episode: NextEpisode;

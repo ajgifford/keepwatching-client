@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
@@ -15,9 +14,7 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
   CardContent,
-  CardMedia,
   Chip,
   CircularProgress,
   Dialog,
@@ -66,6 +63,7 @@ import { fetchProfileRecommendations } from '../../app/slices/communityRecommend
 import { fetchRatings } from '../../app/slices/ratingsSlice';
 import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../../app/slices/watchHistorySlice';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
+import { StickyBackButton } from '../common/navigation/StickyBackButton';
 import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
 import { RecommendButton } from '../common/recommendations/recommendButton';
 import BulkMarkBanner from '../common/shows/BulkMarkBanner';
@@ -85,7 +83,6 @@ import {
   calculateRuntimeDisplay,
 } from '../utility/contentUtility';
 import {
-  WatchStatusIcon,
   canChangeEpisodeWatchStatus,
   canChangeSeasonWatchStatus,
   determineNextSeasonWatchStatus,
@@ -100,12 +97,17 @@ import {
 } from '@ajgifford/keepwatching-types';
 import {
   ErrorComponent,
+  GenreChipList,
   LoadingComponent,
+  MediaHeroCard,
+  WatchStatusIcon,
+  buildServicesLine,
   buildTMDBImagePath,
+  formatSeasons,
   formatUserRating,
+  getWatchStatusDisplay,
   parseLocalDate,
 } from '@ajgifford/keepwatching-ui';
-import { getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
 function ShowDetails() {
   const { showId, profileId } = useParams();
@@ -113,7 +115,6 @@ function ShowDetails() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const formatters = useDateFormatters();
 
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const show = useAppSelector(selectShow);
   const watchedEpisodes = useAppSelector(selectWatchedEpisodes);
@@ -452,64 +453,6 @@ function ShowDetails() {
     }
   };
 
-  const buildBackButtonPath = () => {
-    let path = returnPath;
-    if (genreFilter) {
-      path += path.includes('?') ? '&' : '?';
-      path += `genre=${encodeURIComponent(genreFilter)}`;
-    }
-    if (streamingServiceFilter) {
-      path += path.includes('?') ? '&' : '?';
-      path += `streamingService=${encodeURIComponent(streamingServiceFilter)}`;
-    }
-    if (watchStatusFilter) {
-      path += path.includes('?') ? '&' : '?';
-      path += `watchStatus=${encodeURIComponent(watchStatusFilter)}`;
-    }
-    return path;
-  };
-
-  const getBackButtonTooltip = () => {
-    const basePath = returnPath.split('?')[0];
-
-    const pathMap: Record<string, string> = {
-      '/shows': 'Back to Shows',
-      '/search': 'Back to Search',
-      '/discover': 'Back to Discover',
-      '/home': 'Back to Home',
-    };
-
-    return pathMap[basePath] || 'Back';
-  };
-
-  const formatSeasons = (seasons: number | undefined) => {
-    if (seasons) {
-      if (seasons === 1) {
-        return '1 season';
-      }
-      return `${seasons} seasons`;
-    }
-    return 'No seasons';
-  };
-
-  const buildServicesLine = (network: string | null | undefined, streamingServices: string | undefined) => {
-    if (!network && !streamingServices) {
-      return 'No Network or Streaming Service';
-    }
-
-    // Helper function to filter out 'Unknown' from streaming services
-    const filterUnknown = (services: string) => {
-      return services
-        .split(',')
-        .map((service) => service.trim())
-        .filter((service) => service.toLowerCase() !== 'unknown')
-        .join(', ');
-    };
-
-    const services = streamingServices ? filterUnknown(streamingServices) : 'No Streaming Service';
-    return `${network || 'No Network'} • ${services}`;
-  };
-
   const handlePriorWatchAll = async () => {
     if (!show) return;
     await dispatch(markShowAsPriorWatched({ profileId: Number(profileId), showId: show.id }));
@@ -526,38 +469,18 @@ function ShowDetails() {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
-      {/* Back button */}
-      <Box
-        sx={{
-          px: 2,
-          position: 'sticky',
-          top: 0,
-          zIndex: 1,
+      <StickyBackButton
+        returnPath={returnPath}
+        genreFilter={genreFilter}
+        streamingServiceFilter={streamingServiceFilter}
+        watchStatusFilter={watchStatusFilter}
+        pathLabelMap={{
+          '/shows': 'Back to Shows',
+          '/search': 'Back to Search',
+          '/discover': 'Back to Discover',
+          '/home': 'Back to Home',
         }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mb: 2,
-            mt: 1,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <Tooltip title={getBackButtonTooltip()}>
-            <IconButton
-              aria-label="back"
-              onClick={() => {
-                navigate(buildBackButtonPath());
-              }}
-              sx={{ color: 'text.primary' }}
-            >
-              <ArrowBackIosIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
+      />
       {bulkMarkBannerVisible && (
         <Box sx={{ px: 2, pt: 1 }}>
           <BulkMarkBanner
@@ -579,153 +502,115 @@ function ShowDetails() {
       )}
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         {/* Show Details Card */}
-        <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
-          {/* Backdrop Image Section */}
-          <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-            {show?.backdropImage ? (
-              <CardMedia
-                component="img"
-                height={isMobile ? '380' : '320'}
-                image={buildTMDBImagePath(show?.backdropImage, 'w1280')}
-                alt={show.title}
-                sx={{
-                  filter: 'brightness(0.65)',
-                  objectFit: 'cover',
-                  objectPosition: 'center 20%',
-                  width: '100%',
-                }}
-              />
-            ) : (
+        <MediaHeroCard
+          backdropImage={show?.backdropImage}
+          posterImage={show?.posterImage}
+          title={show?.title}
+          description={show?.description}
+          isMobile={isMobile}
+          metadata={[
+            { icon: <CalendarTodayIcon sx={{ fontSize: 16 }} />, label: formatters.yearOnly(show?.releaseDate) },
+            { icon: <TvOutlinedIcon sx={{ fontSize: 16 }} />, label: formatSeasons(show?.seasonCount) },
+            { icon: <LocalMoviesOutlinedIcon sx={{ fontSize: 16 }} />, label: `${show?.episodeCount} Episodes` },
+            {
+              icon: <StarIcon sx={{ fontSize: 16, color: 'warning.main' }} />,
+              label: formatUserRating(show?.userRating),
+            },
+          ]}
+          contentRatingLabel={show?.contentRating}
+          actions={
+            <>
               <Box
                 sx={{
-                  height: isMobile ? '200px' : '320px',
-                  backgroundColor: 'grey.800',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  gap: 1,
+                  mt: 1,
+                  alignItems: 'flex-start',
                 }}
-              />
-            )}
-
-            {/* Overlay Content */}
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                bgcolor: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 100%)',
-                color: 'white',
-                pt: { xs: 3, sm: 4 },
-                pb: { xs: 1.5, sm: 2 },
-                px: { xs: 1.5, sm: 2 },
-                display: 'flex',
-                alignItems: 'flex-end',
-                minHeight: { xs: '140px', sm: '180px' },
-              }}
-            >
-              {/* Poster */}
-              <Box
-                component="img"
-                sx={{
-                  width: { xs: 80, sm: 120, md: 140 },
-                  height: { xs: 120, sm: 180, md: 210 },
-                  mr: { xs: 2, sm: 2, md: 3 },
-                  borderRadius: 1,
-                  boxShadow: 3,
-                  transform: 'translateY(-30px)',
-                  objectFit: 'cover',
-                  flexShrink: 0,
-                }}
-                src={buildTMDBImagePath(show?.posterImage, 'w500')}
-                alt={show?.title}
-                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                  e.currentTarget.src = 'https://placehold.co/300x450/gray/white?text=No+Image';
-                }}
-              />
-
-              {/* Show Details */}
-              <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
-                <Typography
-                  variant={isMobile ? 'h5' : 'h4'}
+              >
+                <Button
+                  variant="contained"
+                  disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
+                  onClick={(event) => show && handleShowWatchStatusChange(show, event)}
+                  startIcon={
+                    loadingShowWatchStatus ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} />
+                    )
+                  }
                   sx={{
-                    fontWeight: 'bold',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    mb: 1,
-                  }}
-                >
-                  {show?.title}
-                </Typography>
-
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mb: 1.5,
-                    opacity: 1,
-                    lineHeight: 1.4,
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.8)',
-                    fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backdropFilter: 'blur(12px)',
+                    border: '2px solid rgba(255, 255, 255, 0.4)',
+                    color: 'white',
+                    fontWeight: 600,
+                    textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                    position: 'relative',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: { xs: 5, sm: 7 },
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      border: '2px solid rgba(255, 255, 255, 0.6)',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      border: '2px solid rgba(255, 255, 255, 0.2)',
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background:
+                        'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
+                      pointerEvents: 'none',
+                      zIndex: 1,
+                    },
+                    '& .MuiButton-startIcon, & .MuiButton-endIcon': {
+                      position: 'relative',
+                      zIndex: 2,
+                    },
+                    '& .MuiButton-label': {
+                      position: 'relative',
+                      zIndex: 2,
+                    },
                   }}
                 >
-                  <i>{show?.description}</i>
-                </Typography>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <CalendarTodayIcon sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{formatters.yearOnly(show?.releaseDate)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <TvOutlinedIcon sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{formatSeasons(show?.seasonCount)} </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <LocalMoviesOutlinedIcon sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{show?.episodeCount} Episodes</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <StarIcon sx={{ fontSize: 16, color: 'warning.main' }} />
-                    <Typography variant="body2">{formatUserRating(show?.userRating)}</Typography>
-                  </Box>
-                  <Chip label={show?.contentRating} size="small" color="primary" sx={{ fontWeight: 500 }} />
-                </Box>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    gap: 1,
-                    mt: 1,
-                    alignItems: 'flex-start',
-                  }}
-                >
+                  {loadingShowWatchStatus
+                    ? 'Loading...'
+                    : show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE
+                      ? 'Mark Unwatched'
+                      : 'Mark as Watched'}
+                </Button>
+                {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
                   <Button
-                    variant="contained"
-                    disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
-                    onClick={(event) => show && handleShowWatchStatusChange(show, event)}
+                    variant="outlined"
+                    disabled={loadingShowRewatch}
+                    onClick={() => setRewatchConfirmOpen(true)}
                     startIcon={
-                      loadingShowWatchStatus ? (
+                      loadingShowRewatch ? (
                         <CircularProgress size={20} color="inherit" />
                       ) : (
-                        <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} />
+                        <ReplayIcon sx={{ color: 'rewatch.main' }} />
                       )
                     }
                     sx={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
                       backdropFilter: 'blur(12px)',
                       border: '2px solid rgba(255, 255, 255, 0.4)',
                       color: 'white',
                       fontWeight: 600,
                       textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
                       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                      position: 'relative',
-                      overflow: 'hidden',
                       '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         border: '2px solid rgba(255, 255, 255, 0.6)',
                         transform: 'translateY(-1px)',
                         boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
@@ -735,85 +620,25 @@ function ShowDetails() {
                         color: 'rgba(255, 255, 255, 0.7)',
                         border: '2px solid rgba(255, 255, 255, 0.2)',
                       },
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background:
-                          'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
-                        pointerEvents: 'none',
-                        zIndex: 1,
-                      },
-                      '& .MuiButton-startIcon, & .MuiButton-endIcon': {
-                        position: 'relative',
-                        zIndex: 2,
-                      },
-                      '& .MuiButton-label': {
-                        position: 'relative',
-                        zIndex: 2,
-                      },
                     }}
                   >
-                    {loadingShowWatchStatus
-                      ? 'Loading...'
-                      : show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE
-                        ? 'Mark Unwatched'
-                        : 'Mark as Watched'}
+                    {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
                   </Button>
-                  {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
-                    <Button
-                      variant="outlined"
-                      disabled={loadingShowRewatch}
-                      onClick={() => setRewatchConfirmOpen(true)}
-                      startIcon={
-                        loadingShowRewatch ? (
-                          <CircularProgress size={20} color="inherit" />
-                        ) : (
-                          <ReplayIcon sx={{ color: 'rewatch.main' }} />
-                        )
-                      }
-                      sx={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        backdropFilter: 'blur(12px)',
-                        border: '2px solid rgba(255, 255, 255, 0.4)',
-                        color: 'white',
-                        fontWeight: 600,
-                        textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                          border: '2px solid rgba(255, 255, 255, 0.6)',
-                          transform: 'translateY(-1px)',
-                          boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
-                        },
-                        '&:disabled': {
-                          backgroundColor: 'rgba(128, 128, 128, 0.8)',
-                          color: 'rgba(255, 255, 255, 0.7)',
-                          border: '2px solid rgba(255, 255, 255, 0.2)',
-                        },
-                      }}
-                    >
-                      {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
-                    </Button>
-                  )}
-                </Box>
-                {show && profileId && (
-                  <Box sx={{ mt: 1 }}>
-                    <RecommendButton
-                      profileId={Number(profileId)}
-                      contentType="show"
-                      contentId={show.id}
-                      contentTitle={show.title}
-                    />
-                  </Box>
                 )}
               </Box>
-            </Box>
-          </Box>
-
+              {show && profileId && (
+                <Box sx={{ mt: 1 }}>
+                  <RecommendButton
+                    profileId={Number(profileId)}
+                    contentType="show"
+                    contentId={show.id}
+                    contentTitle={show.title}
+                  />
+                </Box>
+              )}
+            </>
+          }
+        >
           {/* Additional Show Details */}
           <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
             <Grid container spacing={2} sx={{ mb: 6 }}>
@@ -829,11 +654,7 @@ function ShowDetails() {
                     >
                       Genres
                     </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {show?.genres.split(',').map((genre: string) => (
-                        <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
-                      ))}
-                    </Box>
+                    <GenreChipList genres={show?.genres ?? ''} />
                   </Grid>
 
                   <Grid size={{ xs: 12, sm: 6 }}>
@@ -864,7 +685,11 @@ function ShowDetails() {
                       >
                         Watch Status
                       </Typography>
-                      <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      >
                         <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} fontSize="small" />
                         {getWatchStatusDisplay(show?.watchStatus)}
                       </Typography>
@@ -1351,7 +1176,7 @@ function ShowDetails() {
               {show && <SimilarShowsComponent showId={show.id} profileId={Number(profileId)} />}
             </TabPanel>
           </CardContent>
-        </Card>
+        </MediaHeroCard>
       </Box>
       {/* Prior watch history dialogs */}
       <PriorWatchPromptDialog

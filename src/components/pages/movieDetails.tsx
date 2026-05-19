@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { AccessTime, CalendarToday, Replay, Star } from '@mui/icons-material';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -10,17 +9,12 @@ import {
   AccordionSummary,
   Box,
   Button,
-  Card,
   CardContent,
-  CardMedia,
-  Chip,
   CircularProgress,
   Divider,
   Grid,
-  IconButton,
   Tab,
   Tabs,
-  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -46,15 +40,17 @@ import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import MoviePriorWatchDialog from '../common/movies/MoviePriorWatchDialog';
 import { MovieCastSection } from '../common/movies/movieCast';
+import { StickyBackButton } from '../common/navigation/StickyBackButton';
 import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
 import { RecommendButton } from '../common/recommendations/recommendButton';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
-import { WatchStatusIcon } from '../utility/watchStatusUtility';
 import { ProfileMovie, SimilarOrRecommendedMovie, WatchStatus } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 import {
   ErrorComponent,
+  GenreChipList,
   LoadingComponent,
+  MediaHeroCard,
+  WatchStatusIcon,
   formatCurrency,
   formatRuntime,
   formatUserRating,
@@ -66,7 +62,6 @@ function MovieDetails() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const formatters = useDateFormatters();
 
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const movie = useAppSelector(selectMovie);
   const recommendedMovies = useAppSelector(selectRecommendedMovies);
@@ -157,216 +152,128 @@ function MovieDetails() {
     }
   };
 
-  const buildBackButtonPath = () => {
-    let path = returnPath;
-    if (genreFilter) {
-      path += path.includes('?') ? '&' : '?';
-      path += `genre=${encodeURIComponent(genreFilter)}`;
-    }
-    if (streamingServiceFilter) {
-      path += path.includes('?') ? '&' : '?';
-      path += `streamingService=${encodeURIComponent(streamingServiceFilter)}`;
-    }
-    if (watchStatusFilter) {
-      path += path.includes('?') ? '&' : '?';
-      path += `watchStatus=${encodeURIComponent(watchStatusFilter)}`;
-    }
-    return path;
-  };
-
-  const getBackButtonTooltip = () => {
-    const basePath = returnPath.split('?')[0];
-
-    const pathMap: Record<string, string> = {
-      '/movies': 'Back to Movies',
-      '/search': 'Back to Search',
-      '/discover': 'Back to Discover',
-      '/home': 'Back to Home',
-    };
-
-    return pathMap[basePath] || 'Back';
-  };
-
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
-      {/* Back button */}
-      <Box
-        sx={{
-          px: 2,
-          position: 'sticky',
-          top: 0,
-          zIndex: 1,
+      <StickyBackButton
+        returnPath={returnPath}
+        genreFilter={genreFilter}
+        streamingServiceFilter={streamingServiceFilter}
+        watchStatusFilter={watchStatusFilter}
+        pathLabelMap={{
+          '/movies': 'Back to Movies',
+          '/search': 'Back to Search',
+          '/discover': 'Back to Discover',
+          '/home': 'Back to Home',
         }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mb: 2,
-            mt: 1,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <Tooltip title={getBackButtonTooltip()}>
-            <IconButton
-              aria-label="back"
-              onClick={() => {
-                navigate(buildBackButtonPath());
-              }}
-              sx={{ color: 'text.primary' }}
-            >
-              <ArrowBackIosIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
+      />
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         {/* Movie Details Card */}
-        <Card elevation={2} sx={{ overflow: 'visible', borderRadius: { xs: 1, md: 2 } }}>
-          {/* Backdrop Image Section */}
-          <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-            {movie?.backdropImage ? (
-              <CardMedia
-                component="img"
-                height={isMobile ? '380' : '320'}
-                image={buildTMDBImagePath(movie?.backdropImage, 'w1280')}
-                alt={movie.title}
-                sx={{
-                  filter: 'brightness(0.65)',
-                  objectFit: 'cover',
-                  objectPosition: 'center 20%',
-                  width: '100%',
-                }}
-              />
-            ) : (
+        <MediaHeroCard
+          backdropImage={movie?.backdropImage}
+          posterImage={movie?.posterImage}
+          title={movie?.title}
+          description={movie?.description}
+          isMobile={isMobile}
+          metadata={[
+            { icon: <CalendarToday sx={{ fontSize: 16 }} />, label: formatters.relativeDate(movie?.releaseDate) },
+            { icon: <AccessTime sx={{ fontSize: 16 }} />, label: formatRuntime(movie?.runtime) },
+            { icon: <Star sx={{ fontSize: 16, color: 'warning.main' }} />, label: formatUserRating(movie?.userRating) },
+          ]}
+          contentRatingLabel={movie?.mpaRating}
+          descriptionClamp={{ xs: 3, sm: 4 }}
+          actions={
+            <>
               <Box
                 sx={{
-                  height: isMobile ? '200px' : '320px',
-                  backgroundColor: 'grey.800',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  gap: 1,
+                  mt: 1,
+                  alignItems: 'flex-start',
                 }}
-              />
-            )}
-
-            {/* Overlay Content */}
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 100%)',
-                color: 'white',
-                pt: { xs: 3, sm: 4 },
-                pb: { xs: 1.5, sm: 2 },
-                px: { xs: 1.5, sm: 2 },
-                display: 'flex',
-                alignItems: 'flex-end',
-                minHeight: { xs: '140px', sm: '180px' },
-              }}
-            >
-              {/* Poster */}
-              <Box
-                component="img"
-                sx={{
-                  width: { xs: 80, sm: 120, md: 140 },
-                  height: { xs: 120, sm: 180, md: 210 },
-                  mr: { xs: 2, sm: 2, md: 3 },
-                  borderRadius: 1,
-                  boxShadow: 3,
-                  transform: 'translateY(-30px)',
-                  objectFit: 'cover',
-                  flexShrink: 0,
-                }}
-                src={buildTMDBImagePath(movie?.posterImage, 'w500')}
-                alt={movie?.title}
-                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                  e.currentTarget.src = 'https://placehold.co/300x450/gray/white?text=No+Image';
-                }}
-              />
-
-              {/* Movie Details */}
-              <Box sx={{ flexGrow: 1, pb: 2, minWidth: 0 }}>
-                <Typography
-                  variant={isMobile ? 'h5' : 'h4'}
+              >
+                <Button
+                  variant="contained"
+                  disabled={loadingWatchStatus || movie?.watchStatus === WatchStatus.UNAIRED}
+                  onClick={(event) => movie && handleMovieWatchStatusChange(movie, event)}
+                  startIcon={
+                    loadingWatchStatus ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <WatchStatusIcon status={movie?.watchStatus || WatchStatus.NOT_WATCHED} />
+                    )
+                  }
                   sx={{
-                    fontWeight: 'bold',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    mb: 1,
-                  }}
-                >
-                  {movie?.title}
-                </Typography>
-
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mb: 1.5,
-                    opacity: 1,
-                    lineHeight: 1.4,
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.8)',
-                    fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backdropFilter: 'blur(12px)',
+                    border: '2px solid rgba(255, 255, 255, 0.4)',
+                    color: 'white',
+                    fontWeight: 600,
+                    textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                    position: 'relative',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: { xs: 3, sm: 4 },
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      border: '2px solid rgba(255, 255, 255, 0.6)',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      border: '2px solid rgba(255, 255, 255, 0.2)',
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background:
+                        'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
+                      pointerEvents: 'none',
+                      zIndex: 1,
+                    },
+                    '& .MuiButton-startIcon, & .MuiButton-endIcon': {
+                      position: 'relative',
+                      zIndex: 2,
+                    },
+                    '& .MuiButton-label': {
+                      position: 'relative',
+                      zIndex: 2,
+                    },
                   }}
                 >
-                  <i>{movie?.description}</i>
-                </Typography>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <CalendarToday sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{formatters.relativeDate(movie?.releaseDate)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <AccessTime sx={{ fontSize: 16 }} />
-                    <Typography variant="body2">{formatRuntime(movie?.runtime)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Star sx={{ fontSize: 16, color: 'warning.main' }} />
-                    <Typography variant="body2">{formatUserRating(movie?.userRating)}</Typography>
-                  </Box>
-                  <Chip label={movie?.mpaRating} size="small" color="primary" sx={{ fontWeight: 500 }} />
-                </Box>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    gap: 1,
-                    mt: 1,
-                    alignItems: 'flex-start',
-                  }}
-                >
+                  {loadingWatchStatus
+                    ? 'Loading...'
+                    : movie?.watchStatus === WatchStatus.WATCHED
+                      ? 'Mark Unwatched'
+                      : 'Mark as Watched'}
+                </Button>
+                {movie?.watchStatus === WatchStatus.WATCHED && (
                   <Button
-                    variant="contained"
-                    disabled={loadingWatchStatus || movie?.watchStatus === WatchStatus.UNAIRED}
-                    onClick={(event) => movie && handleMovieWatchStatusChange(movie, event)}
+                    variant="outlined"
+                    disabled={loadingMovieRewatch}
+                    onClick={handleStartMovieRewatch}
                     startIcon={
-                      loadingWatchStatus ? (
+                      loadingMovieRewatch ? (
                         <CircularProgress size={20} color="inherit" />
                       ) : (
-                        <WatchStatusIcon status={movie?.watchStatus || WatchStatus.NOT_WATCHED} />
+                        <Replay sx={{ color: 'rewatch.main' }} />
                       )
                     }
                     sx={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
                       backdropFilter: 'blur(12px)',
                       border: '2px solid rgba(255, 255, 255, 0.4)',
                       color: 'white',
                       fontWeight: 600,
                       textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
                       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                      position: 'relative',
-                      overflow: 'hidden',
                       '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         border: '2px solid rgba(255, 255, 255, 0.6)',
                         transform: 'translateY(-1px)',
                         boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
@@ -376,85 +283,25 @@ function MovieDetails() {
                         color: 'rgba(255, 255, 255, 0.7)',
                         border: '2px solid rgba(255, 255, 255, 0.2)',
                       },
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background:
-                          'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
-                        pointerEvents: 'none',
-                        zIndex: 1,
-                      },
-                      '& .MuiButton-startIcon, & .MuiButton-endIcon': {
-                        position: 'relative',
-                        zIndex: 2,
-                      },
-                      '& .MuiButton-label': {
-                        position: 'relative',
-                        zIndex: 2,
-                      },
                     }}
                   >
-                    {loadingWatchStatus
-                      ? 'Loading...'
-                      : movie?.watchStatus === WatchStatus.WATCHED
-                        ? 'Mark Unwatched'
-                        : 'Mark as Watched'}
+                    {loadingMovieRewatch ? 'Loading...' : 'Mark Rewatched'}
                   </Button>
-                  {movie?.watchStatus === WatchStatus.WATCHED && (
-                    <Button
-                      variant="outlined"
-                      disabled={loadingMovieRewatch}
-                      onClick={handleStartMovieRewatch}
-                      startIcon={
-                        loadingMovieRewatch ? (
-                          <CircularProgress size={20} color="inherit" />
-                        ) : (
-                          <Replay sx={{ color: 'rewatch.main' }} />
-                        )
-                      }
-                      sx={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        backdropFilter: 'blur(12px)',
-                        border: '2px solid rgba(255, 255, 255, 0.4)',
-                        color: 'white',
-                        fontWeight: 600,
-                        textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                          border: '2px solid rgba(255, 255, 255, 0.6)',
-                          transform: 'translateY(-1px)',
-                          boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
-                        },
-                        '&:disabled': {
-                          backgroundColor: 'rgba(128, 128, 128, 0.8)',
-                          color: 'rgba(255, 255, 255, 0.7)',
-                          border: '2px solid rgba(255, 255, 255, 0.2)',
-                        },
-                      }}
-                    >
-                      {loadingMovieRewatch ? 'Loading...' : 'Mark Rewatched'}
-                    </Button>
-                  )}
-                </Box>
-                {movie && profileId && (
-                  <Box sx={{ mt: 1 }}>
-                    <RecommendButton
-                      profileId={Number(profileId)}
-                      contentType="movie"
-                      contentId={movie.id}
-                      contentTitle={movie.title}
-                    />
-                  </Box>
                 )}
               </Box>
-            </Box>
-          </Box>
-
+              {movie && profileId && (
+                <Box sx={{ mt: 1 }}>
+                  <RecommendButton
+                    profileId={Number(profileId)}
+                    contentType="movie"
+                    contentId={movie.id}
+                    contentTitle={movie.title}
+                  />
+                </Box>
+              )}
+            </>
+          }
+        >
           {/* Additional Movie Details */}
           <CardContent sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
             <Grid container spacing={3} sx={{ mb: 6 }}>
@@ -510,11 +357,7 @@ function MovieDetails() {
                 >
                   Genres
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {movie?.genres.split(',').map((genre: string) => (
-                    <Chip key={genre} label={genre.trim()} variant="outlined" size="small" color="primary" />
-                  ))}
-                </Box>
+                <GenreChipList genres={movie?.genres ?? ''} />
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography
@@ -618,7 +461,7 @@ function MovieDetails() {
               </Box>
             </TabPanel>
           </CardContent>
-        </Card>
+        </MediaHeroCard>
       </Box>
       <MoviePriorWatchDialog
         open={priorWatchDialogOpen}

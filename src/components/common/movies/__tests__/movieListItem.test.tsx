@@ -11,6 +11,7 @@ import userEvent from '@testing-library/user-event';
 // Mock dependencies
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string) => `https://image.tmdb.org/t/p/original${path}`),
+  WatchStatusIcon: ({ status }: any) => <span data-testid="watch-status-icon">{status}</span>,
 }));
 
 jest.mock('../../../../app/hooks/useDateFormatters', () => ({
@@ -29,7 +30,6 @@ jest.mock('../../../utility/contentUtility', () => ({
 }));
 
 jest.mock('../../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: any) => <div data-testid="watch-status-icon">{status}</div>,
   getWatchStatusAction: (status: string) => {
     if (status === 'Watched') return 'Mark as Unwatched';
     return 'Mark as Watched';

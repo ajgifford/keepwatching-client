@@ -22,6 +22,21 @@ import { WatchStatus } from '@ajgifford/keepwatching-types';
 const mockDispatch = jest.fn();
 const mockNavigate = jest.fn();
 
+jest.mock('@ajgifford/keepwatching-ui', () => ({
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`
+  ),
+  parseLocalDate: jest.fn((dateString: string) => {
+    if (!dateString) return new Date(NaN);
+    return new Date(dateString);
+  }),
+  WatchStatusIcon: ({ status }: { status: string }) => (
+    <span data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </span>
+  ),
+}));
+
 jest.mock('../../../app/hooks', () => ({
   useAppDispatch: () => mockDispatch,
   useAppSelector: jest.fn(),
@@ -94,7 +109,6 @@ jest.mock('../../common/tabs/tabPanel', () => ({
 }));
 
 jest.mock('../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: { status: string }) => <span data-testid="watch-status-icon">{status}</span>,
   canChangeEpisodeWatchStatus: () => true,
   canChangeSeasonWatchStatus: () => true,
   determineNextSeasonWatchStatus: (season: any) =>
@@ -112,8 +126,52 @@ jest.mock('../../utility/contentUtility', () => ({
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   ErrorComponent: ({ error }: { error: string }) => <div data-testid="error-component">{error}</div>,
   LoadingComponent: () => <div data-testid="loading-component">Loading...</div>,
+  MediaHeroCard: ({
+    children,
+    actions,
+    title,
+    description,
+    backdropImage,
+    posterImage,
+    metadata,
+    contentRatingLabel,
+  }: any) => (
+    <div data-testid="media-hero-card">
+      <img src={backdropImage} alt={title} />
+      <img
+        src={posterImage}
+        alt={title}
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = 'https://placehold.co/300x450';
+        }}
+      />
+      <div>{title}</div>
+      <div>{description}</div>
+      {contentRatingLabel && <span>{contentRatingLabel}</span>}
+      {metadata?.map((item: any, i: number) => (
+        <span key={i}>{item.label}</span>
+      ))}
+      <div>{actions}</div>
+      <div>{children}</div>
+    </div>
+  ),
+  GenreChipList: ({ genres }: { genres: string }) => (
+    <div data-testid="genre-chip-list">
+      {genres.split(',').map((g: string) => (
+        <span key={g.trim()}>{g.trim()}</span>
+      ))}
+    </div>
+  ),
+  WatchStatusIcon: ({ status }: { status: string }) => (
+    <span data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </span>
+  ),
   buildTMDBImagePath: (path: string) => `https://image.tmdb.org/t/p/w500${path}`,
   formatUserRating: (rating: number) => rating?.toFixed(1) || 'N/A',
+  formatSeasons: (count: number) => (count > 1 ? `${count} seasons` : '1 season'),
+  buildServicesLine: (network: string, streamingServices: string) =>
+    `${network || 'No Network'} • ${streamingServices}`,
   getWatchStatusDisplay: (status: string) => status || 'Unknown',
   parseLocalDate: (dateStr: string) => new Date(dateStr + 'T00:00:00'),
 }));
@@ -696,57 +754,6 @@ describe('ShowDetails', () => {
       await waitFor(() => {
         expect(screen.getByText('Cast: 2')).toBeInTheDocument();
       });
-    });
-  });
-
-  describe('formatting helpers', () => {
-    it('formats season count correctly for single season', () => {
-      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
-        if (selector === selectShow) return { ...mockShow, seasonCount: 1 };
-        if (selector === selectSeasons) return mockSeasons;
-        if (selector === selectShowCast) return mockCast;
-        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
-        if (selector === selectShowLoading) return false;
-        if (selector === selectShowError) return null;
-        return null;
-      });
-
-      renderShowDetails();
-
-      expect(screen.getByText('1 season')).toBeInTheDocument();
-    });
-
-    it('shows "No seasons" when season count is undefined', () => {
-      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
-        if (selector === selectShow) return { ...mockShow, seasonCount: undefined };
-        if (selector === selectSeasons) return mockSeasons;
-        if (selector === selectShowCast) return mockCast;
-        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
-        if (selector === selectShowLoading) return false;
-        if (selector === selectShowError) return null;
-        return null;
-      });
-
-      renderShowDetails();
-
-      expect(screen.getByText('No seasons')).toBeInTheDocument();
-    });
-
-    it('filters out "Unknown" from streaming services', () => {
-      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
-        if (selector === selectShow) return { ...mockShow, streamingServices: 'Netflix, Unknown, Hulu' };
-        if (selector === selectSeasons) return mockSeasons;
-        if (selector === selectShowCast) return mockCast;
-        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
-        if (selector === selectShowLoading) return false;
-        if (selector === selectShowError) return null;
-        return null;
-      });
-
-      renderShowDetails();
-
-      expect(screen.getByText(/Netflix, Hulu/)).toBeInTheDocument();
-      expect(screen.queryByText(/Unknown/)).not.toBeInTheDocument();
     });
   });
 

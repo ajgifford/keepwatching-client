@@ -111,13 +111,50 @@ jest.mock('../../common/tabs/tabPanel', () => ({
   }),
 }));
 
-jest.mock('../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: { status: string }) => <span data-testid="watch-status-icon">{status}</span>,
-}));
-
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   ErrorComponent: ({ error }: { error: string }) => <div data-testid="error-component">{error}</div>,
   LoadingComponent: () => <div data-testid="loading-component">Loading...</div>,
+  MediaHeroCard: ({
+    children,
+    actions,
+    title,
+    description,
+    backdropImage,
+    posterImage,
+    metadata,
+    contentRatingLabel,
+  }: any) => (
+    <div data-testid="media-hero-card">
+      <img src={backdropImage} alt={title} />
+      <img
+        src={posterImage}
+        alt={title}
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = 'https://placehold.co/300x450';
+        }}
+      />
+      <div>{title}</div>
+      <div>{description}</div>
+      {contentRatingLabel && <span>{contentRatingLabel}</span>}
+      {metadata?.map((item: any, i: number) => (
+        <span key={i}>{item.label}</span>
+      ))}
+      <div>{actions}</div>
+      <div>{children}</div>
+    </div>
+  ),
+  GenreChipList: ({ genres }: { genres: string }) => (
+    <div data-testid="genre-chip-list">
+      {genres.split(',').map((g: string) => (
+        <span key={g.trim()}>{g.trim()}</span>
+      ))}
+    </div>
+  ),
+  WatchStatusIcon: ({ status }: { status: string }) => (
+    <span data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </span>
+  ),
   buildTMDBImagePath: (path: string) => `https://image.tmdb.org/t/p/w500${path}`,
   formatCurrency: (value: number) => `$${value.toLocaleString()}`,
   formatRuntime: (minutes: number) => `${minutes} min`,

@@ -12,10 +12,10 @@
   resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.11.7/3cc210c8ab9a2ee54e28769fb36797a9ac48e9c0#3cc210c8ab9a2ee54e28769fb36797a9ac48e9c0"
   integrity sha512-ywYvD8uNYmAEV4m9LvLy7BOoxprZK69XJBE3eoa0iS9Ydgvv4jY3Nur6knijW9SkWB4Ie0p1KAkeIMveFky2tA==
 
-"@ajgifford/keepwatching-ui@^0.5.0":
-  version "0.5.0"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.5.0/8161260c096005034783a7feeed6f92a795f04a7#8161260c096005034783a7feeed6f92a795f04a7"
-  integrity sha512-zl0OarcmEeJxI+me6UC62ie3CoBotdZDzsdQ3j2cdjaETpxjTvIivVVnHzSLJB/EwrpZMJUi0s+ghvpiXt7M/A==
+"@ajgifford/keepwatching-ui@^0.6.0":
+  version "0.6.0"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.6.0/df1a0033ff9a953ee8da6939c6dcb87199706679#df1a0033ff9a953ee8da6939c6dcb87199706679"
+  integrity sha512-XuctSHiZFWMLwCaIOmI7Z9OfHDaLMJj+ZwaQgUzgu6LYZKj1LjLhOAC458Mkj0tQLpMKv5hzJaXHwODO96Ksjg==
 
 "@ampproject/remapping@^2.2.0":
   version "2.3.0"
@@ -8393,15 +8393,10 @@ write-file-atomic@^5.0.1:
     imurmurhash "^0.1.4"
     signal-exit "^4.0.1"
 
-ws@^8.18.0:
-  version "8.18.3"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
-  integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==
-
-ws@~8.17.1:
-  version "8.17.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.1.tgz#9293da530bb548febc95371d90f9c878727d919b"
-  integrity sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==
+ws@8.20.1, ws@^8.18.0, ws@~8.17.1:
+  version "8.20.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.20.1.tgz#91a9ae2b312ccf98e0a85ec499b48cef45ab0ddb"
+  integrity sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==
 
 xml-name-validator@^5.0.0:
   version "5.0.0"

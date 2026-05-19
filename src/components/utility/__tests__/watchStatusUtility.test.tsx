@@ -1,7 +1,4 @@
-import { render } from '@testing-library/react';
-
 import {
-  WatchStatusIcon,
   canChangeEpisodeWatchStatus,
   canChangeSeasonWatchStatus,
   canChangeShowWatchStatus,
@@ -12,39 +9,17 @@ import {
 } from '../watchStatusUtility';
 import { ProfileEpisode, ProfileSeason, ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 
+jest.mock('@ajgifford/keepwatching-ui', () => ({
+  parseLocalDate: (dateString: string) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+    return new Date(dateString);
+  },
+}));
+
 describe('watchStatusUtility', () => {
-  describe('WatchStatusIcon', () => {
-    it('should render WatchLaterIcon for WATCHED status', () => {
-      const { container } = render(<WatchStatusIcon status={WatchStatus.WATCHED} />);
-      expect(container.querySelector('svg')).toBeInTheDocument();
-    });
-
-    it('should render WatchLaterTwoToneIcon for WATCHING status', () => {
-      const { container } = render(<WatchStatusIcon status={WatchStatus.WATCHING} />);
-      expect(container.querySelector('svg')).toBeInTheDocument();
-    });
-
-    it('should render UpdateIcon for UP_TO_DATE status', () => {
-      const { container } = render(<WatchStatusIcon status={WatchStatus.UP_TO_DATE} />);
-      expect(container.querySelector('svg')).toBeInTheDocument();
-    });
-
-    it('should render PendingOutlinedIcon for UNAIRED status', () => {
-      const { container } = render(<WatchStatusIcon status={WatchStatus.UNAIRED} />);
-      expect(container.querySelector('svg')).toBeInTheDocument();
-    });
-
-    it('should render WatchLaterOutlinedIcon for NOT_WATCHED status', () => {
-      const { container } = render(<WatchStatusIcon status={WatchStatus.NOT_WATCHED} />);
-      expect(container.querySelector('svg')).toBeInTheDocument();
-    });
-
-    it('should accept custom fontSize prop', () => {
-      const { container } = render(<WatchStatusIcon status={WatchStatus.WATCHED} fontSize="small" />);
-      expect(container.querySelector('svg')).toBeInTheDocument();
-    });
-  });
-
   describe('determineNextSeasonWatchStatus', () => {
     it('should return WATCHED for NOT_WATCHED status', () => {
       const season = { watchStatus: WatchStatus.NOT_WATCHED } as ProfileSeason;

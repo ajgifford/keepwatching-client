@@ -1,11 +1,3 @@
-import React from 'react';
-
-import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
-import UpdateIcon from '@mui/icons-material/Update';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
-import WatchLaterTwoToneIcon from '@mui/icons-material/WatchLaterTwoTone';
-
 import {
   ProfileEpisode,
   ProfileSeason,
@@ -14,25 +6,6 @@ import {
   WatchStatus,
 } from '@ajgifford/keepwatching-types';
 import { parseLocalDate } from '@ajgifford/keepwatching-ui';
-
-export const WatchStatusIcon: React.FC<{
-  status: WatchStatus;
-  fontSize?: 'small' | 'medium' | 'large' | 'inherit';
-}> = ({ status, fontSize = 'medium' }) => {
-  switch (status) {
-    case WatchStatus.WATCHED:
-      return <WatchLaterIcon color="success" fontSize={fontSize} />;
-    case WatchStatus.WATCHING:
-      return <WatchLaterTwoToneIcon color="success" fontSize={fontSize} />;
-    case WatchStatus.UP_TO_DATE:
-      return <UpdateIcon color="success" fontSize={fontSize} />;
-    case WatchStatus.UNAIRED:
-      return <PendingOutlinedIcon fontSize={fontSize} />;
-    case WatchStatus.NOT_WATCHED:
-    default:
-      return <WatchLaterOutlinedIcon fontSize={fontSize} />;
-  }
-};
 
 export function determineNextSeasonWatchStatus(season: ProfileSeason): UserWatchStatus {
   switch (season.watchStatus) {

@@ -20,6 +20,11 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((path: string) => (path ? `https://image.tmdb.org/t/p/original${path}` : '')),
+  WatchStatusIcon: ({ status }: any) => (
+    <span data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </span>
+  ),
 }));
 
 jest.mock('../../../../app/hooks/useDateFormatters', () => ({
@@ -36,11 +41,6 @@ jest.mock('../../../utility/contentUtility', () => ({
 }));
 
 jest.mock('../../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: any) => (
-    <div data-testid="watch-status-icon" data-status={status}>
-      Icon
-    </div>
-  ),
   determineNextShowWatchStatus: jest.fn((show: any) =>
     show.watchStatus === WatchStatus.WATCHED ? WatchStatus.NOT_WATCHED : WatchStatus.WATCHED
   ),

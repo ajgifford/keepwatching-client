@@ -7,6 +7,21 @@ import { KeepWatchingProfileComponent } from '../keepWatchingProfileComponent';
 import { KeepWatchingShow, NextEpisode } from '@ajgifford/keepwatching-types';
 import { EnhancedStore, configureStore } from '@reduxjs/toolkit';
 
+jest.mock('@ajgifford/keepwatching-ui', () => ({
+  buildTMDBImagePath: jest.fn(
+    (path: string, size?: string) => `https://image.tmdb.org/t/p/${size || 'original'}${path || ''}`
+  ),
+  parseLocalDate: jest.fn((dateString: string) => {
+    if (!dateString) return new Date(NaN);
+    return new Date(dateString);
+  }),
+  WatchStatusIcon: ({ status }: { status: string }) => (
+    <span data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </span>
+  ),
+}));
+
 jest.mock('../../../../app/hooks/useDateFormatters', () => ({
   useDateFormatters: () => {
     const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');

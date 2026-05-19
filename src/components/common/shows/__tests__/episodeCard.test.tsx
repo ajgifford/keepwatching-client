@@ -15,6 +15,11 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
     }
     return new Date(dateString);
   }),
+  WatchStatusIcon: ({ status }: any) => (
+    <span data-testid="watch-status-icon" data-status={status}>
+      Icon
+    </span>
+  ),
 }));
 
 jest.mock('../../../../app/hooks/useDateFormatters', () => ({
@@ -22,14 +27,6 @@ jest.mock('../../../../app/hooks/useDateFormatters', () => ({
     const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
     return createDateFormatters();
   },
-}));
-
-jest.mock('../../../utility/watchStatusUtility', () => ({
-  WatchStatusIcon: ({ status }: any) => (
-    <div data-testid="watch-status-icon" data-status={status}>
-      Icon
-    </div>
-  ),
 }));
 
 describe('EpisodeCard', () => {
