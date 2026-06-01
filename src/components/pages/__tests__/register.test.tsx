@@ -6,6 +6,12 @@ import { showActivityNotification } from '../../../app/slices/activityNotificati
 import Register from '../register';
 import userEvent from '@testing-library/user-event';
 
+jest.mock('react-google-recaptcha-v3', () => ({
+  useGoogleReCaptcha: () => ({
+    executeRecaptcha: jest.fn().mockResolvedValue('mock-recaptcha-token'),
+  }),
+}));
+
 // Mock dependencies
 const mockDispatch = jest.fn();
 
@@ -274,6 +280,7 @@ describe('Register', () => {
         name: 'John Doe',
         email: 'test@example.com',
         password: 'password123',
+        recaptchaToken: 'mock-recaptcha-token',
       });
       expect(mockDispatch).toHaveBeenCalled();
     });
@@ -363,6 +370,7 @@ describe('Register', () => {
         name: 'John Doe',
         email: 'test@example.com',
         password: 'password123',
+        recaptchaToken: 'mock-recaptcha-token',
       });
       expect(mockDispatch).toHaveBeenCalled();
     });

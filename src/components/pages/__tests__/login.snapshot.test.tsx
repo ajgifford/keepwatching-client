@@ -3,6 +3,12 @@ import { BrowserRouter } from 'react-router-dom';
 
 import Login from '../login';
 
+jest.mock('react-google-recaptcha-v3', () => ({
+  useGoogleReCaptcha: () => ({
+    executeRecaptcha: jest.fn().mockResolvedValue('mock-recaptcha-token'),
+  }),
+}));
+
 // Mock Firebase
 jest.mock('../../../app/firebaseConfig', () => ({
   auth: {

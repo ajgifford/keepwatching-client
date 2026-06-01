@@ -121,7 +121,7 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(login({ email: 'test@test.com', password: 'password123' }));
+      await store.dispatch(login({ email: 'test@test.com', password: 'password123', recaptchaToken: 'test-token' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -142,7 +142,7 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(login({ email: 'test@test.com', password: 'password123' }));
+      await store.dispatch(login({ email: 'test@test.com', password: 'password123', recaptchaToken: 'test-token' }));
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith('account', JSON.stringify(mockAccount));
     });
@@ -151,7 +151,7 @@ describe('accountSlice', () => {
       mockSignIn.mockRejectedValueOnce(new Error('Invalid credentials'));
 
       const store = createMockStore();
-      await store.dispatch(login({ email: 'test@test.com', password: 'wrong' }));
+      await store.dispatch(login({ email: 'test@test.com', password: 'wrong', recaptchaToken: 'test-token' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -168,7 +168,7 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(login({ email: 'test@test.com', password: 'password123' }));
+      await store.dispatch(login({ email: 'test@test.com', password: 'password123', recaptchaToken: 'test-token' }));
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -192,7 +192,9 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
+      await store.dispatch(
+        register({ email: 'test@test.com', password: 'password123', name: 'Test User', recaptchaToken: 'test-token' })
+      );
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -215,7 +217,9 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
+      await store.dispatch(
+        register({ email: 'test@test.com', password: 'password123', name: 'Test User', recaptchaToken: 'test-token' })
+      );
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith('account', JSON.stringify(mockAccount));
     });
@@ -224,7 +228,9 @@ describe('accountSlice', () => {
       mockCreateUser.mockRejectedValueOnce(new Error('Email already in use'));
 
       const store = createMockStore();
-      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
+      await store.dispatch(
+        register({ email: 'test@test.com', password: 'password123', name: 'Test User', recaptchaToken: 'test-token' })
+      );
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -243,7 +249,9 @@ describe('accountSlice', () => {
       });
 
       const store = createMockStore();
-      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
+      await store.dispatch(
+        register({ email: 'test@test.com', password: 'password123', name: 'Test User', recaptchaToken: 'test-token' })
+      );
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
@@ -260,7 +268,9 @@ describe('accountSlice', () => {
       mockAxiosInstance.post.mockRejectedValueOnce(new Error('Network error'));
 
       const store = createMockStore();
-      await store.dispatch(register({ email: 'test@test.com', password: 'password123', name: 'Test User' }));
+      await store.dispatch(
+        register({ email: 'test@test.com', password: 'password123', name: 'Test User', recaptchaToken: 'test-token' })
+      );
 
       const state = store.getState().auth;
       expect(state.loading).toBe(false);

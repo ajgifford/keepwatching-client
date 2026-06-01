@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -81,135 +82,137 @@ function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <Provider store={store}>
-        <AppThemeProvider>
-          <WebSocketProvider />
-          <ActivityTracker />
-          <div className="app-container">
-            <BrowserRouter>
-              <ErrorBoundary>
-                <Navigation />
-                <ActivityNotificationBar />
-                <OfflineBanner />
-                <div className="content">
-                  <Container maxWidth="xl" sx={{ p: 1 }}>
-                    <Routes>
-                      <Route element={<DefaultLayout />}>
-                        <Route path="/" element={<Default />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                      </Route>
-                      <Route element={<ProtectedLayout />}>
-                        <Route
-                          path="/home"
-                          element={
-                            <ErrorBoundary>
-                              <Home />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/shows"
-                          element={
-                            <ErrorBoundary>
-                              <Shows />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/shows/:showId/:profileId"
-                          element={
-                            <ErrorBoundary>
-                              <ShowDetails />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/movies"
-                          element={
-                            <ErrorBoundary>
-                              <Movies />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/movies/:movieId/:profileId"
-                          element={
-                            <ErrorBoundary>
-                              <MovieDetails />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/discover"
-                          element={
-                            <ErrorBoundary>
-                              <Discover />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/search"
-                          element={
-                            <ErrorBoundary>
-                              <Search />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/notifications"
-                          element={
-                            <ErrorBoundary>
-                              <Notifications />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/manageAccount"
-                          element={
-                            <ErrorBoundary>
-                              <ManageAccount />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/person/:personId"
-                          element={
-                            <ErrorBoundary>
-                              <PersonDetails />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/history"
-                          element={
-                            <ErrorBoundary>
-                              <WatchHistory />
-                            </ErrorBoundary>
-                          }
-                        />
-                        <Route
-                          path="/calendar"
-                          element={
-                            <ErrorBoundary>
-                              <Calendar />
-                            </ErrorBoundary>
-                          }
-                        />
-                      </Route>
-                    </Routes>
-                  </Container>
-                </div>
-              </ErrorBoundary>
-            </BrowserRouter>
-            <footer className="footer">
-              <Footer />
-            </footer>
-          </div>
-        </AppThemeProvider>
-      </Provider>
-    </ErrorBoundary>
+    <GoogleReCaptchaProvider reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? ''}>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <AppThemeProvider>
+            <WebSocketProvider />
+            <ActivityTracker />
+            <div className="app-container">
+              <BrowserRouter>
+                <ErrorBoundary>
+                  <Navigation />
+                  <ActivityNotificationBar />
+                  <OfflineBanner />
+                  <div className="content">
+                    <Container maxWidth="xl" sx={{ p: 1 }}>
+                      <Routes>
+                        <Route element={<DefaultLayout />}>
+                          <Route path="/" element={<Default />} />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/register" element={<Register />} />
+                        </Route>
+                        <Route element={<ProtectedLayout />}>
+                          <Route
+                            path="/home"
+                            element={
+                              <ErrorBoundary>
+                                <Home />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/shows"
+                            element={
+                              <ErrorBoundary>
+                                <Shows />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/shows/:showId/:profileId"
+                            element={
+                              <ErrorBoundary>
+                                <ShowDetails />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/movies"
+                            element={
+                              <ErrorBoundary>
+                                <Movies />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/movies/:movieId/:profileId"
+                            element={
+                              <ErrorBoundary>
+                                <MovieDetails />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/discover"
+                            element={
+                              <ErrorBoundary>
+                                <Discover />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/search"
+                            element={
+                              <ErrorBoundary>
+                                <Search />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/notifications"
+                            element={
+                              <ErrorBoundary>
+                                <Notifications />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/manageAccount"
+                            element={
+                              <ErrorBoundary>
+                                <ManageAccount />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/person/:personId"
+                            element={
+                              <ErrorBoundary>
+                                <PersonDetails />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/history"
+                            element={
+                              <ErrorBoundary>
+                                <WatchHistory />
+                              </ErrorBoundary>
+                            }
+                          />
+                          <Route
+                            path="/calendar"
+                            element={
+                              <ErrorBoundary>
+                                <Calendar />
+                              </ErrorBoundary>
+                            }
+                          />
+                        </Route>
+                      </Routes>
+                    </Container>
+                  </div>
+                </ErrorBoundary>
+              </BrowserRouter>
+              <footer className="footer">
+                <Footer />
+              </footer>
+            </div>
+          </AppThemeProvider>
+        </Provider>
+      </ErrorBoundary>
+    </GoogleReCaptchaProvider>
   );
 }
 

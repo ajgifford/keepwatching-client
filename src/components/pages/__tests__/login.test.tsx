@@ -6,6 +6,12 @@ import { showActivityNotification } from '../../../app/slices/activityNotificati
 import Login from '../login';
 import userEvent from '@testing-library/user-event';
 
+jest.mock('react-google-recaptcha-v3', () => ({
+  useGoogleReCaptcha: () => ({
+    executeRecaptcha: jest.fn().mockResolvedValue('mock-recaptcha-token'),
+  }),
+}));
+
 // Mock dependencies
 const mockDispatch = jest.fn();
 
@@ -228,7 +234,11 @@ describe('Login', () => {
       await user.type(passwordField, 'password123');
       await user.click(loginButton);
 
-      expect(login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123' });
+      expect(login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+        recaptchaToken: 'mock-recaptcha-token',
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
@@ -289,7 +299,11 @@ describe('Login', () => {
       await user.type(passwordField, 'password123');
       await user.keyboard('{Enter}');
 
-      expect(login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123' });
+      expect(login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+        recaptchaToken: 'mock-recaptcha-token',
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 

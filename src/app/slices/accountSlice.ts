@@ -28,6 +28,7 @@ const ACCOUNT_KEY = 'account';
 type LoginData = {
   email: string;
   password: string;
+  recaptchaToken: string;
 };
 
 type NewAccountData = LoginData & {
@@ -63,9 +64,10 @@ function initializeAccount(dispatch: ThunkDispatch<unknown, unknown, UnknownActi
 export const login = createAsyncThunk<Account, LoginData, { rejectValue: ApiErrorResponse }>(
   'account/login',
   async (data: LoginData, { dispatch, rejectWithValue }) => {
+    const { email, password, recaptchaToken } = data;
     let userCredential: UserCredential;
     try {
-      userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      userCredential = await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       const errorMessage = getFirebaseAuthErrorMessage(
         error as FirebaseError,
@@ -83,6 +85,7 @@ export const login = createAsyncThunk<Account, LoginData, { rejectValue: ApiErro
     try {
       const response: AxiosResponse<AccountResponse> = await axiosInstance.post('/accounts/login', {
         uid: userCredential.user.uid,
+        recaptchaToken,
       });
       const account = response.data.result;
 
@@ -123,10 +126,11 @@ export const login = createAsyncThunk<Account, LoginData, { rejectValue: ApiErro
 export const register = createAsyncThunk<Account, NewAccountData, { rejectValue: ApiErrorResponse }>(
   'account/register',
   async (data: NewAccountData, { dispatch, rejectWithValue }) => {
+    const { name, email, password, recaptchaToken } = data;
     let userCredential: UserCredential;
     try {
-      userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      await updateProfile(userCredential.user, { displayName: data.name });
+      userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
 
       // Send verification email with action code settings
       const actionCodeSettings = {
@@ -150,9 +154,10 @@ export const register = createAsyncThunk<Account, NewAccountData, { rejectValue:
 
     try {
       const response: AxiosResponse<AccountResponse> = await axiosInstance.post('/accounts/register', {
-        email: data.email,
+        email,
         uid: userCredential.user.uid,
-        name: data.name,
+        name,
+        recaptchaToken,
       });
       const account = response.data.result;
 

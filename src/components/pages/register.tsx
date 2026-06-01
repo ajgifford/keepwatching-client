@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
@@ -22,6 +23,7 @@ import { validate } from 'email-validator';
 
 const Register = () => {
   const dispatch = useAppDispatch();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,10 +48,15 @@ const Register = () => {
   const emailHelperText = useMemo(() => (emailHasError ? 'Invalid email format' : ''), [emailHasError]);
 
   const handleRegister = async () => {
-    // This is only a basic validation of inputs. Improve this as needed.
     if (name && email && password) {
       try {
-        await dispatch(register({ name, email, password }));
+        let recaptchaToken = '';
+        try {
+          recaptchaToken = executeRecaptcha ? await executeRecaptcha('register') : '';
+        } catch {
+          // no valid key configured
+        }
+        await dispatch(register({ name, email, password, recaptchaToken }));
       } catch (error) {
         console.error(error);
       }

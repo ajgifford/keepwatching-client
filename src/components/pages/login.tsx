@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Link } from 'react-router-dom';
 
 import { LockOutlined } from '@mui/icons-material';
@@ -24,6 +25,7 @@ import { validate } from 'email-validator';
 
 const Login = () => {
   const dispatch = useAppDispatch();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -46,7 +48,13 @@ const Login = () => {
   const handleLogin = async () => {
     if (email && password) {
       try {
-        await dispatch(login({ email, password }));
+        let recaptchaToken = '';
+        try {
+          recaptchaToken = executeRecaptcha ? await executeRecaptcha('login') : '';
+        } catch {
+          // no valid key configured
+        }
+        await dispatch(login({ email, password, recaptchaToken }));
       } catch (error) {
         console.error(error);
       }
