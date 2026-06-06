@@ -22,7 +22,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectPreferences, updateEmailPreferences, updatePreferences } from '../../../app/slices/preferencesSlice';
-import { DisplayPreferences } from '@ajgifford/keepwatching-types';
+import { DisplayPreferences, NotificationPreferences } from '@ajgifford/keepwatching-types';
 import { createDateFormatters } from '@ajgifford/keepwatching-ui';
 import { getAuth } from 'firebase/auth';
 
@@ -36,6 +36,7 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
   const account = useAppSelector(selectCurrentAccount);
   const preferences = useAppSelector(selectPreferences);
   const displayPreferences = preferences.display as DisplayPreferences;
+  const notificationPreferences = preferences.notification as NotificationPreferences | undefined;
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -48,6 +49,8 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
   );
   const [localTimeFormat, setLocalTimeFormat] = useState<'12h' | '24h'>('12h');
   const [localWeeklyDigest, setLocalWeeklyDigest] = useState<boolean>(true);
+  const [localNewSeasonAlerts, setLocalNewSeasonAlerts] = useState<boolean>(true);
+  const [localNewEpisodeAlerts, setLocalNewEpisodeAlerts] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Initialize local state when dialog opens
@@ -58,8 +61,10 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
       setLocalRelativeDate(displayPreferences?.relativeDate || 'relative-recent');
       setLocalTimeFormat(displayPreferences?.timeFormat || '12h');
       setLocalWeeklyDigest(preferences.email?.weeklyDigest ?? true);
+      setLocalNewSeasonAlerts(notificationPreferences?.newSeasonAlerts ?? true);
+      setLocalNewEpisodeAlerts(notificationPreferences?.newEpisodeAlerts ?? true);
     }
-  }, [open, displayPreferences, preferences.email?.weeklyDigest]);
+  }, [open, displayPreferences, preferences.email?.weeklyDigest, notificationPreferences]);
 
   const previewFormatters = useMemo(
     () =>
@@ -102,6 +107,18 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
         })
       );
 
+      // Save notification preferences
+      await dispatch(
+        updatePreferences({
+          accountId: account.id,
+          preferenceType: 'notification',
+          updates: {
+            newSeasonAlerts: localNewSeasonAlerts,
+            newEpisodeAlerts: localNewEpisodeAlerts,
+          },
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error saving preferences:', error);
@@ -117,6 +134,8 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
     setLocalRelativeDate(displayPreferences?.relativeDate || 'relative-recent');
     setLocalTimeFormat(displayPreferences?.timeFormat || '12h');
     setLocalWeeklyDigest(preferences.email?.weeklyDigest ?? true);
+    setLocalNewSeasonAlerts(notificationPreferences?.newSeasonAlerts ?? true);
+    setLocalNewEpisodeAlerts(notificationPreferences?.newEpisodeAlerts ?? true);
     onClose();
   };
 
@@ -320,6 +339,54 @@ const PreferencesDialog = ({ open, onClose }: PreferencesDialogProps) => {
             Email must be verified to enable email preferences
           </Typography>
         )}
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Notification Preferences */}
+        <Typography variant="subtitle1" color="primary" gutterBottom sx={{ fontWeight: 500 }}>
+          Notification Preferences
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localNewSeasonAlerts}
+              onChange={(e) => setLocalNewSeasonAlerts(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="New season alerts"
+          sx={{
+            ml: 2,
+            mb: 1,
+            '& .MuiFormControlLabel-label': {
+              color: 'primary.main',
+              fontWeight: 500,
+            },
+          }}
+        />
+        <Typography variant="caption" sx={{ color: 'text.secondary', ml: 4, display: 'block', mb: 2 }}>
+          Notify me when a new season of a favorited show is available
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localNewEpisodeAlerts}
+              onChange={(e) => setLocalNewEpisodeAlerts(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="New episode alerts"
+          sx={{
+            ml: 2,
+            '& .MuiFormControlLabel-label': {
+              color: 'primary.main',
+              fontWeight: 500,
+            },
+          }}
+        />
+        <Typography variant="caption" sx={{ color: 'text.secondary', ml: 4, display: 'block', mt: 1 }}>
+          Notify me when individual new episodes of favorited shows are available
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel} variant="outlined" disabled={isSaving}>

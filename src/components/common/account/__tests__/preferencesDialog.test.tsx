@@ -34,6 +34,10 @@ const mockPreferences = {
   email: {
     weeklyDigest: true,
   },
+  notification: {
+    newSeasonAlerts: true,
+    newEpisodeAlerts: true,
+  },
 };
 
 const createMockStore = (accountData: any = mockAccount, preferencesData: any = mockPreferences) => {
@@ -288,5 +292,114 @@ describe('PreferencesDialog', () => {
 
     const darkRadio = screen.getByLabelText('Dark') as HTMLInputElement;
     expect(darkRadio.checked).toBe(true);
+  });
+
+  it('displays notification preferences section', () => {
+    const store = createMockStore();
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    expect(screen.getByText('Notification Preferences')).toBeInTheDocument();
+    expect(screen.getByLabelText('New season alerts')).toBeInTheDocument();
+    expect(screen.getByLabelText('New episode alerts')).toBeInTheDocument();
+  });
+
+  it('new season alerts switch is checked by default', () => {
+    const store = createMockStore();
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    const seasonSwitch = screen.getByRole('switch', { name: /new season alerts/i }) as HTMLInputElement;
+    expect(seasonSwitch.checked).toBe(true);
+  });
+
+  it('new episode alerts switch is checked by default', () => {
+    const store = createMockStore();
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    const episodeSwitch = screen.getByRole('switch', { name: /new episode alerts/i }) as HTMLInputElement;
+    expect(episodeSwitch.checked).toBe(true);
+  });
+
+  it('allows toggling new season alerts off', () => {
+    const store = createMockStore();
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    const seasonSwitch = screen.getByRole('switch', { name: /new season alerts/i });
+    fireEvent.click(seasonSwitch);
+
+    expect((seasonSwitch as HTMLInputElement).checked).toBe(false);
+  });
+
+  it('allows toggling new episode alerts off', () => {
+    const store = createMockStore();
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    const episodeSwitch = screen.getByRole('switch', { name: /new episode alerts/i });
+    fireEvent.click(episodeSwitch);
+
+    expect((episodeSwitch as HTMLInputElement).checked).toBe(false);
+  });
+
+  it('initializes notification switches from stored preferences', () => {
+    const customPreferences = {
+      ...mockPreferences,
+      notification: {
+        newSeasonAlerts: false,
+        newEpisodeAlerts: true,
+      },
+    };
+    const store = createMockStore(mockAccount, customPreferences);
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    const seasonSwitch = screen.getByRole('switch', { name: /new season alerts/i }) as HTMLInputElement;
+    const episodeSwitch = screen.getByRole('switch', { name: /new episode alerts/i }) as HTMLInputElement;
+    expect(seasonSwitch.checked).toBe(false);
+    expect(episodeSwitch.checked).toBe(true);
+  });
+
+  it('dispatches notification preference update when Save is clicked', async () => {
+    const store = createMockStore();
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
+
+    render(
+      <Provider store={store}>
+        <PreferencesDialog {...defaultProps} />
+      </Provider>
+    );
+
+    // Toggle season alerts off
+    const seasonSwitch = screen.getByRole('switch', { name: /new season alerts/i });
+    fireEvent.click(seasonSwitch);
+
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(dispatchSpy).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
+    });
   });
 });
