@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
+import StatsTimeWindowSelector, { StatsTimeWindowDays } from './statsTimeWindowSelector';
 import { AccountEnhancedStatistics, AccountStatisticsResponse } from '@ajgifford/keepwatching-types';
 import { EnhancedAccountStatisticsDashboard } from '@ajgifford/keepwatching-ui';
 
@@ -18,6 +19,7 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
   const [statistics, setStatistics] = useState<AccountStatisticsResponse | null>(null);
   const [enhancedStatistics, setEnhancedStatistics] = useState<AccountEnhancedStatistics>({});
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<StatsTimeWindowDays>(30);
 
   useEffect(() => {
     const fetchAllStats = async () => {
@@ -25,6 +27,8 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
 
       setLoading(true);
       setIsLoadingEnhancedStats(true);
+
+      const velocityDays = selectedDays ?? 36500;
 
       try {
         // Fetch base statistics
@@ -47,15 +51,15 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
           profileComparisonRes,
           rewatchRes,
         ] = await Promise.allSettled([
-          axiosInstance.get(`/accounts/${accountId}/statistics/velocity`, { params: { days: 30 } }),
-          axiosInstance.get(`/accounts/${accountId}/statistics/activity/timeline`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/binge`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/streaks`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/time-to-watch`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/seasonal`),
+          axiosInstance.get(`/accounts/${accountId}/statistics/velocity`, { params: { days: velocityDays } }),
+          axiosInstance.get(`/accounts/${accountId}/statistics/activity/timeline`, { params: { days: velocityDays } }),
+          axiosInstance.get(`/accounts/${accountId}/statistics/binge`, { params: { days: velocityDays } }),
+          axiosInstance.get(`/accounts/${accountId}/statistics/streaks`, { params: { days: velocityDays } }),
+          axiosInstance.get(`/accounts/${accountId}/statistics/time-to-watch`, { params: { days: velocityDays } }),
+          axiosInstance.get(`/accounts/${accountId}/statistics/seasonal`, { params: { days: velocityDays } }),
           axiosInstance.get(`/accounts/${accountId}/statistics/milestones`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/content-depth`),
-          axiosInstance.get(`/accounts/${accountId}/statistics/content-discovery`),
+          axiosInstance.get(`/accounts/${accountId}/statistics/content-depth`, { params: { days: velocityDays } }),
+          axiosInstance.get(`/accounts/${accountId}/statistics/content-discovery`, { params: { days: velocityDays } }),
           axiosInstance.get(`/accounts/${accountId}/statistics/abandonment-risk`),
           axiosInstance.get(`/accounts/${accountId}/statistics/unaired-content`),
           axiosInstance.get(`/accounts/${accountId}/statistics/profile-comparison`),
@@ -92,7 +96,7 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
     if (accountId && open) {
       fetchAllStats();
     }
-  }, [accountId, open]);
+  }, [accountId, open, selectedDays]);
 
   return (
     <Dialog
@@ -109,7 +113,12 @@ const AccountStatisticsDialog = ({ open, title, accountId, onClose }: AccountSta
         },
       }}
     >
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+          <span>{title}</span>
+          <StatsTimeWindowSelector value={selectedDays} onChange={setSelectedDays} disabled={loading} />
+        </Box>
+      </DialogTitle>
       <DialogContent dividers>
         <EnhancedAccountStatisticsDashboard
           statistics={statistics}

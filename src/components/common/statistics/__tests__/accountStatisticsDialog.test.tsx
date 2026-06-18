@@ -85,6 +85,22 @@ describe('AccountStatisticsDialog', () => {
       });
       expect(screen.getByTestId('account-stats-dashboard')).toBeInTheDocument();
     });
+
+    it('renders the time window selector', async () => {
+      setupSuccessfulMocks();
+      await act(async () => {
+        render(<AccountStatisticsDialog {...defaultProps} />);
+      });
+      expect(screen.getByRole('group', { name: /stats time window/i })).toBeInTheDocument();
+    });
+
+    it('defaults the time window selector to 30D', async () => {
+      setupSuccessfulMocks();
+      await act(async () => {
+        render(<AccountStatisticsDialog {...defaultProps} />);
+      });
+      expect(screen.getByRole('button', { name: /30d/i })).toHaveAttribute('aria-pressed', 'true');
+    });
   });
 
   describe('close behavior', () => {
@@ -109,20 +125,24 @@ describe('AccountStatisticsDialog', () => {
       });
     });
 
-    it('fetches all enhanced statistics endpoints', async () => {
+    it('fetches all enhanced statistics endpoints with 30-day velocity by default', async () => {
       setupSuccessfulMocks();
       render(<AccountStatisticsDialog {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/velocity', { params: { days: 30 } });
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/activity/timeline');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/binge');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/streaks');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/time-to-watch');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/seasonal');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/activity/timeline', {
+          params: { days: 30 },
+        });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/binge', { params: { days: 30 } });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/streaks', { params: { days: 30 } });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/time-to-watch', { params: { days: 30 } });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/seasonal', { params: { days: 30 } });
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/milestones');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/content-depth');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/content-discovery');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/content-depth', { params: { days: 30 } });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/content-discovery', {
+          params: { days: 30 },
+        });
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/abandonment-risk');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/unaired-content');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/profile-comparison');
@@ -171,6 +191,44 @@ describe('AccountStatisticsDialog', () => {
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics');
+      });
+    });
+
+    it('re-fetches velocity with new days when time window is changed to 90D', async () => {
+      const user = userEvent.setup();
+      setupSuccessfulMocks();
+      render(<AccountStatisticsDialog {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/velocity', { params: { days: 30 } });
+      });
+
+      mockAxiosGet.mockClear();
+      mockAxiosGet.mockImplementation(() => Promise.resolve({ data: { results: {} } }));
+
+      await user.click(screen.getByRole('button', { name: /90d/i }));
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/velocity', { params: { days: 90 } });
+      });
+    });
+
+    it('re-fetches velocity with 36500 days when time window is changed to All', async () => {
+      const user = userEvent.setup();
+      setupSuccessfulMocks();
+      render(<AccountStatisticsDialog {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/velocity', { params: { days: 30 } });
+      });
+
+      mockAxiosGet.mockClear();
+      mockAxiosGet.mockImplementation(() => Promise.resolve({ data: { results: {} } }));
+
+      await user.click(screen.getByRole('button', { name: /all/i }));
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/velocity', { params: { days: 36500 } });
       });
     });
   });

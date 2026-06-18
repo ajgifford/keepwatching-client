@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 
 import ProfileStatisticsComponent from '../profileStatisticsComponent';
+import userEvent from '@testing-library/user-event';
 
 const mockAxiosGet = jest.fn();
 
@@ -58,6 +59,22 @@ describe('ProfileStatisticsComponent', () => {
       });
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
+
+    it('renders the time window selector', async () => {
+      setupSuccessfulMocks();
+      await act(async () => {
+        render(<ProfileStatisticsComponent {...defaultProps} />);
+      });
+      expect(screen.getByRole('group', { name: /stats time window/i })).toBeInTheDocument();
+    });
+
+    it('defaults the time window selector to 30D', async () => {
+      setupSuccessfulMocks();
+      await act(async () => {
+        render(<ProfileStatisticsComponent {...defaultProps} />);
+      });
+      expect(screen.getByRole('button', { name: /30d/i })).toHaveAttribute('aria-pressed', 'true');
+    });
   });
 
   describe('data fetching', () => {
@@ -70,7 +87,7 @@ describe('ProfileStatisticsComponent', () => {
       });
     });
 
-    it('fetches all enhanced statistics endpoints on mount', async () => {
+    it('fetches all enhanced statistics endpoints with 30-day velocity by default', async () => {
       setupSuccessfulMocks();
       render(<ProfileStatisticsComponent {...defaultProps} />);
 
@@ -78,14 +95,28 @@ describe('ProfileStatisticsComponent', () => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
           params: { days: 30 },
         });
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/activity/timeline');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/binge');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/streaks');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/time-to-watch');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/seasonal');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/activity/timeline', {
+          params: { days: 30 },
+        });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/binge', {
+          params: { days: 30 },
+        });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/streaks', {
+          params: { days: 30 },
+        });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/time-to-watch', {
+          params: { days: 30 },
+        });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/seasonal', {
+          params: { days: 30 },
+        });
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/milestones');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/content-depth');
-        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/content-discovery');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/content-depth', {
+          params: { days: 30 },
+        });
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/content-discovery', {
+          params: { days: 30 },
+        });
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/abandonment-risk');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/unaired-content');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/rewatches');
@@ -133,6 +164,29 @@ describe('ProfileStatisticsComponent', () => {
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/55/profiles/7/statistics');
+      });
+    });
+
+    it('re-fetches velocity with new days when time window is changed to 6M', async () => {
+      const user = userEvent.setup();
+      setupSuccessfulMocks();
+      render(<ProfileStatisticsComponent {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
+          params: { days: 30 },
+        });
+      });
+
+      mockAxiosGet.mockClear();
+      mockAxiosGet.mockImplementation(() => Promise.resolve({ data: { results: {} } }));
+
+      await user.click(screen.getByRole('button', { name: /6m/i }));
+
+      await waitFor(() => {
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
+          params: { days: 180 },
+        });
       });
     });
   });

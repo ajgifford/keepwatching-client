@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
+import StatsTimeWindowSelector, { StatsTimeWindowDays } from './statsTimeWindowSelector';
 import { ProfileEnhancedStatistics, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 import { EnhancedProfileStatisticsDashboard } from '@ajgifford/keepwatching-ui';
 
@@ -19,6 +20,7 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
   const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
   const [enhancedStatistics, setEnhancedStatistics] = useState<ProfileEnhancedStatistics>({});
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<StatsTimeWindowDays>(30);
 
   useEffect(() => {
     const fetchAllStats = async () => {
@@ -26,6 +28,8 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
 
       setLoading(true);
       setIsLoadingEnhancedStats(true);
+
+      const velocityDays = selectedDays ?? 36500;
 
       try {
         // Fetch base statistics
@@ -48,16 +52,30 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
           rewatchRes,
         ] = await Promise.allSettled([
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
-            params: { days: 30 },
+            params: { days: velocityDays },
           }),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`, {
+            params: { days: velocityDays },
+          }),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-depth`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-discovery`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-depth`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-discovery`, {
+            params: { days: velocityDays },
+          }),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/abandonment-risk`),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/unaired-content`),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/rewatches`),
@@ -91,7 +109,7 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
     if (accountId && profileId && open) {
       fetchAllStats();
     }
-  }, [accountId, profileId, open]);
+  }, [accountId, profileId, open, selectedDays]);
 
   return (
     <Dialog
@@ -108,7 +126,12 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
         },
       }}
     >
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+          <span>{title}</span>
+          <StatsTimeWindowSelector value={selectedDays} onChange={setSelectedDays} disabled={loading} />
+        </Box>
+      </DialogTitle>
       <DialogContent dividers>
         <EnhancedProfileStatisticsDashboard
           statistics={statistics}

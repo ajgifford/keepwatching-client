@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { Box } from '@mui/material';
+
 import axiosInstance from '../../../app/api/axiosInstance';
+import StatsTimeWindowSelector, { StatsTimeWindowDays } from './statsTimeWindowSelector';
 import { ProfileEnhancedStatistics, ProfileStatisticsResponse } from '@ajgifford/keepwatching-types';
 import { EnhancedProfileStatisticsDashboard } from '@ajgifford/keepwatching-ui';
 
@@ -14,6 +17,7 @@ const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsC
   const [statistics, setStatistics] = useState<ProfileStatisticsResponse | null>(null);
   const [enhancedStatistics, setEnhancedStatistics] = useState<ProfileEnhancedStatistics>({});
   const [isLoadingEnhancedStats, setIsLoadingEnhancedStats] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<StatsTimeWindowDays>(30);
 
   useEffect(() => {
     const fetchAllStats = async () => {
@@ -21,6 +25,8 @@ const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsC
 
       setLoading(true);
       setIsLoadingEnhancedStats(true);
+
+      const velocityDays = selectedDays ?? 36500;
 
       try {
         // Fetch base statistics
@@ -43,16 +49,30 @@ const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsC
           rewatchRes,
         ] = await Promise.allSettled([
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
-            params: { days: 30 },
+            params: { days: velocityDays },
           }),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/activity/timeline`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/binge`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/streaks`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/time-to-watch`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/seasonal`, {
+            params: { days: velocityDays },
+          }),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/milestones`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-depth`),
-          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-discovery`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-depth`, {
+            params: { days: velocityDays },
+          }),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/content-discovery`, {
+            params: { days: velocityDays },
+          }),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/abandonment-risk`),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/unaired-content`),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/rewatches`),
@@ -86,15 +106,20 @@ const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsC
     if (accountId && profileId) {
       fetchAllStats();
     }
-  }, [accountId, profileId]);
+  }, [accountId, profileId, selectedDays]);
 
   return (
-    <EnhancedProfileStatisticsDashboard
-      statistics={statistics}
-      isLoading={loading}
-      enhancedStatistics={enhancedStatistics}
-      isLoadingEnhancedStats={isLoadingEnhancedStats}
-    />
+    <Box>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <StatsTimeWindowSelector value={selectedDays} onChange={setSelectedDays} disabled={loading} />
+      </Box>
+      <EnhancedProfileStatisticsDashboard
+        statistics={statistics}
+        isLoading={loading}
+        enhancedStatistics={enhancedStatistics}
+        isLoadingEnhancedStats={isLoadingEnhancedStats}
+      />
+    </Box>
   );
 };
 
