@@ -12,9 +12,8 @@ import {
   selectShowError,
   selectShowLoading,
   selectWatchedEpisodes,
-  updateEpisodeWatchStatus,
-  updateSeasonWatchStatus,
 } from '../../../app/slices/activeShowSlice';
+import { selectWatchlistItems } from '../../../app/slices/watchlistSlice';
 import ShowDetails from '../showDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
 
@@ -74,6 +73,15 @@ jest.mock('../../../app/slices/activeProfileSlice', () => ({
     type: 'activeProfile/updateShowWatchStatus',
     payload: params,
   })),
+  selectShows: jest.fn((state: any) => state?.activeProfile?.shows ?? []),
+  selectMovies: jest.fn((state: any) => state?.activeProfile?.movies ?? []),
+}));
+
+jest.mock('../../../app/slices/watchlistSlice', () => ({
+  fetchWatchlist: jest.fn((profileId) => ({ type: 'watchlist/fetchWatchlist', payload: profileId })),
+  addToWatchlist: jest.fn((params) => ({ type: 'watchlist/addToWatchlist', payload: params })),
+  removeFromWatchlist: jest.fn((params) => ({ type: 'watchlist/removeFromWatchlist', payload: params })),
+  selectWatchlistItems: jest.fn(),
 }));
 
 jest.mock('../../common/controls/optionalTooltipControl', () => ({
@@ -303,6 +311,7 @@ describe('ShowDetails', () => {
       if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
       if (selector === selectShowLoading) return false;
       if (selector === selectShowError) return null;
+      if (selector === selectWatchlistItems) return [];
       return null;
     });
   });
@@ -327,6 +336,7 @@ describe('ShowDetails', () => {
     it('renders loading component when loading', () => {
       jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShowLoading) return true;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -338,6 +348,7 @@ describe('ShowDetails', () => {
     it('renders error component when there is an error', () => {
       jest.mocked(useAppSelector).mockImplementation((selector: any) => {
         if (selector === selectShowError) return 'Failed to load show';
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -484,6 +495,7 @@ describe('ShowDetails', () => {
         if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
         if (selector === selectShowLoading) return false;
         if (selector === selectShowError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -517,6 +529,7 @@ describe('ShowDetails', () => {
         if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
         if (selector === selectShowLoading) return false;
         if (selector === selectShowError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -766,6 +779,7 @@ describe('ShowDetails', () => {
         if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
         if (selector === selectShowLoading) return false;
         if (selector === selectShowError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 

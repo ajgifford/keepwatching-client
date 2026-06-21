@@ -20,6 +20,7 @@ import {
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
 import { fetchCommunityRecommendations } from '../../app/slices/communityRecommendationsSlice';
+import { fetchWatchlist } from '../../app/slices/watchlistSlice';
 import StreamingServiceSection from '../common/media/streamingServiceSection';
 import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
@@ -28,7 +29,18 @@ import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import ProfileStatisticsComponent from '../common/statistics/profileStatisticsComponent';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
+import { UpNextSection } from '../common/watchlist/upNextSection';
 import { ErrorComponent, LoadingComponent } from '@ajgifford/keepwatching-ui';
+
+const TABS = {
+  KEEP_WATCHING: 0,
+  UP_NEXT: 1,
+  TV_SHOWS: 2,
+  MOVIES: 3,
+  BY_SERVICE: 4,
+  COMMUNITY: 5,
+  STATISTICS: 6,
+} as const;
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -61,13 +73,14 @@ const Home = () => {
   };
 
   const handleNavigateToStats = () => {
-    setTabValue(5); // Navigate to Statistics tab
+    setTabValue(TABS.STATISTICS);
   };
 
   useEffect(() => {
     if (profile) {
       dispatch(fetchMilestoneStats());
       dispatch(fetchCommunityRecommendations({}));
+      dispatch(fetchWatchlist(profile.id));
     }
   }, [dispatch, profile]);
 
@@ -108,22 +121,28 @@ const Home = () => {
           allowScrollButtonsMobile
           aria-label="home content tabs"
         >
-          <Tab label="Keep Watching" {...a11yProps(0)} />
-          <Tab label="TV Shows" {...a11yProps(1)} />
-          <Tab label="Movies" {...a11yProps(2)} />
-          <Tab label="By Service" {...a11yProps(3)} />
-          <Tab label="Community" {...a11yProps(4)} />
-          <Tab label="Statistics" {...a11yProps(5)} />
+          <Tab label="Keep Watching" {...a11yProps(TABS.KEEP_WATCHING)} />
+          <Tab label="Up Next" {...a11yProps(TABS.UP_NEXT)} />
+          <Tab label="TV Shows" {...a11yProps(TABS.TV_SHOWS)} />
+          <Tab label="Movies" {...a11yProps(TABS.MOVIES)} />
+          <Tab label="By Service" {...a11yProps(TABS.BY_SERVICE)} />
+          <Tab label="Community" {...a11yProps(TABS.COMMUNITY)} />
+          <Tab label="Statistics" {...a11yProps(TABS.STATISTICS)} />
         </Tabs>
       </Box>
 
       {/* Keep Watching Tab */}
-      <TabPanel value={tabValue} index={0}>
+      <TabPanel value={tabValue} index={TABS.KEEP_WATCHING}>
         <KeepWatchingProfileComponent profileId={profile.id} />
       </TabPanel>
 
+      {/* Up Next Tab */}
+      <TabPanel value={tabValue} index={TABS.UP_NEXT}>
+        <UpNextSection />
+      </TabPanel>
+
       {/* TV Shows Tab */}
-      <TabPanel value={tabValue} index={1}>
+      <TabPanel value={tabValue} index={TABS.TV_SHOWS}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
             <Button component={Link} to="/calendar" size="small" variant="outlined" startIcon={<CalendarMonthIcon />}>
@@ -135,7 +154,7 @@ const Home = () => {
       </TabPanel>
 
       {/* Movies Tab */}
-      <TabPanel value={tabValue} index={2}>
+      <TabPanel value={tabValue} index={TABS.MOVIES}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
             <Button component={Link} to="/calendar" size="small" variant="outlined" startIcon={<CalendarMonthIcon />}>
@@ -147,19 +166,19 @@ const Home = () => {
       </TabPanel>
 
       {/* By Service Tab */}
-      <TabPanel value={tabValue} index={3}>
+      <TabPanel value={tabValue} index={TABS.BY_SERVICE}>
         <StreamingServiceSection />
       </TabPanel>
 
       {/* Community Tab */}
-      <TabPanel value={tabValue} index={4}>
+      <TabPanel value={tabValue} index={TABS.COMMUNITY}>
         <Box sx={{ pt: 2, px: { xs: 1, sm: 2 } }}>
           <CommunityRecommendationsSection />
         </Box>
       </TabPanel>
 
       {/* Statistics Tab */}
-      <TabPanel value={tabValue} index={5}>
+      <TabPanel value={tabValue} index={TABS.STATISTICS}>
         <ProfileStatisticsComponent accountId={profile.accountId} profileId={profile.id} />
       </TabPanel>
     </Box>

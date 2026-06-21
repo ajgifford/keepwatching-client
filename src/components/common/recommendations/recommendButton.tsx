@@ -30,9 +30,16 @@ interface RecommendButtonProps {
   contentType: RatingContentType;
   contentId: number;
   contentTitle: string;
+  size?: 'small' | 'medium' | 'large';
 }
 
-export const RecommendButton = ({ profileId, contentType, contentId, contentTitle }: RecommendButtonProps) => {
+export const RecommendButton = ({
+  profileId,
+  contentType,
+  contentId,
+  contentTitle,
+  size = 'medium',
+}: RecommendButtonProps) => {
   const dispatch = useAppDispatch();
   const hasRecommended = useAppSelector(selectHasRecommended(contentType, contentId));
   const sendLoading = useAppSelector(selectSendLoading);
@@ -104,7 +111,7 @@ export const RecommendButton = ({ profileId, contentType, contentId, contentTitl
     <>
       <Button
         variant={hasRecommended ? 'contained' : 'outlined'}
-        size="small"
+        size={size}
         startIcon={hasRecommended ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
         onClick={handleRecommendClick}
         disabled={sendLoading}

@@ -94,6 +94,7 @@ describe('ShowListItem', () => {
     inProduction: false,
     lastAirDate: null,
     network: null,
+    averageEpisodeRuntime: null,
   };
 
   const mockGetFilters = jest.fn(

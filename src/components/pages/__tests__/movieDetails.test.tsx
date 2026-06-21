@@ -14,6 +14,7 @@ import {
 } from '../../../app/slices/activeMovieSlice';
 import { updateMovieWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { startMovieRewatch } from '../../../app/slices/watchHistorySlice';
+import { selectWatchlistItems } from '../../../app/slices/watchlistSlice';
 import MovieDetails from '../movieDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
 
@@ -50,6 +51,8 @@ jest.mock('../../../app/slices/activeProfileSlice', () => ({
     type: 'activeProfile/updateMovieWatchStatus',
     payload: params,
   })),
+  selectShows: jest.fn((state: any) => state?.activeProfile?.shows ?? []),
+  selectMovies: jest.fn((state: any) => state?.activeProfile?.movies ?? []),
 }));
 
 jest.mock('../../../app/slices/watchHistorySlice', () => ({
@@ -57,6 +60,13 @@ jest.mock('../../../app/slices/watchHistorySlice', () => ({
     type: 'watchHistory/startMovieRewatch',
     payload: params,
   })),
+}));
+
+jest.mock('../../../app/slices/watchlistSlice', () => ({
+  addToWatchlist: jest.fn((params) => ({ type: 'watchlist/addToWatchlist', payload: params })),
+  fetchWatchlist: jest.fn((profileId) => ({ type: 'watchlist/fetchWatchlist', payload: profileId })),
+  removeFromWatchlist: jest.fn((params) => ({ type: 'watchlist/removeFromWatchlist', payload: params })),
+  selectWatchlistItems: jest.fn(),
 }));
 
 jest.mock('../../common/media/mediaCard', () => ({
@@ -225,6 +235,7 @@ describe('MovieDetails', () => {
       if (selector === selectSimilarMovies) return mockSimilarMovies;
       if (selector === selectMovieLoading) return false;
       if (selector === selectMovieError) return null;
+      if (selector === selectWatchlistItems) return [];
       return null;
     });
   });
@@ -460,6 +471,7 @@ describe('MovieDetails', () => {
         if (selector === selectSimilarMovies) return mockSimilarMovies;
         if (selector === selectMovieLoading) return false;
         if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -526,6 +538,7 @@ describe('MovieDetails', () => {
         if (selector === selectSimilarMovies) return mockSimilarMovies;
         if (selector === selectMovieLoading) return false;
         if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -552,6 +565,7 @@ describe('MovieDetails', () => {
         if (selector === selectSimilarMovies) return mockSimilarMovies;
         if (selector === selectMovieLoading) return false;
         if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -652,6 +666,7 @@ describe('MovieDetails', () => {
         if (selector === selectSimilarMovies) return mockSimilarMovies;
         if (selector === selectMovieLoading) return false;
         if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -675,6 +690,7 @@ describe('MovieDetails', () => {
       if (selector === selectSimilarMovies) return mockSimilarMovies;
       if (selector === selectMovieLoading) return false;
       if (selector === selectMovieError) return null;
+      if (selector === selectWatchlistItems) return [];
       return null;
     };
 
@@ -736,6 +752,7 @@ describe('MovieDetails', () => {
         if (selector === selectSimilarMovies) return mockSimilarMovies;
         if (selector === selectMovieLoading) return false;
         if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 
@@ -752,6 +769,7 @@ describe('MovieDetails', () => {
         if (selector === selectSimilarMovies) return mockSimilarMovies;
         if (selector === selectMovieLoading) return false;
         if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
         return null;
       });
 

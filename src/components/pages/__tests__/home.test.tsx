@@ -92,6 +92,28 @@ jest.mock('@ajgifford/keepwatching-ui', () => ({
   LoadingComponent: () => <div data-testid="loading-component">Loading...</div>,
 }));
 
+jest.mock('../../../app/slices/communityRecommendationsSlice', () => ({
+  fetchCommunityRecommendations: jest.fn(() => ({
+    type: 'communityRecommendations/fetchCommunityRecommendations',
+  })),
+}));
+
+jest.mock('../../../app/slices/watchlistSlice', () => ({
+  fetchWatchlist: jest.fn(() => ({
+    type: 'watchlist/fetchWatchlist',
+  })),
+}));
+
+jest.mock('../../common/recommendations/communityRecommendationsSection', () => ({
+  CommunityRecommendationsSection: () => (
+    <div data-testid="community-recommendations-section">CommunityRecommendationsSection</div>
+  ),
+}));
+
+jest.mock('../../common/watchlist/upNextSection', () => ({
+  UpNextSection: () => <div data-testid="up-next-section">UpNextSection</div>,
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
@@ -183,13 +205,15 @@ describe('Home', () => {
       expect(screen.getByTestId('dashboard-profile-card')).toBeInTheDocument();
     });
 
-    it('should render all 5 tabs', () => {
+    it('should render all 7 tabs', () => {
       renderWithRouter(<Home />);
 
       expect(screen.getByRole('tab', { name: /keep watching/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /up next/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /tv shows/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /movies/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /by service/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /community/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /statistics/i })).toBeInTheDocument();
     });
 
@@ -479,7 +503,7 @@ describe('Home', () => {
       renderWithRouter(<Home />);
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(6);
+      expect(tabs).toHaveLength(7);
     });
 
     it('should have tablist with aria-label', () => {

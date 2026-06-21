@@ -11,6 +11,7 @@ import profilesReducer from './slices/profilesSlice';
 import ratingsReducer from './slices/ratingsSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
 import watchHistoryReducer from './slices/watchHistorySlice';
+import watchlistReducer from './slices/watchlistSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 const rootReducer = combineReducers({
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   personSearch: personSearchReducer,
   preferences: preferencesReducer,
   watchHistory: watchHistoryReducer,
+  watchlist: watchlistReducer,
   ratings: ratingsReducer,
   communityRecommendations: communityRecommendationsReducer,
 });

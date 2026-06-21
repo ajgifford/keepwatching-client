@@ -88,6 +88,7 @@ describe('StreamingServiceSection', () => {
     inProduction: false,
     lastAirDate: '2013-09-29',
     network: 'AMC',
+    averageEpisodeRuntime: null,
     watchStatus: WatchStatus.WATCHED,
     profileId: 1,
     lastEpisode: null,

@@ -87,6 +87,7 @@ const mockShow: ProfileShowWithSeasons = {
   type: '',
   inProduction: false,
   lastAirDate: null,
+  averageEpisodeRuntime: null,
   seasons: [mockSeason],
 };
 

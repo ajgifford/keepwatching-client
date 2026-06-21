@@ -3,6 +3,8 @@ import { useLocation, useParams } from 'react-router-dom';
 
 import { AccessTime, CalendarToday, Replay, Star } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import {
   Accordion,
   AccordionDetails,
@@ -36,6 +38,12 @@ import { updateMovieWatchStatus } from '../../app/slices/activeProfileSlice';
 import { fetchProfileRecommendations } from '../../app/slices/communityRecommendationsSlice';
 import { fetchRatings } from '../../app/slices/ratingsSlice';
 import { startMovieRewatch } from '../../app/slices/watchHistorySlice';
+import {
+  addToWatchlist,
+  fetchWatchlist,
+  removeFromWatchlist,
+  selectWatchlistItems,
+} from '../../app/slices/watchlistSlice';
 import { MediaCard } from '../common/media/mediaCard';
 import { ScrollableMediaRow } from '../common/media/scrollableMediaRow';
 import MoviePriorWatchDialog from '../common/movies/MoviePriorWatchDialog';
@@ -69,6 +77,7 @@ function MovieDetails() {
   const castMembers = useAppSelector(selectCastMembers);
   const movieDetailsLoading = useAppSelector(selectMovieLoading);
   const movieDetailsError = useAppSelector(selectMovieError);
+  const watchlistItems = useAppSelector(selectWatchlistItems);
 
   const location = useLocation();
   const returnPath = location.state?.returnPath || '/movies';
@@ -79,6 +88,7 @@ function MovieDetails() {
   const [tabValue, setTabValue] = useState(0);
   const [loadingWatchStatus, setLoadingWatchStatus] = useState<boolean>(false);
   const [loadingMovieRewatch, setLoadingMovieRewatch] = useState(false);
+  const [loadingWatchlist, setLoadingWatchlist] = useState(false);
   const [priorWatchDialogOpen, setPriorWatchDialogOpen] = useState(false);
   const [pendingWatchMovie, setPendingWatchMovie] = useState<ProfileMovie | null>(null);
 
@@ -92,6 +102,7 @@ function MovieDetails() {
       dispatch(fetchMovieWithDetails({ profileId: Number(profileId), movieId: Number(movieId) }));
       dispatch(fetchRatings({ profileId: Number(profileId) }));
       dispatch(fetchProfileRecommendations({ profileId: Number(profileId) }));
+      dispatch(fetchWatchlist(Number(profileId)));
     }
 
     return () => {
@@ -152,6 +163,22 @@ function MovieDetails() {
     }
   };
 
+  const watchlistEntry = watchlistItems.find((i) => i.contentType === 'movie' && i.contentId === movie?.id);
+
+  const handleToggleWatchlist = async () => {
+    if (!movie) return;
+    setLoadingWatchlist(true);
+    try {
+      if (watchlistEntry) {
+        await dispatch(removeFromWatchlist({ profileId: Number(profileId), itemId: watchlistEntry.id }));
+      } else {
+        await dispatch(addToWatchlist({ profileId: Number(profileId), contentType: 'movie', contentId: movie.id }));
+      }
+    } finally {
+      setLoadingWatchlist(false);
+    }
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       <StickyBackButton
@@ -164,6 +191,7 @@ function MovieDetails() {
           '/search': 'Back to Search',
           '/discover': 'Back to Discover',
           '/home': 'Back to Home',
+          '/watchlist': 'Back to Watchlist',
         }}
       />
       <Box sx={{ p: { xs: 2, md: 3 } }}>
@@ -182,39 +210,100 @@ function MovieDetails() {
           contentRatingLabel={movie?.mpaRating}
           descriptionClamp={{ xs: 3, sm: 4 }}
           actions={
-            <>
-              <Box
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                flexWrap: 'wrap',
+                gap: 1,
+                mt: 1,
+                alignItems: { xs: 'stretch', sm: 'center' },
+              }}
+            >
+              <Button
+                variant="contained"
+                size={isMobile ? 'small' : 'medium'}
+                disabled={loadingWatchStatus || movie?.watchStatus === WatchStatus.UNAIRED}
+                onClick={(event) => movie && handleMovieWatchStatusChange(movie, event)}
+                startIcon={
+                  loadingWatchStatus ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <WatchStatusIcon status={movie?.watchStatus || WatchStatus.NOT_WATCHED} />
+                  )
+                }
                 sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  gap: 1,
-                  mt: 1,
-                  alignItems: 'flex-start',
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                  backdropFilter: 'blur(12px)',
+                  border: '2px solid rgba(255, 255, 255, 0.4)',
+                  color: 'white',
+                  fontWeight: 600,
+                  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    border: '2px solid rgba(255, 255, 255, 0.6)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background:
+                      'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                  },
+                  '& .MuiButton-startIcon, & .MuiButton-endIcon': {
+                    position: 'relative',
+                    zIndex: 2,
+                  },
+                  '& .MuiButton-label': {
+                    position: 'relative',
+                    zIndex: 2,
+                  },
                 }}
               >
+                {loadingWatchStatus
+                  ? 'Loading...'
+                  : movie?.watchStatus === WatchStatus.WATCHED
+                    ? 'Mark Unwatched'
+                    : 'Mark as Watched'}
+              </Button>
+              {movie?.watchStatus === WatchStatus.WATCHED && (
                 <Button
-                  variant="contained"
-                  disabled={loadingWatchStatus || movie?.watchStatus === WatchStatus.UNAIRED}
-                  onClick={(event) => movie && handleMovieWatchStatusChange(movie, event)}
+                  variant="outlined"
+                  size={isMobile ? 'small' : 'medium'}
+                  disabled={loadingMovieRewatch}
+                  onClick={handleStartMovieRewatch}
                   startIcon={
-                    loadingWatchStatus ? (
+                    loadingMovieRewatch ? (
                       <CircularProgress size={20} color="inherit" />
                     ) : (
-                      <WatchStatusIcon status={movie?.watchStatus || WatchStatus.NOT_WATCHED} />
+                      <Replay sx={{ color: 'rewatch.main' }} />
                     )
                   }
                   sx={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
                     backdropFilter: 'blur(12px)',
                     border: '2px solid rgba(255, 255, 255, 0.4)',
                     color: 'white',
                     fontWeight: 600,
                     textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                    position: 'relative',
-                    overflow: 'hidden',
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
                       border: '2px solid rgba(255, 255, 255, 0.6)',
                       transform: 'translateY(-1px)',
                       boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
@@ -224,82 +313,58 @@ function MovieDetails() {
                       color: 'rgba(255, 255, 255, 0.7)',
                       border: '2px solid rgba(255, 255, 255, 0.2)',
                     },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background:
-                        'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
-                      pointerEvents: 'none',
-                      zIndex: 1,
-                    },
-                    '& .MuiButton-startIcon, & .MuiButton-endIcon': {
-                      position: 'relative',
-                      zIndex: 2,
-                    },
-                    '& .MuiButton-label': {
-                      position: 'relative',
-                      zIndex: 2,
-                    },
                   }}
                 >
-                  {loadingWatchStatus
-                    ? 'Loading...'
-                    : movie?.watchStatus === WatchStatus.WATCHED
-                      ? 'Mark Unwatched'
-                      : 'Mark as Watched'}
+                  {loadingMovieRewatch ? 'Loading...' : 'Mark Rewatched'}
                 </Button>
-                {movie?.watchStatus === WatchStatus.WATCHED && (
-                  <Button
-                    variant="outlined"
-                    disabled={loadingMovieRewatch}
-                    onClick={handleStartMovieRewatch}
-                    startIcon={
-                      loadingMovieRewatch ? (
-                        <CircularProgress size={20} color="inherit" />
-                      ) : (
-                        <Replay sx={{ color: 'rewatch.main' }} />
-                      )
-                    }
-                    sx={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                      backdropFilter: 'blur(12px)',
-                      border: '2px solid rgba(255, 255, 255, 0.4)',
-                      color: 'white',
-                      fontWeight: 600,
-                      textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        border: '2px solid rgba(255, 255, 255, 0.6)',
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
-                      },
-                      '&:disabled': {
-                        backgroundColor: 'rgba(128, 128, 128, 0.8)',
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        border: '2px solid rgba(255, 255, 255, 0.2)',
-                      },
-                    }}
-                  >
-                    {loadingMovieRewatch ? 'Loading...' : 'Mark Rewatched'}
-                  </Button>
-                )}
-              </Box>
-              {movie && profileId && (
-                <Box sx={{ mt: 1 }}>
-                  <RecommendButton
-                    profileId={Number(profileId)}
-                    contentType="movie"
-                    contentId={movie.id}
-                    contentTitle={movie.title}
-                  />
-                </Box>
               )}
-            </>
+              <Button
+                variant="outlined"
+                size={isMobile ? 'small' : 'medium'}
+                disabled={loadingWatchlist}
+                onClick={handleToggleWatchlist}
+                startIcon={
+                  loadingWatchlist ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : watchlistEntry ? (
+                    <PlaylistRemoveIcon />
+                  ) : (
+                    <PlaylistAddIcon />
+                  )
+                }
+                sx={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  backdropFilter: 'blur(12px)',
+                  border: '2px solid rgba(255, 255, 255, 0.4)',
+                  color: 'white',
+                  fontWeight: 600,
+                  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    border: '2px solid rgba(255, 255, 255, 0.6)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                  },
+                }}
+              >
+                {loadingWatchlist ? 'Loading...' : watchlistEntry ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              </Button>
+              {movie && profileId && (
+                <RecommendButton
+                  profileId={Number(profileId)}
+                  contentType="movie"
+                  contentId={movie.id}
+                  contentTitle={movie.title}
+                  size={isMobile ? 'small' : 'medium'}
+                />
+              )}
+            </Box>
           }
         >
           {/* Additional Movie Details */}

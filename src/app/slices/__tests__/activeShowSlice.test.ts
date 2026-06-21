@@ -101,6 +101,7 @@ describe('activeShowSlice', () => {
     inProduction: true,
     lastAirDate: null,
     network: null,
+    averageEpisodeRuntime: null,
     profileId: 1,
     watchStatus: WatchStatus.WATCHING,
     lastEpisode: null,

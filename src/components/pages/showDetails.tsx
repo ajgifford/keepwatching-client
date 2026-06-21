@@ -4,6 +4,8 @@ import { useLocation, useParams } from 'react-router-dom';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import ReplayIcon from '@mui/icons-material/Replay';
 import StarIcon from '@mui/icons-material/Star';
 import TvOutlinedIcon from '@mui/icons-material/TvOutlined';
@@ -62,6 +64,12 @@ import {
 import { fetchProfileRecommendations } from '../../app/slices/communityRecommendationsSlice';
 import { fetchRatings } from '../../app/slices/ratingsSlice';
 import { recordEpisodeRewatch, startSeasonRewatch, startShowRewatch } from '../../app/slices/watchHistorySlice';
+import {
+  addToWatchlist,
+  fetchWatchlist,
+  removeFromWatchlist,
+  selectWatchlistItems,
+} from '../../app/slices/watchlistSlice';
 import { OptionalTooltipControl } from '../common/controls/optionalTooltipControl';
 import { StickyBackButton } from '../common/navigation/StickyBackButton';
 import { ContentRatingWidget } from '../common/ratings/contentRatingWidget';
@@ -123,6 +131,7 @@ function ShowDetails() {
   const showDetailsLoading = useAppSelector(selectShowLoading);
   const showDetailsError = useAppSelector(selectShowError);
   const activeProfile = useAppSelector(selectActiveProfile);
+  const watchlistItems = useAppSelector(selectWatchlistItems);
 
   const [tabValue, setTabValue] = useState(0);
   const [loadingSeasons, setLoadingSeasons] = useState<Record<number, boolean>>({});
@@ -151,6 +160,7 @@ function ShowDetails() {
   const [rewatchSeasonConfirmOpen, setRewatchSeasonConfirmOpen] = useState(false);
   const [pendingRewatchSeason, setPendingRewatchSeason] = useState<ProfileSeason | null>(null);
   const [loadingSeasonRewatch, setLoadingSeasonRewatch] = useState<Record<number, boolean>>({});
+  const [loadingWatchlist, setLoadingWatchlist] = useState(false);
 
   const priorPromptShownKey = `shown-prior-prompt-${showId}-${profileId}`;
 
@@ -180,6 +190,7 @@ function ShowDetails() {
       dispatch(fetchShowWithDetails({ profileId: Number(profileId), showId: Number(showId) }));
       dispatch(fetchRatings({ profileId: Number(profileId) }));
       dispatch(fetchProfileRecommendations({ profileId: Number(profileId) }));
+      dispatch(fetchWatchlist(Number(profileId)));
     }
 
     // Cleanup function to clear the active show when component unmounts
@@ -466,6 +477,21 @@ function ShowDetails() {
   };
 
   const completedSeasons = seasons ? getCompletedPriorSeasons(seasons) : [];
+  const watchlistEntry = watchlistItems.find((i) => i.contentType === 'show' && i.contentId === show?.id);
+
+  const handleToggleWatchlist = async () => {
+    if (!show) return;
+    setLoadingWatchlist(true);
+    try {
+      if (watchlistEntry) {
+        await dispatch(removeFromWatchlist({ profileId: Number(profileId), itemId: watchlistEntry.id }));
+      } else {
+        await dispatch(addToWatchlist({ profileId: Number(profileId), contentType: 'show', contentId: show.id }));
+      }
+    } finally {
+      setLoadingWatchlist(false);
+    }
+  };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
@@ -479,6 +505,7 @@ function ShowDetails() {
           '/search': 'Back to Search',
           '/discover': 'Back to Discover',
           '/home': 'Back to Home',
+          '/watchlist': 'Back to Watchlist',
         }}
       />
       {bulkMarkBannerVisible && (
@@ -519,39 +546,100 @@ function ShowDetails() {
           ]}
           contentRatingLabel={show?.contentRating}
           actions={
-            <>
-              <Box
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                flexWrap: 'wrap',
+                gap: 1,
+                mt: 1,
+                alignItems: { xs: 'stretch', sm: 'center' },
+              }}
+            >
+              <Button
+                variant="contained"
+                size={isMobile ? 'small' : 'medium'}
+                disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
+                onClick={(event) => show && handleShowWatchStatusChange(show, event)}
+                startIcon={
+                  loadingShowWatchStatus ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} />
+                  )
+                }
                 sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  gap: 1,
-                  mt: 1,
-                  alignItems: 'flex-start',
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                  backdropFilter: 'blur(12px)',
+                  border: '2px solid rgba(255, 255, 255, 0.4)',
+                  color: 'white',
+                  fontWeight: 600,
+                  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    border: '2px solid rgba(255, 255, 255, 0.6)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background:
+                      'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                  },
+                  '& .MuiButton-startIcon, & .MuiButton-endIcon': {
+                    position: 'relative',
+                    zIndex: 2,
+                  },
+                  '& .MuiButton-label': {
+                    position: 'relative',
+                    zIndex: 2,
+                  },
                 }}
               >
+                {loadingShowWatchStatus
+                  ? 'Loading...'
+                  : show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE
+                    ? 'Mark Unwatched'
+                    : 'Mark as Watched'}
+              </Button>
+              {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
                 <Button
-                  variant="contained"
-                  disabled={loadingShowWatchStatus || show?.watchStatus === WatchStatus.UNAIRED}
-                  onClick={(event) => show && handleShowWatchStatusChange(show, event)}
+                  variant="outlined"
+                  size={isMobile ? 'small' : 'medium'}
+                  disabled={loadingShowRewatch}
+                  onClick={() => setRewatchConfirmOpen(true)}
                   startIcon={
-                    loadingShowWatchStatus ? (
+                    loadingShowRewatch ? (
                       <CircularProgress size={20} color="inherit" />
                     ) : (
-                      <WatchStatusIcon status={show?.watchStatus || WatchStatus.NOT_WATCHED} />
+                      <ReplayIcon sx={{ color: 'rewatch.main' }} />
                     )
                   }
                   sx={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
                     backdropFilter: 'blur(12px)',
                     border: '2px solid rgba(255, 255, 255, 0.4)',
                     color: 'white',
                     fontWeight: 600,
                     textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                    position: 'relative',
-                    overflow: 'hidden',
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
                       border: '2px solid rgba(255, 255, 255, 0.6)',
                       transform: 'translateY(-1px)',
                       boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
@@ -561,82 +649,58 @@ function ShowDetails() {
                       color: 'rgba(255, 255, 255, 0.7)',
                       border: '2px solid rgba(255, 255, 255, 0.2)',
                     },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background:
-                        'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.1) 100%)',
-                      pointerEvents: 'none',
-                      zIndex: 1,
-                    },
-                    '& .MuiButton-startIcon, & .MuiButton-endIcon': {
-                      position: 'relative',
-                      zIndex: 2,
-                    },
-                    '& .MuiButton-label': {
-                      position: 'relative',
-                      zIndex: 2,
-                    },
                   }}
                 >
-                  {loadingShowWatchStatus
-                    ? 'Loading...'
-                    : show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE
-                      ? 'Mark Unwatched'
-                      : 'Mark as Watched'}
+                  {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
                 </Button>
-                {(show?.watchStatus === WatchStatus.WATCHED || show?.watchStatus === WatchStatus.UP_TO_DATE) && (
-                  <Button
-                    variant="outlined"
-                    disabled={loadingShowRewatch}
-                    onClick={() => setRewatchConfirmOpen(true)}
-                    startIcon={
-                      loadingShowRewatch ? (
-                        <CircularProgress size={20} color="inherit" />
-                      ) : (
-                        <ReplayIcon sx={{ color: 'rewatch.main' }} />
-                      )
-                    }
-                    sx={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                      backdropFilter: 'blur(12px)',
-                      border: '2px solid rgba(255, 255, 255, 0.4)',
-                      color: 'white',
-                      fontWeight: 600,
-                      textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        border: '2px solid rgba(255, 255, 255, 0.6)',
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
-                      },
-                      '&:disabled': {
-                        backgroundColor: 'rgba(128, 128, 128, 0.8)',
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        border: '2px solid rgba(255, 255, 255, 0.2)',
-                      },
-                    }}
-                  >
-                    {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
-                  </Button>
-                )}
-              </Box>
-              {show && profileId && (
-                <Box sx={{ mt: 1 }}>
-                  <RecommendButton
-                    profileId={Number(profileId)}
-                    contentType="show"
-                    contentId={show.id}
-                    contentTitle={show.title}
-                  />
-                </Box>
               )}
-            </>
+              <Button
+                variant="outlined"
+                size={isMobile ? 'small' : 'medium'}
+                disabled={loadingWatchlist}
+                onClick={handleToggleWatchlist}
+                startIcon={
+                  loadingWatchlist ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : watchlistEntry ? (
+                    <PlaylistRemoveIcon />
+                  ) : (
+                    <PlaylistAddIcon />
+                  )
+                }
+                sx={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  backdropFilter: 'blur(12px)',
+                  border: '2px solid rgba(255, 255, 255, 0.4)',
+                  color: 'white',
+                  fontWeight: 600,
+                  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    border: '2px solid rgba(255, 255, 255, 0.6)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                  },
+                }}
+              >
+                {loadingWatchlist ? 'Loading...' : watchlistEntry ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              </Button>
+              {show && profileId && (
+                <RecommendButton
+                  profileId={Number(profileId)}
+                  contentType="show"
+                  contentId={show.id}
+                  contentTitle={show.title}
+                  size={isMobile ? 'small' : 'medium'}
+                />
+              )}
+            </Box>
           }
         >
           {/* Additional Show Details */}

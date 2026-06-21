@@ -8,6 +8,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import MovieIcon from '@mui/icons-material/Movie';
 import PersonIcon from '@mui/icons-material/Person';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import SearchIcon from '@mui/icons-material/Search';
 import TvIcon from '@mui/icons-material/Tv';
 import {
@@ -198,6 +199,7 @@ function Navigation() {
       icon: <MovieIcon className="icon" />,
       to: '/movies?watchStatus=UNAIRED%2CNOT_WATCHED',
     },
+    { id: 'watchlist', label: 'Watchlist', icon: <PlaylistAddIcon className="icon" />, to: '/watchlist' },
     { id: 'discover', label: 'Discover', icon: <ExploreIcon className="icon" />, to: '/discover' },
     { id: 'search', label: 'Search', icon: <SearchIcon className="icon" />, to: '/search' },
     { id: 'history', label: 'History', icon: <HistoryIcon className="icon" />, to: '/history' },
