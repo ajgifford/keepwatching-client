@@ -31,6 +31,7 @@ import Search from './pages/search';
 import ShowDetails from './pages/showDetails';
 import Shows from './pages/shows';
 import WatchHistory from './pages/watchHistory';
+import Watchlist from './pages/watchlist';
 import OfflineBanner from './pwa/OfflineBanner';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -82,137 +83,149 @@ function App() {
   }
 
   return (
-    <GoogleReCaptchaProvider reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? ''}>
-      <ErrorBoundary>
-        <Provider store={store}>
-          <AppThemeProvider>
-            <WebSocketProvider />
-            <ActivityTracker />
-            <div className="app-container">
-              <BrowserRouter>
-                <ErrorBoundary>
-                  <Navigation />
-                  <ActivityNotificationBar />
-                  <OfflineBanner />
-                  <div className="content">
-                    <Container maxWidth="xl" sx={{ p: 1 }}>
-                      <Routes>
-                        <Route element={<DefaultLayout />}>
-                          <Route path="/" element={<Default />} />
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/register" element={<Register />} />
-                        </Route>
-                        <Route element={<ProtectedLayout />}>
-                          <Route
-                            path="/home"
-                            element={
-                              <ErrorBoundary>
-                                <Home />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/shows"
-                            element={
-                              <ErrorBoundary>
-                                <Shows />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/shows/:showId/:profileId"
-                            element={
-                              <ErrorBoundary>
-                                <ShowDetails />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/movies"
-                            element={
-                              <ErrorBoundary>
-                                <Movies />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/movies/:movieId/:profileId"
-                            element={
-                              <ErrorBoundary>
-                                <MovieDetails />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/discover"
-                            element={
-                              <ErrorBoundary>
-                                <Discover />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/search"
-                            element={
-                              <ErrorBoundary>
-                                <Search />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/notifications"
-                            element={
-                              <ErrorBoundary>
-                                <Notifications />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/manageAccount"
-                            element={
-                              <ErrorBoundary>
-                                <ManageAccount />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/person/:personId"
-                            element={
-                              <ErrorBoundary>
-                                <PersonDetails />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/history"
-                            element={
-                              <ErrorBoundary>
-                                <WatchHistory />
-                              </ErrorBoundary>
-                            }
-                          />
-                          <Route
-                            path="/calendar"
-                            element={
-                              <ErrorBoundary>
-                                <Calendar />
-                              </ErrorBoundary>
-                            }
-                          />
-                        </Route>
-                      </Routes>
-                    </Container>
-                  </div>
-                </ErrorBoundary>
-              </BrowserRouter>
-              <footer className="footer">
-                <Footer />
-              </footer>
-            </div>
-          </AppThemeProvider>
-        </Provider>
-      </ErrorBoundary>
-    </GoogleReCaptchaProvider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <AppThemeProvider>
+          <WebSocketProvider />
+          <ActivityTracker />
+          <div className="app-container">
+            <BrowserRouter>
+              <ErrorBoundary>
+                <Navigation />
+                <ActivityNotificationBar />
+                <OfflineBanner />
+                <div className="content">
+                  <Container maxWidth="xl" sx={{ p: 1 }}>
+                    <Routes>
+                      <Route
+                        element={
+                          <GoogleReCaptchaProvider reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? ''}>
+                            <DefaultLayout />
+                          </GoogleReCaptchaProvider>
+                        }
+                      >
+                        <Route path="/" element={<Default />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                      </Route>
+                      <Route element={<ProtectedLayout />}>
+                        <Route
+                          path="/home"
+                          element={
+                            <ErrorBoundary>
+                              <Home />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/shows"
+                          element={
+                            <ErrorBoundary>
+                              <Shows />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/shows/:showId/:profileId"
+                          element={
+                            <ErrorBoundary>
+                              <ShowDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/movies"
+                          element={
+                            <ErrorBoundary>
+                              <Movies />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/movies/:movieId/:profileId"
+                          element={
+                            <ErrorBoundary>
+                              <MovieDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/discover"
+                          element={
+                            <ErrorBoundary>
+                              <Discover />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/search"
+                          element={
+                            <ErrorBoundary>
+                              <Search />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/notifications"
+                          element={
+                            <ErrorBoundary>
+                              <Notifications />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/manageAccount"
+                          element={
+                            <ErrorBoundary>
+                              <ManageAccount />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/person/:personId"
+                          element={
+                            <ErrorBoundary>
+                              <PersonDetails />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/watchlist"
+                          element={
+                            <ErrorBoundary>
+                              <Watchlist />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/history"
+                          element={
+                            <ErrorBoundary>
+                              <WatchHistory />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/calendar"
+                          element={
+                            <ErrorBoundary>
+                              <Calendar />
+                            </ErrorBoundary>
+                          }
+                        />
+                      </Route>
+                    </Routes>
+                  </Container>
+                </div>
+              </ErrorBoundary>
+            </BrowserRouter>
+            <footer className="footer">
+              <Footer />
+            </footer>
+          </div>
+        </AppThemeProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 
