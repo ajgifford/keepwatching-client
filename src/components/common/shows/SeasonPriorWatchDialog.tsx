@@ -17,14 +17,14 @@ const SeasonPriorWatchDialog = ({
 }: SeasonPriorWatchDialogProps) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>When did you watch {seasonName}?</DialogTitle>
+      <DialogTitle>What did you do with {seasonName}?</DialogTitle>
       <DialogContent>
         <DialogContentText>
           This helps keep your statistics accurate. If you watched it before joining, we'll use the original air dates
           instead of today.
         </DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, pb: 2, px: 3 }}>
+      <DialogActions disableSpacing sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, pb: 2, px: 3 }}>
         <Button onClick={onWatchedWhenAired} variant="contained" color="primary" fullWidth>
           Previously watched (use air dates)
         </Button>

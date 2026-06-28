@@ -12,6 +12,7 @@ export function determineNextSeasonWatchStatus(season: ProfileSeason): UserWatch
     case WatchStatus.NOT_WATCHED:
     case WatchStatus.WATCHING:
       return WatchStatus.WATCHED;
+    case WatchStatus.SKIPPED:
     case WatchStatus.UP_TO_DATE:
     case WatchStatus.WATCHED:
     default:
@@ -45,6 +46,9 @@ export function determineNextWatchStatus(currentStatus: WatchStatus): UserWatchS
 
 /** Helper function that will return the action that will be taken for a given watch status */
 export function getWatchStatusAction(currentStatus: WatchStatus): string {
+  if (currentStatus === WatchStatus.SKIPPED) {
+    return 'Mark Not Watched';
+  }
   const nextStatus = determineNextWatchStatus(currentStatus);
   if (nextStatus === WatchStatus.NOT_WATCHED) {
     return 'Mark Not Watched';

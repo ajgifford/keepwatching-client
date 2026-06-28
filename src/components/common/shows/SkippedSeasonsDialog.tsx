@@ -16,7 +16,9 @@ interface SkippedSeasonsDialogProps {
   open: boolean;
   skippedSeasons: ProfileSeason[];
   targetSeason: ProfileSeason | null;
+  triggerLabel?: string;
   onMarkAll: () => void;
+  onMarkSkipped: () => void;
   onMarkJustThis: () => void;
   onClose: () => void;
 }
@@ -25,18 +27,23 @@ const SkippedSeasonsDialog = ({
   open,
   skippedSeasons,
   targetSeason,
+  triggerLabel,
   onMarkAll,
+  onMarkSkipped,
   onMarkJustThis,
   onClose,
 }: SkippedSeasonsDialogProps) => {
-  if (!targetSeason) return null;
+  if (!targetSeason && !triggerLabel) return null;
+
+  const description = triggerLabel ?? `${targetSeason?.name} as watched`;
+  const justThisLabel = targetSeason ? `No, just ${targetSeason.name}` : 'No, continue anyway';
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>Earlier seasons aren't marked as watched</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          You marked <strong>{targetSeason.name}</strong> as previously watched, but the following earlier{' '}
+          You marked <strong>{description}</strong>, but the following earlier{' '}
           {skippedSeasons.length === 1 ? 'season has' : 'seasons have'} not been watched yet:
         </DialogContentText>
         <List dense disablePadding sx={{ mt: 1 }}>
@@ -47,15 +54,18 @@ const SkippedSeasonsDialog = ({
           ))}
         </List>
         <DialogContentText sx={{ mt: 1 }}>
-          Would you like to mark {skippedSeasons.length === 1 ? 'it' : 'them'} as previously watched too?
+          What would you like to do with {skippedSeasons.length === 1 ? 'it' : 'them'}?
         </DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, pb: 2, px: 3 }}>
+      <DialogActions disableSpacing sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, pb: 2, px: 3 }}>
         <Button onClick={onMarkAll} variant="contained" color="primary" fullWidth>
-          Yes, mark all as previously watched
+          Mark as previously watched
         </Button>
-        <Button onClick={onMarkJustThis} variant="outlined" fullWidth>
-          No, just {targetSeason.name}
+        <Button onClick={onMarkSkipped} variant="outlined" color="primary" fullWidth>
+          Mark as skipped
+        </Button>
+        <Button onClick={onMarkJustThis} variant="outlined" color="primary" fullWidth>
+          {justThisLabel}
         </Button>
       </DialogActions>
     </Dialog>

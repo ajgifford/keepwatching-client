@@ -96,7 +96,7 @@ const activeMovieSlice = createSlice({
         const { movieId, status } = action.payload;
         const movie = state.movie;
         if (movie && movie.id === movieId) {
-          movie.watchStatus = status;
+          movie.watchStatus = status as typeof movie.watchStatus;
         }
       })
       .addCase(startMovieRewatch.fulfilled, (state, action) => {

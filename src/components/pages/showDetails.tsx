@@ -7,6 +7,7 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import ReplayIcon from '@mui/icons-material/Replay';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 import StarIcon from '@mui/icons-material/Star';
 import TvOutlinedIcon from '@mui/icons-material/TvOutlined';
 import {
@@ -314,8 +315,9 @@ function ShowDetails() {
         (s) =>
           s.seasonNumber > 0 &&
           s.seasonNumber < seasonToMark.seasonNumber &&
-          s.watchStatus !== 'WATCHED' &&
-          s.watchStatus !== 'UP_TO_DATE' &&
+          s.watchStatus !== WatchStatus.WATCHED &&
+          s.watchStatus !== WatchStatus.UP_TO_DATE &&
+          s.watchStatus !== WatchStatus.SKIPPED &&
           s.episodes.length > 0 &&
           s.episodes.every((ep) => ep.airDate && parseLocalDate(ep.airDate) < today)
       );
@@ -353,20 +355,93 @@ function ShowDetails() {
         setLoadingSeasons((prev) => ({ ...prev, [season.id]: false }));
       }
     }
+    if (pendingEpisode) {
+      const ep = pendingEpisode;
+      setPendingEpisode(null);
+      await dispatchEpisodeWatchUpdate(ep, WatchStatus.WATCHED);
+    }
   };
 
-  const handleSkipPriorSeasons = () => {
+  const handleMarkSkippedSeasonsAsSkipped = async () => {
+    setSkippedSeasonsDialogOpen(false);
+    setPendingSeason(null);
+    const seasonsToMark = skippedSeasons;
+    setSkippedSeasons([]);
+    for (const season of seasonsToMark) {
+      setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
+    }
+    try {
+      for (const season of seasonsToMark) {
+        await dispatch(
+          updateSeasonWatchStatus({
+            profileId: Number(profileId),
+            seasonId: season.id,
+            seasonStatus: WatchStatus.SKIPPED,
+          })
+        );
+      }
+    } finally {
+      for (const season of seasonsToMark) {
+        setLoadingSeasons((prev) => ({ ...prev, [season.id]: false }));
+      }
+    }
+    if (pendingEpisode) {
+      const ep = pendingEpisode;
+      setPendingEpisode(null);
+      await dispatchEpisodeWatchUpdate(ep, WatchStatus.WATCHED);
+    }
+  };
+
+  const handleSkipPriorSeasons = async () => {
     setSkippedSeasonsDialogOpen(false);
     setSkippedSeasons([]);
     setPendingSeason(null);
+    if (pendingEpisode) {
+      const ep = pendingEpisode;
+      setPendingEpisode(null);
+      await dispatchEpisodeWatchUpdate(ep, WatchStatus.WATCHED);
+    }
   };
 
   const handleSeasonWatchedNow = async () => {
     if (!pendingSeason) return;
     const seasonToMark = pendingSeason;
     setSeasonDialogOpen(false);
-    setPendingSeason(null);
     await dispatchSeasonWatchUpdate(seasonToMark, WatchStatus.WATCHED);
+
+    const today = new Date();
+    const unwatchedPrior = (seasons ?? []).filter(
+      (s) =>
+        s.seasonNumber > 0 &&
+        s.seasonNumber < seasonToMark.seasonNumber &&
+        s.watchStatus !== WatchStatus.WATCHED &&
+        s.watchStatus !== WatchStatus.UP_TO_DATE &&
+        s.watchStatus !== WatchStatus.SKIPPED &&
+        s.episodes.length > 0 &&
+        s.episodes.every((ep) => ep.airDate && parseLocalDate(ep.airDate) < today)
+    );
+
+    if (unwatchedPrior.length > 0) {
+      setSkippedSeasons(unwatchedPrior);
+      setSkippedSeasonsDialogOpen(true);
+    } else {
+      setPendingSeason(null);
+    }
+  };
+
+  const handleSeasonSkip = async (season: ProfileSeason) => {
+    setLoadingSeasons((prev) => ({ ...prev, [season.id]: true }));
+    try {
+      await dispatch(
+        updateSeasonWatchStatus({
+          profileId: Number(profileId),
+          seasonId: season.id,
+          seasonStatus: WatchStatus.SKIPPED,
+        })
+      );
+    } finally {
+      setLoadingSeasons((prev) => ({ ...prev, [season.id]: false }));
+    }
   };
 
   const dispatchEpisodeWatchUpdate = async (episode: ProfileEpisode, status: UserWatchStatus) => {
@@ -390,6 +465,25 @@ function ShowDetails() {
     if (nextStatus === WatchStatus.WATCHED && seasons) {
       const today = new Date();
       const currentSeason = seasons.find((s) => s.episodes.some((e) => e.id === episode.id));
+
+      // Check for prior seasons that are entirely unwatched/unskipped
+      const priorUnwatchedSeasons = seasons.filter(
+        (s) =>
+          s.seasonNumber > 0 &&
+          s.seasonNumber < (currentSeason?.seasonNumber ?? 0) &&
+          s.watchStatus !== WatchStatus.WATCHED &&
+          s.watchStatus !== WatchStatus.UP_TO_DATE &&
+          s.watchStatus !== WatchStatus.SKIPPED &&
+          s.episodes.length > 0 &&
+          s.episodes.every((ep) => ep.airDate && parseLocalDate(ep.airDate) < today)
+      );
+      if (priorUnwatchedSeasons.length > 0) {
+        setPendingEpisode(episode);
+        setSkippedSeasons(priorUnwatchedSeasons);
+        setSkippedSeasonsDialogOpen(true);
+        return;
+      }
+
       if (currentSeason) {
         const unwatchedPrior = currentSeason.episodes.filter(
           (e) =>
@@ -1002,6 +1096,26 @@ function ShowDetails() {
                               />
                             )}
                           </Box>
+                          {season.watchStatus !== WatchStatus.SKIPPED &&
+                            season.watchStatus !== WatchStatus.WATCHED &&
+                            season.watchStatus !== WatchStatus.UP_TO_DATE &&
+                            canChangeSeasonWatchStatus(season) && (
+                              <Tooltip title="Skip Season">
+                                <span>
+                                  <IconButton
+                                    component="span"
+                                    size="small"
+                                    disabled={!!loadingSeasons[season.id]}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      handleSeasonSkip(season);
+                                    }}
+                                  >
+                                    <SkipNextIcon fontSize="small" />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                            )}
                           {season.watchStatus === WatchStatus.WATCHED && (
                             <Tooltip title="Rewatch Season">
                               <span>
@@ -1266,12 +1380,19 @@ function ShowDetails() {
         open={skippedSeasonsDialogOpen}
         skippedSeasons={skippedSeasons}
         targetSeason={pendingSeason}
+        triggerLabel={
+          pendingEpisode && !pendingSeason
+            ? `S${pendingEpisode.seasonNumber} E${pendingEpisode.episodeNumber} as watched`
+            : undefined
+        }
         onMarkAll={handleMarkSkippedSeasonsAsPrior}
+        onMarkSkipped={handleMarkSkippedSeasonsAsSkipped}
         onMarkJustThis={handleSkipPriorSeasons}
         onClose={() => {
           setSkippedSeasonsDialogOpen(false);
           setSkippedSeasons([]);
           setPendingSeason(null);
+          setPendingEpisode(null);
         }}
       />
       <SkippedEpisodesDialog

@@ -40,6 +40,11 @@ describe('watchStatusUtility', () => {
       const season = { watchStatus: WatchStatus.WATCHED } as ProfileSeason;
       expect(determineNextSeasonWatchStatus(season)).toBe(WatchStatus.NOT_WATCHED);
     });
+
+    it('should return NOT_WATCHED for SKIPPED status (clicking watch icon un-skips)', () => {
+      const season = { watchStatus: WatchStatus.SKIPPED } as ProfileSeason;
+      expect(determineNextSeasonWatchStatus(season)).toBe(WatchStatus.NOT_WATCHED);
+    });
   });
 
   describe('determineNextShowWatchStatus', () => {
@@ -93,6 +98,10 @@ describe('watchStatusUtility', () => {
 
     it('should return "Mark Watched" when next status is WATCHED', () => {
       expect(getWatchStatusAction(WatchStatus.NOT_WATCHED)).toBe('Mark Watched');
+    });
+
+    it('should return "Mark Not Watched" for SKIPPED status', () => {
+      expect(getWatchStatusAction(WatchStatus.SKIPPED)).toBe('Mark Not Watched');
     });
   });
 

@@ -1,17 +1,19 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { useAppSelector } from '../../../app/hooks';
-import { updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
+import { selectActiveProfile, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 import {
   clearActiveShow,
   fetchShowWithDetails,
+  markSeasonIdsAsPriorWatched,
   selectSeasons,
   selectShow,
   selectShowCast,
   selectShowError,
   selectShowLoading,
   selectWatchedEpisodes,
+  updateSeasonWatchStatus,
 } from '../../../app/slices/activeShowSlice';
 import { selectWatchlistItems } from '../../../app/slices/watchlistSlice';
 import ShowDetails from '../showDetails';
@@ -52,6 +54,10 @@ jest.mock('../../../app/slices/activeShowSlice', () => ({
     type: 'activeShow/fetchShowWithDetails',
     payload: params,
   })),
+  markSeasonIdsAsPriorWatched: jest.fn((params) => ({
+    type: 'activeShow/markSeasonIdsAsPriorWatched',
+    payload: params,
+  })),
   selectSeasons: jest.fn(),
   selectShow: jest.fn(),
   selectShowCast: jest.fn(),
@@ -69,6 +75,14 @@ jest.mock('../../../app/slices/activeShowSlice', () => ({
 }));
 
 jest.mock('../../../app/slices/activeProfileSlice', () => ({
+  dismissBulkMarkedShow: jest.fn((params) => ({ type: 'activeProfile/dismissBulkMarkedShow', payload: params })),
+  getBulkMarkedShows: jest.fn((params) => ({ type: 'activeProfile/getBulkMarkedShows', payload: params })),
+  markShowAsPriorWatched: jest.fn((params) => ({ type: 'activeProfile/markShowAsPriorWatched', payload: params })),
+  retroactivelyMarkShowAsPrior: jest.fn((params) => ({
+    type: 'activeProfile/retroactivelyMarkShowAsPrior',
+    payload: params,
+  })),
+  selectActiveProfile: jest.fn(),
   updateShowWatchStatus: jest.fn((params) => ({
     type: 'activeProfile/updateShowWatchStatus',
     payload: params,
@@ -790,6 +804,230 @@ describe('ShowDetails', () => {
       await waitFor(() => {
         expect(screen.getByText('No seasons available for this show')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('SeasonPriorWatchDialog flow', () => {
+    // Three-season setup: Season 1 SKIPPED, Season 2 NOT_WATCHED, Season 3 NOT_WATCHED (target).
+    // All episodes have past air dates so the prior-watch dialog triggers.
+    const pastDate = '2020-01-01';
+
+    const makePastEpisode = (id: number, episodeNumber: number, seasonNumber: number, status: WatchStatus) => ({
+      id,
+      title: `S${seasonNumber}E${episodeNumber}`,
+      episodeNumber,
+      seasonNumber,
+      airDate: pastDate,
+      runtime: 45,
+      overview: '',
+      stillImage: '',
+      watchStatus: status,
+    });
+
+    const mockSeasonsForDialog = [
+      {
+        id: 10,
+        name: 'Season 1',
+        seasonNumber: 1,
+        numberOfEpisodes: 1,
+        releaseDate: pastDate,
+        posterImage: '',
+        watchStatus: WatchStatus.SKIPPED,
+        episodes: [makePastEpisode(101, 1, 1, WatchStatus.SKIPPED)],
+      },
+      {
+        id: 20,
+        name: 'Season 2',
+        seasonNumber: 2,
+        numberOfEpisodes: 1,
+        releaseDate: pastDate,
+        posterImage: '',
+        watchStatus: WatchStatus.NOT_WATCHED,
+        episodes: [makePastEpisode(201, 1, 2, WatchStatus.NOT_WATCHED)],
+      },
+      {
+        id: 30,
+        name: 'Season 3',
+        seasonNumber: 3,
+        numberOfEpisodes: 1,
+        releaseDate: pastDate,
+        posterImage: '',
+        watchStatus: WatchStatus.NOT_WATCHED,
+        episodes: [makePastEpisode(301, 1, 3, WatchStatus.NOT_WATCHED)],
+      },
+    ];
+
+    const mockWatchedEpisodesForDialog = { 101: false, 201: false, 301: false };
+
+    beforeEach(() => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectShow) return mockShow;
+        if (selector === selectSeasons) return mockSeasonsForDialog;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodesForDialog;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
+        if (selector === selectActiveProfile) return null;
+        if (selector === selectWatchlistItems) return [];
+        return null;
+      });
+    });
+
+    const openSeasonsTab = () => {
+      renderShowDetails();
+      fireEvent.click(screen.getByRole('tab', { name: /seasons & episodes/i }));
+    };
+
+    const findSeasonWatchBox = (seasonName: string): Element | null => {
+      const summaries = document.querySelectorAll('.MuiAccordionSummary-root');
+      for (const summary of Array.from(summaries)) {
+        if (summary.textContent?.includes(seasonName)) {
+          const icon = summary.querySelector('[data-testid="watch-status-icon"]');
+          return icon?.parentElement ?? null;
+        }
+      }
+      return null;
+    };
+
+    it('opens SeasonPriorWatchDialog when clicking an all-aired unwatched season', async () => {
+      openSeasonsTab();
+
+      await waitFor(() => expect(screen.getByText('Season 3')).toBeInTheDocument());
+
+      const watchBox = findSeasonWatchBox('Season 3');
+      expect(watchBox).not.toBeNull();
+      fireEvent.click(watchBox!);
+
+      await waitFor(() => {
+        expect(screen.getByText('What did you do with Season 3?')).toBeInTheDocument();
+      });
+    });
+
+    it('SeasonPriorWatchDialog does not have a skip option', async () => {
+      openSeasonsTab();
+
+      await waitFor(() => expect(screen.getByText('Season 3')).toBeInTheDocument());
+      fireEvent.click(findSeasonWatchBox('Season 3')!);
+
+      await waitFor(() => {
+        expect(screen.getByText('What did you do with Season 3?')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByRole('button', { name: /skip/i })).not.toBeInTheDocument();
+    });
+
+    it('"I just watched it" shows SkippedSeasonsDialog for prior NOT_WATCHED seasons', async () => {
+      openSeasonsTab();
+
+      await waitFor(() => expect(screen.getByText('Season 3')).toBeInTheDocument());
+      fireEvent.click(findSeasonWatchBox('Season 3')!);
+
+      await waitFor(() => expect(screen.getByRole('button', { name: /i just watched it/i })).toBeInTheDocument());
+      fireEvent.click(screen.getByRole('button', { name: /i just watched it/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Earlier seasons aren't marked as watched")).toBeInTheDocument();
+      });
+
+      expect(mockDispatch).toHaveBeenCalledWith(
+        updateSeasonWatchStatus({ profileId: 1, seasonId: 30, seasonStatus: WatchStatus.WATCHED })
+      );
+    });
+
+    it('"I just watched it" does not include already-SKIPPED seasons in the follow-up dialog', async () => {
+      openSeasonsTab();
+
+      await waitFor(() => expect(screen.getByText('Season 3')).toBeInTheDocument());
+      fireEvent.click(findSeasonWatchBox('Season 3')!);
+
+      await waitFor(() => expect(screen.getByRole('button', { name: /i just watched it/i })).toBeInTheDocument());
+      fireEvent.click(screen.getByRole('button', { name: /i just watched it/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Earlier seasons aren't marked as watched")).toBeInTheDocument();
+      });
+
+      // Scope to dialog: Season 2 (NOT_WATCHED) should appear; Season 1 (SKIPPED) should not
+      const dialog1 = screen.getByRole('dialog');
+      expect(within(dialog1).getByText('Season 2')).toBeInTheDocument();
+      expect(within(dialog1).queryByText('Season 1')).not.toBeInTheDocument();
+    });
+
+    it('"Previously watched" does not include already-SKIPPED seasons in the follow-up dialog', async () => {
+      openSeasonsTab();
+
+      await waitFor(() => expect(screen.getByText('Season 3')).toBeInTheDocument());
+      fireEvent.click(findSeasonWatchBox('Season 3')!);
+
+      await waitFor(() => expect(screen.getByRole('button', { name: /previously watched/i })).toBeInTheDocument());
+      fireEvent.click(screen.getByRole('button', { name: /previously watched/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Earlier seasons aren't marked as watched")).toBeInTheDocument();
+      });
+
+      expect(mockDispatch).toHaveBeenCalledWith(
+        markSeasonIdsAsPriorWatched({ profileId: 1, showId: 1, seasonIds: [30] })
+      );
+
+      // Scope to dialog: Season 2 (NOT_WATCHED) should appear; Season 1 (SKIPPED) should not
+      const dialog2 = screen.getByRole('dialog');
+      expect(within(dialog2).getByText('Season 2')).toBeInTheDocument();
+      expect(within(dialog2).queryByText('Season 1')).not.toBeInTheDocument();
+    });
+
+    it('"I just watched it" skips the follow-up dialog when no prior unwatched seasons exist', async () => {
+      // Override: Season 1 WATCHED, Season 2 (target) NOT_WATCHED — nothing prior to prompt about
+      const seasonsNoGaps = [
+        {
+          id: 10,
+          name: 'Season 1',
+          seasonNumber: 1,
+          numberOfEpisodes: 1,
+          releaseDate: pastDate,
+          posterImage: '',
+          watchStatus: WatchStatus.WATCHED,
+          episodes: [makePastEpisode(101, 1, 1, WatchStatus.WATCHED)],
+        },
+        {
+          id: 20,
+          name: 'Season 2',
+          seasonNumber: 2,
+          numberOfEpisodes: 1,
+          releaseDate: pastDate,
+          posterImage: '',
+          watchStatus: WatchStatus.NOT_WATCHED,
+          episodes: [makePastEpisode(201, 1, 2, WatchStatus.NOT_WATCHED)],
+        },
+      ];
+
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectShow) return mockShow;
+        if (selector === selectSeasons) return seasonsNoGaps;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return { 101: true, 201: false };
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
+        if (selector === selectActiveProfile) return null;
+        if (selector === selectWatchlistItems) return [];
+        return null;
+      });
+
+      openSeasonsTab();
+
+      await waitFor(() => expect(screen.getByText('Season 2')).toBeInTheDocument());
+      fireEvent.click(findSeasonWatchBox('Season 2')!);
+
+      await waitFor(() => expect(screen.getByRole('button', { name: /i just watched it/i })).toBeInTheDocument());
+      fireEvent.click(screen.getByRole('button', { name: /i just watched it/i }));
+
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith(
+          updateSeasonWatchStatus({ profileId: 1, seasonId: 20, seasonStatus: WatchStatus.WATCHED })
+        );
+      });
+
+      expect(screen.queryByText("Earlier seasons aren't marked as watched")).not.toBeInTheDocument();
     });
   });
 });

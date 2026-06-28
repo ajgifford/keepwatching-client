@@ -981,7 +981,7 @@ const activeProfileSlice = createSlice({
         if (movies) {
           const movie = movies.find((m) => m.id === movieId);
           if (movie) {
-            movie.watchStatus = status;
+            movie.watchStatus = status as typeof movie.watchStatus;
           }
         }
         state.loading = false;
