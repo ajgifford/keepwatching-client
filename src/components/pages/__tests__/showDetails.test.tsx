@@ -554,6 +554,49 @@ describe('ShowDetails', () => {
     });
   });
 
+  describe('watchlist button visibility', () => {
+    it('shows Add to Watchlist button for non-watched shows', () => {
+      renderShowDetails();
+
+      expect(screen.getByRole('button', { name: /add to watchlist/i })).toBeInTheDocument();
+    });
+
+    it('shows Add to Watchlist button for UP_TO_DATE shows', () => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.UP_TO_DATE };
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
+        if (selector === selectWatchlistItems) return [];
+        return null;
+      });
+
+      renderShowDetails();
+
+      expect(screen.getByRole('button', { name: /add to watchlist/i })).toBeInTheDocument();
+    });
+
+    it('hides the watchlist button for watched shows', () => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.WATCHED };
+        if (selector === selectSeasons) return mockSeasons;
+        if (selector === selectShowCast) return mockCast;
+        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+        if (selector === selectShowLoading) return false;
+        if (selector === selectShowError) return null;
+        if (selector === selectWatchlistItems) return [];
+        return null;
+      });
+
+      renderShowDetails();
+
+      expect(screen.queryByRole('button', { name: /add to watchlist/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /remove from watchlist/i })).not.toBeInTheDocument();
+    });
+  });
+
   describe('tab navigation', () => {
     it('renders all four tabs', () => {
       renderShowDetails();

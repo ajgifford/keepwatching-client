@@ -576,6 +576,32 @@ describe('MovieDetails', () => {
     });
   });
 
+  describe('watchlist button visibility', () => {
+    it('shows Add to Watchlist button for non-watched movies', () => {
+      renderMovieDetails();
+
+      expect(screen.getByRole('button', { name: /add to watchlist/i })).toBeInTheDocument();
+    });
+
+    it('hides the watchlist button for watched movies', () => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectMovie) return { ...mockMovie, watchStatus: WatchStatus.WATCHED };
+        if (selector === selectCastMembers) return mockCastMembers;
+        if (selector === selectRecommendedMovies) return mockRecommendedMovies;
+        if (selector === selectSimilarMovies) return mockSimilarMovies;
+        if (selector === selectMovieLoading) return false;
+        if (selector === selectMovieError) return null;
+        if (selector === selectWatchlistItems) return [];
+        return null;
+      });
+
+      renderMovieDetails();
+
+      expect(screen.queryByRole('button', { name: /add to watchlist/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /remove from watchlist/i })).not.toBeInTheDocument();
+    });
+  });
+
   describe('tab navigation', () => {
     it('renders Cast and Related Content tabs', () => {
       renderMovieDetails();

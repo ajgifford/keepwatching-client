@@ -318,43 +318,45 @@ function MovieDetails() {
                   {loadingMovieRewatch ? 'Loading...' : 'Mark Rewatched'}
                 </Button>
               )}
-              <Button
-                variant="outlined"
-                size={isMobile ? 'small' : 'medium'}
-                disabled={loadingWatchlist}
-                onClick={handleToggleWatchlist}
-                startIcon={
-                  loadingWatchlist ? (
-                    <CircularProgress size={20} color="inherit" />
-                  ) : watchlistEntry ? (
-                    <PlaylistRemoveIcon />
-                  ) : (
-                    <PlaylistAddIcon />
-                  )
-                }
-                sx={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                  backdropFilter: 'blur(12px)',
-                  border: '2px solid rgba(255, 255, 255, 0.4)',
-                  color: 'white',
-                  fontWeight: 600,
-                  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    border: '2px solid rgba(255, 255, 255, 0.6)',
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
-                  },
-                  '&:disabled': {
-                    backgroundColor: 'rgba(128, 128, 128, 0.8)',
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    border: '2px solid rgba(255, 255, 255, 0.2)',
-                  },
-                }}
-              >
-                {loadingWatchlist ? 'Loading...' : watchlistEntry ? 'Remove from Watchlist' : 'Add to Watchlist'}
-              </Button>
+              {movie?.watchStatus !== WatchStatus.WATCHED && (
+                <Button
+                  variant="outlined"
+                  size={isMobile ? 'small' : 'medium'}
+                  disabled={loadingWatchlist}
+                  onClick={handleToggleWatchlist}
+                  startIcon={
+                    loadingWatchlist ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : watchlistEntry ? (
+                      <PlaylistRemoveIcon />
+                    ) : (
+                      <PlaylistAddIcon />
+                    )
+                  }
+                  sx={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    backdropFilter: 'blur(12px)',
+                    border: '2px solid rgba(255, 255, 255, 0.4)',
+                    color: 'white',
+                    fontWeight: 600,
+                    textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      border: '2px solid rgba(255, 255, 255, 0.6)',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 6px 25px rgba(0, 0, 0, 0.5)',
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'rgba(128, 128, 128, 0.8)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      border: '2px solid rgba(255, 255, 255, 0.2)',
+                    },
+                  }}
+                >
+                  {loadingWatchlist ? 'Loading...' : watchlistEntry ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                </Button>
+              )}
               {movie && profileId && (
                 <RecommendButton
                   profileId={Number(profileId)}
