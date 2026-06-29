@@ -9,32 +9,6 @@ import { EpisodeCard } from './episodeCard';
 import { KeepWatchingShow, NextEpisode, UserWatchStatus } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
-const balanceShowsAcrossRows = (shows: KeepWatchingShow[]): KeepWatchingShow[] => {
-  if (!shows || shows.length <= 2) return shows;
-
-  const groupedByEpisodeCount: Record<number, KeepWatchingShow[]> = {};
-
-  shows.forEach((show) => {
-    const count = show.episodes.length;
-    if (!groupedByEpisodeCount[count]) {
-      groupedByEpisodeCount[count] = [];
-    }
-    groupedByEpisodeCount[count].push(show);
-  });
-
-  const episodeCounts = Object.keys(groupedByEpisodeCount)
-    .map(Number)
-    .sort((a, b) => b - a);
-
-  const result: KeepWatchingShow[] = [];
-
-  episodeCounts.forEach((count) => {
-    result.push(...groupedByEpisodeCount[count]);
-  });
-
-  return result;
-};
-
 export const KeepWatchingProfileComponent = ({ profileId }: { profileId: number }) => {
   const nextUnwatchedEpisodes = useAppSelector(selectNextUnwatchedEpisodes);
   if (!nextUnwatchedEpisodes || nextUnwatchedEpisodes.length === 0) {
@@ -62,10 +36,9 @@ export const KeepWatchingProfileComponent = ({ profileId }: { profileId: number 
     );
   }
 
-  const sortedShows = balanceShowsAcrossRows(nextUnwatchedEpisodes);
   return (
     <Grid container spacing={2}>
-      {sortedShows.map((show) => (
+      {nextUnwatchedEpisodes.map((show) => (
         <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={`show-grid-${show.showId}`}>
           <ShowWithEpisodes show={show} profileId={profileId} />
         </Grid>
