@@ -80,6 +80,7 @@ import PriorWatchPromptDialog from '../common/shows/PriorWatchPromptDialog';
 import SeasonPriorWatchDialog from '../common/shows/SeasonPriorWatchDialog';
 import SkippedEpisodesDialog from '../common/shows/SkippedEpisodesDialog';
 import SkippedSeasonsDialog from '../common/shows/SkippedSeasonsDialog';
+import { CatchUpModeCard } from '../common/shows/catchUpModeCard';
 import { KeepWatchingShowComponent } from '../common/shows/keepWatchingShowComponent';
 import { RecommendedShowsComponent } from '../common/shows/recommendedShowsComponent';
 import { ShowCastSection } from '../common/shows/showCast';
@@ -948,6 +949,9 @@ function ShowDetails() {
                 </Paper>
               </Grid>
             </Grid>
+
+            {/* Catch-Up Mode */}
+            {show && profileId && <CatchUpModeCard />}
 
             {/* Your Rating & Notes */}
             {show && profileId && (
