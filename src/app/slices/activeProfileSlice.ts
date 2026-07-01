@@ -5,7 +5,7 @@ import { clearActivityTimestamp } from '../utils/activityTracker';
 import { deleteAccount, logout } from './accountSlice';
 import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
-import { editProfile, removeProfileImage, updateProfileImage } from './profilesSlice';
+import { editProfile, removeProfileImage, updateProfileAccentColor, updateProfileImage } from './profilesSlice';
 import { startMovieRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
 import {
   AddShowFavoriteResponse,
@@ -1010,6 +1010,12 @@ const activeProfileSlice = createSlice({
       .addCase(editProfile.fulfilled, (state, action) => {
         if (state.profile && state.profile.id === action.payload.id) {
           state.profile = action.payload;
+        }
+      })
+      .addCase(updateProfileAccentColor.fulfilled, (state, action) => {
+        if (state.profile && state.profile.id === action.payload.id) {
+          state.profile.accentColor = action.payload.accentColor;
+          localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
         }
       })
       .addCase(removeProfileImage.fulfilled, (state, action) => {

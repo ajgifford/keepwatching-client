@@ -46,11 +46,13 @@ import {
   editProfile,
   selectAllProfiles,
   selectProfileById,
+  updateProfileAccentColor,
 } from '../../app/slices/profilesSlice';
 import ReviewWatchHistoryDialog from '../common/account/ReviewWatchHistoryDialog';
 import NameEditDialog from '../common/account/nameEditDialog';
 import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
+import ProfileEditDialog from '../common/account/profileEditDialog';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { Profile } from '@ajgifford/keepwatching-types';
@@ -76,6 +78,8 @@ const ManageAccount = () => {
   const [nameDialogTitle, setNameDialogTitle] = useState('');
   const [currentName, setCurrentName] = useState('');
   const [onSaveCallback, setOnSaveCallback] = useState<(name: string) => void>(() => () => {});
+  const [profileEditDialogOpen, setProfileEditDialogOpen] = useState(false);
+  const [profileBeingEdited, setProfileBeingEdited] = useState<Profile | null>(null);
   const [changingActiveProfile, setChangingActiveProfile] = useState<number | null>(null);
   const [preferencesDialogOpen, setPreferencesDialogOpen] = useState<boolean>(false);
   const [profileStatsDialogOpen, setProfileStatsDialogOpen] = useState<boolean>(false);
@@ -122,9 +126,20 @@ const ManageAccount = () => {
   };
 
   const handleEditProfileButton = (profile: Profile) => {
-    openNameDialog('Edit Profile', profile.name, (newName) => {
-      dispatch(editProfile({ accountId: safeAccount.id, profileId: profile.id, name: newName }));
-    });
+    setProfileBeingEdited(profile);
+    setProfileEditDialogOpen(true);
+  };
+
+  const handleProfileEditSave = (newName: string, newAccentColor: string | null) => {
+    if (!profileBeingEdited) return;
+    const { id, name: currentProfileName, accentColor: currentAccentColor } = profileBeingEdited;
+    if (newName !== currentProfileName) {
+      dispatch(editProfile({ accountId: safeAccount.id, profileId: id, name: newName }));
+    }
+    if (newAccentColor !== (currentAccentColor ?? null)) {
+      dispatch(updateProfileAccentColor({ accountId: safeAccount.id, profileId: id, accentColor: newAccentColor }));
+    }
+    setProfileBeingEdited(null);
   };
 
   const handleEditAccountName = () => {
@@ -459,6 +474,14 @@ const ManageAccount = () => {
         onClose={() => setNameDialogOpen(false)}
         onSave={onSaveCallback}
       />
+      {profileBeingEdited && (
+        <ProfileEditDialog
+          open={profileEditDialogOpen}
+          profile={profileBeingEdited}
+          onClose={() => setProfileEditDialogOpen(false)}
+          onSave={handleProfileEditSave}
+        />
+      )}
       <PreferencesDialog open={preferencesDialogOpen} onClose={() => setPreferencesDialogOpen(false)} />
       <ProfileStatisticsDialog
         open={profileStatsDialogOpen}

@@ -3,7 +3,7 @@ import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
 import { auth } from '../app/firebaseConfig';
 import { useActivityTracking } from '../app/hooks/useActivityTracking';
@@ -219,9 +219,9 @@ function App() {
                 </div>
               </ErrorBoundary>
             </BrowserRouter>
-            <footer className="footer">
+            <Box component="footer" className="footer" sx={{ backgroundColor: 'primary.main' }}>
               <Footer />
-            </footer>
+            </Box>
           </div>
         </AppThemeProvider>
       </Provider>

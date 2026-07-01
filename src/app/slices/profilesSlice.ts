@@ -99,6 +99,37 @@ export const addProfile = createAsyncThunk<
   }
 );
 
+export const updateProfileAccentColor = createAsyncThunk<
+  Profile,
+  { accountId: number; profileId: number; accentColor: string | null },
+  { rejectValue: ApiErrorResponse }
+>(
+  'profiles/updateProfileAccentColor',
+  async (
+    { accountId, profileId, accentColor }: { accountId: number; profileId: number; accentColor: string | null },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response: AxiosResponse<ProfileResponse> = await axiosInstance.patch(
+        `/accounts/${accountId}/profiles/${profileId}/accent`,
+        { accentColor }
+      );
+      dispatch(
+        showActivityNotification({
+          message: 'Profile accent color updated successfully',
+          type: ActivityNotificationType.Success,
+        })
+      );
+      return response.data.profile;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+      return rejectWithValue({ message: 'An unknown error occurred' });
+    }
+  }
+);
+
 export const deleteProfile = createAsyncThunk<
   number,
   { accountId: number; profileId: number },
@@ -303,6 +334,20 @@ const profileSlice = createSlice({
       .addCase(editProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Edit Profile Failed' };
+      })
+      .addCase(updateProfileAccentColor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfileAccentColor.fulfilled, (state, action) => {
+        profilesAdapter.upsertOne(state, action.payload);
+        saveToLocalStorage(Object.values(state.entities));
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateProfileAccentColor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Update Profile Accent Color Failed' };
       })
       .addCase(fetchProfiles.pending, (state) => {
         state.loading = true;

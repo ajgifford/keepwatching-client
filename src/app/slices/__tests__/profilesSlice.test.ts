@@ -10,6 +10,7 @@ import {
   selectProfileById,
   selectProfilesError,
   selectProfilesLoading,
+  updateProfileAccentColor,
   updateProfileImage,
 } from '../profilesSlice';
 import { Profile } from '@ajgifford/keepwatching-types';
@@ -22,6 +23,7 @@ jest.mock('../../api/axiosInstance', () => ({
     get: jest.fn(),
     post: jest.fn(),
     put: jest.fn(),
+    patch: jest.fn(),
     delete: jest.fn(),
   },
 }));
@@ -260,6 +262,70 @@ describe('profilesSlice', () => {
 
       const store = createMockStore();
       await store.dispatch(removeProfileImage({ accountId: 1, profileId: 1 }));
+
+      const state = store.getState().profiles;
+      expect(state.loading).toBe(false);
+      expect(state.error?.message).toBeTruthy();
+    });
+  });
+
+  describe('updateProfileAccentColor', () => {
+    it('should update profile accent color successfully', async () => {
+      const updatedProfile = { ...mockProfile, accentColor: '#7b1fa2' };
+      mockAxiosInstance.patch.mockResolvedValueOnce({
+        data: { profile: updatedProfile },
+      });
+
+      const store = createMockStore({
+        profiles: {
+          ids: [1],
+          entities: { 1: mockProfile },
+          loading: false,
+          error: null,
+        },
+      });
+
+      await store.dispatch(updateProfileAccentColor({ accountId: 1, profileId: 1, accentColor: '#7b1fa2' }));
+
+      const state = store.getState().profiles;
+      expect(state.loading).toBe(false);
+      expect(selectProfileById(store.getState(), 1)?.accentColor).toBe('#7b1fa2');
+      expect(state.error).toBeNull();
+      expect(mockAxiosInstance.patch).toHaveBeenCalledWith('/accounts/1/profiles/1/accent', {
+        accentColor: '#7b1fa2',
+      });
+    });
+
+    it('should clear accent color when null is provided', async () => {
+      const updatedProfile = { ...mockProfile, accentColor: undefined };
+      mockAxiosInstance.patch.mockResolvedValueOnce({
+        data: { profile: updatedProfile },
+      });
+
+      const store = createMockStore({
+        profiles: {
+          ids: [1],
+          entities: { 1: { ...mockProfile, accentColor: '#7b1fa2' } },
+          loading: false,
+          error: null,
+        },
+      });
+
+      await store.dispatch(updateProfileAccentColor({ accountId: 1, profileId: 1, accentColor: null }));
+
+      const state = store.getState().profiles;
+      expect(state.loading).toBe(false);
+      expect(selectProfileById(store.getState(), 1)?.accentColor).toBeUndefined();
+    });
+
+    it('should handle update accent color error', async () => {
+      const mockError: ApiErrorResponse = { message: 'Failed to update accent color' };
+      mockAxiosInstance.patch.mockRejectedValueOnce({
+        response: { data: mockError },
+      });
+
+      const store = createMockStore();
+      await store.dispatch(updateProfileAccentColor({ accountId: 1, profileId: 1, accentColor: '#7b1fa2' }));
 
       const state = store.getState().profiles;
       expect(state.loading).toBe(false);

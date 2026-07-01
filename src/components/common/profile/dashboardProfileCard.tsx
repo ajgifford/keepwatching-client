@@ -6,6 +6,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
 import { Box, Card, CardContent, Grid, Stack, Typography, alpha } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import { STATIC_CONTENT_URL } from '../../../app/constants/constants';
 import { MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
@@ -116,6 +117,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
   milestoneStats,
   onNavigateToStats,
 }) => {
+  const theme = useTheme();
   const buildTitle = (name: string) => {
     return `${name}'s Dashboard`;
   };
@@ -140,7 +142,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
     <Card
       sx={{
         mb: 3,
-        background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 50%, #0d47a1 100%)',
+        background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 50%, ${theme.palette.primary.dark} 100%)`,
         color: 'white',
         position: 'relative',
         overflow: 'hidden',

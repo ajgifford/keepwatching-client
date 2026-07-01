@@ -64,6 +64,9 @@ jest.mock('../../../app/slices/profilesSlice', () => ({
   editProfile: jest.fn(() => ({
     type: 'profiles/edit',
   })),
+  updateProfileAccentColor: jest.fn(() => ({
+    type: 'profiles/updateProfileAccentColor',
+  })),
   selectAllProfiles: jest.fn(),
   selectProfileById: jest.fn(),
 }));
@@ -88,6 +91,11 @@ jest.mock('../../common/account/ReviewWatchHistoryPanel', () => ({
 jest.mock('../../common/account/nameEditDialog', () => ({
   __esModule: true,
   default: () => <div data-testid="name-edit-dialog">NameEditDialog</div>,
+}));
+
+jest.mock('../../common/account/profileEditDialog', () => ({
+  __esModule: true,
+  default: () => <div data-testid="profile-edit-dialog">ProfileEditDialog</div>,
 }));
 
 jest.mock('../../common/account/preferencesDialog', () => ({

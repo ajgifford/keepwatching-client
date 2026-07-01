@@ -46,6 +46,7 @@ jest.mock('../../../app/slices/profilesSlice', () => ({
   addProfile: jest.fn(),
   deleteProfile: jest.fn(),
   editProfile: jest.fn(),
+  updateProfileAccentColor: jest.fn(),
 }));
 
 jest.mock('../../common/account/nameEditDialog', () => ({
@@ -54,6 +55,17 @@ jest.mock('../../common/account/nameEditDialog', () => ({
     open ? (
       <div data-testid="name-edit-dialog">
         <button onClick={() => onSave('New Name')}>Save</button>
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
+}));
+
+jest.mock('../../common/account/profileEditDialog', () => ({
+  __esModule: true,
+  default: ({ open, onSave, onClose }: any) =>
+    open ? (
+      <div data-testid="profile-edit-dialog">
+        <button onClick={() => onSave('New Name', null)}>Save</button>
         <button onClick={onClose}>Close</button>
       </div>
     ) : null,
@@ -268,7 +280,7 @@ describe('ManageAccount', () => {
       await user.click(editButton);
 
       await waitFor(() => {
-        expect(screen.getByTestId('name-edit-dialog')).toBeInTheDocument();
+        expect(screen.getByTestId('profile-edit-dialog')).toBeInTheDocument();
       });
     });
 
