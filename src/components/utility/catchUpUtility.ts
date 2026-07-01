@@ -31,12 +31,7 @@ export interface CatchUpStats {
 }
 
 function isUnwatchedAndAired(episode: ProfileEpisode, today: Date): boolean {
-  return (
-    episode.watchStatus !== WatchStatus.WATCHED &&
-    episode.watchStatus !== WatchStatus.SKIPPED &&
-    !!episode.airDate &&
-    parseLocalDate(episode.airDate) <= today
-  );
+  return episode.watchStatus !== WatchStatus.WATCHED && !!episode.airDate && parseLocalDate(episode.airDate) <= today;
 }
 
 function calculatePace(seasons: ProfileSeason[], today: Date): CatchUpPace | null {

@@ -121,14 +121,13 @@ describe('catchUpUtility', () => {
       expect(stats?.totalEpisodesRemaining).toBe(3);
     });
 
-    it('excludes unaired and skipped episodes from remaining counts', () => {
+    it('excludes unaired episodes from remaining counts', () => {
       const season = createMockSeason({
         episodes: [
           createMockEpisode({ id: 1, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-01', runtime: 40 }),
           createMockEpisode({ id: 2, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-08', runtime: 40 }),
           createMockEpisode({ id: 3, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-15', runtime: 40 }),
           createMockEpisode({ id: 4, watchStatus: WatchStatus.UNAIRED, airDate: '2099-01-01', runtime: 40 }),
-          createMockEpisode({ id: 5, watchStatus: WatchStatus.SKIPPED, airDate: '2024-01-22', runtime: 40 }),
         ],
       });
       const stats = calculateCatchUpStats(createMockShow([season]));
