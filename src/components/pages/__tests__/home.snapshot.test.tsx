@@ -102,6 +102,17 @@ jest.mock('../../../app/slices/watchlistSlice', () => ({
   })),
 }));
 
+jest.mock('../../../app/slices/ratingsSlice', () => ({
+  fetchRatings: jest.fn(() => ({
+    type: 'ratings/fetchRatings',
+  })),
+  selectUnratedContent: jest.fn(),
+}));
+
+jest.mock('../../common/ratings/bulkRatingDialog', () => ({
+  BulkRatingDialog: () => null,
+}));
+
 jest.mock('../../common/recommendations/communityRecommendationsSection', () => ({
   CommunityRecommendationsSection: () => (
     <div data-testid="community-recommendations-section">CommunityRecommendationsSection</div>

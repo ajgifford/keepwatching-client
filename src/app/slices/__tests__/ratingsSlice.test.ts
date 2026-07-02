@@ -6,9 +6,10 @@ import {
   selectRatingForContent,
   selectRatings,
   selectRatingsLoading,
+  selectUnratedContent,
   upsertRating,
 } from '../ratingsSlice';
-import { ContentRating } from '@ajgifford/keepwatching-types';
+import { ContentRating, ProfileMovie, ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 
 jest.mock('../../api/axiosInstance');
 
@@ -163,6 +164,96 @@ describe('ratingsSlice', () => {
     it('selectRatingsLoading returns loading state', () => {
       const store = createMockStore({ ratings: { ratings: [], loading: true, error: null } } as any);
       expect(selectRatingsLoading(store.getState() as any)).toBe(true);
+    });
+  });
+
+  describe('selectUnratedContent', () => {
+    const mockWatchedShow: ProfileShow = {
+      id: 1,
+      title: 'Breaking Bad',
+      posterImage: '/poster.jpg',
+      watchStatus: WatchStatus.WATCHED,
+    } as any;
+    const mockUpToDateShow: ProfileShow = {
+      id: 2,
+      title: 'The Mandalorian',
+      posterImage: '/mando.jpg',
+      watchStatus: WatchStatus.UP_TO_DATE,
+    } as any;
+    const mockUnwatchedShow: ProfileShow = {
+      id: 3,
+      title: 'Stranger Things',
+      posterImage: '/st.jpg',
+      watchStatus: WatchStatus.NOT_WATCHED,
+    } as any;
+    const mockWatchedMovie: ProfileMovie = {
+      id: 99,
+      title: 'Inception',
+      posterImage: '/inception.jpg',
+      watchStatus: WatchStatus.WATCHED,
+    } as any;
+    const mockUnwatchedMovie: ProfileMovie = {
+      id: 100,
+      title: 'Dune Part Two',
+      posterImage: '/dune.jpg',
+      watchStatus: WatchStatus.NOT_WATCHED,
+    } as any;
+
+    const storeWithProfileContent = (shows: ProfileShow[], movies: ProfileMovie[], ratings: ContentRating[] = []) =>
+      createMockStore({
+        ratings: { ratings, loading: false, error: null },
+        activeProfile: {
+          profile: null,
+          shows,
+          showGenres: [],
+          showStreamingServices: [],
+          movies,
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      } as any);
+
+    it('includes WATCHED and UP_TO_DATE shows with no rating', () => {
+      const store = storeWithProfileContent([mockWatchedShow, mockUpToDateShow, mockUnwatchedShow], []);
+      const result = selectUnratedContent(store.getState() as any);
+      expect(result).toEqual([
+        { contentType: 'show', contentId: 1, contentTitle: 'Breaking Bad', posterImage: '/poster.jpg' },
+        { contentType: 'show', contentId: 2, contentTitle: 'The Mandalorian', posterImage: '/mando.jpg' },
+      ]);
+    });
+
+    it('includes WATCHED movies with no rating and excludes unwatched movies', () => {
+      const store = storeWithProfileContent([], [mockWatchedMovie, mockUnwatchedMovie]);
+      const result = selectUnratedContent(store.getState() as any);
+      expect(result).toEqual([
+        { contentType: 'movie', contentId: 99, contentTitle: 'Inception', posterImage: '/inception.jpg' },
+      ]);
+    });
+
+    it('excludes content that already has a rating', () => {
+      const store = storeWithProfileContent(
+        [mockWatchedShow],
+        [mockWatchedMovie],
+        [
+          { ...mockRating, contentType: 'show', contentId: 1 },
+          { ...mockMovieRating, contentType: 'movie', contentId: 99 },
+        ]
+      );
+      expect(selectUnratedContent(store.getState() as any)).toEqual([]);
+    });
+
+    it('returns an empty array when there is no watched content', () => {
+      const store = storeWithProfileContent([mockUnwatchedShow], [mockUnwatchedMovie]);
+      expect(selectUnratedContent(store.getState() as any)).toEqual([]);
     });
   });
 

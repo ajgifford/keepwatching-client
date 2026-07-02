@@ -16,6 +16,7 @@ import {
   selectUpcomingEpisodes,
   selectUpcomingMovies,
 } from '../../../app/slices/activeProfileSlice';
+import { fetchRatings, selectUnratedContent } from '../../../app/slices/ratingsSlice';
 import Home from '../home';
 import userEvent from '@testing-library/user-event';
 
@@ -102,6 +103,22 @@ jest.mock('../../../app/slices/watchlistSlice', () => ({
   fetchWatchlist: jest.fn(() => ({
     type: 'watchlist/fetchWatchlist',
   })),
+}));
+
+jest.mock('../../../app/slices/ratingsSlice', () => ({
+  fetchRatings: jest.fn(() => ({
+    type: 'ratings/fetchRatings',
+  })),
+  selectUnratedContent: jest.fn(),
+}));
+
+jest.mock('../../common/ratings/bulkRatingDialog', () => ({
+  BulkRatingDialog: ({ open, onClose }: { open: boolean; onClose: () => void }) =>
+    open ? (
+      <div data-testid="bulk-rating-dialog">
+        <button onClick={onClose}>Close Dialog</button>
+      </div>
+    ) : null,
 }));
 
 jest.mock('../../common/recommendations/communityRecommendationsSection', () => ({
@@ -593,6 +610,81 @@ describe('Home', () => {
       renderWithRouter(<Home />);
 
       expect(screen.getByTestId('dashboard-profile-card')).toBeInTheDocument();
+    });
+  });
+
+  describe('bulk rating', () => {
+    const withUnratedContent = (unratedContent: any[]) => {
+      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+        if (selector === selectShowWatchCounts) return mockShowWatchCounts;
+        if (selector === selectMovieWatchCounts) return mockMovieWatchCounts;
+        if (selector === selectActiveProfileLoading) return false;
+        if (selector === selectActiveProfileError) return null;
+        if (selector === selectActiveProfile) return mockProfile;
+        if (selector === selectMilestoneStats) return mockMilestoneStats;
+        if (selector === selectRecentEpisodes) return mockRecentEpisodes;
+        if (selector === selectUpcomingEpisodes) return mockUpcomingEpisodes;
+        if (selector === selectRecentMovies) return [1, 2];
+        if (selector === selectUpcomingMovies) return [3, 4];
+        if (selector === selectUnratedContent) return unratedContent;
+
+        if (typeof selector === 'function' && selector.toString().includes('selectMoviesByIds')) {
+          const selectorStr = selector.toString();
+          if (selectorStr.includes('recentMovieIds')) {
+            return mockRecentMovies;
+          }
+          if (selectorStr.includes('upcomingMovieIds')) {
+            return mockUpcomingMovies;
+          }
+        }
+
+        return [];
+      });
+    };
+
+    it('dispatches fetchRatings on mount when profile exists', () => {
+      renderWithRouter(<Home />);
+
+      expect(fetchRatings).toHaveBeenCalledWith({ profileId: mockProfile.id });
+    });
+
+    it('does not render the Rate Your Library button when nothing is unrated', () => {
+      withUnratedContent([]);
+      renderWithRouter(<Home />);
+
+      expect(screen.queryByRole('button', { name: /rate your library/i })).not.toBeInTheDocument();
+    });
+
+    it('renders the Rate Your Library button with a count when content is unrated', () => {
+      withUnratedContent([
+        { contentType: 'show', contentId: 1, contentTitle: 'Breaking Bad', posterImage: '/poster.jpg' },
+        { contentType: 'movie', contentId: 2, contentTitle: 'Inception', posterImage: '/inception.jpg' },
+      ]);
+      renderWithRouter(<Home />);
+
+      expect(screen.getByRole('button', { name: /rate your library \(2\)/i })).toBeInTheDocument();
+    });
+
+    it('opens the BulkRatingDialog when the button is clicked', async () => {
+      const user = userEvent.setup();
+      withUnratedContent([{ contentType: 'show', contentId: 1, contentTitle: 'Breaking Bad', posterImage: '/p.jpg' }]);
+      renderWithRouter(<Home />);
+
+      expect(screen.queryByTestId('bulk-rating-dialog')).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: /rate your library/i }));
+      expect(screen.getByTestId('bulk-rating-dialog')).toBeInTheDocument();
+    });
+
+    it('closes the BulkRatingDialog when onClose fires', async () => {
+      const user = userEvent.setup();
+      withUnratedContent([{ contentType: 'show', contentId: 1, contentTitle: 'Breaking Bad', posterImage: '/p.jpg' }]);
+      renderWithRouter(<Home />);
+
+      await user.click(screen.getByRole('button', { name: /rate your library/i }));
+      expect(screen.getByTestId('bulk-rating-dialog')).toBeInTheDocument();
+
+      await user.click(screen.getByText('Close Dialog'));
+      expect(screen.queryByTestId('bulk-rating-dialog')).not.toBeInTheDocument();
     });
   });
 

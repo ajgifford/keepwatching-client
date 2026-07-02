@@ -178,4 +178,99 @@ describe('ContentRatingWidget', () => {
       });
     });
   });
+
+  describe('autoSaveRating', () => {
+    it('persists the rating immediately on star selection without clicking Save', async () => {
+      (axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { rating: { ...mockRating, note: null } },
+      });
+      renderWithProviders(<ContentRatingWidget {...defaultProps} autoSaveRating />, {
+        preloadedState: ratingsState(),
+      });
+
+      const threeStars = screen.getByRole('radio', { name: /3 stars/i });
+      fireEvent.click(threeStars);
+
+      await waitFor(() => {
+        expect(axiosInstance.post).toHaveBeenCalledWith(
+          '/accounts/123/profiles/10/ratings',
+          expect.objectContaining({ rating: 3 })
+        );
+      });
+    });
+
+    it('does not auto-save when autoSaveRating is not set', () => {
+      renderWithProviders(<ContentRatingWidget {...defaultProps} />, {
+        preloadedState: ratingsState(),
+      });
+
+      const threeStars = screen.getByRole('radio', { name: /3 stars/i });
+      fireEvent.click(threeStars);
+
+      expect(axiosInstance.post).not.toHaveBeenCalled();
+    });
+
+    it('disables Save right after the rating auto-saves, since there is nothing left to save', () => {
+      renderWithProviders(<ContentRatingWidget {...defaultProps} autoSaveRating />, {
+        preloadedState: ratingsState(),
+      });
+
+      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+
+      expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
+    });
+
+    it('re-enables Save once the note is edited after an auto-saved rating', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<ContentRatingWidget {...defaultProps} autoSaveRating />, {
+        preloadedState: ratingsState(),
+      });
+
+      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
+
+      await user.type(screen.getByLabelText(/notes/i), 'Great episode');
+
+      expect(screen.getByRole('button', { name: /save/i })).toBeEnabled();
+    });
+  });
+
+  describe('onDirtyChange', () => {
+    it('reports dirty when the note differs from the saved note', async () => {
+      const user = userEvent.setup();
+      const onDirtyChange = jest.fn();
+      renderWithProviders(<ContentRatingWidget {...defaultProps} onDirtyChange={onDirtyChange} />, {
+        preloadedState: ratingsState([mockRating]),
+      });
+
+      onDirtyChange.mockClear();
+      await user.type(screen.getByLabelText(/notes/i), '!');
+
+      expect(onDirtyChange).toHaveBeenLastCalledWith(true);
+    });
+
+    it('reports not dirty when autoSaveRating is set and only the rating changes', () => {
+      const onDirtyChange = jest.fn();
+      renderWithProviders(<ContentRatingWidget {...defaultProps} autoSaveRating onDirtyChange={onDirtyChange} />, {
+        preloadedState: ratingsState(),
+      });
+
+      onDirtyChange.mockClear();
+      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+
+      expect(onDirtyChange).toHaveBeenLastCalledWith(false);
+    });
+
+    it('reports dirty when a rating is chosen without autoSaveRating', () => {
+      const onDirtyChange = jest.fn();
+      renderWithProviders(<ContentRatingWidget {...defaultProps} onDirtyChange={onDirtyChange} />, {
+        preloadedState: ratingsState(),
+      });
+
+      onDirtyChange.mockClear();
+      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+
+      expect(onDirtyChange).toHaveBeenLastCalledWith(true);
+    });
+  });
 });

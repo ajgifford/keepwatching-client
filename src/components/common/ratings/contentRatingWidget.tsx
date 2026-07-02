@@ -16,6 +16,10 @@ interface ContentRatingWidgetProps {
   contentId: number;
   contentTitle: string;
   posterImage: string;
+  /** Persist the star rating immediately on selection instead of waiting for Save. Save remains available for notes. */
+  autoSaveRating?: boolean;
+  /** Reports whether there are unsaved changes (an unsaved note, or an unsaved rating when autoSaveRating is off). */
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 export const ContentRatingWidget = ({
@@ -24,6 +28,8 @@ export const ContentRatingWidget = ({
   contentId,
   contentTitle,
   posterImage,
+  autoSaveRating = false,
+  onDirtyChange,
 }: ContentRatingWidgetProps) => {
   const dispatch = useAppDispatch();
   const existingRating = useAppSelector(selectRatingForContent(contentType, contentId));
@@ -36,16 +42,27 @@ export const ContentRatingWidget = ({
     setNote(existingRating?.note ?? '');
   }, [existingRating]);
 
-  const handleSave = async () => {
-    if (!starValue) return;
+  const isNoteDirty = note !== (existingRating?.note ?? '');
+  const isRatingDirty = !autoSaveRating && starValue !== (existingRating?.rating ?? null);
+
+  useEffect(() => {
+    if (!onDirtyChange) return;
+    onDirtyChange(isRatingDirty || isNoteDirty);
+    // isRatingDirty/isNoteDirty are derived and can stay the same value across a real state
+    // change (e.g. autoSaveRating always makes isRatingDirty false), so depend on the raw
+    // state instead to make sure this re-runs whenever starValue/note/existingRating change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [starValue, note, existingRating, autoSaveRating, onDirtyChange]);
+
+  const persistRating = async (rating: number, noteValue: string) => {
     try {
       await dispatch(
         upsertRating({
           profileId,
           contentType,
           contentId,
-          rating: starValue,
-          note: note.trim() || null,
+          rating,
+          note: noteValue.trim() || null,
           contentTitle,
           posterImage,
         })
@@ -64,6 +81,18 @@ export const ContentRatingWidget = ({
         })
       );
     }
+  };
+
+  const handleRatingChange = (newValue: number | null) => {
+    setStarValue(newValue);
+    if (autoSaveRating && newValue) {
+      persistRating(newValue, note);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!starValue) return;
+    await persistRating(starValue, note);
   };
 
   const handleDelete = async () => {
@@ -98,7 +127,7 @@ export const ContentRatingWidget = ({
       >
         Your rating
       </Typography>
-      <Rating value={starValue} onChange={(_, newValue) => setStarValue(newValue)} size="large" />
+      <Rating value={starValue} onChange={(_, newValue) => handleRatingChange(newValue)} size="large" />
       <TextField
         label="Notes (optional)"
         multiline
@@ -113,7 +142,13 @@ export const ContentRatingWidget = ({
         }}
       />
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" size="small" startIcon={<SaveIcon />} onClick={handleSave} disabled={!starValue}>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          disabled={!starValue || (autoSaveRating && !isNoteDirty)}
+        >
           Save
         </Button>
         {existingRating && (

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import StarIcon from '@mui/icons-material/Star';
 import { Box, Button, Tab, Tabs } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -20,10 +21,12 @@ import {
   selectUpcomingMovies,
 } from '../../app/slices/activeProfileSlice';
 import { fetchCommunityRecommendations } from '../../app/slices/communityRecommendationsSlice';
+import { fetchRatings, selectUnratedContent } from '../../app/slices/ratingsSlice';
 import { fetchWatchlist } from '../../app/slices/watchlistSlice';
 import StreamingServiceSection from '../common/media/streamingServiceSection';
 import { MoviesSection } from '../common/movies/moviesSection';
 import DashboardProfileCard from '../common/profile/dashboardProfileCard';
+import { BulkRatingDialog } from '../common/ratings/bulkRatingDialog';
 import { CommunityRecommendationsSection } from '../common/recommendations/communityRecommendationsSection';
 import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
@@ -45,6 +48,7 @@ const TABS = {
 const Home = () => {
   const dispatch = useAppDispatch();
   const [tabValue, setTabValue] = useState(0);
+  const [bulkRatingOpen, setBulkRatingOpen] = useState(false);
   const activeProfileLoading = useAppSelector(selectActiveProfileLoading);
   const activeProfileError = useAppSelector(selectActiveProfileError);
   const profile = useAppSelector(selectActiveProfile);
@@ -67,6 +71,7 @@ const Home = () => {
     notWatched: movieNotWatched,
     unaired: movieUnaired,
   } = useAppSelector(selectMovieWatchCounts);
+  const unratedContent = useAppSelector(selectUnratedContent);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -81,6 +86,7 @@ const Home = () => {
       dispatch(fetchMilestoneStats());
       dispatch(fetchCommunityRecommendations({}));
       dispatch(fetchWatchlist(profile.id));
+      dispatch(fetchRatings({ profileId: profile.id }));
     }
   }, [dispatch, profile]);
 
@@ -111,6 +117,16 @@ const Home = () => {
         milestoneStats={milestoneStats}
         onNavigateToStats={handleNavigateToStats}
       />
+
+      {unratedContent.length > 0 && (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <Button variant="outlined" size="small" startIcon={<StarIcon />} onClick={() => setBulkRatingOpen(true)}>
+            Rate Your Library ({unratedContent.length})
+          </Button>
+        </Box>
+      )}
+
+      <BulkRatingDialog profileId={profile.id} open={bulkRatingOpen} onClose={() => setBulkRatingOpen(false)} />
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs

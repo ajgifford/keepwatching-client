@@ -1,7 +1,14 @@
 import axiosInstance from '../api/axiosInstance';
 import { RootState } from '../store';
 import { deleteAccount, logout } from './accountSlice';
-import { ContentRating, RatingContentType, RatingResponse, RatingsResponse } from '@ajgifford/keepwatching-types';
+import { selectMovies, selectShows } from './activeProfileSlice';
+import {
+  ContentRating,
+  RatingContentType,
+  RatingResponse,
+  RatingsResponse,
+  WatchStatus,
+} from '@ajgifford/keepwatching-types';
 import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -164,5 +171,41 @@ export const selectRatingForContent = (contentType: RatingContentType, contentId
   createSelector(selectRatings, (ratings) =>
     ratings.find((r) => r.contentType === contentType && r.contentId === contentId)
   );
+
+export interface UnratedContentItem {
+  contentType: RatingContentType;
+  contentId: number;
+  contentTitle: string;
+  posterImage: string;
+}
+
+export const selectUnratedContent = createSelector(
+  [selectShows, selectMovies, selectRatings],
+  (shows, movies, ratings) => {
+    const ratedKeys = new Set(ratings.map((r) => `${r.contentType}-${r.contentId}`));
+
+    const unratedShows: UnratedContentItem[] = shows
+      .filter((show) => show.watchStatus === WatchStatus.WATCHED || show.watchStatus === WatchStatus.UP_TO_DATE)
+      .filter((show) => !ratedKeys.has(`show-${show.id}`))
+      .map((show) => ({
+        contentType: 'show',
+        contentId: show.id,
+        contentTitle: show.title,
+        posterImage: show.posterImage,
+      }));
+
+    const unratedMovies: UnratedContentItem[] = movies
+      .filter((movie) => movie.watchStatus === WatchStatus.WATCHED)
+      .filter((movie) => !ratedKeys.has(`movie-${movie.id}`))
+      .map((movie) => ({
+        contentType: 'movie',
+        contentId: movie.id,
+        contentTitle: movie.title,
+        posterImage: movie.posterImage,
+      }));
+
+    return [...unratedShows, ...unratedMovies];
+  }
+);
 
 export default ratingsSlice.reducer;
