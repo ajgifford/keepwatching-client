@@ -76,6 +76,10 @@ jest.mock('../../common/statistics/profileStatisticsComponent', () => ({
   default: () => <div data-testid="profile-statistics-component">ProfileStatisticsComponent</div>,
 }));
 
+jest.mock('../../common/statistics/recap/recapBanner', () => ({
+  RecapBanner: () => <div data-testid="recap-banner">RecapBanner</div>,
+}));
+
 jest.mock('../../common/tabs/tabPanel', () => ({
   TabPanel: ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => (
     <div role="tabpanel" hidden={value !== index}>

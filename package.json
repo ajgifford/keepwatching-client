@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@ajgifford/keepwatching-types": "^0.12.2",
+    "@ajgifford/keepwatching-types": "^0.13.0",
     "@ajgifford/keepwatching-ui": "^0.6.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -17,6 +17,7 @@
     "axios": "^1.18.0",
     "email-validator": "^2.0.4",
     "firebase": "^12.15.0",
+    "html-to-image": "^1.11.13",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-google-recaptcha-v3": "^1.11.0",

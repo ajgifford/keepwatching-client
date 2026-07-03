@@ -105,6 +105,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
         />
       </Provider>
@@ -119,6 +122,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -137,6 +143,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -159,6 +168,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
         />
       </Provider>
@@ -176,6 +188,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -197,6 +212,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
         />
       </Provider>
@@ -214,6 +232,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -235,6 +256,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
         />
       </Provider>
@@ -252,6 +276,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -273,6 +300,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
           profile={defaultProfile}
         />
@@ -290,6 +320,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -310,6 +343,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
           isLoading={true}
         />
@@ -325,6 +361,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -352,6 +391,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}
@@ -417,6 +459,9 @@ describe('ProfileCard', () => {
           handleReviewWatchHistory={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
+          handleViewRecap={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
           {...defaultProps}
         />
       </Provider>
@@ -431,6 +476,9 @@ describe('ProfileCard', () => {
       <Provider store={store}>
         <ProfileCard
           handleReviewWatchHistory={function (profile: Profile): void {
+            throw new Error('Function not implemented.');
+          }}
+          handleViewRecap={function (profile: Profile): void {
             throw new Error('Function not implemented.');
           }}
           {...defaultProps}

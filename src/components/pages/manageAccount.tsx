@@ -55,6 +55,7 @@ import { ProfileCard } from '../common/account/profileCard';
 import ProfileEditDialog from '../common/account/profileEditDialog';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
+import { RecapDialog } from '../common/statistics/recap/recapDialog';
 import { Profile } from '@ajgifford/keepwatching-types';
 import { getAccountImageUrl } from '@ajgifford/keepwatching-ui';
 import { ErrorComponent } from '@ajgifford/keepwatching-ui';
@@ -87,6 +88,8 @@ const ManageAccount = () => {
   const [profileStatsDialogProfileId, setProfileStatsDialogProfileId] = useState<number>(0);
   const [accountStatsDialogOpen, setAccountStatsDialogOpen] = useState<boolean>(false);
   const [accountStatsDialogTitle, setAccountStatsDialogTitle] = useState<string>('');
+  const [recapDialogOpen, setRecapDialogOpen] = useState<boolean>(false);
+  const [recapDialogProfile, setRecapDialogProfile] = useState<Profile | null>(null);
   const [reviewWatchHistoryDialogOpen, setReviewWatchHistoryDialogOpen] = useState<boolean>(false);
   const [reviewWatchHistoryProfileId, setReviewWatchHistoryProfileId] = useState<number>(0);
   const [reviewWatchHistoryProfileName, setReviewWatchHistoryProfileName] = useState<string>('');
@@ -203,6 +206,11 @@ const ManageAccount = () => {
     setReviewWatchHistoryProfileId(profile.id);
     setReviewWatchHistoryProfileName(profile.name);
     setReviewWatchHistoryDialogOpen(true);
+  }
+
+  function handleViewRecap(profile: Profile) {
+    setRecapDialogProfile(profile);
+    setRecapDialogOpen(true);
   }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -462,6 +470,7 @@ const ManageAccount = () => {
               handleSetActive={handleSetActiveProfile}
               handleViewStats={handleViewProfileStats}
               handleReviewWatchHistory={handleReviewWatchHistory}
+              handleViewRecap={handleViewRecap}
               isLoading={changingActiveProfile === profile.id}
             />
           ))}
@@ -502,6 +511,17 @@ const ManageAccount = () => {
         profileName={reviewWatchHistoryProfileName}
         onClose={() => setReviewWatchHistoryDialogOpen(false)}
       />
+      {recapDialogProfile && (
+        <RecapDialog
+          open={recapDialogOpen}
+          accountId={safeAccount.id}
+          profileId={recapDialogProfile.id}
+          profileName={recapDialogProfile.name}
+          profileAccentColor={recapDialogProfile.accentColor}
+          initialPeriodType="year"
+          onClose={() => setRecapDialogOpen(false)}
+        />
+      )}
       {/* Confirm Profile Delete Dialog */}
       <Dialog
         open={deleteProfileDialogOpen}

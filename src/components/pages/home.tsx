@@ -31,6 +31,7 @@ import { CommunityRecommendationsSection } from '../common/recommendations/commu
 import { EpisodesSection } from '../common/shows/episodeSection';
 import { KeepWatchingProfileComponent } from '../common/shows/keepWatchingProfileComponent';
 import ProfileStatisticsComponent from '../common/statistics/profileStatisticsComponent';
+import { RecapBanner } from '../common/statistics/recap/recapBanner';
 import { TabPanel, a11yProps } from '../common/tabs/tabPanel';
 import { UpNextSection } from '../common/watchlist/upNextSection';
 import { ErrorComponent, LoadingComponent } from '@ajgifford/keepwatching-ui';
@@ -116,6 +117,13 @@ const Home = () => {
         movieUnaired={movieUnaired}
         milestoneStats={milestoneStats}
         onNavigateToStats={handleNavigateToStats}
+      />
+
+      <RecapBanner
+        accountId={profile.accountId}
+        profileId={profile.id}
+        profileName={profile.name}
+        profileAccentColor={profile.accentColor}
       />
 
       {unratedContent.length > 0 && (

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -27,6 +28,7 @@ interface PropTypes {
   handleSetActive: (profile: Profile) => void;
   handleViewStats: (profile: Profile) => void;
   handleReviewWatchHistory: (profile: Profile) => void;
+  handleViewRecap: (profile: Profile) => void;
   isLoading?: boolean;
 }
 
@@ -38,6 +40,7 @@ export function ProfileCard({
   handleSetActive,
   handleViewStats,
   handleReviewWatchHistory,
+  handleViewRecap,
   isLoading = false,
 }: PropTypes) {
   const dispatch = useAppDispatch();
@@ -245,6 +248,15 @@ export function ProfileCard({
           }}
         >
           Review Watch Dates
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<AutoAwesomeIcon />}
+          onClick={() => {
+            handleViewRecap(profile);
+          }}
+        >
+          View Recap
         </Button>
         <Button
           variant="outlined"
