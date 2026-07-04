@@ -54,9 +54,7 @@ const MoviePriorWatchDialog = ({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Have you seen {movieTitle} before?</DialogTitle>
       <DialogContent>
-        <DialogContentText sx={{ mb: 2 }}>
-          Let us know your watch history so your statistics stay accurate.
-        </DialogContentText>
+        <DialogContentText sx={{ mb: 2 }}>Let us know when you watched this so we log it correctly.</DialogContentText>
         <RadioGroup value={choice} onChange={(e) => setChoice(e.target.value as WatchChoice)}>
           <FormControlLabel value="now" control={<Radio />} label="I just watched it" />
           <FormControlLabel value="prior" control={<Radio />} label="I've seen it before (prior watch)" />
@@ -96,6 +94,10 @@ const MoviePriorWatchDialog = ({
                   </Link>
                 </>
               )}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+              If this date is before you joined, it's marked watched only; if it's after, it's backdated but treated
+              like any other watch.
             </Typography>
           </Box>
         )}

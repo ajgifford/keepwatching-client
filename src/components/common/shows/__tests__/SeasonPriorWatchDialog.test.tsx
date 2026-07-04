@@ -27,10 +27,12 @@ describe('SeasonPriorWatchDialog', () => {
       expect(screen.getByText('What did you do with Season 4?')).toBeInTheDocument();
     });
 
-    it('renders the statistics accuracy explanation', () => {
+    it('renders the air-date explanation', () => {
       render(<SeasonPriorWatchDialog {...defaultProps} />);
 
-      expect(screen.getByText(/helps keep your statistics accurate/i)).toBeInTheDocument();
+      expect(screen.getByText(/logs each episode using its original air date/i)).toBeInTheDocument();
+      expect(screen.getByText(/marked watched only/i)).toBeInTheDocument();
+      expect(screen.getByText(/backdated but treated like any other watch/i)).toBeInTheDocument();
     });
 
     it('renders the "Previously watched" button', () => {

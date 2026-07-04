@@ -20,8 +20,9 @@ const SeasonPriorWatchDialog = ({
       <DialogTitle>What did you do with {seasonName}?</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          This helps keep your statistics accurate. If you watched it before joining, we'll use the original air dates
-          instead of today.
+          "Previously watched" logs each episode using its original air date instead of today. Episodes that aired
+          before you joined are marked watched only; episodes that aired after are backdated but treated like any other
+          watch.
         </DialogContentText>
       </DialogContent>
       <DialogActions disableSpacing sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, pb: 2, px: 3 }}>
