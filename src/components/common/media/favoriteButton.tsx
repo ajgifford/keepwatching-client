@@ -12,10 +12,18 @@ import {
   selectMovieByTMDBId,
   selectShowByTMDBId,
 } from '../../../app/slices/activeProfileSlice';
+import { RefavoriteChoiceDialog } from '../dialogs/RefavoriteChoiceDialog';
 
 interface FavoritesButtonProps {
   id: string | number;
   searchType: string;
+}
+
+interface RestoreDialogState {
+  contentTitle: string;
+  contentLabel: 'show' | 'movie';
+  profileId: number;
+  contentId: number;
 }
 
 function FavoritesButton(props: FavoritesButtonProps) {
@@ -25,6 +33,7 @@ function FavoritesButton(props: FavoritesButtonProps) {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isProcessingRef = useRef<boolean>(false);
+  const [restoreDialogState, setRestoreDialogState] = useState<RestoreDialogState | null>(null);
 
   let tmdbId: number;
   if (typeof props.id === 'string') {
@@ -50,19 +59,27 @@ function FavoritesButton(props: FavoritesButtonProps) {
 
       try {
         if (searchType === 'movies') {
-          await dispatch(
-            addMovieFavorite({
-              profileId: profile?.id || -1,
-              movieId: tmdbId,
-            })
-          );
+          const profileId = profile?.id || -1;
+          const result = await dispatch(addMovieFavorite({ profileId, movieId: tmdbId }));
+          if (addMovieFavorite.fulfilled.match(result) && result.payload.hasSurvivingHistory) {
+            setRestoreDialogState({
+              contentTitle: result.payload.favoritedMovie.title,
+              contentLabel: 'movie',
+              profileId,
+              contentId: tmdbId,
+            });
+          }
         } else {
-          await dispatch(
-            addShowFavorite({
-              profileId: Number(profile?.id),
-              showId: tmdbId,
-            })
-          );
+          const profileId = Number(profile?.id);
+          const result = await dispatch(addShowFavorite({ profileId, showId: tmdbId }));
+          if (addShowFavorite.fulfilled.match(result) && result.payload.hasSurvivingHistory) {
+            setRestoreDialogState({
+              contentTitle: result.payload.addedShow.title,
+              contentLabel: 'show',
+              profileId,
+              contentId: tmdbId,
+            });
+          }
         }
       } finally {
         isProcessingRef.current = false;
@@ -71,6 +88,19 @@ function FavoritesButton(props: FavoritesButtonProps) {
     },
     [dispatch, searchType, profile?.id, alreadyFavorited]
   );
+
+  const handleCloseRestoreDialog = useCallback(() => setRestoreDialogState(null), []);
+
+  const handleRestoreFromHistory = useCallback(() => {
+    if (!restoreDialogState) return;
+    const { profileId, contentId, contentLabel } = restoreDialogState;
+    if (contentLabel === 'movie') {
+      dispatch(addMovieFavorite({ profileId, movieId: contentId, restoreFromHistory: true }));
+    } else {
+      dispatch(addShowFavorite({ profileId, showId: contentId, restoreFromHistory: true }));
+    }
+    setRestoreDialogState(null);
+  }, [dispatch, restoreDialogState]);
 
   const getButtonContent = () => {
     if (isLoading) {
@@ -128,9 +158,19 @@ function FavoritesButton(props: FavoritesButtonProps) {
   );
 
   return (
-    <Tooltip key={`favoriteButtonTooltip_${tmdbId}`} title={getTooltipText()}>
-      {isLoading ? <span>{buttonElement}</span> : buttonElement}
-    </Tooltip>
+    <>
+      <Tooltip key={`favoriteButtonTooltip_${tmdbId}`} title={getTooltipText()}>
+        {isLoading ? <span>{buttonElement}</span> : buttonElement}
+      </Tooltip>
+      <RefavoriteChoiceDialog
+        open={restoreDialogState !== null}
+        contentTitle={restoreDialogState?.contentTitle ?? ''}
+        contentLabel={restoreDialogState?.contentLabel ?? 'show'}
+        onRestore={handleRestoreFromHistory}
+        onStartFresh={handleCloseRestoreDialog}
+        onClose={handleCloseRestoreDialog}
+      />
+    </>
   );
 }
 

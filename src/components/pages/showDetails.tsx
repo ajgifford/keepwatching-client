@@ -92,6 +92,7 @@ import {
   buildSeasonAirDate,
   calculateRuntimeDisplay,
 } from '../utility/contentUtility';
+import { getPriorWatchPromptKey } from '../utility/priorWatchPromptStorage';
 import {
   canChangeEpisodeWatchStatus,
   canChangeSeasonWatchStatus,
@@ -164,7 +165,7 @@ function ShowDetails() {
   const [loadingSeasonRewatch, setLoadingSeasonRewatch] = useState<Record<number, boolean>>({});
   const [loadingWatchlist, setLoadingWatchlist] = useState(false);
 
-  const priorPromptShownKey = `shown-prior-prompt-${showId}-${profileId}`;
+  const priorPromptShownKey = getPriorWatchPromptKey(showId, profileId);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);

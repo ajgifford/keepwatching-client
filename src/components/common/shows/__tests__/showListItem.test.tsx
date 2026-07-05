@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+import * as activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+import { getPriorWatchPromptKey } from '../../../utility/priorWatchPromptStorage';
 import { FilterProps, ShowListItem } from '../showListItem';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
@@ -108,6 +110,7 @@ describe('ShowListItem', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockDispatch.mockReturnValue(Promise.resolve());
+    localStorage.clear();
   });
 
   describe('basic rendering', () => {
@@ -231,7 +234,7 @@ describe('ShowListItem', () => {
   });
 
   describe('remove favorite functionality', () => {
-    it('should dispatch removeShowFavorite when remove favorite button clicked', async () => {
+    it('should open the unfavorite choice dialog when remove favorite button clicked', async () => {
       const user = userEvent.setup();
 
       const { container } = renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
@@ -240,8 +243,70 @@ describe('ShowListItem', () => {
       const removeButton = starIcon.closest('button');
       await user.click(removeButton!);
 
-      // Dispatch is called with a thunk, so just verify it was called
-      expect(mockDispatch).toHaveBeenCalled();
+      expect(screen.getByText("Remove 'Breaking Bad' from favorites?")).toBeInTheDocument();
+      expect(mockDispatch).not.toHaveBeenCalled();
+    });
+
+    it('should dispatch removeShowFavorite with removeHistory=false when "Keep watch history" is chosen', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(activeProfileSlice, 'removeShowFavorite');
+
+      const { container } = renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
+
+      const starIcon = container.querySelector('[data-testid="StarIcon"]')!;
+      await user.click(starIcon.closest('button')!);
+      await user.click(screen.getByRole('button', { name: /keep watch history/i }));
+
+      expect(dispatchSpy).toHaveBeenCalledWith({
+        profileId: 123,
+        showId: 1,
+        removeHistory: false,
+      });
+    });
+
+    it('should not clear the prior-watch-prompt flag when "Keep watch history" is chosen', async () => {
+      const user = userEvent.setup();
+      const promptKey = getPriorWatchPromptKey(mockShow.id, mockShow.profileId);
+      localStorage.setItem(promptKey, 'true');
+
+      const { container } = renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
+
+      const starIcon = container.querySelector('[data-testid="StarIcon"]')!;
+      await user.click(starIcon.closest('button')!);
+      await user.click(screen.getByRole('button', { name: /keep watch history/i }));
+
+      expect(localStorage.getItem(promptKey)).toBe('true');
+    });
+
+    it('should dispatch removeShowFavorite with removeHistory=true when "Remove entirely" is chosen', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(activeProfileSlice, 'removeShowFavorite');
+
+      const { container } = renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
+
+      const starIcon = container.querySelector('[data-testid="StarIcon"]')!;
+      await user.click(starIcon.closest('button')!);
+      await user.click(screen.getByRole('button', { name: /remove entirely/i }));
+
+      expect(dispatchSpy).toHaveBeenCalledWith({
+        profileId: 123,
+        showId: 1,
+        removeHistory: true,
+      });
+    });
+
+    it('should clear the prior-watch-prompt flag when "Remove entirely" is chosen, so it can retrigger on re-favorite', async () => {
+      const user = userEvent.setup();
+      const promptKey = getPriorWatchPromptKey(mockShow.id, mockShow.profileId);
+      localStorage.setItem(promptKey, 'true');
+
+      const { container } = renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
+
+      const starIcon = container.querySelector('[data-testid="StarIcon"]')!;
+      await user.click(starIcon.closest('button')!);
+      await user.click(screen.getByRole('button', { name: /remove entirely/i }));
+
+      expect(localStorage.getItem(promptKey)).toBeNull();
     });
 
     it('should not navigate when clicking remove favorite button', async () => {

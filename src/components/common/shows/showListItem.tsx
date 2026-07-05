@@ -26,8 +26,10 @@ import { useAppDispatch } from '../../../app/hooks';
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import { removeShowFavorite, updateShowWatchStatus } from '../../../app/slices/activeProfileSlice';
 import { buildEpisodeLine, buildServicesLine, buildShowAirDate } from '../../utility/contentUtility';
+import { clearPriorWatchPromptFlag } from '../../utility/priorWatchPromptStorage';
 import { determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
+import { UnfavoriteChoiceDialog } from '../dialogs/UnfavoriteChoiceDialog';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 import { WatchStatusIcon, buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -53,6 +55,7 @@ export const ShowListItem = (props: ShowListItemProps) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [confirmChangeWatchStatusDialogOpen, setConfirmChangeWatchStatusDialogOpen] = useState<boolean>(false);
   const [isUpdatingWatchStatus, setIsUpdatingWatchStatus] = useState<boolean>(false);
+  const [unfavoriteDialogOpen, setUnfavoriteDialogOpen] = useState<boolean>(false);
 
   const nextWatchStatus = determineNextShowWatchStatus(show);
 
@@ -88,10 +91,25 @@ export const ShowListItem = (props: ShowListItemProps) => {
   };
 
   const handleRemoveFavorite = () => {
+    setUnfavoriteDialogOpen(true);
+  };
+
+  const handleCloseUnfavoriteDialog = () => {
+    setUnfavoriteDialogOpen(false);
+  };
+
+  const handleUnfavoriteChoice = (removeHistory: boolean) => {
+    setUnfavoriteDialogOpen(false);
+    if (removeHistory) {
+      // History is genuinely gone, so the one-time "have you watched this before?" prompt
+      // should be eligible to show again next time this show is favorited.
+      clearPriorWatchPromptFlag(show.id, show.profileId);
+    }
     dispatch(
       removeShowFavorite({
         profileId: Number(show.profileId),
         showId: show.id,
+        removeHistory,
       })
     );
   };
@@ -223,6 +241,14 @@ export const ShowListItem = (props: ShowListItemProps) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <UnfavoriteChoiceDialog
+        open={unfavoriteDialogOpen}
+        contentTitle={show.title}
+        contentLabel="show"
+        onKeepHistory={() => handleUnfavoriteChoice(false)}
+        onRemoveEntirely={() => handleUnfavoriteChoice(true)}
+        onClose={handleCloseUnfavoriteDialog}
+      />
     </>
   );
 };

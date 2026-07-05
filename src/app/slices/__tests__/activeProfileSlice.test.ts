@@ -390,6 +390,59 @@ describe('activeProfileSlice', () => {
       expect((shows[0] as any).isFavorite).toBe(true);
     });
 
+    it('should post restoreFromHistory and surface hasSurvivingHistory in the response', async () => {
+      const mockShow: any = { id: 1, tmdbId: 123, title: 'Test Show' };
+
+      mockAxiosInstance.post.mockResolvedValueOnce({
+        data: {
+          addedShow: mockShow,
+          episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+          hasSurvivingHistory: true,
+        },
+      });
+
+      const store = createMockStore({
+        auth: {
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
+          loading: false,
+          error: null,
+        },
+        activeProfile: {
+          profile: mockProfile,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      const result = await store.dispatch(addShowFavorite({ profileId: 1, showId: 123, restoreFromHistory: true }));
+
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith(expect.any(String), {
+        showTMDBId: 123,
+        restoreFromHistory: true,
+      });
+      expect((result.payload as any).hasSurvivingHistory).toBe(true);
+    });
+
     it('should handle error when no account found', async () => {
       const store = createMockStore({
         auth: {
@@ -513,6 +566,100 @@ describe('activeProfileSlice', () => {
 
       const shows = selectShows(store.getState());
       expect(shows).toHaveLength(0);
+    });
+
+    it('should pass removeHistory as a query param when true', async () => {
+      mockAxiosInstance.delete.mockResolvedValueOnce({
+        data: {
+          removedShowReference: { id: 1, title: 'Test Show' },
+          episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+        },
+      });
+
+      const store = createMockStore({
+        auth: {
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
+          loading: false,
+          error: null,
+        },
+        activeProfile: {
+          profile: mockProfile,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      await store.dispatch(removeShowFavorite({ profileId: 1, showId: 1, removeHistory: true }));
+
+      expect(mockAxiosInstance.delete).toHaveBeenCalledWith(expect.any(String), {
+        params: { removeHistory: true },
+      });
+    });
+
+    it('should not send removeHistory query param when false/omitted', async () => {
+      mockAxiosInstance.delete.mockResolvedValueOnce({
+        data: {
+          removedShowReference: { id: 1, title: 'Test Show' },
+          episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+        },
+      });
+
+      const store = createMockStore({
+        auth: {
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
+          loading: false,
+          error: null,
+        },
+        activeProfile: {
+          profile: mockProfile,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      await store.dispatch(removeShowFavorite({ profileId: 1, showId: 1 }));
+
+      expect(mockAxiosInstance.delete).toHaveBeenCalledWith(expect.any(String), { params: undefined });
     });
 
     it('should handle error when no account found', async () => {
@@ -683,6 +830,57 @@ describe('activeProfileSlice', () => {
       expect((movies[0] as any).isFavorite).toBe(true);
     });
 
+    it('should post restoreFromHistory and surface hasSurvivingHistory in the response', async () => {
+      mockAxiosInstance.post.mockResolvedValueOnce({
+        data: {
+          favoritedMovie: { id: 1, tmdbId: 456, title: 'Test Movie' },
+          recentUpcomingMovies: { recentMovies: [], upcomingMovies: [] },
+          hasSurvivingHistory: true,
+        },
+      });
+
+      const store = createMockStore({
+        auth: {
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
+          loading: false,
+          error: null,
+        },
+        activeProfile: {
+          profile: mockProfile,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      const result = await store.dispatch(addMovieFavorite({ profileId: 1, movieId: 456, restoreFromHistory: true }));
+
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith(expect.any(String), {
+        movieTMDBId: 456,
+        restoreFromHistory: true,
+      });
+      expect((result.payload as any).hasSurvivingHistory).toBe(true);
+    });
+
     it('should handle error when no account found', async () => {
       const store = createMockStore({
         auth: {
@@ -762,6 +960,54 @@ describe('activeProfileSlice', () => {
 
       const movies = selectMovies(store.getState());
       expect(movies).toHaveLength(0);
+    });
+
+    it('should pass removeHistory as a query param when true', async () => {
+      mockAxiosInstance.delete.mockResolvedValueOnce({
+        data: {
+          removedMovieReference: { id: 1, title: 'Test Movie' },
+          recentUpcomingMovies: { recentMovies: [], upcomingMovies: [] },
+        },
+      });
+
+      const store = createMockStore({
+        auth: {
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
+          loading: false,
+          error: null,
+        },
+        activeProfile: {
+          profile: mockProfile,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      await store.dispatch(removeMovieFavorite({ profileId: 1, movieId: 1, removeHistory: true }));
+
+      expect(mockAxiosInstance.delete).toHaveBeenCalledWith(expect.any(String), {
+        params: { removeHistory: true },
+      });
     });
 
     it('should handle error when no account found', async () => {

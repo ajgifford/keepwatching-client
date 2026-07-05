@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 
 import { useMediaQuery } from '@mui/material';
 
+import axiosInstance from '../../../../app/api/axiosInstance';
 import { addMovieFavorite, addShowFavorite } from '../../../../app/slices/activeProfileSlice';
 import { renderWithProviders } from '../../../../app/testUtils';
 import FavoritesButton from '../favoriteButton';
@@ -447,6 +448,120 @@ describe('FavoritesButton', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass('MuiButton-contained');
+    });
+  });
+
+  describe('restore from history', () => {
+    const preloadedState = {
+      activeProfile: {
+        profile: mockProfile,
+        shows: [],
+        showGenres: [],
+        showStreamingServices: [],
+        movies: [],
+        movieGenres: [],
+        movieStreamingServices: [],
+        upcomingEpisodes: [],
+        recentEpisodes: [],
+        nextUnwatchedEpisodes: [],
+        recentMovies: [],
+        upcomingMovies: [],
+        milestoneStats: null,
+        lastUpdated: null,
+        loading: false,
+        error: null,
+      },
+      auth: {
+        account: { id: 1, email: 'test@test.com', uid: 'test-uid', image: '', name: 'Test User', defaultProfileId: 0 },
+        loading: false,
+        error: null,
+      },
+    };
+
+    it('shows the restore dialog when adding a show favorite that has surviving history', async () => {
+      const user = userEvent.setup();
+      jest.spyOn(axiosInstance, 'post').mockResolvedValueOnce({
+        data: {
+          addedShow: { id: 1, tmdbId: 123, title: 'Breaking Bad' },
+          episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+          hasSurvivingHistory: true,
+        },
+      });
+
+      renderWithProviders(<FavoritesButton id={123} searchType="shows" />, { preloadedState });
+
+      await user.click(screen.getByRole('button', { name: /Add to Favorites/i }));
+
+      expect(await screen.findByText("You've watched 'Breaking Bad' before")).toBeInTheDocument();
+    });
+
+    it('does not show the restore dialog when there is no surviving history', async () => {
+      const user = userEvent.setup();
+      jest.spyOn(axiosInstance, 'post').mockResolvedValueOnce({
+        data: {
+          addedShow: { id: 1, tmdbId: 123, title: 'Breaking Bad' },
+          episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+          hasSurvivingHistory: false,
+        },
+      });
+
+      renderWithProviders(<FavoritesButton id={123} searchType="shows" />, { preloadedState });
+
+      await user.click(screen.getByRole('button', { name: /Add to Favorites/i }));
+
+      await waitFor(() => expect(screen.getByText('Favorited')).toBeInTheDocument());
+      expect(screen.queryByText(/watched.*before/i)).not.toBeInTheDocument();
+    });
+
+    it('re-dispatches addShowFavorite with restoreFromHistory=true when "Restore previous watch status" is chosen', async () => {
+      const user = userEvent.setup();
+      const postSpy = jest
+        .spyOn(axiosInstance, 'post')
+        .mockResolvedValueOnce({
+          data: {
+            addedShow: { id: 1, tmdbId: 123, title: 'Breaking Bad' },
+            episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+            hasSurvivingHistory: true,
+          },
+        })
+        .mockResolvedValueOnce({
+          data: {
+            addedShow: { id: 1, tmdbId: 123, title: 'Breaking Bad' },
+            episodes: { upcomingEpisodes: [], recentEpisodes: [], nextUnwatchedEpisodes: [] },
+            hasSurvivingHistory: true,
+          },
+        });
+
+      renderWithProviders(<FavoritesButton id={123} searchType="shows" />, { preloadedState });
+
+      await user.click(screen.getByRole('button', { name: /Add to Favorites/i }));
+      await screen.findByText("You've watched 'Breaking Bad' before");
+      await user.click(screen.getByRole('button', { name: /restore previous watch status/i }));
+
+      expect(postSpy).toHaveBeenLastCalledWith(expect.any(String), {
+        showTMDBId: 123,
+        restoreFromHistory: true,
+      });
+    });
+
+    it('closes the restore dialog without a second dispatch when "Start fresh" is chosen', async () => {
+      const user = userEvent.setup();
+      const postSpy = jest.spyOn(axiosInstance, 'post').mockResolvedValueOnce({
+        data: {
+          favoritedMovie: { id: 1, tmdbId: 456, title: 'Inception' },
+          recentUpcomingMovies: { recentMovies: [], upcomingMovies: [] },
+          hasSurvivingHistory: true,
+        },
+      });
+
+      renderWithProviders(<FavoritesButton id={456} searchType="movies" />, { preloadedState });
+
+      await user.click(screen.getByRole('button', { name: /Add to Favorites/i }));
+      await screen.findByText("You've watched 'Inception' before");
+      await user.click(screen.getByRole('button', { name: /start fresh/i }));
+
+      expect(screen.queryByText("You've watched 'Inception' before")).not.toBeInTheDocument();
+      expect(postSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

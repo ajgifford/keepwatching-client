@@ -198,11 +198,11 @@ describe('MovieListItem', () => {
   });
 
   describe('remove favorite', () => {
-    it('should dispatch removeMovieFavorite when clicking star button', async () => {
+    it('should open the unfavorite choice dialog when clicking star button', async () => {
       const user = userEvent.setup();
       const dispatchSpy = jest.spyOn(activeProfileSlice, 'removeMovieFavorite');
 
-      const { store } = renderWithProviders(
+      renderWithProviders(
         <BrowserRouter>
           <MovieListItem movie={mockMovie} getFilters={mockGetFilters} />
         </BrowserRouter>
@@ -211,9 +211,47 @@ describe('MovieListItem', () => {
       const favoriteButton = screen.getByRole('button', { name: /Remove Favorite/i });
       await user.click(favoriteButton);
 
+      expect(screen.getByText("Remove 'The Shawshank Redemption' from favorites?")).toBeInTheDocument();
+      expect(dispatchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should dispatch removeMovieFavorite with removeHistory=false when "Keep watch history" is chosen', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(activeProfileSlice, 'removeMovieFavorite');
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={mockMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      await user.click(screen.getByRole('button', { name: /Remove Favorite/i }));
+      await user.click(screen.getByRole('button', { name: /keep watch history/i }));
+
       expect(dispatchSpy).toHaveBeenCalledWith({
         profileId: 1,
         movieId: 1,
+        removeHistory: false,
+      });
+    });
+
+    it('should dispatch removeMovieFavorite with removeHistory=true when "Remove entirely" is chosen', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(activeProfileSlice, 'removeMovieFavorite');
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={mockMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      await user.click(screen.getByRole('button', { name: /Remove Favorite/i }));
+      await user.click(screen.getByRole('button', { name: /remove entirely/i }));
+
+      expect(dispatchSpy).toHaveBeenCalledWith({
+        profileId: 1,
+        movieId: 1,
+        removeHistory: true,
       });
     });
 

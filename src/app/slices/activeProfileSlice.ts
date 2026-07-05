@@ -184,11 +184,14 @@ export const fetchMilestoneStats = createAsyncThunk<MilestoneStats, void, { reje
 
 export const addShowFavorite = createAsyncThunk<
   AddShowFavoriteResponse,
-  { profileId: number; showId: number },
+  { profileId: number; showId: number; restoreFromHistory?: boolean },
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/addShowFavorite',
-  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, getState, rejectWithValue }) => {
+  async (
+    { profileId, showId, restoreFromHistory }: { profileId: number; showId: number; restoreFromHistory?: boolean },
+    { dispatch, getState, rejectWithValue }
+  ) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -201,6 +204,7 @@ export const addShowFavorite = createAsyncThunk<
         `/accounts/${accountId}/profiles/${profileId}/shows/favorites`,
         {
           showTMDBId: showId,
+          restoreFromHistory,
         }
       );
       const result = response.data;
@@ -235,11 +239,14 @@ export const updateAfterAddShowFavorite = createAsyncThunk<ProfileShow, ProfileS
 
 export const removeShowFavorite = createAsyncThunk<
   RemoveShowFavoriteResponse,
-  { profileId: number; showId: number },
+  { profileId: number; showId: number; removeHistory?: boolean },
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/removeShowFavorite',
-  async ({ profileId, showId }: { profileId: number; showId: number }, { dispatch, getState, rejectWithValue }) => {
+  async (
+    { profileId, showId, removeHistory }: { profileId: number; showId: number; removeHistory?: boolean },
+    { dispatch, getState, rejectWithValue }
+  ) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -249,7 +256,8 @@ export const removeShowFavorite = createAsyncThunk<
       }
 
       const response: AxiosResponse<RemoveShowFavoriteResponse> = await axiosInstance.delete(
-        `/accounts/${accountId}/profiles/${profileId}/shows/favorites/${showId}`
+        `/accounts/${accountId}/profiles/${profileId}/shows/favorites/${showId}`,
+        { params: removeHistory ? { removeHistory: true } : undefined }
       );
       const result = response.data;
       const show = result.removedShowReference;
@@ -420,11 +428,14 @@ export const retroactivelyMarkShowAsPrior = createAsyncThunk<
 
 export const addMovieFavorite = createAsyncThunk<
   FavoriteMovieResponse,
-  { profileId: number; movieId: number },
+  { profileId: number; movieId: number; restoreFromHistory?: boolean },
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/addMovieFavorite',
-  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, getState, rejectWithValue }) => {
+  async (
+    { profileId, movieId, restoreFromHistory }: { profileId: number; movieId: number; restoreFromHistory?: boolean },
+    { dispatch, getState, rejectWithValue }
+  ) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -437,6 +448,7 @@ export const addMovieFavorite = createAsyncThunk<
         `/accounts/${accountId}/profiles/${profileId}/movies/favorites`,
         {
           movieTMDBId: movieId,
+          restoreFromHistory,
         }
       );
 
@@ -461,11 +473,14 @@ export const addMovieFavorite = createAsyncThunk<
 
 export const removeMovieFavorite = createAsyncThunk<
   RemoveMovieResponse,
-  { profileId: number; movieId: number },
+  { profileId: number; movieId: number; removeHistory?: boolean },
   { rejectValue: ApiErrorResponse }
 >(
   'activeProfile/removeMovieFavorite',
-  async ({ profileId, movieId }: { profileId: number; movieId: number }, { dispatch, getState, rejectWithValue }) => {
+  async (
+    { profileId, movieId, removeHistory }: { profileId: number; movieId: number; removeHistory?: boolean },
+    { dispatch, getState, rejectWithValue }
+  ) => {
     try {
       const state = getState() as RootState;
       const accountId = state.auth.account?.id;
@@ -475,7 +490,8 @@ export const removeMovieFavorite = createAsyncThunk<
       }
 
       const response: AxiosResponse<RemoveMovieResponse> = await axiosInstance.delete(
-        `/accounts/${accountId}/profiles/${profileId}/movies/favorites/${movieId}`
+        `/accounts/${accountId}/profiles/${profileId}/movies/favorites/${movieId}`,
+        { params: removeHistory ? { removeHistory: true } : undefined }
       );
 
       const movie = response.data.removedMovieReference;
