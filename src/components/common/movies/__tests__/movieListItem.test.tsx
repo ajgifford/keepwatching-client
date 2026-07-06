@@ -481,7 +481,7 @@ describe('MovieListItem', () => {
       expect(screen.queryByTestId('ReplayIcon')).not.toBeInTheDocument();
     });
 
-    it('should dispatch startMovieRewatch when clicking rewatch button', async () => {
+    it('should open a confirmation dialog without dispatching immediately when clicking rewatch button', async () => {
       const user = userEvent.setup();
       const dispatchSpy = jest.spyOn(watchHistorySlice, 'startMovieRewatch');
 
@@ -494,12 +494,54 @@ describe('MovieListItem', () => {
       const rewatchButton = screen.getByTestId('ReplayIcon').closest('button')!;
       await user.click(rewatchButton);
 
+      expect(await screen.findByText('Rewatch Movie?')).toBeInTheDocument();
+      expect(dispatchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should dispatch startMovieRewatch only after confirming in the dialog', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(watchHistorySlice, 'startMovieRewatch');
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={watchedMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      const rewatchButton = screen.getByTestId('ReplayIcon').closest('button')!;
+      await user.click(rewatchButton);
+      await screen.findByText('Rewatch Movie?');
+
+      await user.click(screen.getByRole('button', { name: /^rewatch movie$/i }));
+
       await waitFor(() => {
         expect(dispatchSpy).toHaveBeenCalledWith({
           profileId: 1,
           movieId: 1,
         });
       });
+    });
+
+    it('should not dispatch startMovieRewatch when the confirmation dialog is cancelled', async () => {
+      const user = userEvent.setup();
+      const dispatchSpy = jest.spyOn(watchHistorySlice, 'startMovieRewatch');
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MovieListItem movie={watchedMovie} getFilters={mockGetFilters} />
+        </BrowserRouter>
+      );
+
+      const rewatchButton = screen.getByTestId('ReplayIcon').closest('button')!;
+      await user.click(rewatchButton);
+      await screen.findByText('Rewatch Movie?');
+
+      await user.click(screen.getByRole('button', { name: /cancel/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByText('Rewatch Movie?')).not.toBeInTheDocument();
+      });
+      expect(dispatchSpy).not.toHaveBeenCalled();
     });
 
     it('should stop propagation when clicking rewatch button', async () => {

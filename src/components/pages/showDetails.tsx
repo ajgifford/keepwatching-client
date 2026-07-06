@@ -163,6 +163,8 @@ function ShowDetails() {
   const [rewatchSeasonConfirmOpen, setRewatchSeasonConfirmOpen] = useState(false);
   const [pendingRewatchSeason, setPendingRewatchSeason] = useState<ProfileSeason | null>(null);
   const [loadingSeasonRewatch, setLoadingSeasonRewatch] = useState<Record<number, boolean>>({});
+  const [episodeRewatchConfirmOpen, setEpisodeRewatchConfirmOpen] = useState(false);
+  const [pendingRewatchEpisode, setPendingRewatchEpisode] = useState<ProfileEpisode | null>(null);
   const [loadingWatchlist, setLoadingWatchlist] = useState(false);
 
   const priorPromptShownKey = getPriorWatchPromptKey(showId, profileId);
@@ -551,7 +553,16 @@ function ShowDetails() {
     }
   };
 
-  const handleEpisodeRewatch = async (episode: ProfileEpisode) => {
+  const handleEpisodeRewatchClick = (episode: ProfileEpisode) => {
+    setPendingRewatchEpisode(episode);
+    setEpisodeRewatchConfirmOpen(true);
+  };
+
+  const handleConfirmEpisodeRewatch = async () => {
+    if (!pendingRewatchEpisode) return;
+    const episode = pendingRewatchEpisode;
+    setEpisodeRewatchConfirmOpen(false);
+    setPendingRewatchEpisode(null);
     setLoadingEpisodeRewatches((prev) => ({ ...prev, [episode.id]: true }));
     try {
       await dispatch(recordEpisodeRewatch({ profileId: Number(profileId), episodeId: episode.id }));
@@ -1293,7 +1304,7 @@ function ShowDetails() {
                                         >
                                           <IconButton
                                             color="rewatch"
-                                            onClick={() => handleEpisodeRewatch(episode)}
+                                            onClick={() => handleEpisodeRewatchClick(episode)}
                                             disabled={loadingEpisodeRewatches[episode.id]}
                                             size="small"
                                           >
@@ -1454,6 +1465,31 @@ function ShowDetails() {
           </Button>
           <Button onClick={handleStartSeasonRewatch} variant="contained" startIcon={<ReplayIcon />}>
             Rewatch Season
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={episodeRewatchConfirmOpen}
+        onClose={() => {
+          setEpisodeRewatchConfirmOpen(false);
+          setPendingRewatchEpisode(null);
+        }}
+      >
+        <DialogTitle>Rewatch Episode?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Log another watch of "{pendingRewatchEpisode?.title}" in your history?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setEpisodeRewatchConfirmOpen(false);
+              setPendingRewatchEpisode(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmEpisodeRewatch} variant="contained" startIcon={<ReplayIcon />}>
+            Rewatch Episode
           </Button>
         </DialogActions>
       </Dialog>

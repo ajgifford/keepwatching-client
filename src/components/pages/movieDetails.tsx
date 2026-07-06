@@ -13,6 +13,11 @@ import {
   Button,
   CardContent,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Grid,
   Tab,
@@ -88,6 +93,7 @@ function MovieDetails() {
   const [tabValue, setTabValue] = useState(0);
   const [loadingWatchStatus, setLoadingWatchStatus] = useState<boolean>(false);
   const [loadingMovieRewatch, setLoadingMovieRewatch] = useState(false);
+  const [movieRewatchConfirmOpen, setMovieRewatchConfirmOpen] = useState(false);
   const [loadingWatchlist, setLoadingWatchlist] = useState(false);
   const [priorWatchDialogOpen, setPriorWatchDialogOpen] = useState(false);
   const [pendingWatchMovie, setPendingWatchMovie] = useState<ProfileMovie | null>(null);
@@ -153,8 +159,13 @@ function MovieDetails() {
     }
   };
 
+  const handleMovieRewatchClick = () => {
+    setMovieRewatchConfirmOpen(true);
+  };
+
   const handleStartMovieRewatch = async () => {
     if (!movie) return;
+    setMovieRewatchConfirmOpen(false);
     setLoadingMovieRewatch(true);
     try {
       await dispatch(startMovieRewatch({ profileId: Number(profileId), movieId: movie.id }));
@@ -286,7 +297,7 @@ function MovieDetails() {
                   variant="outlined"
                   size={isMobile ? 'small' : 'medium'}
                   disabled={loadingMovieRewatch}
-                  onClick={handleStartMovieRewatch}
+                  onClick={handleMovieRewatchClick}
                   startIcon={
                     loadingMovieRewatch ? (
                       <CircularProgress size={20} color="inherit" />
@@ -541,6 +552,18 @@ function MovieDetails() {
           setPendingWatchMovie(null);
         }}
       />
+      <Dialog open={movieRewatchConfirmOpen} onClose={() => setMovieRewatchConfirmOpen(false)}>
+        <DialogTitle>Rewatch Movie?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Log another watch of "{movie?.title}" in your history?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMovieRewatchConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={handleStartMovieRewatch} variant="contained" startIcon={<Replay />}>
+            Rewatch Movie
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

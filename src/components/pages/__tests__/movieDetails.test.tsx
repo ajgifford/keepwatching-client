@@ -734,28 +734,46 @@ describe('MovieDetails', () => {
       expect(screen.queryByRole('button', { name: /mark rewatched/i })).not.toBeInTheDocument();
     });
 
-    it('dispatches startMovieRewatch immediately when Mark Rewatched is clicked', async () => {
+    it('opens a confirmation dialog when Mark Rewatched is clicked, without dispatching yet', async () => {
       jest.mocked(useAppSelector).mockImplementation(watchedMovieSelector);
 
       renderMovieDetails();
 
+      fireEvent.click(screen.getByRole('button', { name: /mark rewatched/i }));
+
+      expect(await screen.findByText('Rewatch Movie?')).toBeInTheDocument();
+      expect(mockDispatch).not.toHaveBeenCalledWith(startMovieRewatch({ profileId: 1, movieId: 1 }));
+    });
+
+    it('dispatches startMovieRewatch only after confirming in the dialog', async () => {
+      jest.mocked(useAppSelector).mockImplementation(watchedMovieSelector);
+
+      renderMovieDetails();
+
+      fireEvent.click(screen.getByRole('button', { name: /mark rewatched/i }));
+      await screen.findByText('Rewatch Movie?');
+
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /mark rewatch/i }));
+        fireEvent.click(screen.getByRole('button', { name: /^rewatch movie$/i }));
       });
 
       expect(mockDispatch).toHaveBeenCalledWith(startMovieRewatch({ profileId: 1, movieId: 1 }));
     });
 
-    it('does not open a confirmation dialog when Mark Rewatched is clicked', async () => {
+    it('does not dispatch startMovieRewatch when the confirmation dialog is cancelled', async () => {
       jest.mocked(useAppSelector).mockImplementation(watchedMovieSelector);
 
       renderMovieDetails();
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /mark rewatched/i }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: /mark rewatched/i }));
+      await screen.findByText('Rewatch Movie?');
 
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByText('Rewatch Movie?')).not.toBeInTheDocument();
+      });
+      expect(mockDispatch).not.toHaveBeenCalledWith(startMovieRewatch({ profileId: 1, movieId: 1 }));
     });
   });
 

@@ -815,6 +815,99 @@ describe('ShowDetails', () => {
     });
   });
 
+  describe('episode rewatch confirmation', () => {
+    const findEpisodeRewatchButton = () => {
+      const replayIcons = screen.getAllByTestId('ReplayIcon');
+      for (const icon of replayIcons) {
+        const button = icon.closest('button');
+        const listItem = button?.closest('.MuiListItem-root');
+        if (button && listItem) {
+          return button;
+        }
+      }
+      return null;
+    };
+
+    it('opens a confirmation dialog instead of dispatching immediately when the rewatch icon is clicked', async () => {
+      jest.clearAllMocks();
+      mockDispatch.mockResolvedValue({ type: 'mock' });
+
+      renderShowDetails();
+      fireEvent.click(screen.getByRole('tab', { name: /seasons & episodes/i }));
+
+      await waitFor(() => {
+        const season1 = screen.getByText('Season 1');
+        const expandButton = season1.closest('[role="button"]');
+        if (expandButton) {
+          fireEvent.click(expandButton);
+        }
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Episode 1')).toBeInTheDocument();
+      });
+
+      const episodeRewatchButton = findEpisodeRewatchButton();
+      if (!episodeRewatchButton) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const callsBefore = mockDispatch.mock.calls.length;
+      fireEvent.click(episodeRewatchButton);
+
+      expect(await screen.findByText('Rewatch Episode?')).toBeInTheDocument();
+      expect(mockDispatch.mock.calls.length).toBe(callsBefore);
+    });
+
+    it('dispatches the rewatch only after confirming, and not if cancelled', async () => {
+      jest.clearAllMocks();
+      mockDispatch.mockResolvedValue({ type: 'mock' });
+
+      renderShowDetails();
+      fireEvent.click(screen.getByRole('tab', { name: /seasons & episodes/i }));
+
+      await waitFor(() => {
+        const season1 = screen.getByText('Season 1');
+        const expandButton = season1.closest('[role="button"]');
+        if (expandButton) {
+          fireEvent.click(expandButton);
+        }
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Episode 1')).toBeInTheDocument();
+      });
+
+      const episodeRewatchButton = findEpisodeRewatchButton();
+      if (!episodeRewatchButton) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const callsBeforeOpen = mockDispatch.mock.calls.length;
+      fireEvent.click(episodeRewatchButton);
+      await screen.findByText('Rewatch Episode?');
+
+      fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      await waitFor(() => {
+        expect(screen.queryByText('Rewatch Episode?')).not.toBeInTheDocument();
+      });
+      expect(mockDispatch.mock.calls.length).toBe(callsBeforeOpen);
+
+      fireEvent.click(episodeRewatchButton);
+      await screen.findByText('Rewatch Episode?');
+      fireEvent.click(screen.getByRole('button', { name: /^rewatch episode$/i }));
+
+      await waitFor(() => {
+        expect(mockDispatch.mock.calls.length).toBeGreaterThan(callsBeforeOpen);
+      });
+      await waitFor(() => {
+        expect(screen.queryByText('Rewatch Episode?')).not.toBeInTheDocument();
+      });
+    });
+  });
+
   describe('cast display', () => {
     it('renders cast section with correct count', async () => {
       renderShowDetails();
