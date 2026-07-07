@@ -213,7 +213,7 @@ function toWatchlistItemFromShow(show: ProfileShow): WatchlistItem {
     genres: show.genres,
     streamingServices: show.streamingServices,
     runtime: show.averageEpisodeRuntime ?? null,
-    hasNewSeason: show.watchStatus === WatchStatus.UP_TO_DATE && show.nextEpisode !== null,
+    currentWatchStatus: WatchStatus.NOT_WATCHED,
   };
 }
 
@@ -230,7 +230,7 @@ function toWatchlistItemFromMovie(movie: ProfileMovie): WatchlistItem {
     genres: movie.genres,
     streamingServices: movie.streamingServices,
     runtime: movie.runtime ?? null,
-    hasNewSeason: false,
+    currentWatchStatus: WatchStatus.NOT_WATCHED,
   };
 }
 
@@ -256,11 +256,7 @@ export const selectWatchlistMovies = createSelector([selectWatchlistItems], (ite
 
 export const selectNotWatchedPool = createSelector([selectShows, selectMovies], (shows, movies) => {
   const poolShows: WatchlistItem[] = (shows ?? [])
-    .filter(
-      (s: ProfileShow) =>
-        s.watchStatus === WatchStatus.NOT_WATCHED ||
-        (s.watchStatus === WatchStatus.UP_TO_DATE && s.nextEpisode !== null)
-    )
+    .filter((s: ProfileShow) => s.watchStatus === WatchStatus.NOT_WATCHED)
     .map(toWatchlistItemFromShow);
 
   const poolMovies: WatchlistItem[] = (movies ?? [])

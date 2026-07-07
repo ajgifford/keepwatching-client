@@ -15,7 +15,7 @@ import {
   selectWizardOpen,
 } from '../../../app/slices/watchlistSlice';
 import Watchlist from '../watchlist';
-import { WatchlistItem } from '@ajgifford/keepwatching-types';
+import { WatchStatus, WatchlistItem } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
 
 const mockDispatch = jest.fn();
@@ -73,7 +73,7 @@ const mockItem = (id: number, contentType: 'show' | 'movie' = 'show'): Watchlist
   genres: 'Drama',
   streamingServices: 'Netflix',
   runtime: 45,
-  hasNewSeason: false,
+  currentWatchStatus: WatchStatus.NOT_WATCHED,
 });
 
 type MockOverrides = {

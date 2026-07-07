@@ -17,7 +17,7 @@ import {
 } from '../../../../app/slices/watchlistSlice';
 import { computeWizardResult } from '../whatShouldIWatchWizard';
 import WhatShouldIWatchWizard from '../whatShouldIWatchWizard';
-import { WatchlistItem } from '@ajgifford/keepwatching-types';
+import { WatchStatus, WatchlistItem } from '@ajgifford/keepwatching-types';
 
 const mockDispatch = jest.fn();
 
@@ -60,7 +60,7 @@ const makeItem = (overrides: Partial<WatchlistItem> = {}): WatchlistItem => ({
   genres: 'Drama',
   streamingServices: 'Netflix',
   runtime: 45,
-  hasNewSeason: false,
+  currentWatchStatus: WatchStatus.NOT_WATCHED,
   ...overrides,
 });
 

@@ -1,7 +1,6 @@
 import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
 import { deleteAccount, logout } from '../accountSlice';
-import { markSeasonIdsAsPriorWatched } from '../activeShowSlice';
 import {
   addMovieFavorite,
   addShowFavorite,
@@ -30,6 +29,7 @@ import {
   updateNextEpisodeWatchStatus,
   updateShowWatchStatus,
 } from '../activeProfileSlice';
+import { markSeasonIdsAsPriorWatched } from '../activeShowSlice';
 import { MilestoneStats, Profile, WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock axios

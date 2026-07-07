@@ -16,6 +16,7 @@ import {
   updateSeasonWatchStatus,
 } from '../../../app/slices/activeShowSlice';
 import { selectWatchlistItems } from '../../../app/slices/watchlistSlice';
+import { getPriorWatchPromptKey } from '../../utility/priorWatchPromptStorage';
 import ShowDetails from '../showDetails';
 import { WatchStatus } from '@ajgifford/keepwatching-types';
 
@@ -555,15 +556,10 @@ describe('ShowDetails', () => {
   });
 
   describe('watchlist button visibility', () => {
-    it('shows Add to Watchlist button for non-watched shows', () => {
-      renderShowDetails();
-
-      expect(screen.getByRole('button', { name: /add to watchlist/i })).toBeInTheDocument();
-    });
-
-    it('shows Add to Watchlist button for UP_TO_DATE shows', () => {
+    it('shows Add to Watchlist button for NOT_WATCHED shows', () => {
+      localStorage.setItem(getPriorWatchPromptKey('1', '1'), 'true');
       jest.mocked(useAppSelector).mockImplementation((selector: any) => {
-        if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.UP_TO_DATE };
+        if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.NOT_WATCHED };
         if (selector === selectSeasons) return mockSeasons;
         if (selector === selectShowCast) return mockCast;
         if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
@@ -578,23 +574,63 @@ describe('ShowDetails', () => {
       expect(screen.getByRole('button', { name: /add to watchlist/i })).toBeInTheDocument();
     });
 
-    it('hides the watchlist button for watched shows', () => {
-      jest.mocked(useAppSelector).mockImplementation((selector: any) => {
-        if (selector === selectShow) return { ...mockShow, watchStatus: WatchStatus.WATCHED };
-        if (selector === selectSeasons) return mockSeasons;
-        if (selector === selectShowCast) return mockCast;
-        if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
-        if (selector === selectShowLoading) return false;
-        if (selector === selectShowError) return null;
-        if (selector === selectWatchlistItems) return [];
-        return null;
-      });
+    it.each([WatchStatus.WATCHING, WatchStatus.UP_TO_DATE, WatchStatus.WATCHED])(
+      'hides the watchlist button for %s shows not already on the watchlist',
+      (watchStatus) => {
+        jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+          if (selector === selectShow) return { ...mockShow, watchStatus };
+          if (selector === selectSeasons) return mockSeasons;
+          if (selector === selectShowCast) return mockCast;
+          if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+          if (selector === selectShowLoading) return false;
+          if (selector === selectShowError) return null;
+          if (selector === selectWatchlistItems) return [];
+          return null;
+        });
 
-      renderShowDetails();
+        renderShowDetails();
 
-      expect(screen.queryByRole('button', { name: /add to watchlist/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /remove from watchlist/i })).not.toBeInTheDocument();
-    });
+        expect(screen.queryByRole('button', { name: /add to watchlist/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /remove from watchlist/i })).not.toBeInTheDocument();
+      }
+    );
+
+    it.each([WatchStatus.WATCHING, WatchStatus.UP_TO_DATE, WatchStatus.WATCHED])(
+      'keeps the Remove from Watchlist button visible for %s shows already on the watchlist',
+      (watchStatus) => {
+        jest.mocked(useAppSelector).mockImplementation((selector: any) => {
+          if (selector === selectShow) return { ...mockShow, watchStatus };
+          if (selector === selectSeasons) return mockSeasons;
+          if (selector === selectShowCast) return mockCast;
+          if (selector === selectWatchedEpisodes) return mockWatchedEpisodes;
+          if (selector === selectShowLoading) return false;
+          if (selector === selectShowError) return null;
+          if (selector === selectWatchlistItems)
+            return [
+              {
+                id: 1,
+                profileId: 1,
+                contentType: 'show',
+                contentId: mockShow.id,
+                priority: 0,
+                addedAt: '2024-01-01T00:00:00Z',
+                title: mockShow.title,
+                posterImage: mockShow.posterImage,
+                genres: '',
+                streamingServices: '',
+                runtime: null,
+                currentWatchStatus: watchStatus,
+              },
+            ];
+          return null;
+        });
+
+        renderShowDetails();
+
+        expect(screen.queryByRole('button', { name: /add to watchlist/i })).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /remove from watchlist/i })).toBeInTheDocument();
+      }
+    );
   });
 
   describe('tab navigation', () => {

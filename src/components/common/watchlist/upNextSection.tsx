@@ -8,8 +8,8 @@ import { Box, Button, Chip, Divider, List, ListItem, Typography } from '@mui/mat
 import { useAppSelector } from '../../../app/hooks';
 import { selectWatchlistItems } from '../../../app/slices/watchlistSlice';
 import { calculateRuntimeDisplay } from '../../utility/contentUtility';
-import { WatchlistItem } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
+import { WatchStatus, WatchlistItem } from '@ajgifford/keepwatching-types';
+import { WatchStatusIcon, buildTMDBImagePath, getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
 const UP_NEXT_LIMIT = 5;
 
@@ -77,7 +77,14 @@ export function UpNextSection() {
                   >
                     {item.title}
                   </Typography>
-                  {item.hasNewSeason && <Chip label="New Season" size="small" color="secondary" />}
+                  {item.currentWatchStatus !== WatchStatus.NOT_WATCHED && (
+                    <Chip
+                      icon={<WatchStatusIcon status={item.currentWatchStatus} fontSize="small" />}
+                      label={getWatchStatusDisplay(item.currentWatchStatus)}
+                      size="small"
+                      color="secondary"
+                    />
+                  )}
                 </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip

@@ -761,7 +761,7 @@ function ShowDetails() {
                   {loadingShowRewatch ? 'Loading...' : 'Start Rewatch'}
                 </Button>
               )}
-              {show?.watchStatus !== WatchStatus.WATCHED && (
+              {(show?.watchStatus === WatchStatus.NOT_WATCHED || watchlistEntry) && (
                 <Button
                   variant="outlined"
                   size={isMobile ? 'small' : 'medium'}

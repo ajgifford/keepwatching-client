@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { useAppDispatch } from '../../../../app/hooks';
 import { removeFromWatchlist, updateWatchlistPriorities } from '../../../../app/slices/watchlistSlice';
 import WatchlistQueueItem from '../watchlistQueueItem';
-import { WatchlistItem } from '@ajgifford/keepwatching-types';
+import { WatchStatus, WatchlistItem } from '@ajgifford/keepwatching-types';
 
 const mockDispatch = jest.fn();
 
@@ -19,6 +19,8 @@ jest.mock('../../../../app/slices/watchlistSlice', () => ({
 
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: (_path: string, _size: string) => 'https://image.tmdb.org/test.jpg',
+  WatchStatusIcon: () => null,
+  getWatchStatusDisplay: (status: string) => status,
 }));
 
 jest.mock('../../../utility/contentUtility', () => ({
@@ -37,7 +39,7 @@ const makeItem = (overrides: Partial<WatchlistItem> = {}): WatchlistItem => ({
   genres: 'Drama,Crime',
   streamingServices: 'Netflix',
   runtime: 45,
-  hasNewSeason: false,
+  currentWatchStatus: WatchStatus.NOT_WATCHED,
   ...overrides,
 });
 
@@ -60,15 +62,16 @@ describe('WatchlistQueueItem', () => {
     expect(screen.getByText('Crime')).toBeInTheDocument();
   });
 
-  it('shows New Season chip when hasNewSeason is true', () => {
-    const item = makeItem({ hasNewSeason: true });
+  it('shows a status chip when currentWatchStatus is not NOT_WATCHED', () => {
+    const item = makeItem({ currentWatchStatus: WatchStatus.WATCHED });
     renderItem(item, [item]);
-    expect(screen.getByText('New Season')).toBeInTheDocument();
+    expect(screen.getByText(WatchStatus.WATCHED)).toBeInTheDocument();
   });
 
-  it('does not show New Season chip when hasNewSeason is false', () => {
+  it('does not show a status chip when currentWatchStatus is NOT_WATCHED', () => {
     renderItem(makeItem(), [makeItem()]);
-    expect(screen.queryByText('New Season')).not.toBeInTheDocument();
+    expect(screen.queryByText(WatchStatus.WATCHED)).not.toBeInTheDocument();
+    expect(screen.queryByText(WatchStatus.NOT_WATCHED)).not.toBeInTheDocument();
   });
 
   it('displays movie runtime via calculateRuntimeDisplay', () => {

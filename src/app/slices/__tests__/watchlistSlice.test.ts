@@ -85,7 +85,7 @@ const mockWatchlistItem = (overrides: Partial<WatchlistItem> = {}): WatchlistIte
   genres: 'Drama',
   streamingServices: 'Netflix',
   runtime: 45,
-  hasNewSeason: false,
+  currentWatchStatus: WatchStatus.NOT_WATCHED,
   ...overrides,
 });
 
@@ -267,7 +267,7 @@ describe('watchlistSlice — selectors', () => {
     expect(pool.filter((i) => i.contentType === 'movie')).toHaveLength(1);
   });
 
-  it('selectNotWatchedPool includes UP_TO_DATE shows with nextEpisode', () => {
+  it('selectNotWatchedPool excludes UP_TO_DATE shows even with a nextEpisode', () => {
     const store = createMockStore({
       ...baseState,
       activeProfile: {
@@ -281,21 +281,32 @@ describe('watchlistSlice — selectors', () => {
         movies: [],
       },
     } as any);
-    const pool = selectNotWatchedPool(store.getState());
-    expect(pool).toHaveLength(1);
-    expect(pool[0].hasNewSeason).toBe(true);
+    expect(selectNotWatchedPool(store.getState())).toHaveLength(0);
   });
 
-  it('selectNotWatchedPool excludes UP_TO_DATE shows without nextEpisode', () => {
+  it('selectNotWatchedPool excludes WATCHING shows', () => {
     const store = createMockStore({
       ...baseState,
       activeProfile: {
         profile: { id: 1 },
-        shows: [mockShow({ watchStatus: WatchStatus.UP_TO_DATE, nextEpisode: null })],
+        shows: [mockShow({ watchStatus: WatchStatus.WATCHING })],
         movies: [],
       },
     } as any);
     expect(selectNotWatchedPool(store.getState())).toHaveLength(0);
+  });
+
+  it('selectNotWatchedPool items always report currentWatchStatus as NOT_WATCHED', () => {
+    const store = createMockStore({
+      ...baseState,
+      activeProfile: {
+        profile: { id: 1 },
+        shows: [mockShow()],
+        movies: [mockMovie()],
+      },
+    } as any);
+    const pool = selectNotWatchedPool(store.getState());
+    expect(pool.every((i) => i.currentWatchStatus === WatchStatus.NOT_WATCHED)).toBe(true);
   });
 
   it('selectFilteredNotWatchedPool excludes items already on the watchlist', () => {

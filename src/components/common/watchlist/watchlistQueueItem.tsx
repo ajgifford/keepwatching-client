@@ -11,8 +11,8 @@ import { Box, Chip, IconButton, ListItem, Tooltip, Typography } from '@mui/mater
 import { useAppDispatch } from '../../../app/hooks';
 import { removeFromWatchlist, updateWatchlistPriorities } from '../../../app/slices/watchlistSlice';
 import { calculateRuntimeDisplay } from '../../utility/contentUtility';
-import { WatchlistItem } from '@ajgifford/keepwatching-types';
-import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
+import { WatchStatus, WatchlistItem } from '@ajgifford/keepwatching-types';
+import { WatchStatusIcon, buildTMDBImagePath, getWatchStatusDisplay } from '@ajgifford/keepwatching-ui';
 
 interface WatchlistQueueItemProps {
   item: WatchlistItem;
@@ -117,7 +117,14 @@ export default function WatchlistQueueItem({ item, allItems, isFirst, isLast }: 
           >
             {item.title}
           </Typography>
-          {item.hasNewSeason && <Chip label="New Season" size="small" color="secondary" />}
+          {item.currentWatchStatus !== WatchStatus.NOT_WATCHED && (
+            <Chip
+              icon={<WatchStatusIcon status={item.currentWatchStatus} fontSize="small" />}
+              label={getWatchStatusDisplay(item.currentWatchStatus)}
+              size="small"
+              color="secondary"
+            />
+          )}
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           {genres.length > 0 && (
