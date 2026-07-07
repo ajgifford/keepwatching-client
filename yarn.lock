@@ -7,15 +7,15 @@
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.4.4.tgz#2856c55443d3d461693f32d2b96fb6ea92e1ffa9"
   integrity sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==
 
-"@ajgifford/keepwatching-types@^0.13.0":
-  version "0.13.0"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.13.0/0274470d27e42e679b089e90110e9ed4264ab988#0274470d27e42e679b089e90110e9ed4264ab988"
-  integrity sha512-oOV5EOzCo8bbVirKzwsatI8AaVKAxjI+JwEppNaTNVV4h2sxaYGfvvK3Byo1emAQ3Y+AuAH0nqsUiP8VRd1EfQ==
+"@ajgifford/keepwatching-types@^0.14.0":
+  version "0.14.0"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-types/0.14.0/be6329b10be6ccddd809896a80ad9fb2640eaf7d#be6329b10be6ccddd809896a80ad9fb2640eaf7d"
+  integrity sha512-Rx+oFFrs/FBSFMfhT4k3w8T66TJz8/t72ISltlo+MNsK7OYdtPhG/svfwJ5YSp/HU5/TYWBKma+Eu6RyivlbZg==
 
-"@ajgifford/keepwatching-ui@^0.6.1":
-  version "0.6.1"
-  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.6.1/4932847149b00582302a6c7c2e94a0469d36e9e5#4932847149b00582302a6c7c2e94a0469d36e9e5"
-  integrity sha512-t8ygyvPix/fDqPzM1udo2kH64rYOGy/xWv0DthGwwriY8WDYnJJPc9BISOeKFs0PYOPIInBfzM8KYzKFl2dRow==
+"@ajgifford/keepwatching-ui@^0.6.2":
+  version "0.6.2"
+  resolved "https://npm.pkg.github.com/download/@ajgifford/keepwatching-ui/0.6.2/089d7ddbc4b0d950f51e08773316a88c551788f2#089d7ddbc4b0d950f51e08773316a88c551788f2"
+  integrity sha512-noPsXUXGVkIyK+1/QBbtLX1FiztacKi1zFO53/jfidvAJM3RjxqE/1rhNtfUYatFHRPMWTjx8qeYe9f+FCPv9A==
 
 "@apideck/better-ajv-errors@^0.3.1":
   version "0.3.7"
