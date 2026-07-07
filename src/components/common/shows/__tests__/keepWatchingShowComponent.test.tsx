@@ -388,6 +388,58 @@ describe('KeepWatchingShowComponent', () => {
     expect(screen.getByText('Episode 1')).toBeInTheDocument();
   });
 
+  it('excludes skipped seasons from the fallback candidate list', () => {
+    const skippedSeason: ProfileSeason = {
+      ...mockSeason,
+      watchStatus: WatchStatus.SKIPPED,
+    };
+    const showWithSkippedSeason = { ...mockShow, seasons: [skippedSeason] };
+    const store = createMockStore(showWithSkippedSeason);
+    render(
+      <Provider store={store}>
+        <KeepWatchingShowComponent profileId={1} />
+      </Provider>
+    );
+
+    expect(screen.getByText(/you've watched all available episodes/i)).toBeInTheDocument();
+    expect(screen.queryByText('Episode 1')).not.toBeInTheDocument();
+  });
+
+  it('excludes a skipped season even after an individual episode inside it is marked watched', () => {
+    const skippedSeason: ProfileSeason = {
+      ...mockSeason,
+      watchStatus: WatchStatus.SKIPPED,
+    };
+    const season2: ProfileSeason = {
+      id: 2,
+      showId: 100,
+      seasonNumber: 2,
+      name: 'Season 2',
+      overview: 'Second season',
+      releaseDate: '2024-06-01',
+      posterImage: '/season2-poster.jpg',
+      episodes: [{ ...createMockEpisode(4, 9, '2024-06-01'), seasonId: 2, seasonNumber: 2 }],
+      profileId: 0,
+      watchStatus: WatchStatus.NOT_WATCHED,
+      tmdbId: 0,
+      numberOfEpisodes: 1,
+    };
+    const showWithSkippedSeason = { ...mockShow, seasons: [skippedSeason, season2] };
+    // Episode 1 (in the skipped season) was individually marked watched, which should NOT
+    // make the skipped season "active" or surface its remaining episodes.
+    const watchedEpisodes = { 1: true };
+    const store = createMockStore(showWithSkippedSeason, watchedEpisodes);
+    render(
+      <Provider store={store}>
+        <KeepWatchingShowComponent profileId={1} />
+      </Provider>
+    );
+
+    expect(screen.queryByText('Episode 2')).not.toBeInTheDocument();
+    expect(screen.queryByText('Episode 3')).not.toBeInTheDocument();
+    expect(screen.getByText('Episode 9')).toBeInTheDocument(); // season 2's episode
+  });
+
   it('filters episodes without air dates', () => {
     const episodeWithoutAirDate = createMockEpisode(4, 4, '2024-01-01');
     // Cast to any to bypass TypeScript checking for this test scenario

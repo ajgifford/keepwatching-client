@@ -68,25 +68,29 @@ export function calculateCatchUpStats(show: ProfileShowWithSeasons | null): Catc
   let totalRuntimeRemaining = 0;
   let hasMissingRuntime = false;
 
-  const seasons: SeasonCatchUpBreakdown[] = show.seasons.map((season) => {
-    const remainingEpisodes = season.episodes.filter((episode) => isUnwatchedAndAired(episode, today));
-    const runtimeRemaining = remainingEpisodes.reduce((sum, episode) => sum + (episode.runtime || 0), 0);
-    const seasonHasMissingRuntime = remainingEpisodes.some((episode) => !episode.runtime);
+  // Skipped seasons are an explicit "not watching this" choice — their episodes shouldn't
+  // count toward the backlog or get written to history by "Mark Caught Up".
+  const seasons: SeasonCatchUpBreakdown[] = show.seasons
+    .filter((season) => season.watchStatus !== WatchStatus.SKIPPED)
+    .map((season) => {
+      const remainingEpisodes = season.episodes.filter((episode) => isUnwatchedAndAired(episode, today));
+      const runtimeRemaining = remainingEpisodes.reduce((sum, episode) => sum + (episode.runtime || 0), 0);
+      const seasonHasMissingRuntime = remainingEpisodes.some((episode) => !episode.runtime);
 
-    totalEpisodesRemaining += remainingEpisodes.length;
-    totalRuntimeRemaining += runtimeRemaining;
-    if (seasonHasMissingRuntime) {
-      hasMissingRuntime = true;
-    }
+      totalEpisodesRemaining += remainingEpisodes.length;
+      totalRuntimeRemaining += runtimeRemaining;
+      if (seasonHasMissingRuntime) {
+        hasMissingRuntime = true;
+      }
 
-    return {
-      seasonId: season.id,
-      seasonNumber: season.seasonNumber,
-      episodesRemaining: remainingEpisodes.length,
-      runtimeRemaining,
-      hasMissingRuntime: seasonHasMissingRuntime,
-    };
-  });
+      return {
+        seasonId: season.id,
+        seasonNumber: season.seasonNumber,
+        episodesRemaining: remainingEpisodes.length,
+        runtimeRemaining,
+        hasMissingRuntime: seasonHasMissingRuntime,
+      };
+    });
 
   if (totalEpisodesRemaining < MIN_EPISODES_REMAINING_TO_SHOW) {
     return null;

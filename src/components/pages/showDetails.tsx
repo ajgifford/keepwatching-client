@@ -963,7 +963,7 @@ function ShowDetails() {
             </Grid>
 
             {/* Catch-Up Mode */}
-            {show && profileId && <CatchUpModeCard />}
+            {show && profileId && <CatchUpModeCard profileId={Number(profileId)} />}
 
             {/* Your Rating & Notes */}
             {show && profileId && (

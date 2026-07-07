@@ -3,7 +3,12 @@ import { generateGenreFilterValues, generateStreamingServiceFilterValues } from 
 import { RootState } from '../store';
 import { clearActivityTimestamp } from '../utils/activityTracker';
 import { deleteAccount, logout } from './accountSlice';
-import { fetchShowWithDetails, updateEpisodeWatchStatus, updateSeasonWatchStatus } from './activeShowSlice';
+import {
+  fetchShowWithDetails,
+  markSeasonIdsAsPriorWatched,
+  updateEpisodeWatchStatus,
+  updateSeasonWatchStatus,
+} from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
 import { editProfile, removeProfileImage, updateProfileAccentColor, updateProfileImage } from './profilesSlice';
 import { startMovieRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
@@ -927,6 +932,22 @@ const activeProfileSlice = createSlice({
         localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
       })
       .addCase(updateEpisodeWatchStatus.fulfilled, (state, action) => {
+        const { showWithSeasons, nextUnwatchedEpisodes } = action.payload;
+
+        const show = toProfileShow(showWithSeasons);
+        const shows = state.shows;
+        if (shows) {
+          const index = shows.findIndex((s) => s.id === showWithSeasons.id);
+          if (index !== -1) {
+            shows[index] = show;
+          }
+        }
+
+        state.nextUnwatchedEpisodes = nextUnwatchedEpisodes;
+        state.lastUpdated = new Date().toISOString();
+        localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+      })
+      .addCase(markSeasonIdsAsPriorWatched.fulfilled, (state, action) => {
         const { showWithSeasons, nextUnwatchedEpisodes } = action.payload;
 
         const show = toProfileShow(showWithSeasons);

@@ -93,8 +93,12 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
     );
   }
 
+  // Skipped seasons are an explicit "not watching this" choice — never surface them as
+  // something to keep watching, regardless of individual episode watch status underneath.
+  const nonSkippedSeasons = show.seasons.filter((season: ProfileSeason) => season.watchStatus !== WatchStatus.SKIPPED);
+
   // Step 1: Find active seasons (have watched episodes AND have remaining unwatched episodes)
-  const activeSeasons = show.seasons.filter((season: ProfileSeason) => {
+  const activeSeasons = nonSkippedSeasons.filter((season: ProfileSeason) => {
     const hasWatchedEpisodes = season.episodes.some((ep) => watchedEpisodes[ep.id]);
     const hasUnwatchedAiredEpisodes = season.episodes.some(
       (ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date()
@@ -106,7 +110,7 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
   const seasonsToProcess =
     activeSeasons.length > 0
       ? activeSeasons
-      : show.seasons.filter((s) =>
+      : nonSkippedSeasons.filter((s) =>
           s.episodes.some((ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date())
         );
 

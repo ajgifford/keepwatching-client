@@ -1,10 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
+import axiosInstance from '../../../../app/api/axiosInstance';
+import accountSlice from '../../../../app/slices/accountSlice';
 import activeShowSlice from '../../../../app/slices/activeShowSlice';
 import { CatchUpModeCard } from '../catchUpModeCard';
 import { ProfileEpisode, ProfileSeason, ProfileShowWithSeasons, WatchStatus } from '@ajgifford/keepwatching-types';
 import { configureStore } from '@reduxjs/toolkit';
+
+jest.mock('../../../../app/api/axiosInstance');
 
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   parseLocalDate: jest.fn((dateString: string) => {
@@ -85,6 +89,7 @@ const createMockStore = (show: ProfileShowWithSeasons | null) => {
   return configureStore({
     reducer: {
       activeShow: activeShowSlice,
+      auth: accountSlice,
     },
     preloadedState: {
       activeShow: {
@@ -100,23 +105,39 @@ const createMockStore = (show: ProfileShowWithSeasons | null) => {
         similarShows: [],
         similarShowsError: null,
       },
+      auth: {
+        account: {
+          id: 123,
+          uid: 'firebase-uid-123',
+          name: 'Test User',
+          email: 'test@example.com',
+          image: '',
+          defaultProfileId: 10,
+        },
+        loading: false,
+        error: null,
+      } as any,
     },
   });
 };
 
-const renderWithStore = (show: ProfileShowWithSeasons | null) => {
+const renderWithStore = (show: ProfileShowWithSeasons | null, profileId = 10) => {
   const store = createMockStore(show);
-  return render(
-    <Provider store={store}>
-      <CatchUpModeCard />
-    </Provider>
-  );
+  return {
+    store,
+    ...render(
+      <Provider store={store}>
+        <CatchUpModeCard profileId={profileId} />
+      </Provider>
+    ),
+  };
 };
 
 describe('CatchUpModeCard', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-06-01').getTime());
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -211,5 +232,78 @@ describe('CatchUpModeCard', () => {
     renderWithStore(createMockShow([season]));
 
     expect(screen.getByText(/estimate incomplete/i)).toBeInTheDocument();
+  });
+
+  it('opens a confirmation dialog when Mark Caught Up is clicked', () => {
+    const season = createMockSeason({
+      episodes: [
+        createMockEpisode({ id: 1, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-01' }),
+        createMockEpisode({ id: 2, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-08' }),
+        createMockEpisode({ id: 3, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-15' }),
+      ],
+    });
+    renderWithStore(createMockShow([season]));
+
+    expect(screen.queryByText(/mark caught up\?/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /mark caught up/i }));
+
+    expect(screen.getByText(/mark caught up\?/i)).toBeInTheDocument();
+    expect(screen.getByText(/mark 3 remaining episodes across 1 season as previously watched/i)).toBeInTheDocument();
+  });
+
+  it('closes the confirmation dialog without dispatching when Cancel is clicked', () => {
+    const season = createMockSeason({
+      episodes: [
+        createMockEpisode({ id: 1, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-01' }),
+        createMockEpisode({ id: 2, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-08' }),
+        createMockEpisode({ id: 3, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-15' }),
+      ],
+    });
+    renderWithStore(createMockShow([season]));
+
+    fireEvent.click(screen.getByRole('button', { name: /mark caught up/i }));
+    fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+
+    expect(axiosInstance.put).not.toHaveBeenCalled();
+  });
+
+  it('dispatches markSeasonIdsAsPriorWatched with every season with remaining episodes on confirm', async () => {
+    const seasonOne = createMockSeason({
+      id: 1,
+      seasonNumber: 1,
+      episodes: [
+        createMockEpisode({ id: 1, seasonId: 1, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-01' }),
+        createMockEpisode({ id: 2, seasonId: 1, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-08' }),
+      ],
+    });
+    const seasonTwo = createMockSeason({
+      id: 2,
+      seasonNumber: 2,
+      episodes: [
+        createMockEpisode({ id: 3, seasonId: 2, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-15' }),
+      ],
+    });
+    const show = createMockShow([seasonOne, seasonTwo]);
+
+    (axiosInstance.put as jest.Mock).mockResolvedValue({
+      data: {
+        statusData: {
+          showWithSeasons: show,
+          nextUnwatchedEpisodes: [],
+        },
+      },
+    });
+
+    renderWithStore(show);
+
+    fireEvent.click(screen.getByRole('button', { name: /mark caught up/i }));
+    const dialog = screen.getByRole('dialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: /mark caught up/i }));
+
+    await waitFor(() => expect(axiosInstance.put).toHaveBeenCalledTimes(1));
+    expect(axiosInstance.put).toHaveBeenCalledWith('/accounts/123/profiles/10/seasons/priorWatchStatus', {
+      seasonIds: [1, 2],
+      showId: 100,
+    });
   });
 });

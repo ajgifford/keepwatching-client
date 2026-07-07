@@ -1,6 +1,7 @@
 import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
 import { deleteAccount, logout } from '../accountSlice';
+import { markSeasonIdsAsPriorWatched } from '../activeShowSlice';
 import {
   addMovieFavorite,
   addShowFavorite,
@@ -766,6 +767,66 @@ describe('activeProfileSlice', () => {
       );
 
       expect(result.meta.requestStatus).toBe('rejected');
+    });
+  });
+
+  describe('markSeasonIdsAsPriorWatched (cross-slice sync)', () => {
+    it('syncs nextUnwatchedEpisodes and the cached show into activeProfile after Catch-Up Mode marks seasons', async () => {
+      // Regression test: Catch-Up Mode dispatches markSeasonIdsAsPriorWatched (defined in
+      // activeShowSlice), which previously had no corresponding extraReducers case in
+      // activeProfileSlice — unlike its siblings updateEpisodeWatchStatus/updateSeasonWatchStatus.
+      // That left the home page's "Keep Watching" list stale after using Catch-Up Mode.
+      const staleShow: any = { id: 100, title: 'Test Show', watchStatus: WatchStatus.WATCHING };
+      const updatedShow: any = { id: 100, title: 'Test Show', watchStatus: WatchStatus.UP_TO_DATE, seasons: [] };
+      const staleKeepWatchingEntry: any = { showId: 100, showTitle: 'Test Show', episodes: [{ episodeId: 1 }] };
+
+      mockAxiosInstance.put.mockResolvedValueOnce({
+        data: {
+          statusData: {
+            showWithSeasons: updatedShow,
+            nextUnwatchedEpisodes: [],
+          },
+        },
+      });
+
+      const store = createMockStore({
+        auth: {
+          account: {
+            id: 1,
+            email: 'test@test.com',
+            uid: 'test-uid',
+            image: '',
+            name: 'Test User',
+            defaultProfileId: 0,
+          },
+          loading: false,
+          error: null,
+        },
+        activeProfile: {
+          profile: mockProfile,
+          shows: [staleShow],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [staleKeepWatchingEntry],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      await store.dispatch(markSeasonIdsAsPriorWatched({ profileId: 1, showId: 100, seasonIds: [10, 11] }) as any);
+
+      const shows = selectShows(store.getState());
+      expect(shows[0].watchStatus).toBe(WatchStatus.UP_TO_DATE);
+      expect(selectNextUnwatchedEpisodes(store.getState())).toEqual([]);
     });
   });
 

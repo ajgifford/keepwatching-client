@@ -160,6 +160,34 @@ describe('catchUpUtility', () => {
       expect(stats?.seasons[1]).toMatchObject({ seasonNumber: 2, episodesRemaining: 1, runtimeRemaining: 50 });
     });
 
+    it('excludes skipped seasons from the backlog even when their episodes are unwatched and aired', () => {
+      const skippedSeason = createMockSeason({
+        id: 1,
+        seasonNumber: 1,
+        watchStatus: WatchStatus.SKIPPED,
+        episodes: [
+          createMockEpisode({ id: 1, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-01', runtime: 45 }),
+          createMockEpisode({ id: 2, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-01-08', runtime: 45 }),
+        ],
+      });
+      const activeSeason = createMockSeason({
+        id: 2,
+        seasonNumber: 2,
+        episodes: [
+          createMockEpisode({ id: 3, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-02-01', runtime: 30 }),
+          createMockEpisode({ id: 4, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-02-08', runtime: 30 }),
+          createMockEpisode({ id: 5, watchStatus: WatchStatus.NOT_WATCHED, airDate: '2024-02-15', runtime: 30 }),
+        ],
+      });
+
+      const stats = calculateCatchUpStats(createMockShow([skippedSeason, activeSeason]));
+
+      expect(stats?.seasons).toHaveLength(1);
+      expect(stats?.seasons[0].seasonNumber).toBe(2);
+      expect(stats?.totalEpisodesRemaining).toBe(3);
+      expect(stats?.totalRuntimeRemaining).toBe(90);
+    });
+
     it('flags missing runtime and treats it as zero minutes', () => {
       const season = createMockSeason({
         episodes: [
