@@ -45,6 +45,7 @@ All global state lives in Redux slices under `src/app/slices/`:
 - `watchHistorySlice` - Paginated watch history with filters; rewatch thunks
 - `ratingsSlice` - Per-profile star ratings and notes for shows/movies
 - `communityRecommendationsSlice` - Community-wide recommendations and profile recommendations
+- `watchlistSlice` - Personal prioritized watch queue, Unwatched pool, and the "Help Me Decide" wizard
 
 **Important patterns:**
 
