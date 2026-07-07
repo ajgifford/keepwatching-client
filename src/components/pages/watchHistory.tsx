@@ -301,11 +301,12 @@ function WatchHistory() {
         {/* Filters: single row on md+, wraps on smaller screens */}
         <Stack
           direction="row"
-          spacing={1}
           useFlexGap
           sx={{
             alignItems: 'flex-start',
             flexWrap: 'wrap',
+            rowGap: { xs: 2, sm: 1.5 },
+            columnGap: 1,
             mb: 2,
           }}
         >
