@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
 import { renderWithProviders } from '../../../../app/testUtils';
@@ -125,15 +125,14 @@ describe('ContentRatingWidget', () => {
         preloadedState: ratingsState([mockRating]),
       });
       await user.click(screen.getByRole('button', { name: /save/i }));
-      await waitFor(() => {
-        expect(axiosInstance.post).toHaveBeenCalledWith('/accounts/123/profiles/10/ratings', {
-          contentType: 'show',
-          contentId: 42,
-          rating: 4,
-          note: 'Great show',
-          contentTitle: 'Breaking Bad',
-          posterImage: '/poster.jpg',
-        });
+      await act(async () => {});
+      expect(axiosInstance.post).toHaveBeenCalledWith('/accounts/123/profiles/10/ratings', {
+        contentType: 'show',
+        contentId: 42,
+        rating: 4,
+        note: 'Great show',
+        contentTitle: 'Breaking Bad',
+        posterImage: '/poster.jpg',
       });
     });
 
@@ -148,9 +147,8 @@ describe('ContentRatingWidget', () => {
       // Clear the note field
       await user.clear(screen.getByLabelText(/notes/i));
       await user.click(screen.getByRole('button', { name: /save/i }));
-      await waitFor(() => {
-        expect(axiosInstance.post).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ note: null }));
-      });
+      await act(async () => {});
+      expect(axiosInstance.post).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ note: null }));
     });
 
     it('does not call API when save button is disabled', () => {
@@ -173,9 +171,8 @@ describe('ContentRatingWidget', () => {
       const buttons = screen.getAllByRole('button');
       const deleteButton = buttons[1]; // second button is delete
       await user.click(deleteButton);
-      await waitFor(() => {
-        expect(axiosInstance.delete).toHaveBeenCalledWith('/accounts/123/profiles/10/ratings/1');
-      });
+      await act(async () => {});
+      expect(axiosInstance.delete).toHaveBeenCalledWith('/accounts/123/profiles/10/ratings/1');
     });
   });
 
@@ -189,14 +186,14 @@ describe('ContentRatingWidget', () => {
       });
 
       const threeStars = screen.getByRole('radio', { name: /3 stars/i });
-      fireEvent.click(threeStars);
-
-      await waitFor(() => {
-        expect(axiosInstance.post).toHaveBeenCalledWith(
-          '/accounts/123/profiles/10/ratings',
-          expect.objectContaining({ rating: 3 })
-        );
+      await act(async () => {
+        fireEvent.click(threeStars);
       });
+
+      expect(axiosInstance.post).toHaveBeenCalledWith(
+        '/accounts/123/profiles/10/ratings',
+        expect.objectContaining({ rating: 3 })
+      );
     });
 
     it('does not auto-save when autoSaveRating is not set', () => {
@@ -210,12 +207,14 @@ describe('ContentRatingWidget', () => {
       expect(axiosInstance.post).not.toHaveBeenCalled();
     });
 
-    it('disables Save right after the rating auto-saves, since there is nothing left to save', () => {
+    it('disables Save right after the rating auto-saves, since there is nothing left to save', async () => {
       renderWithProviders(<ContentRatingWidget {...defaultProps} autoSaveRating />, {
         preloadedState: ratingsState(),
       });
 
-      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      await act(async () => {
+        fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      });
 
       expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
     });
@@ -226,7 +225,9 @@ describe('ContentRatingWidget', () => {
         preloadedState: ratingsState(),
       });
 
-      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      await act(async () => {
+        fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      });
       expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
 
       await user.type(screen.getByLabelText(/notes/i), 'Great episode');
@@ -249,14 +250,16 @@ describe('ContentRatingWidget', () => {
       expect(onDirtyChange).toHaveBeenLastCalledWith(true);
     });
 
-    it('reports not dirty when autoSaveRating is set and only the rating changes', () => {
+    it('reports not dirty when autoSaveRating is set and only the rating changes', async () => {
       const onDirtyChange = jest.fn();
       renderWithProviders(<ContentRatingWidget {...defaultProps} autoSaveRating onDirtyChange={onDirtyChange} />, {
         preloadedState: ratingsState(),
       });
 
       onDirtyChange.mockClear();
-      fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      await act(async () => {
+        fireEvent.click(screen.getByRole('radio', { name: /3 stars/i }));
+      });
 
       expect(onDirtyChange).toHaveBeenLastCalledWith(false);
     });

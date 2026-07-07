@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import axiosInstance from '../../../../app/api/axiosInstance';
@@ -298,9 +298,12 @@ describe('CatchUpModeCard', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /mark caught up/i }));
     const dialog = screen.getByRole('dialog');
-    fireEvent.click(within(dialog).getByRole('button', { name: /mark caught up/i }));
 
-    await waitFor(() => expect(axiosInstance.put).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      fireEvent.click(within(dialog).getByRole('button', { name: /mark caught up/i }));
+    });
+
+    expect(axiosInstance.put).toHaveBeenCalledTimes(1);
     expect(axiosInstance.put).toHaveBeenCalledWith('/accounts/123/profiles/10/seasons/priorWatchStatus', {
       seasonIds: [1, 2],
       showId: 100,
