@@ -15,6 +15,7 @@ set -e
 # Configuration
 PROD_DIR=/var/www/keepwatching-client
 BACKUP_DIR=/var/www/keepwatching-client-backups
+REPO_DIR=~/git/keepwatching-client
 
 # Colors for output
 RED='\033[0;31m'
@@ -53,13 +54,17 @@ ${GREEN}Usage:${NC} $0 [OPTIONS]
 ${YELLOW}Options:${NC}
     --list              List all available backups
     --rollback N        Rollback to backup number N (use --list to see numbers)
-    --dry-run           Preview rollback without making changes (use with --rollback)
+    --tag vX.Y.Z        Rollback to the backup matching this version tag (alternative to --rollback N)
+    --dry-run           Preview rollback without making changes
+    --yes               Skip the interactive confirmation prompt (required for non-interactive/CI use)
     --help              Show this help message
 
 ${YELLOW}Examples:${NC}
     $0 --list                      # List all backups
     $0 --rollback 1 --dry-run      # Preview rollback to backup #1
     $0 --rollback 1                # Actually rollback to backup #1
+    $0 --tag v1.4.2                # Rollback to the backup for v1.4.2
+    $0 --tag v1.4.2 --yes          # Same, without the confirmation prompt (CI)
 
 EOF
     exit 0
@@ -128,10 +133,54 @@ list_backups() {
     fi
 }
 
+# Resolve a version tag (e.g. v1.4.2) to a backup number, for use with rollback().
+# Echoes the backup number on success; errors and exits on failure.
+resolve_tag_to_backup_num() {
+    local TAG=$1
+
+    if [ ! -d "$REPO_DIR/.git" ]; then
+        error "Repo not found at $REPO_DIR — cannot resolve tag $TAG"
+        exit 1
+    fi
+
+    local TARGET_COMMIT
+    TARGET_COMMIT=$(git -C "$REPO_DIR" rev-list -n1 "$TAG" 2>/dev/null || true)
+    if [ -z "$TARGET_COMMIT" ]; then
+        error "Tag '$TAG' not found in $REPO_DIR"
+        exit 1
+    fi
+
+    local TAG_BACKUPS
+    TAG_BACKUPS=($(sudo ls -1dt "$BACKUP_DIR"/backup_* 2>/dev/null || true))
+
+    if [ ${#TAG_BACKUPS[@]} -eq 0 ]; then
+        error "No backups found in $BACKUP_DIR"
+        exit 1
+    fi
+
+    for i in "${!TAG_BACKUPS[@]}"; do
+        local CANDIDATE="${TAG_BACKUPS[$i]}"
+        if sudo [ -f "$CANDIDATE/.deployment-meta" ]; then
+            local CANDIDATE_COMMIT
+            CANDIDATE_COMMIT=$(sudo grep "GIT_COMMIT=" "$CANDIDATE/.deployment-meta" | cut -d= -f2)
+            if [ "$CANDIDATE_COMMIT" = "$TARGET_COMMIT" ]; then
+                echo "$((i+1))"
+                return 0
+            fi
+        fi
+    done
+
+    error "No backup found for $TAG (commit ${TARGET_COMMIT:0:8})."
+    error "It may have aged out of the kept backups, or was never superseded by a later"
+    error "deploy — a version's build output is only backed up once a later deploy replaces it."
+    exit 1
+}
+
 # Perform rollback
 rollback() {
     local BACKUP_NUM=$1
     local DRY_RUN=$2
+    local ASSUME_YES=$3
 
     if [ ! -d "$BACKUP_DIR" ]; then
         error "Backup directory $BACKUP_DIR does not exist!"
@@ -186,10 +235,14 @@ rollback() {
         echo "  Date:    $BACKUP_DATE"
         echo ""
 
-        read -p "Are you sure you want to proceed? (yes/no): " CONFIRM
-        if [ "$CONFIRM" != "yes" ]; then
-            info "Rollback cancelled"
-            exit 0
+        if [ "$ASSUME_YES" = true ]; then
+            info "Skipping confirmation prompt (--yes)"
+        else
+            read -p "Are you sure you want to proceed? (yes/no): " CONFIRM
+            if [ "$CONFIRM" != "yes" ]; then
+                info "Rollback cancelled"
+                exit 0
+            fi
         fi
 
         log "Starting rollback process..."
@@ -234,24 +287,23 @@ EOF"
 
         # Record this rollback in the shared deployment log (best-effort — a
         # backup made before this change may not have full metadata to draw from)
-        ROLLBACK_REPO_DIR=~/git/keepwatching-client
         ROLLBACK_VERSION=""
         ROLLBACK_TAG="—"
         TYPES_VERSION="—"
         UI_VERSION="—"
         COMMIT_DATE="—"
         BRANCH="main"
-        if [ "$BACKUP_COMMIT" != "unknown" ] && [ -d "$ROLLBACK_REPO_DIR/.git" ]; then
-            ROLLBACK_VERSION=$(git -C "$ROLLBACK_REPO_DIR" show "$BACKUP_COMMIT:package.json" 2>/dev/null | grep '"version"' | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
-            FOUND_TAG=$(git -C "$ROLLBACK_REPO_DIR" tag --points-at "$BACKUP_COMMIT" 2>/dev/null | grep '^v' | head -1)
+        if [ "$BACKUP_COMMIT" != "unknown" ] && [ -d "$REPO_DIR/.git" ]; then
+            ROLLBACK_VERSION=$(git -C "$REPO_DIR" show "$BACKUP_COMMIT:package.json" 2>/dev/null | grep '"version"' | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
+            FOUND_TAG=$(git -C "$REPO_DIR" tag --points-at "$BACKUP_COMMIT" 2>/dev/null | grep '^v' | head -1)
             [ -n "$FOUND_TAG" ] && ROLLBACK_TAG="$FOUND_TAG"
-            FOUND_TYPES=$(git -C "$ROLLBACK_REPO_DIR" show "$BACKUP_COMMIT:yarn.lock" 2>/dev/null | grep -A1 "^\"@ajgifford/keepwatching-types@" | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
+            FOUND_TYPES=$(git -C "$REPO_DIR" show "$BACKUP_COMMIT:yarn.lock" 2>/dev/null | grep -A1 "^\"@ajgifford/keepwatching-types@" | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
             [ -n "$FOUND_TYPES" ] && TYPES_VERSION="$FOUND_TYPES"
-            FOUND_UI=$(git -C "$ROLLBACK_REPO_DIR" show "$BACKUP_COMMIT:yarn.lock" 2>/dev/null | grep -A1 "^\"@ajgifford/keepwatching-ui@" | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
+            FOUND_UI=$(git -C "$REPO_DIR" show "$BACKUP_COMMIT:yarn.lock" 2>/dev/null | grep -A1 "^\"@ajgifford/keepwatching-ui@" | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
             [ -n "$FOUND_UI" ] && UI_VERSION="$FOUND_UI"
-            FOUND_DATE=$(git -C "$ROLLBACK_REPO_DIR" log -1 --format=%cd --date=short "$BACKUP_COMMIT" 2>/dev/null || true)
+            FOUND_DATE=$(git -C "$REPO_DIR" log -1 --format=%cd --date=short "$BACKUP_COMMIT" 2>/dev/null || true)
             [ -n "$FOUND_DATE" ] && COMMIT_DATE="$FOUND_DATE"
-            FOUND_BRANCH=$(git -C "$ROLLBACK_REPO_DIR" branch --show-current 2>/dev/null || true)
+            FOUND_BRANCH=$(git -C "$REPO_DIR" branch --show-current 2>/dev/null || true)
             [ -n "$FOUND_BRANCH" ] && BRANCH="$FOUND_BRANCH"
         fi
         VERSION_CELL="—"
@@ -271,8 +323,10 @@ EOF"
 
 # Parse command line arguments
 DRY_RUN=false
+ASSUME_YES=false
 ACTION=""
 BACKUP_NUM=""
+TARGET_TAG=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -285,8 +339,17 @@ while [[ $# -gt 0 ]]; do
             BACKUP_NUM="$2"
             shift 2
             ;;
+        --tag)
+            ACTION="rollback"
+            TARGET_TAG="$2"
+            shift 2
+            ;;
         --dry-run)
             DRY_RUN=true
+            shift
+            ;;
+        --yes)
+            ASSUME_YES=true
             shift
             ;;
         --help)
@@ -305,11 +368,18 @@ case $ACTION in
         list_backups
         ;;
     rollback)
+        if [ -n "$TARGET_TAG" ]; then
+            if [ -n "$BACKUP_NUM" ]; then
+                warning "Both --rollback and --tag given; using --tag ($TARGET_TAG)"
+            fi
+            BACKUP_NUM=$(resolve_tag_to_backup_num "$TARGET_TAG")
+            info "Resolved tag $TARGET_TAG to backup #$BACKUP_NUM"
+        fi
         if [ -z "$BACKUP_NUM" ]; then
-            error "Backup number required for rollback"
+            error "Backup number or --tag required for rollback"
             usage
         fi
-        rollback "$BACKUP_NUM" "$DRY_RUN"
+        rollback "$BACKUP_NUM" "$DRY_RUN" "$ASSUME_YES"
         ;;
     *)
         error "No action specified"
