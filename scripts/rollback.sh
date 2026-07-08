@@ -231,6 +231,41 @@ EOF"
         log "Rollback completed successfully!"
         info "Production restored to commit: ${BACKUP_COMMIT:0:8}"
         info "Previous production saved to: $CURRENT_BACKUP"
+
+        # Record this rollback in the shared deployment log (best-effort — a
+        # backup made before this change may not have full metadata to draw from)
+        ROLLBACK_REPO_DIR=~/git/keepwatching-client
+        ROLLBACK_VERSION=""
+        ROLLBACK_TAG="—"
+        TYPES_VERSION="—"
+        UI_VERSION="—"
+        COMMIT_DATE="—"
+        BRANCH="main"
+        if [ "$BACKUP_COMMIT" != "unknown" ] && [ -d "$ROLLBACK_REPO_DIR/.git" ]; then
+            ROLLBACK_VERSION=$(git -C "$ROLLBACK_REPO_DIR" show "$BACKUP_COMMIT:package.json" 2>/dev/null | grep '"version"' | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
+            FOUND_TAG=$(git -C "$ROLLBACK_REPO_DIR" tag --points-at "$BACKUP_COMMIT" 2>/dev/null | grep '^v' | head -1)
+            [ -n "$FOUND_TAG" ] && ROLLBACK_TAG="$FOUND_TAG"
+            FOUND_TYPES=$(git -C "$ROLLBACK_REPO_DIR" show "$BACKUP_COMMIT:yarn.lock" 2>/dev/null | grep -A1 "^\"@ajgifford/keepwatching-types@" | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
+            [ -n "$FOUND_TYPES" ] && TYPES_VERSION="$FOUND_TYPES"
+            FOUND_UI=$(git -C "$ROLLBACK_REPO_DIR" show "$BACKUP_COMMIT:yarn.lock" 2>/dev/null | grep -A1 "^\"@ajgifford/keepwatching-ui@" | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
+            [ -n "$FOUND_UI" ] && UI_VERSION="$FOUND_UI"
+            FOUND_DATE=$(git -C "$ROLLBACK_REPO_DIR" log -1 --format=%cd --date=short "$BACKUP_COMMIT" 2>/dev/null || true)
+            [ -n "$FOUND_DATE" ] && COMMIT_DATE="$FOUND_DATE"
+            FOUND_BRANCH=$(git -C "$ROLLBACK_REPO_DIR" branch --show-current 2>/dev/null || true)
+            [ -n "$FOUND_BRANCH" ] && BRANCH="$FOUND_BRANCH"
+        fi
+        VERSION_CELL="—"
+        [ -n "$ROLLBACK_VERSION" ] && VERSION_CELL="v$ROLLBACK_VERSION"
+
+        DEPLOY_DATETIME=$(date '+%Y-%m-%d %I:%M %p')
+        LOG_SCRIPT=~/git/keepwatching-admin-doc/deployment/scripts/record-deployment.sh
+
+        if [ -x "$LOG_SCRIPT" ]; then
+            ROW="| $DEPLOY_DATETIME | $VERSION_CELL | $ROLLBACK_TAG | $BACKUP_COMMIT | $COMMIT_DATE | $BRANCH | $(whoami) | rollback | $TYPES_VERSION | $UI_VERSION | Rolled back to $BACKUP_NAME |"
+            "$LOG_SCRIPT" client "$ROW" || warning "Failed to record rollback in shared log."
+        else
+            warning "Deployment log script not found at $LOG_SCRIPT — skipping log entry."
+        fi
     fi
 }
 

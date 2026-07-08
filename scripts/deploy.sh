@@ -101,6 +101,21 @@ if [ "$CURRENT_COMMIT" = "$NEW_COMMIT" ]; then
     warning "If you expected new changes, make sure they are pushed to the remote."
 fi
 
+# Determine version/tag for this deploy and guard against re-tagging a
+# different commit under an already-used version number
+VERSION=$(node -p "require('./package.json').version")
+TAG="v$VERSION"
+TAG_EXISTS=false
+if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+    TAG_COMMIT=$(git rev-list -n1 "$TAG")
+    if [ "$TAG_COMMIT" != "$NEW_COMMIT" ]; then
+        error "Version $VERSION is already tagged at a different commit (${TAG_COMMIT:0:8})."
+        error "Bump the version first: yarn bump-version patch|minor|major (then commit and push)"
+        exit 1
+    fi
+    TAG_EXISTS=true
+fi
+
 # Install dependencies
 log "Installing dependencies..."
 yarn install
@@ -141,7 +156,30 @@ sudo find "$PROD_DIR" -type d -exec chmod 755 {} \;
 log "Reloading NGINX..."
 sudo systemctl reload nginx
 
+# Tag this deployment and record it in the shared deployment log
+if [ "$TAG_EXISTS" = false ]; then
+    log "Tagging $NEW_COMMIT as $TAG..."
+    git tag -a "$TAG" -m "Deploy $TAG"
+    git push origin "$TAG"
+else
+    info "Tag $TAG already points at this commit — skipping tag creation (redeploy)."
+fi
+
+TYPES_VERSION=$(grep -A1 "^\"@ajgifford/keepwatching-types@" yarn.lock 2>/dev/null | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
+UI_VERSION=$(grep -A1 "^\"@ajgifford/keepwatching-ui@" yarn.lock 2>/dev/null | grep version | head -1 | sed -E 's/.*version "([^"]+)".*/\1/')
+COMMIT_DATE=$(git log -1 --format=%cd --date=short "$NEW_COMMIT")
+DEPLOY_DATETIME=$(date '+%Y-%m-%d %I:%M %p')
+BRANCH=$(git branch --show-current)
+LOG_SCRIPT=~/git/keepwatching-admin-doc/deployment/scripts/record-deployment.sh
+
+if [ -x "$LOG_SCRIPT" ]; then
+    ROW="| $DEPLOY_DATETIME | v$VERSION | $TAG | $NEW_COMMIT | $COMMIT_DATE | $BRANCH | $(whoami) | deploy | ${TYPES_VERSION:-—} | ${UI_VERSION:-—} |  |"
+    "$LOG_SCRIPT" client "$ROW" || warning "Failed to record deployment in shared log."
+else
+    warning "Deployment log script not found at $LOG_SCRIPT — skipping log entry."
+fi
+
 log "Client Deployment Successful!"
-info "Deployed: ${NEW_COMMIT:0:8}"
+info "Deployed: ${NEW_COMMIT:0:8} ($TAG)"
 info "Backup: $BACKUP_PATH"
 info "Run './scripts/rollback.sh --list' to see available backups"
