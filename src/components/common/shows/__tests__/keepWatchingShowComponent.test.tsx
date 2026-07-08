@@ -283,7 +283,7 @@ describe('KeepWatchingShowComponent', () => {
     expect(screen.getByText('Episode 2')).toBeInTheDocument();
   });
 
-  it('fills from multiple seasons when no episodes are watched', () => {
+  it('fills only from the earliest season when no episodes are watched', () => {
     const season2: ProfileSeason = {
       id: 2,
       showId: 100,
@@ -314,10 +314,13 @@ describe('KeepWatchingShowComponent', () => {
       </Provider>
     );
 
-    // With no watched episodes, should fill from all seasons using round-robin
-    // S1: 3 episodes, S2: 2 episodes → round-robin shows all 5
+    // With no watched episodes, should exhaust season 1 before touching season 2
+    // S1: 3 episodes, S2: 2 episodes → only season 1's 3 episodes are shown
     const episodeTitles = screen.getAllByText(/^Episode \d+$/);
-    expect(episodeTitles).toHaveLength(5);
+    expect(episodeTitles).toHaveLength(3);
+    expect(screen.getByText('Episode 1')).toBeInTheDocument();
+    expect(screen.getByText('Episode 2')).toBeInTheDocument();
+    expect(screen.getByText('Episode 3')).toBeInTheDocument();
   });
 
   it('shows episodes from active seasons with watched progress using round-robin', () => {

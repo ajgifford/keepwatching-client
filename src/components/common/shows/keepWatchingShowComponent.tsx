@@ -106,13 +106,18 @@ export const KeepWatchingShowComponent = ({ profileId }: { profileId: number }) 
     return hasWatchedEpisodes && hasUnwatchedAiredEpisodes;
   });
 
-  // Step 2: Determine which seasons to use (active seasons, or fall back to all seasons with unwatched episodes)
-  const seasonsToProcess =
-    activeSeasons.length > 0
-      ? activeSeasons
-      : nonSkippedSeasons.filter((s) =>
-          s.episodes.some((ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date())
-        );
+  // Step 2: Determine which seasons to use (active seasons, or fall back to the earliest season
+  // with unwatched episodes — never mix multiple untouched seasons together)
+  let seasonsToProcess: ProfileSeason[];
+  if (activeSeasons.length > 0) {
+    seasonsToProcess = activeSeasons;
+  } else {
+    const seasonsWithUnwatched = nonSkippedSeasons.filter((s) =>
+      s.episodes.some((ep) => !watchedEpisodes[ep.id] && ep.airDate && parseLocalDate(ep.airDate) <= new Date())
+    );
+    const earliestSeasonNumber = Math.min(...seasonsWithUnwatched.map((s) => s.seasonNumber));
+    seasonsToProcess = seasonsWithUnwatched.filter((s) => s.seasonNumber === earliestSeasonNumber);
+  }
 
   // Step 3: Get unwatched episodes per season
   const episodesBySeason: Map<number, NextEpisode[]> = new Map();
