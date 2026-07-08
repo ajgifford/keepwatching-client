@@ -106,6 +106,24 @@ export function RecapNavigator({
     };
   }, [accountId, profileId]);
 
+  useEffect(() => {
+    if (!available) return;
+    const hasYearly = available.years.length > 0;
+    const hasMonthly = available.months.length > 0;
+    const initialTypeHasData = periodType === 'year' ? hasYearly : hasMonthly;
+    if (initialTypeHasData) return;
+
+    const fallback: RecapPeriodType = periodType === 'year' ? 'month' : 'year';
+    const fallbackHasData = fallback === 'year' ? hasYearly : hasMonthly;
+    if (fallbackHasData && allowedPeriodTypes.includes(fallback)) {
+      setPeriodType(fallback);
+    }
+    // Only run right when `available` first resolves, not on every manual toggle - a user
+    // deliberately switching to a period type with no data yet should see the empty state,
+    // not get silently bounced back.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [available]);
+
   const periods: RecapPeriodKey[] = useMemo(() => {
     if (!available) return [];
     if (periodType === 'year') {
@@ -286,16 +304,6 @@ export function RecapNavigator({
     );
   }
 
-  if (periods.length === 0) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <Typography color="text.secondary">
-          No {periodType === 'year' ? 'yearly' : 'monthly'} recap available yet — keep watching!
-        </Typography>
-      </Box>
-    );
-  }
-
   const focused = periods[focusedIndex];
   const focusedRecap = focused ? (recapCache[periodKeyString(focused)] ?? null) : null;
   const focusedIsLoading = focused ? loadingKeys.has(periodKeyString(focused)) : false;
@@ -309,90 +317,100 @@ export function RecapNavigator({
         </ToggleButtonGroup>
       )}
 
-      <Box sx={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-        {showLeftArrow && (
-          <IconButton
-            aria-label="previous recap"
-            onClick={() => setFocusedIndex((i) => Math.max(0, i - 1))}
-            sx={{
-              position: 'absolute',
-              left: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 2,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
-            }}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-        )}
-
-        <Box
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          data-testid="recap-scroll-track"
-          sx={{
-            display: 'flex',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-            width: '100%',
-            maxWidth: 420,
-          }}
-        >
-          {periods.map((p, index) => {
-            const key = periodKeyString(p);
-            const previousKey = periodKeyString(getPreviousPeriodKey(p));
-            return (
-              <Box
-                key={key}
-                sx={{ flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', justifyContent: 'center' }}
-              >
-                <PeriodRecapCard
-                  ref={(el) => {
-                    cardRefs.current[index] = el;
-                  }}
-                  profileName={profileName}
-                  profileAccentColor={profileAccentColor}
-                  period={p.period}
-                  year={p.year}
-                  month={p.month}
-                  recap={recapCache[key] ?? null}
-                  previousRecap={recapCache[previousKey] ?? null}
-                  isLoading={loadingKeys.has(key)}
-                />
-              </Box>
-            );
-          })}
+      {periods.length === 0 ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+          <Typography color="text.secondary">
+            No {periodType === 'year' ? 'yearly' : 'monthly'} recap available yet — keep watching!
+          </Typography>
         </Box>
+      ) : (
+        <>
+          <Box sx={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+            {showLeftArrow && (
+              <IconButton
+                aria-label="previous recap"
+                onClick={() => setFocusedIndex((i) => Math.max(0, i - 1))}
+                sx={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 2,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            )}
 
-        {showRightArrow && (
-          <IconButton
-            aria-label="next recap"
-            onClick={() => setFocusedIndex((i) => Math.min(periods.length - 1, i + 1))}
-            sx={{
-              position: 'absolute',
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 2,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
-            }}
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        )}
-      </Box>
+            <Box
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
+              data-testid="recap-scroll-track"
+              sx={{
+                display: 'flex',
+                overflowX: 'auto',
+                scrollSnapType: 'x mandatory',
+                scrollbarWidth: 'none',
+                '&::-webkit-scrollbar': { display: 'none' },
+                width: '100%',
+                maxWidth: 420,
+              }}
+            >
+              {periods.map((p, index) => {
+                const key = periodKeyString(p);
+                const previousKey = periodKeyString(getPreviousPeriodKey(p));
+                return (
+                  <Box
+                    key={key}
+                    sx={{ flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', justifyContent: 'center' }}
+                  >
+                    <PeriodRecapCard
+                      ref={(el) => {
+                        cardRefs.current[index] = el;
+                      }}
+                      profileName={profileName}
+                      profileAccentColor={profileAccentColor}
+                      period={p.period}
+                      year={p.year}
+                      month={p.month}
+                      recap={recapCache[key] ?? null}
+                      previousRecap={recapCache[previousKey] ?? null}
+                      isLoading={loadingKeys.has(key)}
+                    />
+                  </Box>
+                );
+              })}
+            </Box>
 
-      {focused && (
-        <Typography variant="body2" color="text.secondary" data-testid="focused-period-label">
-          {recapPeriodLabel(focused.period, focused.year, focused.month)}
-        </Typography>
+            {showRightArrow && (
+              <IconButton
+                aria-label="next recap"
+                onClick={() => setFocusedIndex((i) => Math.min(periods.length - 1, i + 1))}
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 2,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+                }}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+            )}
+          </Box>
+
+          {focused && (
+            <Typography variant="body2" color="text.secondary" data-testid="focused-period-label">
+              {recapPeriodLabel(focused.period, focused.year, focused.month)}
+            </Typography>
+          )}
+        </>
       )}
 
       <Box sx={{ display: 'flex', gap: 1 }}>

@@ -56,10 +56,16 @@ import ProfileEditDialog from '../common/account/profileEditDialog';
 import AccountStatisticsDialog from '../common/statistics/accountStatisticsDialog';
 import ProfileStatisticsDialog from '../common/statistics/profileStatisticsDialog';
 import { RecapDialog } from '../common/statistics/recap/recapDialog';
-import { Profile } from '@ajgifford/keepwatching-types';
+import { Profile, RecapPeriodType } from '@ajgifford/keepwatching-types';
 import { getAccountImageUrl } from '@ajgifford/keepwatching-ui';
 import { ErrorComponent } from '@ajgifford/keepwatching-ui';
 import { getAuth } from 'firebase/auth';
+
+/** December's own recap isn't ready until closer to year-end, but it's the one month where the
+ * yearly recap is more relevant to open on by default than the (still in-progress) month. */
+function getDefaultRecapPeriodType(): RecapPeriodType {
+  return new Date().getMonth() === 11 ? 'year' : 'month';
+}
 
 const ManageAccount = () => {
   const dispatch = useAppDispatch();
@@ -518,7 +524,7 @@ const ManageAccount = () => {
           profileId={recapDialogProfile.id}
           profileName={recapDialogProfile.name}
           profileAccentColor={recapDialogProfile.accentColor}
-          initialPeriodType="year"
+          initialPeriodType={getDefaultRecapPeriodType()}
           onClose={() => setRecapDialogOpen(false)}
         />
       )}
