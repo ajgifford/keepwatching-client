@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { useAppSelector } from '../../../../app/hooks';
 import { selectActiveProfile } from '../../../../app/slices/activeProfileSlice';
 import {
+  defaultCalendarEnd,
+  defaultCalendarStart,
   fetchCalendarContent,
   selectCalendarDays,
   selectCalendarError,
@@ -11,6 +13,8 @@ import {
   selectCalendarLastFetched,
   selectCalendarLoading,
 } from '../../../../app/slices/calendarSlice';
+import { downloadTextFile } from '../../../utility/downloadFileUtility';
+import { generateIcsCalendar } from '../../../utility/icsExportUtility';
 import { ContentCalendar } from '../contentCalendar';
 import userEvent from '@testing-library/user-event';
 
@@ -22,6 +26,8 @@ jest.mock('../../../../app/hooks', () => ({
 }));
 
 jest.mock('../../../../app/slices/calendarSlice', () => ({
+  defaultCalendarStart: jest.fn(() => '2026-06-08'),
+  defaultCalendarEnd: jest.fn(() => '2026-09-06'),
   fetchCalendarContent: jest.fn(() => ({ type: 'calendar/fetchContent' })),
   selectCalendarDays: jest.fn(),
   selectCalendarError: jest.fn(),
@@ -45,6 +51,18 @@ jest.mock('../calendarAgendaView', () => ({
 
 jest.mock('../calendarGridView', () => ({
   CalendarGridView: () => <div data-testid="grid-view">Grid View</div>,
+}));
+
+jest.mock('../calendarRangeControls', () => ({
+  CalendarRangeControls: () => <div data-testid="range-controls">Range Controls</div>,
+}));
+
+jest.mock('../../../utility/icsExportUtility', () => ({
+  generateIcsCalendar: jest.fn(() => 'BEGIN:VCALENDAR\r\nEND:VCALENDAR'),
+}));
+
+jest.mock('../../../utility/downloadFileUtility', () => ({
+  downloadTextFile: jest.fn(),
 }));
 
 const mockProfile = { id: 5, accountId: 1, name: 'Test Profile', image: '' };
@@ -196,10 +214,18 @@ describe('ContentCalendar', () => {
   });
 
   describe('data fetching', () => {
+    beforeEach(() => {
+      localStorage.removeItem('calendarDateRange');
+    });
+
     it('should dispatch fetchCalendarContent on mount when data has never been fetched', () => {
       setupSelector({ lastFetched: null });
       renderWithRouter(<ContentCalendar />);
-      expect(fetchCalendarContent).toHaveBeenCalledWith({ profileId: mockProfile.id });
+      expect(fetchCalendarContent).toHaveBeenCalledWith({
+        profileId: mockProfile.id,
+        startDate: defaultCalendarStart(),
+        endDate: defaultCalendarEnd(),
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
@@ -207,7 +233,11 @@ describe('ContentCalendar', () => {
       const staleTimestamp = new Date(Date.now() - 6 * 60 * 1000).toISOString();
       setupSelector({ lastFetched: staleTimestamp });
       renderWithRouter(<ContentCalendar />);
-      expect(fetchCalendarContent).toHaveBeenCalledWith({ profileId: mockProfile.id });
+      expect(fetchCalendarContent).toHaveBeenCalledWith({
+        profileId: mockProfile.id,
+        startDate: defaultCalendarStart(),
+        endDate: defaultCalendarEnd(),
+      });
     });
 
     it('should not dispatch fetchCalendarContent when the cached data is still fresh', () => {
@@ -221,6 +251,73 @@ describe('ContentCalendar', () => {
       setupSelector({ profile: null });
       renderWithRouter(<ContentCalendar />);
       expect(fetchCalendarContent).not.toHaveBeenCalled();
+    });
+
+    it('should dispatch fetchCalendarContent with the resolved dates from a persisted custom range on mount', () => {
+      localStorage.setItem(
+        'calendarDateRange',
+        JSON.stringify({ preset: 'custom', customStart: '2026-01-01', customEnd: '2026-02-01' })
+      );
+      setupSelector({ lastFetched: null });
+      renderWithRouter(<ContentCalendar />);
+      expect(fetchCalendarContent).toHaveBeenCalledWith({
+        profileId: mockProfile.id,
+        startDate: '2026-01-01',
+        endDate: '2026-02-01',
+      });
+    });
+  });
+
+  describe('range controls', () => {
+    it('should show range controls in agenda view (full mode)', () => {
+      renderWithRouter(<ContentCalendar />);
+      expect(screen.getByTestId('range-controls')).toBeInTheDocument();
+    });
+
+    it('should not show range controls in grid view', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(<ContentCalendar />);
+      await user.click(screen.getByRole('button', { name: /calendar grid view/i }));
+      await waitFor(() => {
+        expect(screen.queryByTestId('range-controls')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should not show range controls in compact mode', () => {
+      renderWithRouter(<ContentCalendar compact />);
+      expect(screen.queryByTestId('range-controls')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('export', () => {
+    it('should show the Export button in full mode (agenda and grid)', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(<ContentCalendar />);
+      expect(screen.getByRole('button', { name: /export/i })).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: /calendar grid view/i }));
+      expect(screen.getByRole('button', { name: /export/i })).toBeInTheDocument();
+    });
+
+    it('should not show the Export button in compact mode', () => {
+      renderWithRouter(<ContentCalendar compact />);
+      expect(screen.queryByRole('button', { name: /export/i })).not.toBeInTheDocument();
+    });
+
+    it('should generate and download an ics file with the currently loaded days when clicked', async () => {
+      const user = userEvent.setup();
+      const days = [{ date: '2026-07-10', items: [] }];
+      setupSelector({ days });
+      renderWithRouter(<ContentCalendar />);
+
+      await user.click(screen.getByRole('button', { name: /export/i }));
+
+      expect(generateIcsCalendar).toHaveBeenCalledWith(days);
+      expect(downloadTextFile).toHaveBeenCalledWith(
+        'BEGIN:VCALENDAR\r\nEND:VCALENDAR',
+        'keepwatching-calendar.ics',
+        'text/calendar'
+      );
     });
   });
 });

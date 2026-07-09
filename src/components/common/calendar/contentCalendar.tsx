@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Box, Button, Chip, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 
@@ -15,8 +16,17 @@ import {
   selectCalendarLastFetched,
   selectCalendarLoading,
 } from '../../../app/slices/calendarSlice';
+import {
+  RangePresetId,
+  loadPersistedCalendarRange,
+  resolveRangeForPreset,
+  savePersistedCalendarRange,
+} from '../../utility/calendarRangePresetUtility';
+import { downloadTextFile } from '../../utility/downloadFileUtility';
+import { generateIcsCalendar } from '../../utility/icsExportUtility';
 import { CalendarAgendaView } from './calendarAgendaView';
 import { CalendarGridView } from './calendarGridView';
+import { CalendarRangeControls } from './calendarRangeControls';
 import { ErrorComponent, LoadingComponent } from '@ajgifford/keepwatching-ui';
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes
@@ -66,18 +76,29 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
     return stored === 'grid' ? 'grid' : 'agenda';
   });
 
+  const [range, setRange] = useState<{ preset: RangePresetId; startDate: string; endDate: string }>(() => {
+    if (compact) {
+      return { preset: 'default', ...resolveRangeForPreset('default') };
+    }
+    const persisted = loadPersistedCalendarRange();
+    const resolved = resolveRangeForPreset(persisted.preset, persisted.customStart, persisted.customEnd);
+    return { preset: persisted.preset, ...resolved };
+  });
+
   // Initial load or stale data
   useEffect(() => {
     if (!profile) return;
     const isStale = !lastFetched || Date.now() - new Date(lastFetched).getTime() > STALE_MS;
     if (isStale) {
-      dispatch(fetchCalendarContent({ profileId: profile.id }));
+      dispatch(fetchCalendarContent({ profileId: profile.id, startDate: range.startDate, endDate: range.endDate }));
     }
+    // Only re-run on mount/profile/staleness changes — user-picked range changes dispatch their own fetch (handleRangeChange).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, profile, lastFetched]);
 
-  // When the viewed month changes, check if it's outside the fetched range and fetch if needed
+  // When the viewed month changes in grid view, check if it's outside the fetched range and fetch if needed
   useEffect(() => {
-    if (!profile || compact) return;
+    if (!profile || compact || viewMode !== 'grid') return;
     if (!fetchedRange.startDate || !fetchedRange.endDate) return;
 
     const viewedMonthStart = monthStart(viewYear, viewMonth);
@@ -89,7 +110,7 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
       const { startDate, endDate } = expandedRange(viewYear, viewMonth);
       dispatch(fetchCalendarContent({ profileId: profile.id, startDate, endDate }));
     }
-  }, [dispatch, profile, compact, viewYear, viewMonth, fetchedRange]);
+  }, [dispatch, profile, compact, viewMode, viewYear, viewMonth, fetchedRange]);
 
   const handlePrevMonth = () => {
     if (viewMonth === 0) {
@@ -120,6 +141,24 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
     localStorage.setItem(VIEW_MODE_KEY, newMode);
   };
 
+  const handleRangeChange = (next: {
+    preset: RangePresetId;
+    startDate: string;
+    endDate: string;
+    customStart?: string;
+    customEnd?: string;
+  }) => {
+    setRange({ preset: next.preset, startDate: next.startDate, endDate: next.endDate });
+    savePersistedCalendarRange({ preset: next.preset, customStart: next.customStart, customEnd: next.customEnd });
+    if (profile) {
+      dispatch(fetchCalendarContent({ profileId: profile.id, startDate: next.startDate, endDate: next.endDate }));
+    }
+  };
+
+  const handleExport = () => {
+    downloadTextFile(generateIcsCalendar(days), 'keepwatching-calendar.ics', 'text/calendar');
+  };
+
   if (loading) return <LoadingComponent />;
   if (error) return <ErrorComponent error={error} />;
 
@@ -128,40 +167,78 @@ export const ContentCalendar: React.FC<ContentCalendarProps> = ({ compact = fals
   return (
     <Box>
       {/* Header */}
-      <Box
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <CalendarMonthIcon color="primary" />
-          <Typography
-            variant="h6"
+      <Box sx={{ mb: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 1,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minHeight: 40 }}>
+            <CalendarMonthIcon color="primary" />
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+              }}
+            >
+              Content Calendar
+            </Typography>
+            <Chip label={`${totalItems} items`} size="small" color="primary" variant="outlined" />
+          </Box>
+
+          <Box
             sx={{
-              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 1,
+              width: { xs: '100%', sm: 'auto' },
             }}
           >
-            Content Calendar
-          </Typography>
-          <Chip label={`${totalItems} items`} size="small" color="primary" variant="outlined" />
+            {!compact && (
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<FileDownloadIcon fontSize="small" />}
+                onClick={handleExport}
+              >
+                Export
+              </Button>
+            )}
+
+            {!compact && (
+              <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange} size="small">
+                <ToggleButton value="agenda" aria-label="agenda view">
+                  <ViewListIcon fontSize="small" />
+                </ToggleButton>
+                <ToggleButton value="grid" aria-label="calendar grid view">
+                  <CalendarMonthIcon fontSize="small" />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )}
+
+            {compact && (
+              <Button component={Link} to="/calendar" size="small" variant="outlined">
+                View Full Calendar
+              </Button>
+            )}
+          </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {!compact && (
-            <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange} size="small">
-              <ToggleButton value="agenda" aria-label="agenda view">
-                <ViewListIcon fontSize="small" />
-              </ToggleButton>
-              <ToggleButton value="grid" aria-label="calendar grid view">
-                <CalendarMonthIcon fontSize="small" />
-              </ToggleButton>
-            </ToggleButtonGroup>
-          )}
-
-          {compact && (
-            <Button component={Link} to="/calendar" size="small" variant="outlined">
-              View Full Calendar
-            </Button>
-          )}
-        </Box>
+        {!compact && viewMode === 'agenda' && (
+          <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, mt: 3 }}>
+            <CalendarRangeControls
+              preset={range.preset}
+              startDate={range.startDate}
+              endDate={range.endDate}
+              onRangeChange={handleRangeChange}
+            />
+          </Box>
+        )}
       </Box>
       {/* Content */}
       {viewMode === 'agenda' || compact ? (

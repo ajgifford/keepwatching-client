@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { CssBaseline, ThemeProvider as MuiThemeProvider, useMediaQuery } from '@mui/material';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { useAppSelector } from '../app/hooks';
 import { selectActiveProfile } from '../app/slices/activeProfileSlice';
@@ -42,7 +44,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      {children}
+      <LocalizationProvider dateAdapter={AdapterDateFns}>{children}</LocalizationProvider>
     </MuiThemeProvider>
   );
 };

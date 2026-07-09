@@ -1,5 +1,6 @@
 import axiosInstance from '../api/axiosInstance';
 import { RootState } from '../store';
+import { logout } from './accountSlice';
 import {
   CalendarContentResponse,
   ContentReference,
@@ -9,6 +10,8 @@ import {
 import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
+
+const CALENDAR_RANGE_KEY = 'calendarDateRange';
 
 // ---------------------------------------------------------------------------
 // Local calendar types
@@ -147,6 +150,10 @@ const calendarSlice = createSlice({
       .addCase(fetchCalendarContent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? { message: 'Unknown error' };
+      })
+      .addCase(logout.fulfilled, () => {
+        localStorage.removeItem(CALENDAR_RANGE_KEY);
+        return initialState;
       });
   },
 });
