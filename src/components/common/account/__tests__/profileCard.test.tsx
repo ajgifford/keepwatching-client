@@ -4,9 +4,18 @@ import { Provider } from 'react-redux';
 import accountSlice from '../../../../app/slices/accountSlice';
 import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
 import profilesSlice from '../../../../app/slices/profilesSlice';
+import { buildProfileDataExport, profileDataExportFilename } from '../../../utility/dataExportUtility';
+import { downloadTextFile } from '../../../utility/downloadFileUtility';
 import { ProfileCard } from '../profileCard';
 import { Profile } from '@ajgifford/keepwatching-types';
 import { configureStore } from '@reduxjs/toolkit';
+
+jest.mock('../../../utility/dataExportUtility');
+jest.mock('../../../utility/downloadFileUtility');
+
+const mockedBuildProfileDataExport = buildProfileDataExport as jest.Mock;
+const mockedProfileDataExportFilename = profileDataExportFilename as jest.Mock;
+const mockedDownloadTextFile = downloadTextFile as jest.Mock;
 
 const mockProfile: Profile = {
   id: 1,
@@ -488,5 +497,74 @@ describe('ProfileCard', () => {
 
     const card = screen.getByText('Test Profile').closest('[id^="profileCard_"]');
     expect(card).toHaveAttribute('id', 'profileCard_1');
+  });
+
+  describe('Download My Data', () => {
+    beforeEach(() => {
+      mockedProfileDataExportFilename.mockReturnValue('keepwatching-data-test-profile-2026-07-09.json');
+    });
+
+    it('downloads the export when the button is clicked', async () => {
+      const exportData = { profile: { id: mockProfile.id, name: mockProfile.name } };
+      mockedBuildProfileDataExport.mockResolvedValueOnce(exportData);
+
+      const store = createMockStore();
+      render(
+        <Provider store={store}>
+          <ProfileCard
+            handleReviewWatchHistory={function (profile: Profile): void {
+              throw new Error('Function not implemented.');
+            }}
+            handleViewRecap={function (profile: Profile): void {
+              throw new Error('Function not implemented.');
+            }}
+            {...defaultProps}
+          />
+        </Provider>
+      );
+
+      const downloadButton = screen.getByRole('button', { name: /download my data/i });
+      fireEvent.click(downloadButton);
+
+      expect(await screen.findByText(/exporting/i)).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(mockedBuildProfileDataExport).toHaveBeenCalledWith(mockAccount.id, mockProfile);
+      });
+      expect(mockedDownloadTextFile).toHaveBeenCalledWith(
+        JSON.stringify(exportData, null, 2),
+        'keepwatching-data-test-profile-2026-07-09.json',
+        'application/json'
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /download my data/i })).not.toBeDisabled();
+      });
+    });
+
+    it('shows an error alert when the export fails', async () => {
+      mockedBuildProfileDataExport.mockRejectedValueOnce(new Error('network error'));
+
+      const store = createMockStore();
+      render(
+        <Provider store={store}>
+          <ProfileCard
+            handleReviewWatchHistory={function (profile: Profile): void {
+              throw new Error('Function not implemented.');
+            }}
+            handleViewRecap={function (profile: Profile): void {
+              throw new Error('Function not implemented.');
+            }}
+            {...defaultProps}
+          />
+        </Provider>
+      );
+
+      const downloadButton = screen.getByRole('button', { name: /download my data/i });
+      fireEvent.click(downloadButton);
+
+      expect(await screen.findByText(/failed to export data/i)).toBeInTheDocument();
+      expect(mockedDownloadTextFile).not.toHaveBeenCalled();
+    });
   });
 });

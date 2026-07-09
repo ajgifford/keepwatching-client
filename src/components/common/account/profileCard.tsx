@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import HistoryIcon from '@mui/icons-material/History';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
@@ -17,6 +18,8 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
 import { selectActiveProfile } from '../../../app/slices/activeProfileSlice';
 import { removeProfileImage, selectProfileById, updateProfileImage } from '../../../app/slices/profilesSlice';
+import { buildProfileDataExport, profileDataExportFilename } from '../../utility/dataExportUtility';
+import { downloadTextFile } from '../../utility/downloadFileUtility';
 import { Profile } from '@ajgifford/keepwatching-types';
 import { getProfileImageUrl } from '@ajgifford/keepwatching-ui';
 
@@ -54,6 +57,8 @@ export function ProfileCard({
   const [isHovered, setIsHovered] = useState(false);
   const [imageMenuAnchor, setImageMenuAnchor] = useState<null | HTMLElement>(null);
   const [isRemovingImage, setIsRemovingImage] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   if (!account || !activeProfile) {
     return (
@@ -97,6 +102,19 @@ export function ProfileCard({
       await dispatch(removeProfileImage({ accountId: account.id, profileId: profile.id }));
     } finally {
       setIsRemovingImage(false);
+    }
+  };
+
+  const handleDownloadData = async () => {
+    setIsExporting(true);
+    setExportError(null);
+    try {
+      const data = await buildProfileDataExport(account.id, profile);
+      downloadTextFile(JSON.stringify(data, null, 2), profileDataExportFilename(profile.name), 'application/json');
+    } catch {
+      setExportError('Failed to export data. Please try again.');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -258,6 +276,19 @@ export function ProfileCard({
         >
           View Recap
         </Button>
+        <Button
+          variant="outlined"
+          startIcon={isExporting ? <CircularProgress size={16} /> : <FileDownloadIcon />}
+          onClick={handleDownloadData}
+          disabled={isExporting}
+        >
+          {isExporting ? 'Exporting…' : 'Download My Data'}
+        </Button>
+        {exportError && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {exportError}
+          </Alert>
+        )}
         <Button
           variant="outlined"
           startIcon={<EditIcon />}
