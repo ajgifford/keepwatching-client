@@ -35,6 +35,7 @@ import {
   selectContentTypeFilter,
   setContentTypeFilter,
 } from '../../../app/slices/communityRecommendationsSlice';
+import WatchlistButton from '../media/watchlistButton';
 import RecommendationDetailsDialog from './recommendationDetailsDialog';
 import { CommunityRecommendation, RatingContentType } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
@@ -150,7 +151,10 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
             const addingFavorite = favoritingIds.has(key);
 
             return (
-              <Card key={key} sx={{ minWidth: 140, maxWidth: 160, flexShrink: 0 }}>
+              <Card
+                key={key}
+                sx={{ display: 'flex', flexDirection: 'column', minWidth: 140, maxWidth: 160, flexShrink: 0 }}
+              >
                 <Tooltip
                   title={favorited ? '' : 'Add to your favorites to view details'}
                   disableHoverListener={favorited}
@@ -199,7 +203,16 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
                     </CardActionArea>
                   </span>
                 </Tooltip>
-                <Box sx={{ px: 1, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box
+                  sx={{
+                    px: 1,
+                    pb: 1,
+                    mt: 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
                   {rec.messageCount > 0 ? (
                     <Link
                       component="button"
@@ -212,28 +225,36 @@ export const CommunityRecommendationsSection = ({ returnPath = '/home' }: Commun
                   ) : (
                     <span />
                   )}
-                  <Tooltip title={favorited ? 'In your favorites' : 'Add to favorites'}>
-                    <span>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => !favorited && handleAddFavorite(rec, e)}
-                        disabled={addingFavorite || favorited}
-                        sx={{
-                          p: 0.5,
-                          '&.Mui-disabled': { opacity: favorited ? 1 : 0.5 },
-                        }}
-                        aria-label={favorited ? 'Already in favorites' : 'Add to favorites'}
-                      >
-                        {addingFavorite ? (
-                          <CircularProgress size={16} />
-                        ) : favorited ? (
-                          <StarIcon fontSize="small" color="primary" />
-                        ) : (
-                          <StarBorderIcon fontSize="small" />
-                        )}
-                      </IconButton>
-                    </span>
-                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <WatchlistButton
+                      id={rec.tmdbId}
+                      searchType={rec.contentType === 'movie' ? 'movies' : 'shows'}
+                      iconOnly
+                      size="small"
+                    />
+                    <Tooltip title={favorited ? 'In your favorites' : 'Add to favorites'}>
+                      <span>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => !favorited && handleAddFavorite(rec, e)}
+                          disabled={addingFavorite || favorited}
+                          sx={{
+                            p: 0.5,
+                            '&.Mui-disabled': { opacity: favorited ? 1 : 0.5 },
+                          }}
+                          aria-label={favorited ? 'Already in favorites' : 'Add to favorites'}
+                        >
+                          {addingFavorite ? (
+                            <CircularProgress size={16} />
+                          ) : favorited ? (
+                            <StarIcon fontSize="small" color="primary" />
+                          ) : (
+                            <StarBorderIcon fontSize="small" />
+                          )}
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </Box>
                 </Box>
               </Card>
             );

@@ -370,6 +370,25 @@ describe('ContentSearchTab', () => {
         expect(screen.getByTestId('search-results')).toHaveAttribute('data-search-performed', 'true');
       });
     });
+
+    it('should show a "Showing X of Y results" counter after a successful search', async () => {
+      const user = userEvent.setup();
+      mockAxiosGet.mockResolvedValue(mockSearchResponse(makeResults().slice(0, 2)));
+
+      render(<ContentSearchTab searchType="movies" />);
+
+      await user.type(screen.getByLabelText('Search for movies...'), 'Test');
+      await user.click(screen.getByRole('button', { name: /^search$/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText('Showing 2 of 2 results')).toBeInTheDocument();
+      });
+    });
+
+    it('should not show a results counter before a search is performed', () => {
+      render(<ContentSearchTab searchType="movies" />);
+      expect(screen.queryByText(/showing/i)).not.toBeInTheDocument();
+    });
   });
 
   describe('loading state', () => {

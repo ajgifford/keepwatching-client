@@ -6,6 +6,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   Typography,
   useMediaQuery,
   useTheme,
@@ -13,6 +14,7 @@ import {
 
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import FavoritesButton from '../media/favoriteButton';
+import WatchlistButton from '../media/watchlistButton';
 import { DiscoverAndSearchResult } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -77,7 +79,16 @@ export function SearchResultItem(props: SearchResultProps) {
       key={searchResult.id}
       alignItems="center"
       sx={{ gap: 2 }}
-      secondaryAction={<FavoritesButton id={searchResult.id} searchType={props.searchType} />}
+      secondaryAction={
+        <Stack
+          direction={isSmallScreen ? 'row' : 'column'}
+          spacing={1}
+          sx={{ alignItems: isSmallScreen ? 'center' : 'stretch' }}
+        >
+          <FavoritesButton id={searchResult.id} searchType={props.searchType} />
+          <WatchlistButton id={searchResult.id} searchType={props.searchType} />
+        </Stack>
+      }
     >
       <ListItemAvatar sx={{ minWidth: 94, width: 94, height: 140, p: 0, m: 0, display: 'flex', alignItems: 'center' }}>
         <Avatar alt={searchResult.title} src={imageSrc} variant="rounded" sx={{ width: 94, height: 140 }} />
@@ -94,7 +105,7 @@ export function SearchResultItem(props: SearchResultProps) {
                 WebkitBoxOrient: 'vertical',
                 WebkitLineClamp: isSmallScreen && !expanded ? 3 : 'unset',
                 overflow: 'hidden',
-                paddingRight: isSmallScreen ? '30px' : '120px',
+                paddingRight: isSmallScreen ? '64px' : '120px',
               }}
             >
               <i>{searchResult.summary}</i>

@@ -30,6 +30,7 @@ import { clearPriorWatchPromptFlag } from '../../utility/priorWatchPromptStorage
 import { determineNextShowWatchStatus, getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
 import { UnfavoriteChoiceDialog } from '../dialogs/UnfavoriteChoiceDialog';
+import WatchlistButton from '../media/watchlistButton';
 import { ProfileShow, WatchStatus } from '@ajgifford/keepwatching-types';
 import { WatchStatusIcon, buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -174,46 +175,53 @@ export const ShowListItem = (props: ShowListItemProps) => {
             }
           />
         </Box>
-        <Tooltip key={`removeFavoriteTooltip_${show.id}`} title="Remove Favorite">
-          <IconButton
-            key={`removeFavoriteIconButton_${show.id}`}
-            onClick={(event) => {
-              handleRemoveFavorite();
-              event.stopPropagation();
-            }}
-          >
-            <StarIcon color="primary" />
-          </IconButton>
-        </Tooltip>
-        <Box sx={{ position: 'relative' }}>
-          <OptionalTooltipControl
-            identifier={`watchStatusTooltip_${show.id}`}
-            title={getWatchStatusAction(show.watchStatus)}
-            disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-          >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Tooltip key={`removeFavoriteTooltip_${show.id}`} title="Remove Favorite">
             <IconButton
-              key={`watchStatusIconButton_${show.id}`}
-              disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+              key={`removeFavoriteIconButton_${show.id}`}
+              size={isSmallScreen ? 'small' : 'medium'}
               onClick={(event) => {
-                handleWatchStatusChange();
+                handleRemoveFavorite();
                 event.stopPropagation();
               }}
             >
-              <WatchStatusIcon status={show.watchStatus} />
+              <StarIcon color="primary" fontSize={isSmallScreen ? 'small' : undefined} />
             </IconButton>
-          </OptionalTooltipControl>
-          {isUpdatingWatchStatus && (
-            <CircularProgress
-              size={24}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-12px',
-                marginLeft: '-12px',
-              }}
-            />
-          )}
+          </Tooltip>
+          <Box onClick={(event) => event.stopPropagation()}>
+            <WatchlistButton id={show.tmdbId} searchType="shows" iconOnly size={isSmallScreen ? 'small' : 'medium'} />
+          </Box>
+          <Box sx={{ position: 'relative' }}>
+            <OptionalTooltipControl
+              identifier={`watchStatusTooltip_${show.id}`}
+              title={getWatchStatusAction(show.watchStatus)}
+              disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+            >
+              <IconButton
+                key={`watchStatusIconButton_${show.id}`}
+                size={isSmallScreen ? 'small' : 'medium'}
+                disabled={show.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+                onClick={(event) => {
+                  handleWatchStatusChange();
+                  event.stopPropagation();
+                }}
+              >
+                <WatchStatusIcon status={show.watchStatus} fontSize={isSmallScreen ? 'small' : undefined} />
+              </IconButton>
+            </OptionalTooltipControl>
+            {isUpdatingWatchStatus && (
+              <CircularProgress
+                size={isSmallScreen ? 18 : 24}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: isSmallScreen ? '-9px' : '-12px',
+                  marginLeft: isSmallScreen ? '-9px' : '-12px',
+                }}
+              />
+            )}
+          </Box>
         </Box>
       </ListItem>
       <Dialog

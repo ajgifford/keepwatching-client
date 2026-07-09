@@ -14,6 +14,7 @@ import {
   Select,
   TextField,
   Tooltip,
+  Typography,
 } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
@@ -321,14 +322,27 @@ export const ContentSearchTab: React.FC<ContentSearchTabProps> = ({ searchType }
       {isLoading && page === 1 ? (
         <LoadingComponent />
       ) : (
-        <SearchResults
-          results={results}
-          searchType={searchType}
-          source="search"
-          isLoading={isLoading}
-          searchPerformed={searchPerformed}
-          searchQuery={searchText}
-        />
+        <>
+          {results.length > 0 && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mb: 2,
+              }}
+            >
+              Showing {results.length} {totalResults > 0 ? `of ${totalResults}` : ''} results
+            </Typography>
+          )}
+          <SearchResults
+            results={results}
+            searchType={searchType}
+            source="search"
+            isLoading={isLoading}
+            searchPerformed={searchPerformed}
+            searchQuery={searchText}
+          />
+        </>
       )}
     </>
   );

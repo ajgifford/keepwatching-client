@@ -6,6 +6,7 @@ import accountSlice from '../../../../app/slices/accountSlice';
 import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
 import activeShowSlice, { fetchRecommendedShows } from '../../../../app/slices/activeShowSlice';
 import preferencesReducer from '../../../../app/slices/preferencesSlice';
+import watchlistReducer from '../../../../app/slices/watchlistSlice';
 import { RecommendedShowsComponent } from '../recommendedShowsComponent';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 import { configureStore } from '@reduxjs/toolkit';
@@ -45,6 +46,7 @@ const createMockStore = (recommendedShows: SimilarOrRecommendedShow[] = [], reco
       activeProfile: activeProfileSlice,
       auth: accountSlice,
       preferences: preferencesReducer,
+      watchlist: watchlistReducer,
     },
     preloadedState: {
       activeShow: {

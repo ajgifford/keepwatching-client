@@ -3,7 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import axiosInstance from '../../../../app/api/axiosInstance';
 import { renderWithProviders } from '../../../../app/testUtils';
 import { CommunityRecommendationsSection } from '../communityRecommendationsSection';
-import { CommunityRecommendation, RatingContentType } from '@ajgifford/keepwatching-types';
+import { CommunityRecommendation, RatingContentType, WatchStatus } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('../../../../app/api/axiosInstance');
@@ -347,6 +347,49 @@ describe('CommunityRecommendationsSection', () => {
           expect.objectContaining({ movieTMDBId: mockMovie.tmdbId })
         );
       });
+    });
+  });
+
+  describe('watchlist quick-action', () => {
+    it('shows an enabled watchlist button for content that is not yet favorited', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: { recommendations: [mockShow] } });
+      renderWithProviders(<CommunityRecommendationsSection />, {
+        preloadedState: buildState(),
+      });
+      await waitFor(() => screen.getByText('Breaking Bad'));
+      expect(screen.getByRole('button', { name: 'watchlistButton' })).toBeEnabled();
+    });
+
+    it('shows an enabled watchlist button for favorited content that has not been watched', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: { recommendations: [mockShow] } });
+      renderWithProviders(<CommunityRecommendationsSection />, {
+        preloadedState: {
+          ...buildState(),
+          activeProfile: {
+            ...activeProfileState,
+            shows: [{ tmdbId: mockShow.tmdbId, watchStatus: WatchStatus.NOT_WATCHED } as any],
+          },
+          auth: { account: mockAccount, loading: false, error: null },
+        },
+      });
+      await waitFor(() => screen.getByText('Breaking Bad'));
+      expect(screen.getByRole('button', { name: 'watchlistButton' })).toBeEnabled();
+    });
+
+    it('shows a disabled watchlist button for favorited content that has already been watched', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: { recommendations: [mockShow] } });
+      renderWithProviders(<CommunityRecommendationsSection />, {
+        preloadedState: {
+          ...buildState(),
+          activeProfile: {
+            ...activeProfileState,
+            shows: [{ tmdbId: mockShow.tmdbId, watchStatus: WatchStatus.WATCHED } as any],
+          },
+          auth: { account: mockAccount, loading: false, error: null },
+        },
+      });
+      await waitFor(() => screen.getByText('Breaking Bad'));
+      expect(screen.getByRole('button', { name: 'watchlistButton' })).toBeDisabled();
     });
   });
 

@@ -14,6 +14,16 @@ jest.mock('../favoriteButton', () => ({
   ),
 }));
 
+// Mock WatchlistButton component
+jest.mock('../watchlistButton', () => ({
+  __esModule: true,
+  default: ({ id, searchType }: { id: number; searchType: string }) => (
+    <button data-testid="watchlist-button" data-id={id} data-search-type={searchType}>
+      Watchlist
+    </button>
+  ),
+}));
+
 // Mock buildTMDBImagePath
 jest.mock('@ajgifford/keepwatching-ui', () => ({
   buildTMDBImagePath: jest.fn((image: string) => `https://image.tmdb.org/t/p/w500${image}`),
@@ -86,6 +96,24 @@ describe('MediaCard', () => {
       expect(favButton).toBeInTheDocument();
       expect(favButton).toHaveAttribute('data-id', '123');
       expect(favButton).toHaveAttribute('data-search-type', 'movies');
+    });
+
+    it('should render WatchlistButton with correct props for shows', () => {
+      render(<MediaCard item={mockItem} searchType="shows" />);
+
+      const watchlistButton = screen.getByTestId('watchlist-button');
+      expect(watchlistButton).toBeInTheDocument();
+      expect(watchlistButton).toHaveAttribute('data-id', '123');
+      expect(watchlistButton).toHaveAttribute('data-search-type', 'shows');
+    });
+
+    it('should render WatchlistButton with correct props for movies', () => {
+      render(<MediaCard item={mockItem} searchType="movies" />);
+
+      const watchlistButton = screen.getByTestId('watchlist-button');
+      expect(watchlistButton).toBeInTheDocument();
+      expect(watchlistButton).toHaveAttribute('data-id', '123');
+      expect(watchlistButton).toHaveAttribute('data-search-type', 'movies');
     });
   });
 
@@ -233,12 +261,13 @@ describe('MediaCard', () => {
       expect(cardContent).toBeInTheDocument();
     });
 
-    it('should render CardActions with FavoritesButton', () => {
+    it('should render CardActions with FavoritesButton and WatchlistButton', () => {
       const { container } = render(<MediaCard item={mockItem} searchType="shows" />);
 
       const cardActions = container.querySelector('.MuiCardActions-root');
       expect(cardActions).toBeInTheDocument();
       expect(screen.getByTestId('favorites-button')).toBeInTheDocument();
+      expect(screen.getByTestId('watchlist-button')).toBeInTheDocument();
     });
   });
 

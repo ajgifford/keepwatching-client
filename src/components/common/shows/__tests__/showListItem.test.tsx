@@ -61,6 +61,15 @@ jest.mock('../../controls/optionalTooltipControl', () => ({
   ),
 }));
 
+jest.mock('../../media/watchlistButton', () => ({
+  __esModule: true,
+  default: ({ id, searchType }: any) => (
+    <button data-testid="watchlist-button" data-id={id} data-search-type={searchType}>
+      Watchlist
+    </button>
+  ),
+}));
+
 // Mock useMediaQuery
 const mockUseMediaQuery = jest.fn(() => false); // Default to large screen
 jest.mock('@mui/material', () => ({
@@ -177,6 +186,25 @@ describe('ShowListItem', () => {
 
       const starIcon = container.querySelector('[data-testid="StarIcon"]');
       expect(starIcon).toBeInTheDocument();
+    });
+
+    it('should render WatchlistButton with the show tmdbId and searchType="shows"', () => {
+      renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
+
+      const watchlistButton = screen.getByTestId('watchlist-button');
+      expect(watchlistButton).toBeInTheDocument();
+      expect(watchlistButton).toHaveAttribute('data-id', String(mockShow.tmdbId));
+      expect(watchlistButton).toHaveAttribute('data-search-type', 'shows');
+    });
+
+    it('should not navigate when clicking the watchlist button', async () => {
+      const user = userEvent.setup();
+
+      renderWithRouter(<ShowListItem show={mockShow} getFilters={mockGetFilters} />);
+
+      await user.click(screen.getByTestId('watchlist-button'));
+
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 

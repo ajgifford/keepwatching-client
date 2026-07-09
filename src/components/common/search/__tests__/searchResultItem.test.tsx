@@ -18,6 +18,15 @@ jest.mock('../../media/favoriteButton', () => ({
   ),
 }));
 
+jest.mock('../../media/watchlistButton', () => ({
+  __esModule: true,
+  default: ({ id, searchType }: any) => (
+    <button data-testid="watchlist-button" data-id={id} data-search-type={searchType}>
+      Watchlist
+    </button>
+  ),
+}));
+
 jest.mock('../../../../app/hooks/useDateFormatters', () => ({
   useDateFormatters: () => {
     const { createDateFormatters } = jest.requireActual('@ajgifford/keepwatching-ui');
@@ -95,6 +104,15 @@ describe('SearchResultItem', () => {
       expect(favoriteButton).toBeInTheDocument();
       expect(favoriteButton).toHaveAttribute('data-id', '1');
       expect(favoriteButton).toHaveAttribute('data-search-type', 'shows');
+    });
+
+    it('should render watchlist button', () => {
+      render(<SearchResultItem result={mockSearchResult} searchType="shows" source="search" />);
+
+      const watchlistButton = screen.getByTestId('watchlist-button');
+      expect(watchlistButton).toBeInTheDocument();
+      expect(watchlistButton).toHaveAttribute('data-id', '1');
+      expect(watchlistButton).toHaveAttribute('data-search-type', 'shows');
     });
 
     it('should render avatar image', () => {
@@ -410,6 +428,20 @@ describe('SearchResultItem', () => {
 
       const favoriteButton = screen.getByTestId('favorite-button');
       expect(favoriteButton).toHaveAttribute('data-search-type', 'shows');
+    });
+
+    it('should pass movies search type to watchlist button', () => {
+      render(<SearchResultItem result={mockSearchResult} searchType="movies" source="search" />);
+
+      const watchlistButton = screen.getByTestId('watchlist-button');
+      expect(watchlistButton).toHaveAttribute('data-search-type', 'movies');
+    });
+
+    it('should pass shows search type to watchlist button', () => {
+      render(<SearchResultItem result={mockSearchResult} searchType="shows" source="search" />);
+
+      const watchlistButton = screen.getByTestId('watchlist-button');
+      expect(watchlistButton).toHaveAttribute('data-search-type', 'shows');
     });
   });
 

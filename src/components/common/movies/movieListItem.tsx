@@ -31,6 +31,7 @@ import { calculateRuntimeDisplay } from '../../utility/contentUtility';
 import { getWatchStatusAction } from '../../utility/watchStatusUtility';
 import { OptionalTooltipControl } from '../controls/optionalTooltipControl';
 import { UnfavoriteChoiceDialog } from '../dialogs/UnfavoriteChoiceDialog';
+import WatchlistButton from '../media/watchlistButton';
 import { ProfileMovie, SimpleWatchStatus, WatchStatus } from '@ajgifford/keepwatching-types';
 import { WatchStatusIcon, buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -174,69 +175,81 @@ export const MovieListItem = (props: MovieListItemProps) => {
             }
           />
         </Box>
-        <Tooltip key={`removeFavoriteTooltip_${movie.id}`} title="Remove Favorite">
-          <IconButton
-            key={`removeFavoriteIconButton_${movie.id}`}
-            onClick={(event) => {
-              handleRemoveFavorite();
-              event.stopPropagation();
-            }}
-          >
-            <StarIcon color="primary" />
-          </IconButton>
-        </Tooltip>
-        {movie.watchStatus === WatchStatus.WATCHED && (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Tooltip key={`removeFavoriteTooltip_${movie.id}`} title="Remove Favorite">
+            <IconButton
+              key={`removeFavoriteIconButton_${movie.id}`}
+              size={isSmallScreen ? 'small' : 'medium'}
+              onClick={(event) => {
+                handleRemoveFavorite();
+                event.stopPropagation();
+              }}
+            >
+              <StarIcon color="primary" fontSize={isSmallScreen ? 'small' : undefined} />
+            </IconButton>
+          </Tooltip>
+          <Box onClick={(event) => event.stopPropagation()}>
+            <WatchlistButton id={movie.tmdbId} searchType="movies" iconOnly size={isSmallScreen ? 'small' : 'medium'} />
+          </Box>
+          {movie.watchStatus === WatchStatus.WATCHED && (
+            <Box sx={{ position: 'relative' }}>
+              <Tooltip title="Mark Rewatched">
+                <span>
+                  <IconButton
+                    disabled={isRewatching}
+                    onClick={handleRewatchClick}
+                    color="rewatch"
+                    size={isSmallScreen ? 'small' : 'medium'}
+                  >
+                    <Replay fontSize={isSmallScreen ? 'small' : undefined} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              {isRewatching && (
+                <CircularProgress
+                  size={isSmallScreen ? 18 : 24}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: isSmallScreen ? '-9px' : '-12px',
+                    marginLeft: isSmallScreen ? '-9px' : '-12px',
+                  }}
+                />
+              )}
+            </Box>
+          )}
           <Box sx={{ position: 'relative' }}>
-            <Tooltip title="Mark Rewatched">
-              <span>
-                <IconButton disabled={isRewatching} onClick={handleRewatchClick} color="rewatch">
-                  <Replay />
-                </IconButton>
-              </span>
-            </Tooltip>
-            {isRewatching && (
+            <OptionalTooltipControl
+              identifier={`watchStatusTooltip_${movie.id}`}
+              title={getWatchStatusAction(movie.watchStatus)}
+              disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+            >
+              <IconButton
+                key={`watchStatusIconButton_${movie.id}`}
+                size={isSmallScreen ? 'small' : 'medium'}
+                disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
+                onClick={(event) => {
+                  handleWatchStatusChange(movie.watchStatus);
+                  event.stopPropagation();
+                }}
+              >
+                <WatchStatusIcon status={movie.watchStatus} fontSize={isSmallScreen ? 'small' : undefined} />
+              </IconButton>
+            </OptionalTooltipControl>
+            {isUpdatingWatchStatus && (
               <CircularProgress
-                size={24}
+                size={isSmallScreen ? 18 : 24}
                 sx={{
                   position: 'absolute',
                   top: '50%',
                   left: '50%',
-                  marginTop: '-12px',
-                  marginLeft: '-12px',
+                  marginTop: isSmallScreen ? '-9px' : '-12px',
+                  marginLeft: isSmallScreen ? '-9px' : '-12px',
                 }}
               />
             )}
           </Box>
-        )}
-        <Box sx={{ position: 'relative' }}>
-          <OptionalTooltipControl
-            identifier={`watchStatusTooltip_${movie.id}`}
-            title={getWatchStatusAction(movie.watchStatus)}
-            disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-          >
-            <IconButton
-              key={`watchStatusIconButton_${movie.id}`}
-              disabled={movie.watchStatus === WatchStatus.UNAIRED || isUpdatingWatchStatus}
-              onClick={(event) => {
-                handleWatchStatusChange(movie.watchStatus);
-                event.stopPropagation();
-              }}
-            >
-              <WatchStatusIcon status={movie.watchStatus} />
-            </IconButton>
-          </OptionalTooltipControl>
-          {isUpdatingWatchStatus && (
-            <CircularProgress
-              size={24}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-12px',
-                marginLeft: '-12px',
-              }}
-            />
-          )}
         </Box>
       </ListItem>
       <UnfavoriteChoiceDialog

@@ -294,7 +294,7 @@ describe('MovieListItem', () => {
         </BrowserRouter>
       );
 
-      const watchStatusButton = screen.getAllByRole('button')[1]; // Second button (first is favorite)
+      const watchStatusButton = screen.getByTestId('watch-status-icon').closest('button')!;
       await user.click(watchStatusButton);
 
       await waitFor(() => {
@@ -317,8 +317,7 @@ describe('MovieListItem', () => {
         </BrowserRouter>
       );
 
-      // For WATCHED movies: button[0]=favorite, button[1]=rewatch, button[2]=watch status
-      const watchStatusButton = screen.getAllByRole('button')[2];
+      const watchStatusButton = screen.getByTestId('watch-status-icon').closest('button')!;
       await user.click(watchStatusButton);
 
       await waitFor(() => {
@@ -339,7 +338,7 @@ describe('MovieListItem', () => {
         </BrowserRouter>
       );
 
-      const watchStatusButton = screen.getAllByRole('button')[1];
+      const watchStatusButton = screen.getByTestId('watch-status-icon').closest('button')!;
       expect(watchStatusButton).toBeDisabled();
     });
 

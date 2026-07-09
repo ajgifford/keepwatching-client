@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Card, CardActions, CardContent, CardMedia, Tooltip, Typography } from '@mui/material';
+import { Card, CardActions, CardContent, CardMedia, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { useDateFormatters } from '../../../app/hooks/useDateFormatters';
 import FavoritesButton from './favoriteButton';
+import WatchlistButton from './watchlistButton';
 import { SimilarOrRecommendedShow } from '@ajgifford/keepwatching-types';
 import { buildTMDBImagePath } from '@ajgifford/keepwatching-ui';
 
@@ -16,6 +17,8 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
   const titleRef = useRef<HTMLDivElement>(null);
   const [isTitleTruncated, setIsTitleTruncated] = useState(false);
   const formatters = useDateFormatters();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const formatPremiered = (premiered: string | undefined) => {
     if (!premiered) return '';
@@ -121,8 +124,18 @@ export const MediaCard = ({ item, searchType }: MediaCardProps) => {
           </Tooltip>
         )}
       </CardContent>
-      <CardActions sx={{ justifyContent: 'center', p: 1 }}>
+      <CardActions
+        disableSpacing
+        sx={{
+          flexDirection: isSmallScreen ? 'row' : 'column',
+          alignItems: isSmallScreen ? 'center' : 'stretch',
+          justifyContent: isSmallScreen ? 'center' : undefined,
+          gap: 1,
+          p: 1,
+        }}
+      >
         <FavoritesButton id={item.id} searchType={searchType} />
+        <WatchlistButton id={item.id} searchType={searchType} />
       </CardActions>
     </Card>
   );
