@@ -893,7 +893,7 @@ describe('ShowDetails', () => {
       fireEvent.click(episodeRewatchButton);
 
       expect(await screen.findByText('Rewatch Episode?')).toBeInTheDocument();
-      expect(mockDispatch.mock.calls.length).toBe(callsBefore);
+      expect(mockDispatch.mock.calls).toHaveLength(callsBefore);
     });
 
     it('dispatches the rewatch only after confirming, and not if cancelled', async () => {
@@ -929,7 +929,7 @@ describe('ShowDetails', () => {
       await waitFor(() => {
         expect(screen.queryByText('Rewatch Episode?')).not.toBeInTheDocument();
       });
-      expect(mockDispatch.mock.calls.length).toBe(callsBeforeOpen);
+      expect(mockDispatch.mock.calls).toHaveLength(callsBeforeOpen);
 
       fireEvent.click(episodeRewatchButton);
       await screen.findByText('Rewatch Episode?');

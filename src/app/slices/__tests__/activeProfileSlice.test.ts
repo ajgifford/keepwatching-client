@@ -270,6 +270,7 @@ describe('activeProfileSlice', () => {
         totalHoursWatched: 200,
         milestones: [],
         recentAchievements: [],
+        allAchievements: [],
       };
 
       mockAxiosInstance.get.mockResolvedValueOnce({

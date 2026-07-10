@@ -16,6 +16,7 @@ import DefaultLayout from './navigation/defaultLayout';
 import Navigation from './navigation/navigation';
 import ProtectedLayout from './navigation/protectedLayout';
 import ActivityNotificationBar from './notification/activityNotificationBar';
+import Achievements from './pages/achievements';
 import Calendar from './pages/calendar';
 import Default from './pages/default';
 import Discover from './pages/discover';
@@ -210,6 +211,14 @@ function App() {
                           element={
                             <ErrorBoundary>
                               <Calendar />
+                            </ErrorBoundary>
+                          }
+                        />
+                        <Route
+                          path="/achievements"
+                          element={
+                            <ErrorBoundary>
+                              <Achievements />
                             </ErrorBoundary>
                           }
                         />

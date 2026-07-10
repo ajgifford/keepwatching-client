@@ -9,6 +9,7 @@ import { Box, Card, CardContent, Grid, Stack, Typography, alpha } from '@mui/mat
 import { useTheme } from '@mui/material/styles';
 
 import { STATIC_CONTENT_URL } from '../../../app/constants/constants';
+import { getUnlockedBadges } from '../achievements/badgeDefinitions';
 import { MilestoneStats, Profile } from '@ajgifford/keepwatching-types';
 import {
   MilestoneBadge,
@@ -124,6 +125,7 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
 
   const lastAchieved = getLastAchievedMilestone(milestoneStats);
   const nextMilestone = getNextMilestone(milestoneStats);
+  const unlockedBadgeCount = getUnlockedBadges(milestoneStats).length;
 
   // Get current progress for tooltip
   const getCurrentProgress = (type: 'episodes' | 'movies' | 'hours'): number | undefined => {
@@ -285,6 +287,20 @@ const DashboardProfileCard: React.FC<DashboardProfileCardProps> = ({
             />
           </Grid>
         </Grid>
+
+        {unlockedBadgeCount > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Link
+              to="/achievements"
+              style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}
+            >
+              <EmojiEventsIcon sx={{ fontSize: 18, opacity: 0.85 }} />
+              <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                {unlockedBadgeCount} badge{unlockedBadgeCount === 1 ? '' : 's'} earned — View Achievements
+              </Typography>
+            </Link>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

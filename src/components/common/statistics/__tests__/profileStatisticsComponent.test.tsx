@@ -1,4 +1,5 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 import ProfileStatisticsComponent from '../profileStatisticsComponent';
 import userEvent from '@testing-library/user-event';
@@ -47,7 +48,11 @@ describe('ProfileStatisticsComponent', () => {
     it('renders the statistics dashboard', async () => {
       setupSuccessfulMocks();
       await act(async () => {
-        render(<ProfileStatisticsComponent {...defaultProps} />);
+        render(
+          <MemoryRouter>
+            <ProfileStatisticsComponent {...defaultProps} />
+          </MemoryRouter>
+        );
       });
       expect(screen.getByTestId('profile-stats-dashboard')).toBeInTheDocument();
     });
@@ -55,7 +60,11 @@ describe('ProfileStatisticsComponent', () => {
     it('renders without a dialog wrapper', async () => {
       setupSuccessfulMocks();
       await act(async () => {
-        render(<ProfileStatisticsComponent {...defaultProps} />);
+        render(
+          <MemoryRouter>
+            <ProfileStatisticsComponent {...defaultProps} />
+          </MemoryRouter>
+        );
       });
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
@@ -63,7 +72,11 @@ describe('ProfileStatisticsComponent', () => {
     it('renders the time window selector', async () => {
       setupSuccessfulMocks();
       await act(async () => {
-        render(<ProfileStatisticsComponent {...defaultProps} />);
+        render(
+          <MemoryRouter>
+            <ProfileStatisticsComponent {...defaultProps} />
+          </MemoryRouter>
+        );
       });
       expect(screen.getByRole('group', { name: /stats time window/i })).toBeInTheDocument();
     });
@@ -71,7 +84,11 @@ describe('ProfileStatisticsComponent', () => {
     it('defaults the time window selector to 30D', async () => {
       setupSuccessfulMocks();
       await act(async () => {
-        render(<ProfileStatisticsComponent {...defaultProps} />);
+        render(
+          <MemoryRouter>
+            <ProfileStatisticsComponent {...defaultProps} />
+          </MemoryRouter>
+        );
       });
       expect(screen.getByRole('button', { name: /30d/i })).toHaveAttribute('aria-pressed', 'true');
     });
@@ -80,7 +97,11 @@ describe('ProfileStatisticsComponent', () => {
   describe('data fetching', () => {
     it('fetches base statistics on mount', async () => {
       setupSuccessfulMocks();
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics');
@@ -89,7 +110,11 @@ describe('ProfileStatisticsComponent', () => {
 
     it('fetches all enhanced statistics endpoints with 30-day velocity by default', async () => {
       setupSuccessfulMocks();
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
@@ -124,18 +149,30 @@ describe('ProfileStatisticsComponent', () => {
     });
 
     it('does not fetch when accountId is 0', () => {
-      render(<ProfileStatisticsComponent {...defaultProps} accountId={0} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} accountId={0} />
+        </MemoryRouter>
+      );
       expect(mockAxiosGet).not.toHaveBeenCalled();
     });
 
     it('does not fetch when profileId is 0', () => {
-      render(<ProfileStatisticsComponent {...defaultProps} profileId={0} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} profileId={0} />
+        </MemoryRouter>
+      );
       expect(mockAxiosGet).not.toHaveBeenCalled();
     });
 
     it('re-fetches when profileId changes', async () => {
       setupSuccessfulMocks();
-      const { rerender } = render(<ProfileStatisticsComponent {...defaultProps} />);
+      const { rerender } = render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics');
@@ -143,7 +180,11 @@ describe('ProfileStatisticsComponent', () => {
 
       mockAxiosGet.mockClear();
       mockAxiosGet.mockImplementation(() => Promise.resolve({ data: { results: {} } }));
-      rerender(<ProfileStatisticsComponent {...defaultProps} profileId={99} />);
+      rerender(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} profileId={99} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/99/statistics');
@@ -152,7 +193,11 @@ describe('ProfileStatisticsComponent', () => {
 
     it('re-fetches when accountId changes', async () => {
       setupSuccessfulMocks();
-      const { rerender } = render(<ProfileStatisticsComponent {...defaultProps} />);
+      const { rerender } = render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics');
@@ -160,7 +205,11 @@ describe('ProfileStatisticsComponent', () => {
 
       mockAxiosGet.mockClear();
       mockAxiosGet.mockImplementation(() => Promise.resolve({ data: { results: {} } }));
-      rerender(<ProfileStatisticsComponent {...defaultProps} accountId={55} />);
+      rerender(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} accountId={55} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/55/profiles/7/statistics');
@@ -170,7 +219,11 @@ describe('ProfileStatisticsComponent', () => {
     it('re-fetches velocity with new days when time window is changed to 6M', async () => {
       const user = userEvent.setup();
       setupSuccessfulMocks();
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/velocity', {
@@ -194,7 +247,11 @@ describe('ProfileStatisticsComponent', () => {
   describe('loading state', () => {
     it('shows loading state while stats are being fetched', async () => {
       mockAxiosGet.mockImplementation(() => new Promise(() => {}));
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(screen.getByTestId('base-stats-loading')).toBeInTheDocument();
@@ -203,7 +260,11 @@ describe('ProfileStatisticsComponent', () => {
 
     it('hides loading state after stats are loaded', async () => {
       setupSuccessfulMocks();
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(screen.queryByTestId('base-stats-loading')).not.toBeInTheDocument();
@@ -214,7 +275,11 @@ describe('ProfileStatisticsComponent', () => {
   describe('data display', () => {
     it('passes fetched base statistics to the dashboard', async () => {
       setupSuccessfulMocks();
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(screen.getByTestId('base-statistics-loaded')).toBeInTheDocument();
@@ -234,7 +299,11 @@ describe('ProfileStatisticsComponent', () => {
         return Promise.resolve({ data: { results: {} } });
       });
 
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(screen.getByTestId('profile-stats-dashboard')).toBeInTheDocument();
@@ -245,7 +314,11 @@ describe('ProfileStatisticsComponent', () => {
       mockAxiosGet.mockRejectedValue(new Error('Server error'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(screen.getByTestId('profile-stats-dashboard')).toBeInTheDocument();
@@ -258,7 +331,11 @@ describe('ProfileStatisticsComponent', () => {
       mockAxiosGet.mockRejectedValue(new Error('Server error'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      render(<ProfileStatisticsComponent {...defaultProps} />);
+      render(
+        <MemoryRouter>
+          <ProfileStatisticsComponent {...defaultProps} />
+        </MemoryRouter>
+      );
 
       await waitFor(() => {
         expect(screen.queryByTestId('base-stats-loading')).not.toBeInTheDocument();

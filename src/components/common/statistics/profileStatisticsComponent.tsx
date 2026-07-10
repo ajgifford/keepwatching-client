@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import { Box } from '@mui/material';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import { Box, Button } from '@mui/material';
 
 import axiosInstance from '../../../app/api/axiosInstance';
 import StatsTimeWindowSelector, { StatsTimeWindowDays } from './statsTimeWindowSelector';
@@ -110,7 +112,12 @@ const ProfileStatisticsComponent = ({ accountId, profileId }: ProfileStatisticsC
 
   return (
     <Box>
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+      <Box
+        sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
+      >
+        <Button component={Link} to="/achievements" size="small" variant="outlined" startIcon={<EmojiEventsIcon />}>
+          View All Achievements
+        </Button>
         <StatsTimeWindowSelector value={selectedDays} onChange={setSelectedDays} disabled={loading} />
       </Box>
       <EnhancedProfileStatisticsDashboard

@@ -49,6 +49,7 @@ describe('DashboardProfileCard', () => {
     totalHoursWatched: 250,
     milestones: [],
     recentAchievements: [],
+    allAchievements: [],
   };
 
   const mockOnNavigateToStats = jest.fn();
