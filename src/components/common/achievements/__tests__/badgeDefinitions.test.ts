@@ -6,6 +6,7 @@ function buildMilestoneStats(overrides: Partial<MilestoneStats> = {}): Milestone
     totalEpisodesWatched: 0,
     totalMoviesWatched: 0,
     totalHoursWatched: 0,
+    totalShowsCompleted: 0,
     milestones: [],
     recentAchievements: [],
     allAchievements: [],

@@ -147,6 +147,8 @@ describe('AccountStatisticsDialog', () => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/unaired-content');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/profile-comparison');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/rewatches');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/skip-rate');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/statistics/watchlist-usage');
       });
     });
 

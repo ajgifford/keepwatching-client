@@ -47,6 +47,7 @@ describe('DashboardProfileCard', () => {
     totalEpisodesWatched: 500,
     totalMoviesWatched: 100,
     totalHoursWatched: 250,
+    totalShowsCompleted: 10,
     milestones: [],
     recentAchievements: [],
     allAchievements: [],

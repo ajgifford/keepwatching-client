@@ -50,6 +50,8 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
           abandonmentRiskRes,
           unairedContentRes,
           rewatchRes,
+          skipRateRes,
+          watchlistUsageRes,
         ] = await Promise.allSettled([
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/velocity`, {
             params: { days: velocityDays },
@@ -79,6 +81,8 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/abandonment-risk`),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/unaired-content`),
           axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/rewatches`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/skip-rate`),
+          axiosInstance.get(`/accounts/${accountId}/profiles/${profileId}/statistics/watchlist-usage`),
         ]);
 
         // Build enhanced statistics object
@@ -95,6 +99,8 @@ const ProfileStatisticsDialog = ({ open, title, accountId, profileId, onClose }:
           abandonmentRisk: abandonmentRiskRes.status === 'fulfilled' ? abandonmentRiskRes.value.data.results : null,
           unairedContent: unairedContentRes.status === 'fulfilled' ? unairedContentRes.value.data.results : null,
           rewatchStats: rewatchRes.status === 'fulfilled' ? rewatchRes.value.data.results : null,
+          skipRateStats: skipRateRes.status === 'fulfilled' ? skipRateRes.value.data.results : null,
+          watchlistUsage: watchlistUsageRes.status === 'fulfilled' ? watchlistUsageRes.value.data.results : null,
         };
 
         setEnhancedStatistics(enhanced);

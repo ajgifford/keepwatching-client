@@ -145,6 +145,8 @@ describe('ProfileStatisticsComponent', () => {
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/abandonment-risk');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/unaired-content');
         expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/rewatches');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/skip-rate');
+        expect(mockAxiosGet).toHaveBeenCalledWith('/accounts/42/profiles/7/statistics/watchlist-usage');
       });
     });
 

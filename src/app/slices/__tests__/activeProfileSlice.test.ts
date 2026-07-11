@@ -268,6 +268,7 @@ describe('activeProfileSlice', () => {
         totalEpisodesWatched: 100,
         totalMoviesWatched: 50,
         totalHoursWatched: 200,
+        totalShowsCompleted: 5,
         milestones: [],
         recentAchievements: [],
         allAchievements: [],
