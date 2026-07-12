@@ -2,12 +2,7 @@ import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { useAppSelector } from '../../../app/hooks';
-import {
-  fetchMilestoneStats,
-  markAchievementsViewed,
-  selectActiveProfile,
-  selectMilestoneStats,
-} from '../../../app/slices/activeProfileSlice';
+import { selectActiveProfile, selectMilestoneStats } from '../../../app/slices/activeProfileSlice';
 import Achievements from '../achievements';
 import { AchievementType, MilestoneStats } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
