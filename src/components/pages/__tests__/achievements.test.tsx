@@ -1,7 +1,13 @@
 import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 import { useAppSelector } from '../../../app/hooks';
-import { fetchMilestoneStats, selectActiveProfile, selectMilestoneStats } from '../../../app/slices/activeProfileSlice';
+import {
+  fetchMilestoneStats,
+  markAchievementsViewed,
+  selectActiveProfile,
+  selectMilestoneStats,
+} from '../../../app/slices/activeProfileSlice';
 import Achievements from '../achievements';
 import { AchievementType, MilestoneStats } from '@ajgifford/keepwatching-types';
 import userEvent from '@testing-library/user-event';
@@ -16,6 +22,7 @@ jest.mock('../../../app/hooks', () => ({
 
 jest.mock('../../../app/slices/activeProfileSlice', () => ({
   fetchMilestoneStats: jest.fn(() => ({ type: 'activeProfile/fetchMilestoneStats' })),
+  markAchievementsViewed: jest.fn(() => ({ type: 'activeProfile/markAchievementsViewed' })),
   selectActiveProfile: jest.fn(),
   selectMilestoneStats: jest.fn(),
 }));
@@ -51,6 +58,14 @@ function buildMilestoneStats(overrides: Partial<MilestoneStats> = {}): Milestone
   };
 }
 
+function renderAchievements(initialEntries: string[] = ['/achievements']) {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <Achievements />
+    </MemoryRouter>
+  );
+}
+
 describe('Achievements page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -59,20 +74,21 @@ describe('Achievements page', () => {
 
   it('shows a loading state while the active profile is not yet available', () => {
     mockSelectors(null, null);
-    render(<Achievements />);
+    renderAchievements();
     expect(screen.getByTestId('loading-component')).toBeInTheDocument();
   });
 
   it('shows a loading state while milestone stats have not loaded yet', () => {
     mockSelectors(mockProfile, null);
-    render(<Achievements />);
+    renderAchievements();
     expect(screen.getByTestId('loading-component')).toBeInTheDocument();
   });
 
-  it('dispatches fetchMilestoneStats on mount once a profile is available', () => {
+  it('dispatches fetchMilestoneStats and markAchievementsViewed on mount once a profile is available', () => {
     mockSelectors(mockProfile, buildMilestoneStats());
-    render(<Achievements />);
+    renderAchievements();
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'activeProfile/fetchMilestoneStats' });
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'activeProfile/markAchievementsViewed' });
   });
 
   it('shows the unlocked count and renders locked/unlocked badges', async () => {
@@ -92,7 +108,7 @@ describe('Achievements page', () => {
     });
     mockSelectors(mockProfile, stats);
 
-    render(<Achievements />);
+    renderAchievements();
 
     expect(await screen.findByText(/1 of 46 badges unlocked/i)).toBeInTheDocument();
     // "10 Episodes Watched" appears twice: once in Recently Unlocked, once in the Episodes section
@@ -114,7 +130,7 @@ describe('Achievements page', () => {
     });
     mockSelectors(mockProfile, stats);
 
-    render(<Achievements />);
+    renderAchievements();
 
     expect(await screen.findByText('Recently Unlocked')).toBeInTheDocument();
   });
@@ -126,7 +142,7 @@ describe('Achievements page', () => {
     });
     mockSelectors(mockProfile, stats);
 
-    render(<Achievements />);
+    renderAchievements();
 
     await user.click(screen.getByText('5 Movies Watched'));
 
@@ -150,7 +166,7 @@ describe('Achievements page', () => {
     });
     mockSelectors(mockProfile, stats);
 
-    render(<Achievements />);
+    renderAchievements();
 
     await user.click(screen.getAllByText('5 Movies Watched')[0]);
 
@@ -163,6 +179,52 @@ describe('Achievements page', () => {
 
     await waitFor(() => {
       expect(mockToPng).toHaveBeenCalled();
+    });
+  });
+
+  describe('?badge= deep link', () => {
+    it('opens the share dialog and scrolls to the matching badge', async () => {
+      const scrollIntoViewMock = jest.fn();
+      const originalGetElementById = document.getElementById.bind(document);
+      jest.spyOn(document, 'getElementById').mockImplementation((id: string) => {
+        const element = originalGetElementById(id);
+        if (element) {
+          (element as HTMLElement).scrollIntoView = scrollIntoViewMock;
+        }
+        return element;
+      });
+
+      const stats = buildMilestoneStats({
+        milestones: [{ type: 'movies', threshold: 5, achieved: true, progress: 100 }],
+        allAchievements: [
+          {
+            description: '5 Movies Watched',
+            achievedDate: '2026-02-01T00:00:00.000Z',
+            achievementType: AchievementType.MOVIES_WATCHED,
+            thresholdValue: 5,
+          },
+        ],
+      });
+      mockSelectors(mockProfile, stats);
+
+      renderAchievements(['/achievements?badge=movies-5']);
+
+      const dialog = await screen.findByRole('dialog');
+      expect(within(dialog).getByLabelText(/download as image/i)).toBeInTheDocument();
+      expect(document.getElementById).toHaveBeenCalledWith('badge-card-movies-5');
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    });
+
+    it('does nothing when the badge id in the query string does not exist', async () => {
+      const stats = buildMilestoneStats({
+        milestones: [{ type: 'movies', threshold: 5, achieved: true, progress: 100 }],
+      });
+      mockSelectors(mockProfile, stats);
+
+      renderAchievements(['/achievements?badge=not-a-real-badge']);
+
+      await screen.findByText(/badges unlocked/i);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });

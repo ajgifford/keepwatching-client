@@ -37,7 +37,7 @@ export interface BadgeInstance {
   achievedDate?: string;
 }
 
-const CATEGORY_ICON: Record<BadgeCategory, SvgIconComponent> = {
+export const CATEGORY_ICON: Record<BadgeCategory, SvgIconComponent> = {
   episodes: TvIcon,
   movies: MovieIcon,
   hours: AccessTimeIcon,

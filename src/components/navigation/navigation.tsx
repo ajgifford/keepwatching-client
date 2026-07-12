@@ -33,6 +33,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout, selectCurrentAccount } from '../../app/slices/accountSlice';
 import { selectActiveProfile, setActiveProfile } from '../../app/slices/activeProfileSlice';
 import { selectAllProfiles } from '../../app/slices/profilesSlice';
+import AchievementIconDropdown from '../common/achievements/achievementIconDropdown';
 import NotificationIconDropdown from '../notification/notificationIconDropdown';
 import { getProfileImageUrl } from '@ajgifford/keepwatching-ui';
 
@@ -107,12 +108,27 @@ function Navigation() {
     return <></>;
   };
 
+  const renderAchievementsControl = () => {
+    if (profile) {
+      return <AchievementIconDropdown />;
+    }
+    return <></>;
+  };
+
+  const renderIconCluster = () => (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 }, ml: { xs: 1, sm: 2 } }}>
+      {renderAchievementsControl()}
+      {renderNotificationControl()}
+      {renderActiveProfileControl()}
+    </Box>
+  );
+
   const renderActiveProfileControl = () => {
     if (profile) {
       return (
         <>
           <Tooltip title={`Active Profile: ${profile.name}`} arrow>
-            <IconButton onClick={handleProfileMenuOpen} sx={{ ml: 2 }}>
+            <IconButton onClick={handleProfileMenuOpen}>
               <Avatar
                 src={getProfileImageUrl(profile.image, STATIC_CONTENT_URL)}
                 alt={profile.name}
@@ -297,8 +313,7 @@ function Navigation() {
                 >
                   KeepWatching
                 </Typography>
-                {renderNotificationControl()}
-                {renderActiveProfileControl()}
+                {renderIconCluster()}
               </>
             ) : (
               <Box
@@ -326,8 +341,7 @@ function Navigation() {
                 </Typography>
                 {renderNavigationButtons()}
                 {buildLoginLogoutButton()}
-                {renderNotificationControl()}
-                {renderActiveProfileControl()}
+                {renderIconCluster()}
               </Box>
             )}
           </Toolbar>

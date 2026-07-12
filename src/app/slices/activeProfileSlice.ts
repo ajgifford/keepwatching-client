@@ -1,3 +1,5 @@
+import { getBadgeCatalog } from '../../components/common/achievements/badgeDefinitions';
+import { TIER_RANK } from '../../components/common/achievements/badgeTierStyles';
 import axiosInstance from '../api/axiosInstance';
 import { generateGenreFilterValues, generateStreamingServiceFilterValues } from '../constants/filters';
 import { RootState } from '../store';
@@ -10,6 +12,7 @@ import {
   updateSeasonWatchStatus,
 } from './activeShowSlice';
 import { ActivityNotificationType, showActivityNotification } from './activityNotificationSlice';
+import { showBadgeUnlockNotification } from './badgeNotificationSlice';
 import { editProfile, removeProfileImage, updateProfileAccentColor, updateProfileImage } from './profilesSlice';
 import { startMovieRewatch, startSeasonRewatch, startShowRewatch } from './watchHistorySlice';
 import {
@@ -54,6 +57,7 @@ interface ActiveProfileState {
   recentMovies: MovieReference[];
   upcomingMovies: MovieReference[];
   milestoneStats: MilestoneStats | null;
+  lastViewedAchievementsAt?: string;
   lastUpdated: string | null;
   loading: boolean;
   error: ApiErrorResponse | null;
@@ -184,6 +188,45 @@ export const fetchMilestoneStats = createAsyncThunk<MilestoneStats, void, { reje
       }
       return rejectWithValue({ message: 'An unknown error occurred fetching milestone stats' });
     }
+  }
+);
+
+export const checkForNewAchievements = createAsyncThunk<void, void, { rejectValue: ApiErrorResponse }>(
+  'activeProfile/checkForNewAchievements',
+  async (_, { dispatch, getState }) => {
+    const before = getState() as RootState;
+    const previousUnlockedIds = new Set(
+      getBadgeCatalog(before.activeProfile.milestoneStats)
+        .filter((badge) => badge.achieved)
+        .map((badge) => badge.id)
+    );
+
+    const fetchAction = await dispatch(fetchMilestoneStats());
+    if (fetchMilestoneStats.rejected.match(fetchAction)) {
+      return;
+    }
+
+    const newlyUnlocked = getBadgeCatalog(fetchAction.payload)
+      .filter((badge) => badge.achieved && !previousUnlockedIds.has(badge.id))
+      .sort((a, b) => TIER_RANK[b.tier] - TIER_RANK[a.tier]);
+
+    if (newlyUnlocked.length === 0) {
+      return;
+    }
+
+    const [topBadge, ...remainingBadges] = newlyUnlocked;
+    dispatch(
+      showBadgeUnlockNotification({
+        badge: {
+          id: topBadge.id,
+          category: topBadge.category,
+          tier: topBadge.tier,
+          title: topBadge.title,
+          achievedDate: topBadge.achievedDate ?? new Date().toISOString(),
+        },
+        additionalCount: remainingBadges.length,
+      })
+    );
   }
 );
 
@@ -655,7 +698,12 @@ function toProfileShow(show: ProfileShowWithSeasons): ProfileShow {
 const activeProfileSlice = createSlice({
   name: 'activeProfile',
   initialState,
-  reducers: {},
+  reducers: {
+    markAchievementsViewed: (state) => {
+      state.lastViewedAchievementsAt = new Date().toISOString();
+      localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
@@ -1092,6 +1140,7 @@ export const selectNextUnwatchedEpisodes = (state: RootState) => state.activePro
 export const selectRecentMovies = (state: RootState) => state.activeProfile.recentMovies;
 export const selectUpcomingMovies = (state: RootState) => state.activeProfile.upcomingMovies;
 export const selectMilestoneStats = (state: RootState) => state.activeProfile.milestoneStats;
+export const selectLastViewedAchievementsAt = (state: RootState) => state.activeProfile.lastViewedAchievementsAt;
 export const selectActiveProfileLoading = (state: RootState) => state.activeProfile.loading;
 export const selectActiveProfileError = (state: RootState) => state.activeProfile.error;
 
@@ -1244,5 +1293,7 @@ export const selectContentByStreamingService = createSelector(
     return servicesArray.filter((service) => service.totalCount > 0).sort((a, b) => b.totalCount - a.totalCount);
   }
 );
+
+export const { markAchievementsViewed } = activeProfileSlice.actions;
 
 export default activeProfileSlice.reducer;

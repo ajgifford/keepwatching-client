@@ -11,3 +11,11 @@ export const TIER_STYLES: Record<BadgeTier, TierStyle> = {
   gold: { label: 'Gold', color: '#D4AF37' },
   platinum: { label: 'Platinum', color: '#6FD3E8' },
 };
+
+/** Ordinal rank for comparing tiers, e.g. picking the highest tier among several newly-unlocked badges. */
+export const TIER_RANK: Record<BadgeTier, number> = {
+  bronze: 0,
+  silver: 1,
+  gold: 2,
+  platinum: 3,
+};

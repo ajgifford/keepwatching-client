@@ -9,6 +9,7 @@ import { auth } from '../app/firebaseConfig';
 import { useActivityTracking } from '../app/hooks/useActivityTracking';
 import store from '../app/store';
 import { AppThemeProvider } from '../theme/ThemeProvider';
+import BadgeUnlockToast from './common/achievements/badgeUnlockToast';
 import ErrorBoundary from './common/errorBoundary';
 import { Footer } from './common/footer';
 import { WebSocketProvider } from './common/webSocketProvider';
@@ -94,6 +95,7 @@ function App() {
               <ErrorBoundary>
                 <Navigation />
                 <ActivityNotificationBar />
+                <BadgeUnlockToast />
                 <OfflineBanner />
                 <div className="content">
                   <Container maxWidth="xl" sx={{ p: 1 }}>

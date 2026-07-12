@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import DownloadIcon from '@mui/icons-material/Download';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -6,7 +7,12 @@ import ShareIcon from '@mui/icons-material/Share';
 import { Box, Dialog, DialogContent, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { fetchMilestoneStats, selectActiveProfile, selectMilestoneStats } from '../../app/slices/activeProfileSlice';
+import {
+  fetchMilestoneStats,
+  markAchievementsViewed,
+  selectActiveProfile,
+  selectMilestoneStats,
+} from '../../app/slices/activeProfileSlice';
 import { AchievementBadgeCard } from '../common/achievements/achievementBadgeCard';
 import {
   BadgeCategory,
@@ -46,12 +52,24 @@ function Achievements() {
   const milestoneStats = useAppSelector(selectMilestoneStats);
   const [selectedBadge, setSelectedBadge] = useState<BadgeInstance | null>(null);
   const shareCardRef = useRef<HTMLDivElement>(null);
+  const [searchParams] = useSearchParams();
+  const badgeIdParam = searchParams.get('badge');
 
   useEffect(() => {
     if (profile) {
       dispatch(fetchMilestoneStats());
+      dispatch(markAchievementsViewed());
     }
   }, [dispatch, profile]);
+
+  useEffect(() => {
+    if (!badgeIdParam || !milestoneStats) return;
+    const target = getBadgeCatalog(milestoneStats).find((badge) => badge.id === badgeIdParam);
+    if (target) {
+      setSelectedBadge(target);
+      document.getElementById(`badge-card-${badgeIdParam}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [badgeIdParam, milestoneStats]);
 
   if (!profile) {
     return <LoadingComponent />;
@@ -123,7 +141,7 @@ function Achievements() {
             </Typography>
             <Grid container spacing={2}>
               {badges.map((badge) => (
-                <Grid key={badge.id} size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
+                <Grid key={badge.id} id={`badge-card-${badge.id}`} size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
                   <AchievementBadgeCard badge={badge} onClick={setSelectedBadge} />
                 </Grid>
               ))}

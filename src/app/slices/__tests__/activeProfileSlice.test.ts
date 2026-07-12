@@ -4,7 +4,9 @@ import { deleteAccount, logout } from '../accountSlice';
 import {
   addMovieFavorite,
   addShowFavorite,
+  checkForNewAchievements,
   fetchMilestoneStats,
+  markAchievementsViewed,
   reloadActiveProfile,
   reloadProfileEpisodes,
   removeMovieFavorite,
@@ -12,6 +14,7 @@ import {
   selectActiveProfile,
   selectActiveProfileError,
   selectActiveProfileLoading,
+  selectLastViewedAchievementsAt,
   selectMilestoneStats,
   selectMovieGenres,
   selectMovieStreamingServices,
@@ -30,7 +33,12 @@ import {
   updateShowWatchStatus,
 } from '../activeProfileSlice';
 import { markSeasonIdsAsPriorWatched } from '../activeShowSlice';
-import { MilestoneStats, Profile, WatchStatus } from '@ajgifford/keepwatching-types';
+import {
+  selectBadgeNotificationAdditionalCount,
+  selectBadgeNotificationBadge,
+  selectBadgeNotificationOpen,
+} from '../badgeNotificationSlice';
+import { AchievementType, MilestoneStats, Profile, WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock axios
 jest.mock('../../api/axiosInstance', () => ({
@@ -328,6 +336,258 @@ describe('activeProfileSlice', () => {
       const result = await store.dispatch(fetchMilestoneStats());
 
       expect(result.meta.requestStatus).toBe('rejected');
+    });
+  });
+
+  describe('checkForNewAchievements', () => {
+    const baseActiveProfileState = {
+      profile: mockProfile,
+      shows: [],
+      showGenres: [],
+      showStreamingServices: [],
+      movies: [],
+      movieGenres: [],
+      movieStreamingServices: [],
+      upcomingEpisodes: [],
+      recentEpisodes: [],
+      nextUnwatchedEpisodes: [],
+      recentMovies: [],
+      upcomingMovies: [],
+      lastUpdated: null,
+      loading: false,
+      error: null,
+    };
+
+    const authState = {
+      account: {
+        id: 1,
+        email: 'test@test.com',
+        uid: 'test-uid',
+        image: '',
+        name: 'Test User',
+        defaultProfileId: 0,
+      },
+      loading: false,
+      error: null,
+    };
+
+    it('dispatches a badge-unlock notification for a newly-crossed threshold', async () => {
+      const previouslyUnlocked: MilestoneStats = {
+        totalEpisodesWatched: 100,
+        totalMoviesWatched: 0,
+        totalHoursWatched: 0,
+        totalShowsCompleted: 0,
+        milestones: [{ type: 'episodes', threshold: 100, achieved: true, progress: 100 }],
+        recentAchievements: [],
+        allAchievements: [
+          {
+            description: '100 episodes watched',
+            achievedDate: '2026-06-01T00:00:00.000Z',
+            achievementType: AchievementType.EPISODES_WATCHED,
+            thresholdValue: 100,
+          },
+        ],
+      };
+
+      const newlyUnlocked: MilestoneStats = {
+        ...previouslyUnlocked,
+        totalEpisodesWatched: 250,
+        milestones: [
+          { type: 'episodes', threshold: 100, achieved: true, progress: 100 },
+          { type: 'episodes', threshold: 250, achieved: true, progress: 100 },
+        ],
+        allAchievements: [
+          ...previouslyUnlocked.allAchievements,
+          {
+            description: '250 episodes watched',
+            achievedDate: '2026-07-11T00:00:00.000Z',
+            achievementType: AchievementType.EPISODES_WATCHED,
+            thresholdValue: 250,
+          },
+        ],
+      };
+
+      mockAxiosInstance.get.mockResolvedValueOnce({ data: { results: newlyUnlocked } });
+
+      const store = createMockStore({
+        auth: authState,
+        activeProfile: { ...baseActiveProfileState, milestoneStats: previouslyUnlocked },
+      });
+
+      await store.dispatch(checkForNewAchievements());
+
+      expect(selectBadgeNotificationOpen(store.getState())).toBe(true);
+      expect(selectBadgeNotificationBadge(store.getState())).toMatchObject({
+        id: 'episodes-250',
+        category: 'episodes',
+      });
+      expect(selectBadgeNotificationAdditionalCount(store.getState())).toBe(0);
+    });
+
+    it('picks the highest tier and counts the rest when multiple thresholds cross at once', async () => {
+      const previouslyUnlocked: MilestoneStats = {
+        totalEpisodesWatched: 0,
+        totalMoviesWatched: 0,
+        totalHoursWatched: 0,
+        totalShowsCompleted: 0,
+        milestones: [],
+        recentAchievements: [],
+        allAchievements: [],
+      };
+
+      const newlyUnlocked: MilestoneStats = {
+        ...previouslyUnlocked,
+        totalEpisodesWatched: 250,
+        totalMoviesWatched: 5,
+        milestones: [
+          { type: 'episodes', threshold: 250, achieved: true, progress: 100 },
+          { type: 'movies', threshold: 5, achieved: true, progress: 100 },
+        ],
+        allAchievements: [
+          {
+            description: '250 episodes watched',
+            achievedDate: '2026-07-11T00:00:00.000Z',
+            achievementType: AchievementType.EPISODES_WATCHED,
+            thresholdValue: 250,
+          },
+          {
+            description: '5 movies watched',
+            achievedDate: '2026-07-11T00:00:00.000Z',
+            achievementType: AchievementType.MOVIES_WATCHED,
+            thresholdValue: 5,
+          },
+        ],
+      };
+
+      mockAxiosInstance.get.mockResolvedValueOnce({ data: { results: newlyUnlocked } });
+
+      const store = createMockStore({
+        auth: authState,
+        activeProfile: { ...baseActiveProfileState, milestoneStats: previouslyUnlocked },
+      });
+
+      await store.dispatch(checkForNewAchievements());
+
+      // episodes-250 (silver, index 1 of 12) outranks movies-5 (bronze, index 0 of 10)
+      expect(selectBadgeNotificationBadge(store.getState())).toMatchObject({ id: 'episodes-250' });
+      expect(selectBadgeNotificationAdditionalCount(store.getState())).toBe(1);
+    });
+
+    it('does not dispatch a notification when nothing new unlocked', async () => {
+      const stats: MilestoneStats = {
+        totalEpisodesWatched: 100,
+        totalMoviesWatched: 0,
+        totalHoursWatched: 0,
+        totalShowsCompleted: 0,
+        milestones: [{ type: 'episodes', threshold: 100, achieved: true, progress: 100 }],
+        recentAchievements: [],
+        allAchievements: [
+          {
+            description: '100 episodes watched',
+            achievedDate: '2026-06-01T00:00:00.000Z',
+            achievementType: AchievementType.EPISODES_WATCHED,
+            thresholdValue: 100,
+          },
+        ],
+      };
+
+      mockAxiosInstance.get.mockResolvedValueOnce({ data: { results: stats } });
+
+      const store = createMockStore({
+        auth: authState,
+        activeProfile: { ...baseActiveProfileState, milestoneStats: stats },
+      });
+
+      await store.dispatch(checkForNewAchievements());
+
+      expect(selectBadgeNotificationOpen(store.getState())).toBe(false);
+    });
+
+    it('a plain fetchMilestoneStats() never dispatches a badge notification', async () => {
+      const previouslyUnlocked: MilestoneStats = {
+        totalEpisodesWatched: 100,
+        totalMoviesWatched: 0,
+        totalHoursWatched: 0,
+        totalShowsCompleted: 0,
+        milestones: [{ type: 'episodes', threshold: 100, achieved: true, progress: 100 }],
+        recentAchievements: [],
+        allAchievements: [
+          {
+            description: '100 episodes watched',
+            achievedDate: '2026-06-01T00:00:00.000Z',
+            achievementType: AchievementType.EPISODES_WATCHED,
+            thresholdValue: 100,
+          },
+        ],
+      };
+
+      const newlyUnlocked: MilestoneStats = {
+        ...previouslyUnlocked,
+        totalEpisodesWatched: 250,
+        milestones: [
+          ...previouslyUnlocked.milestones,
+          { type: 'episodes', threshold: 250, achieved: true, progress: 100 },
+        ],
+        allAchievements: [
+          ...previouslyUnlocked.allAchievements,
+          {
+            description: '250 episodes watched',
+            achievedDate: '2026-07-11T00:00:00.000Z',
+            achievementType: AchievementType.EPISODES_WATCHED,
+            thresholdValue: 250,
+          },
+        ],
+      };
+
+      mockAxiosInstance.get.mockResolvedValueOnce({ data: { results: newlyUnlocked } });
+
+      const store = createMockStore({
+        auth: authState,
+        activeProfile: { ...baseActiveProfileState, milestoneStats: previouslyUnlocked },
+      });
+
+      // Home/achievements page mounts call fetchMilestoneStats directly, not checkForNewAchievements.
+      await store.dispatch(fetchMilestoneStats());
+
+      expect(selectMilestoneStats(store.getState())).toEqual(newlyUnlocked);
+      expect(selectBadgeNotificationOpen(store.getState())).toBe(false);
+    });
+  });
+
+  describe('markAchievementsViewed', () => {
+    it('records the current time and persists it to localStorage', () => {
+      const store = createMockStore({
+        activeProfile: {
+          profile: mockProfile,
+          shows: [],
+          showGenres: [],
+          showStreamingServices: [],
+          movies: [],
+          movieGenres: [],
+          movieStreamingServices: [],
+          upcomingEpisodes: [],
+          recentEpisodes: [],
+          nextUnwatchedEpisodes: [],
+          recentMovies: [],
+          upcomingMovies: [],
+          milestoneStats: null,
+          lastUpdated: null,
+          loading: false,
+          error: null,
+        },
+      });
+
+      expect(selectLastViewedAchievementsAt(store.getState())).toBeUndefined();
+
+      const before = Date.now();
+      store.dispatch(markAchievementsViewed());
+      const after = Date.now();
+
+      const viewedAt = selectLastViewedAchievementsAt(store.getState());
+      expect(viewedAt).toBeDefined();
+      expect(new Date(viewedAt as string).getTime()).toBeGreaterThanOrEqual(before);
+      expect(new Date(viewedAt as string).getTime()).toBeLessThanOrEqual(after);
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('activeProfile', expect.any(String));
     });
   });
 

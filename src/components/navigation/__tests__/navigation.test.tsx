@@ -21,6 +21,13 @@ jest.mock('../../notification/notificationIconDropdown', () => {
   };
 });
 
+// Mock the achievements dropdown component
+jest.mock('../../common/achievements/achievementIconDropdown', () => {
+  return function AchievementIconDropdown() {
+    return <div data-testid="achievements-dropdown">Achievements</div>;
+  };
+});
+
 // Mock the useNavigate hook
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -218,6 +225,30 @@ describe('Navigation', () => {
       );
 
       expect(screen.queryByTestId('notification-dropdown')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('achievements control', () => {
+    it('renders the achievements control before the notification control when profile exists', () => {
+      const store = createMockStore();
+      renderWithRouter(
+        <Provider store={store}>
+          <Navigation />
+        </Provider>
+      );
+
+      expect(screen.getByTestId('achievements-dropdown')).toBeInTheDocument();
+    });
+
+    it('does not render the achievements control when no active profile', () => {
+      const store = createMockStore(mockAccount, null, []);
+      renderWithRouter(
+        <Provider store={store}>
+          <Navigation />
+        </Provider>
+      );
+
+      expect(screen.queryByTestId('achievements-dropdown')).not.toBeInTheDocument();
     });
   });
 
@@ -436,6 +467,18 @@ describe('Navigation', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalled();
+    });
+
+    it('renders the achievements and notification controls in the persistent top bar, not the menu', () => {
+      const store = createMockStore();
+      renderWithRouter(
+        <Provider store={store}>
+          <Navigation />
+        </Provider>
+      );
+
+      expect(screen.getByTestId('achievements-dropdown')).toBeInTheDocument();
+      expect(screen.getByTestId('notification-dropdown')).toBeInTheDocument();
     });
   });
 
