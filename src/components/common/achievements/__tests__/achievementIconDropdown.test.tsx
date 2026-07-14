@@ -111,6 +111,16 @@ describe('AchievementIconDropdown', () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'activeProfile/markAchievementsViewed' });
   });
 
+  it('does not dispatch markAchievementsViewed when everything has already been viewed', async () => {
+    const user = userEvent.setup();
+    setupSelectors(mockMilestoneStats, '2026-07-12T00:00:00.000Z');
+    renderComponent();
+
+    await user.click(screen.getByRole('button', { name: /achievements/i }));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
   it('lists recently unlocked badges, newest first', async () => {
     const user = userEvent.setup();
     renderComponent();

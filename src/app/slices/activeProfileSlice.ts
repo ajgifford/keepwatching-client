@@ -27,6 +27,7 @@ import {
   Profile,
   ProfileContentResponse,
   ProfileMovie,
+  ProfileResponse,
   ProfileShow,
   ProfileShowWithSeasons,
   ProfileWithContent,
@@ -57,7 +58,6 @@ interface ActiveProfileState {
   recentMovies: MovieReference[];
   upcomingMovies: MovieReference[];
   milestoneStats: MilestoneStats | null;
-  lastViewedAchievementsAt?: string;
   lastUpdated: string | null;
   loading: boolean;
   error: ApiErrorResponse | null;
@@ -695,15 +695,35 @@ function toProfileShow(show: ProfileShowWithSeasons): ProfileShow {
   };
 }
 
+export const markAchievementsViewed = createAsyncThunk<Profile, void, { rejectValue: ApiErrorResponse }>(
+  'activeProfile/markAchievementsViewed',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const accountId = state.auth.account?.id;
+      const profileId = state.activeProfile.profile?.id;
+
+      if (!accountId || !profileId) {
+        return rejectWithValue({ message: 'No account or active profile found' });
+      }
+
+      const response: AxiosResponse<ProfileResponse> = await axiosInstance.patch(
+        `/accounts/${accountId}/profiles/${profileId}/achievements/viewed`
+      );
+      return response.data.profile;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data || { message: error.message });
+      }
+      return rejectWithValue({ message: 'An unknown error occurred marking achievements as viewed' });
+    }
+  }
+);
+
 const activeProfileSlice = createSlice({
   name: 'activeProfile',
   initialState,
-  reducers: {
-    markAchievementsViewed: (state) => {
-      state.lastViewedAchievementsAt = new Date().toISOString();
-      localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
@@ -1103,6 +1123,18 @@ const activeProfileSlice = createSlice({
           localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
         }
       })
+      .addCase(markAchievementsViewed.pending, (state) => {
+        if (state.profile) {
+          state.profile.lastViewedAchievementsAt = new Date().toISOString();
+          localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+        }
+      })
+      .addCase(markAchievementsViewed.fulfilled, (state, action) => {
+        if (state.profile && state.profile.id === action.payload.id) {
+          state.profile.lastViewedAchievementsAt = action.payload.lastViewedAchievementsAt;
+          localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
+        }
+      })
       .addCase(removeProfileImage.fulfilled, (state, action) => {
         if (state.profile && state.profile.id === action.payload.id) {
           state.profile.image = action.payload.image;
@@ -1140,7 +1172,8 @@ export const selectNextUnwatchedEpisodes = (state: RootState) => state.activePro
 export const selectRecentMovies = (state: RootState) => state.activeProfile.recentMovies;
 export const selectUpcomingMovies = (state: RootState) => state.activeProfile.upcomingMovies;
 export const selectMilestoneStats = (state: RootState) => state.activeProfile.milestoneStats;
-export const selectLastViewedAchievementsAt = (state: RootState) => state.activeProfile.lastViewedAchievementsAt;
+export const selectLastViewedAchievementsAt = (state: RootState) =>
+  state.activeProfile.profile?.lastViewedAchievementsAt;
 export const selectActiveProfileLoading = (state: RootState) => state.activeProfile.loading;
 export const selectActiveProfileError = (state: RootState) => state.activeProfile.error;
 
@@ -1293,7 +1326,5 @@ export const selectContentByStreamingService = createSelector(
     return servicesArray.filter((service) => service.totalCount > 0).sort((a, b) => b.totalCount - a.totalCount);
   }
 );
-
-export const { markAchievementsViewed } = activeProfileSlice.actions;
 
 export default activeProfileSlice.reducer;

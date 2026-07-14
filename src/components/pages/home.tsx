@@ -89,7 +89,8 @@ const Home = () => {
       dispatch(fetchWatchlist(profile.id));
       dispatch(fetchRatings({ profileId: profile.id }));
     }
-  }, [dispatch, profile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, profile?.id]);
 
   if (activeProfileLoading) {
     return <LoadingComponent />;

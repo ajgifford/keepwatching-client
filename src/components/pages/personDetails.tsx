@@ -138,7 +138,8 @@ export default function PersonDetails() {
     if (profile) {
       loadPerson();
     }
-  }, [personId, profile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [personId, profile?.id]);
 
   if (isLoading) {
     return <LoadingComponent />;

@@ -26,7 +26,7 @@ import {
 import { BadgeInstance, getRecentlyUnlockedBadges, getUnlockedBadges } from './badgeDefinitions';
 import { TIER_STYLES } from './badgeTierStyles';
 
-function isUnseen(badge: BadgeInstance, lastViewedAchievementsAt?: string): boolean {
+function isUnseen(badge: BadgeInstance, lastViewedAchievementsAt?: string | null): boolean {
   if (!badge.achievedDate) return false;
   return !lastViewedAchievementsAt || badge.achievedDate > lastViewedAchievementsAt;
 }
@@ -49,7 +49,7 @@ function AchievementIconDropdown() {
   const handleToggle = () => {
     setOpen((prevOpen) => {
       const nextOpen = !prevOpen;
-      if (nextOpen) {
+      if (nextOpen && unseenCount > 0) {
         dispatch(markAchievementsViewed());
       }
       return nextOpen;

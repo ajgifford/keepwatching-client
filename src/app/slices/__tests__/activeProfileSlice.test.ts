@@ -48,6 +48,7 @@ jest.mock('../../api/axiosInstance', () => ({
     get: jest.fn(),
     post: jest.fn(),
     put: jest.fn(),
+    patch: jest.fn(),
     delete: jest.fn(),
   },
 }));
@@ -556,39 +557,70 @@ describe('activeProfileSlice', () => {
   });
 
   describe('markAchievementsViewed', () => {
-    it('records the current time and persists it to localStorage', () => {
-      const store = createMockStore({
-        activeProfile: {
-          profile: mockProfile,
-          shows: [],
-          showGenres: [],
-          showStreamingServices: [],
-          movies: [],
-          movieGenres: [],
-          movieStreamingServices: [],
-          upcomingEpisodes: [],
-          recentEpisodes: [],
-          nextUnwatchedEpisodes: [],
-          recentMovies: [],
-          upcomingMovies: [],
-          milestoneStats: null,
-          lastUpdated: null,
-          loading: false,
-          error: null,
-        },
-      });
+    const authState = {
+      account: {
+        id: 1,
+        email: 'test@test.com',
+        uid: 'test-uid',
+        image: '',
+        name: 'Test User',
+        defaultProfileId: 0,
+      },
+      loading: false,
+      error: null,
+    };
+
+    const activeProfileState = {
+      profile: mockProfile,
+      shows: [],
+      showGenres: [],
+      showStreamingServices: [],
+      movies: [],
+      movieGenres: [],
+      movieStreamingServices: [],
+      upcomingEpisodes: [],
+      recentEpisodes: [],
+      nextUnwatchedEpisodes: [],
+      recentMovies: [],
+      upcomingMovies: [],
+      milestoneStats: null,
+      lastUpdated: null,
+      loading: false,
+      error: null,
+    };
+
+    it('optimistically records the current time on dispatch, then reconciles with the server response', async () => {
+      const updatedProfile: Profile = { ...mockProfile, lastViewedAchievementsAt: '2026-07-14T12:00:00.000Z' };
+      mockAxiosInstance.patch.mockResolvedValueOnce({ data: { profile: updatedProfile } });
+
+      const store = createMockStore({ auth: authState, activeProfile: activeProfileState });
 
       expect(selectLastViewedAchievementsAt(store.getState())).toBeUndefined();
 
       const before = Date.now();
-      store.dispatch(markAchievementsViewed());
-      const after = Date.now();
+      const promise = store.dispatch(markAchievementsViewed());
 
-      const viewedAt = selectLastViewedAchievementsAt(store.getState());
-      expect(viewedAt).toBeDefined();
-      expect(new Date(viewedAt as string).getTime()).toBeGreaterThanOrEqual(before);
-      expect(new Date(viewedAt as string).getTime()).toBeLessThanOrEqual(after);
+      const optimisticViewedAt = selectLastViewedAchievementsAt(store.getState());
+      expect(optimisticViewedAt).toBeDefined();
+      expect(new Date(optimisticViewedAt as string).getTime()).toBeGreaterThanOrEqual(before);
+
+      await promise;
+
+      expect(mockAxiosInstance.patch).toHaveBeenCalledWith('/accounts/1/profiles/1/achievements/viewed');
+      expect(selectLastViewedAchievementsAt(store.getState())).toBe(updatedProfile.lastViewedAchievementsAt);
       expect(localStorageMock.setItem).toHaveBeenCalledWith('activeProfile', expect.any(String));
+    });
+
+    it('rejects when there is no account or active profile', async () => {
+      const store = createMockStore({
+        auth: { account: null, loading: false, error: null },
+        activeProfile: activeProfileState,
+      });
+
+      const result = await store.dispatch(markAchievementsViewed());
+
+      expect(result.type).toBe('activeProfile/markAchievementsViewed/rejected');
+      expect(mockAxiosInstance.patch).not.toHaveBeenCalled();
     });
   });
 

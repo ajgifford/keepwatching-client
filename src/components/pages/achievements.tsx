@@ -60,7 +60,8 @@ function Achievements() {
       dispatch(fetchMilestoneStats());
       dispatch(markAchievementsViewed());
     }
-  }, [dispatch, profile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, profile?.id]);
 
   useEffect(() => {
     if (!badgeIdParam || !milestoneStats) return;
