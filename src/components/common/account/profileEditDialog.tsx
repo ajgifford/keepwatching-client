@@ -52,7 +52,7 @@ const ProfileEditDialog = ({ open, profile, onClose, onSave }: ProfileEditDialog
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Edit Profile</DialogTitle>
       <DialogContent>
         <TextField

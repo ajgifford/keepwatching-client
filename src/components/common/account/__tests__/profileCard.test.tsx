@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 
 import accountSlice from '../../../../app/slices/accountSlice';
 import activeProfileSlice from '../../../../app/slices/activeProfileSlice';
+import profileTransferSlice from '../../../../app/slices/profileTransferSlice';
 import profilesSlice from '../../../../app/slices/profilesSlice';
 import { buildProfileDataExport, profileDataExportFilename } from '../../../utility/dataExportUtility';
 import { downloadTextFile } from '../../../utility/downloadFileUtility';
@@ -47,10 +48,16 @@ const createMockStore = (profile = mockProfile, activeProfile = mockActiveProfil
       auth: accountSlice,
       activeProfile: activeProfileSlice,
       profiles: profilesSlice,
+      profileTransfer: profileTransferSlice,
     },
     preloadedState: {
       auth: {
         account,
+        loading: false,
+        error: null,
+      },
+      profileTransfer: {
+        invitations: [],
         loading: false,
         error: null,
       },
@@ -92,6 +99,8 @@ describe('ProfileCard', () => {
   const mockHandleSetActive = jest.fn();
   const mockHandleViewStats = jest.fn();
 
+  const mockHandleCreateAccountFromProfile = jest.fn();
+
   const defaultProps = {
     profile: mockProfile,
     handleEdit: mockHandleEdit,
@@ -99,6 +108,7 @@ describe('ProfileCard', () => {
     handleSetDefault: mockHandleSetDefault,
     handleSetActive: mockHandleSetActive,
     handleViewStats: mockHandleViewStats,
+    handleCreateAccountFromProfile: mockHandleCreateAccountFromProfile,
     isLoading: false,
   };
 
@@ -146,7 +156,7 @@ describe('ProfileCard', () => {
     expect(image).toHaveAttribute('src', expect.stringContaining('placehold.co'));
   });
 
-  it('renders all action buttons', () => {
+  it('renders primary card controls', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
@@ -164,12 +174,12 @@ describe('ProfileCard', () => {
 
     expect(screen.getByRole('button', { name: /set active/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /set default/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /view stats/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^edit/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /explore/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
 
-  it('calls handleSetActive when Set Active button is clicked', () => {
+  it('calls handleSetActive when the Set Active chip is clicked', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
@@ -185,13 +195,13 @@ describe('ProfileCard', () => {
       </Provider>
     );
 
-    const setActiveButton = screen.getByRole('button', { name: /set active/i });
-    fireEvent.click(setActiveButton);
+    const setActiveChip = screen.getByRole('button', { name: /set active/i });
+    fireEvent.click(setActiveChip);
 
     expect(mockHandleSetActive).toHaveBeenCalledWith(mockProfile);
   });
 
-  it('calls handleSetDefault when Set Default button is clicked', () => {
+  it('calls handleSetDefault when the Set Default chip is clicked', () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
@@ -207,13 +217,13 @@ describe('ProfileCard', () => {
       </Provider>
     );
 
-    const setDefaultButton = screen.getByRole('button', { name: /set default/i });
-    fireEvent.click(setDefaultButton);
+    const setDefaultChip = screen.getByRole('button', { name: /set default/i });
+    fireEvent.click(setDefaultChip);
 
     expect(mockHandleSetDefault).toHaveBeenCalledWith(mockProfile);
   });
 
-  it('calls handleViewStats when View Stats button is clicked', () => {
+  it('calls handleViewStats when View Stats is selected from the Explore menu', async () => {
     const store = createMockStore();
     render(
       <Provider store={store}>
@@ -229,8 +239,9 @@ describe('ProfileCard', () => {
       </Provider>
     );
 
-    const viewStatsButton = screen.getByRole('button', { name: /view stats/i });
-    fireEvent.click(viewStatsButton);
+    fireEvent.click(screen.getByRole('button', { name: /explore/i }));
+    const viewStatsItem = await screen.findByText(/view stats/i);
+    fireEvent.click(viewStatsItem);
 
     expect(mockHandleViewStats).toHaveBeenCalledWith(mockProfile);
   });
@@ -251,7 +262,7 @@ describe('ProfileCard', () => {
       </Provider>
     );
 
-    const editButton = screen.getByRole('button', { name: /edit/i });
+    const editButton = screen.getByRole('button', { name: /^edit/i });
     fireEvent.click(editButton);
 
     expect(mockHandleEdit).toHaveBeenCalledWith(mockProfile);
@@ -279,7 +290,7 @@ describe('ProfileCard', () => {
     expect(mockHandleDelete).toHaveBeenCalledWith(mockProfile);
   });
 
-  it('disables Set Active button when profile is already active', () => {
+  it('shows an "Active" chip instead of a Set Active control when profile is already active', () => {
     const store = createMockStore(mockActiveProfile, mockActiveProfile);
     render(
       <Provider store={store}>
@@ -296,11 +307,11 @@ describe('ProfileCard', () => {
       </Provider>
     );
 
-    const setActiveButton = screen.getByRole('button', { name: /set active/i });
-    expect(setActiveButton).toBeDisabled();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /set active/i })).not.toBeInTheDocument();
   });
 
-  it('disables Set Default button when profile is already default', () => {
+  it('shows a "Default" chip instead of a Set Default control when profile is already default', () => {
     const defaultProfile = { ...mockProfile, id: 3 };
     const store = createMockStore(defaultProfile);
     render(
@@ -318,8 +329,8 @@ describe('ProfileCard', () => {
       </Provider>
     );
 
-    const setDefaultButton = screen.getByRole('button', { name: /set default/i });
-    expect(setDefaultButton).toBeDisabled();
+    expect(screen.getByText('Default')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /set default/i })).not.toBeInTheDocument();
   });
 
   it('disables Delete button when profile is default', () => {
@@ -428,10 +439,16 @@ describe('ProfileCard', () => {
         auth: accountSlice,
         activeProfile: activeProfileSlice,
         profiles: profilesSlice,
+        profileTransfer: profileTransferSlice,
       },
       preloadedState: {
         auth: {
           account: null,
+          loading: false,
+          error: null,
+        },
+        profileTransfer: {
+          invitations: [],
           loading: false,
           error: null,
         },
@@ -523,7 +540,8 @@ describe('ProfileCard', () => {
         </Provider>
       );
 
-      const downloadButton = screen.getByRole('button', { name: /download my data/i });
+      fireEvent.click(screen.getByRole('button', { name: /explore/i }));
+      const downloadButton = await screen.findByText(/download my data/i);
       fireEvent.click(downloadButton);
 
       expect(await screen.findByText(/exporting/i)).toBeInTheDocument();
@@ -538,7 +556,7 @@ describe('ProfileCard', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /download my data/i })).not.toBeDisabled();
+        expect(screen.queryByText(/download my data/i)).not.toBeInTheDocument();
       });
     });
 
@@ -560,7 +578,8 @@ describe('ProfileCard', () => {
         </Provider>
       );
 
-      const downloadButton = screen.getByRole('button', { name: /download my data/i });
+      fireEvent.click(screen.getByRole('button', { name: /explore/i }));
+      const downloadButton = await screen.findByText(/download my data/i);
       fireEvent.click(downloadButton);
 
       expect(await screen.findByText(/failed to export data/i)).toBeInTheDocument();

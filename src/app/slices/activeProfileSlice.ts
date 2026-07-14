@@ -717,7 +717,7 @@ const activeProfileSlice = createSlice({
         return blankState;
       })
       .addCase(updateProfileImage.fulfilled, (state, action) => {
-        if (state.profile) {
+        if (state.profile && state.profile.id === action.payload.id) {
           state.profile.image = action.payload.image;
           localStorage.setItem(ACTIVE_PROFILE_KEY, JSON.stringify(state));
         }

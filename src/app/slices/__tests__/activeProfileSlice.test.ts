@@ -38,6 +38,7 @@ import {
   selectBadgeNotificationBadge,
   selectBadgeNotificationOpen,
 } from '../badgeNotificationSlice';
+import { updateProfileImage } from '../profilesSlice';
 import { AchievementType, MilestoneStats, Profile, WatchStatus } from '@ajgifford/keepwatching-types';
 
 // Mock axios
@@ -1089,6 +1090,57 @@ describe('activeProfileSlice', () => {
       const shows = selectShows(store.getState());
       expect(shows[0].watchStatus).toBe(WatchStatus.UP_TO_DATE);
       expect(selectNextUnwatchedEpisodes(store.getState())).toEqual([]);
+    });
+  });
+
+  describe('updateProfileImage (cross-slice sync)', () => {
+    const baseActiveProfileState = {
+      profile: mockProfile,
+      shows: [],
+      showGenres: [],
+      showStreamingServices: [],
+      movies: [],
+      movieGenres: [],
+      movieStreamingServices: [],
+      upcomingEpisodes: [],
+      recentEpisodes: [],
+      nextUnwatchedEpisodes: [],
+      recentMovies: [],
+      upcomingMovies: [],
+      milestoneStats: null,
+      lastUpdated: null,
+      loading: false,
+      error: null,
+    };
+
+    it('updates the active profile image when the updated profile is the active one', async () => {
+      const updatedActiveProfile = { ...mockProfile, image: 'new-active-image.jpg' };
+      mockAxiosInstance.post.mockResolvedValueOnce({ data: { profile: updatedActiveProfile } });
+
+      const store = createMockStore({ activeProfile: baseActiveProfileState });
+
+      await store.dispatch(
+        updateProfileImage({ accountId: 1, profileId: mockProfile.id, file: new File([], 'avatar.jpg') }) as any
+      );
+
+      expect(selectActiveProfile(store.getState())?.image).toBe('new-active-image.jpg');
+    });
+
+    it('does not touch the active profile image when a different profile is updated', async () => {
+      // Regression test: this reducer previously had no id guard (unlike its siblings
+      // editProfile/updateProfileAccentColor/removeProfileImage below), so uploading a picture
+      // for ANY profile overwrote the active profile's image everywhere it's displayed (nav bar
+      // avatar, home page card) until the active profile was reloaded.
+      const otherProfileUpdated = { id: 999, accountId: 1, name: 'Other Profile', image: 'other-new-image.jpg' };
+      mockAxiosInstance.post.mockResolvedValueOnce({ data: { profile: otherProfileUpdated } });
+
+      const store = createMockStore({ activeProfile: baseActiveProfileState });
+
+      await store.dispatch(
+        updateProfileImage({ accountId: 1, profileId: 999, file: new File([], 'avatar.jpg') }) as any
+      );
+
+      expect(selectActiveProfile(store.getState())?.image).toBe(mockProfile.image);
     });
   });
 

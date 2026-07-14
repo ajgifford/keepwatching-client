@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -40,6 +40,7 @@ import {
   verifyEmail,
 } from '../../app/slices/accountSlice';
 import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../app/slices/activeProfileSlice';
+import { fetchProfileTransferInvitations, inviteProfileTransfer } from '../../app/slices/profileTransferSlice';
 import {
   addProfile,
   deleteProfile,
@@ -49,6 +50,7 @@ import {
   updateProfileAccentColor,
 } from '../../app/slices/profilesSlice';
 import ReviewWatchHistoryDialog from '../common/account/ReviewWatchHistoryDialog';
+import CreateAccountFromProfileDialog from '../common/account/createAccountFromProfileDialog';
 import NameEditDialog from '../common/account/nameEditDialog';
 import PreferencesDialog from '../common/account/preferencesDialog';
 import { ProfileCard } from '../common/account/profileCard';
@@ -104,11 +106,19 @@ const ManageAccount = () => {
   const [isRemovingAccountImage, setIsRemovingAccountImage] = useState(false);
   const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState<boolean>(false);
   const [deleteAccountConfirmationText, setDeleteAccountConfirmationText] = useState<string>('');
+  const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState<boolean>(false);
+  const [profileForAccountCreation, setProfileForAccountCreation] = useState<Profile | null>(null);
 
   const auth = getAuth();
   const user = auth.currentUser;
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (account) {
+      dispatch(fetchProfileTransferInvitations(account.id));
+    }
+  }, [dispatch, account]);
 
   // Handle case where account or activeProfile is not loaded
   if (!account || !activeProfile) {
@@ -178,7 +188,13 @@ const ManageAccount = () => {
   async function handleConfirmDeleteProfile() {
     if (managedProfile) {
       setDeleteProfileDialogOpen(false);
+      // The default profile can't be deleted (disabled in the UI), so it's always a safe,
+      // still-existing fallback if the profile being deleted happens to be the active one.
+      const wasActiveProfile = managedProfile.id === safeActiveProfile.id;
       await dispatch(deleteProfile({ accountId: safeAccount.id, profileId: managedProfile.id }));
+      if (wasActiveProfile) {
+        await dispatch(setActiveProfile({ accountId: safeAccount.id, profileId: safeAccount.defaultProfileId }));
+      }
       setManagedProfile(null);
     }
   }
@@ -217,6 +233,27 @@ const ManageAccount = () => {
   function handleViewRecap(profile: Profile) {
     setRecapDialogProfile(profile);
     setRecapDialogOpen(true);
+  }
+
+  function handleCreateAccountFromProfile(profile: Profile) {
+    setProfileForAccountCreation(profile);
+    setCreateAccountDialogOpen(true);
+  }
+
+  function handleCreateAccountFromProfileSubmit(
+    targetEmail: string,
+    targetName: string | undefined,
+    newDefaultProfileId: number | undefined
+  ) {
+    if (!profileForAccountCreation) return;
+    dispatch(
+      inviteProfileTransfer({
+        accountId: safeAccount.id,
+        profileId: profileForAccountCreation.id,
+        request: { targetEmail, targetName, newDefaultProfileId },
+      })
+    );
+    setProfileForAccountCreation(null);
   }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -477,6 +514,7 @@ const ManageAccount = () => {
               handleViewStats={handleViewProfileStats}
               handleReviewWatchHistory={handleReviewWatchHistory}
               handleViewRecap={handleViewRecap}
+              handleCreateAccountFromProfile={handleCreateAccountFromProfile}
               isLoading={changingActiveProfile === profile.id}
             />
           ))}
@@ -495,6 +533,16 @@ const ManageAccount = () => {
           profile={profileBeingEdited}
           onClose={() => setProfileEditDialogOpen(false)}
           onSave={handleProfileEditSave}
+        />
+      )}
+      {profileForAccountCreation && (
+        <CreateAccountFromProfileDialog
+          open={createAccountDialogOpen}
+          profile={profileForAccountCreation}
+          isCurrentDefault={profileForAccountCreation.id === safeAccount.defaultProfileId}
+          otherProfiles={profiles.filter((p) => p.id !== profileForAccountCreation.id)}
+          onClose={() => setCreateAccountDialogOpen(false)}
+          onSubmit={handleCreateAccountFromProfileSubmit}
         />
       )}
       <PreferencesDialog open={preferencesDialogOpen} onClose={() => setPreferencesDialogOpen(false)} />

@@ -2,8 +2,16 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { BACKEND_WEBSOCKET_URL } from './constants/constants';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { selectCurrentAccount } from './slices/accountSlice';
-import { reloadActiveProfile, reloadProfileEpisodes, updateAfterAddShowFavorite } from './slices/activeProfileSlice';
+import { defaultProfileIdUpdatedRemotely, selectCurrentAccount } from './slices/accountSlice';
+import {
+  reloadActiveProfile,
+  reloadProfileEpisodes,
+  selectActiveProfile,
+  setActiveProfile,
+  updateAfterAddShowFavorite,
+} from './slices/activeProfileSlice';
+import { ActivityNotificationType, showActivityNotification } from './slices/activityNotificationSlice';
+import { profileRemovedRemotely } from './slices/profilesSlice';
 import { updateNotifications } from './slices/systemNotificationsSlice';
 import { AccountNotification, ProfileShow } from '@ajgifford/keepwatching-types';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -12,6 +20,7 @@ import { Socket, io } from 'socket.io-client';
 export const useWebSocket = () => {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectCurrentAccount);
+  const activeProfile = useAppSelector(selectActiveProfile);
   const auth = getAuth();
 
   const socketRef = useRef<Socket | null>(null);
@@ -20,6 +29,26 @@ export const useWebSocket = () => {
 
   // Extract only the account ID to prevent unnecessary re-renders
   const accountId = useMemo(() => account?.id, [account?.id]);
+  const defaultProfileId = useMemo(() => account?.defaultProfileId, [account?.defaultProfileId]);
+  const activeProfileId = useMemo(() => activeProfile?.id, [activeProfile?.id]);
+
+  // The socket connection is set up once and its listeners are never re-bound on later renders
+  // (see setupSocket below — reconnection is deliberately avoided to keep a stable connection).
+  // Handlers that need the *current* account/profile must therefore read from refs rather than
+  // closing over the values above, or they'd keep acting on whatever was true at connect time.
+  const accountIdRef = useRef(accountId);
+  const defaultProfileIdRef = useRef(defaultProfileId);
+  const activeProfileIdRef = useRef(activeProfileId);
+
+  useEffect(() => {
+    accountIdRef.current = accountId;
+  }, [accountId]);
+  useEffect(() => {
+    defaultProfileIdRef.current = defaultProfileId;
+  }, [defaultProfileId]);
+  useEffect(() => {
+    activeProfileIdRef.current = activeProfileId;
+  }, [activeProfileId]);
 
   // Stable event handlers that don't change on account updates
   const handleShowsUpdate = useCallback(() => {
@@ -41,6 +70,33 @@ export const useWebSocket = () => {
   const handleUpdateNotifications = useCallback(
     async (data: { notifications: AccountNotification[] }) => {
       await dispatch(updateNotifications(data.notifications));
+    },
+    [dispatch]
+  );
+
+  const handleProfileTransferred = useCallback(
+    (data: { profileId: number; newDefaultProfileId?: number }) => {
+      dispatch(profileRemovedRemotely(data.profileId));
+
+      if (data.newDefaultProfileId) {
+        dispatch(defaultProfileIdUpdatedRemotely(data.newDefaultProfileId));
+      }
+
+      // If this device was actively viewing the profile that just moved, it's no longer usable
+      // here at all — switch away from it instead of leaving the UI pointed at a dead profile.
+      const currentAccountId = accountIdRef.current;
+      if (currentAccountId && activeProfileIdRef.current === data.profileId) {
+        const fallbackProfileId = data.newDefaultProfileId ?? defaultProfileIdRef.current;
+        if (fallbackProfileId) {
+          dispatch(setActiveProfile({ accountId: currentAccountId, profileId: fallbackProfileId }));
+        }
+        dispatch(
+          showActivityNotification({
+            message: 'This profile is no longer part of your account. Switched to your default profile.',
+            type: ActivityNotificationType.Info,
+          })
+        );
+      }
     },
     [dispatch]
   );
@@ -102,11 +158,19 @@ export const useWebSocket = () => {
         socketRef.current.on('updateShowFavorite', handleUpdateShowFavorite);
         socketRef.current.on('newNotifications', handleUpdateNotifications);
         socketRef.current.on('updateNotifications', handleUpdateNotifications);
+        socketRef.current.on('profileTransferred', handleProfileTransferred);
       } catch (error) {
         console.error('Error setting up WebSocket:', error);
       }
     },
-    [accountId, handleShowsUpdate, handleMoviesUpdate, handleUpdateShowFavorite, handleUpdateNotifications]
+    [
+      accountId,
+      handleShowsUpdate,
+      handleMoviesUpdate,
+      handleUpdateShowFavorite,
+      handleUpdateNotifications,
+      handleProfileTransferred,
+    ]
   );
 
   useEffect(() => {

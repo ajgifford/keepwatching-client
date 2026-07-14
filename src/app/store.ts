@@ -9,6 +9,7 @@ import calendarReducer from './slices/calendarSlice';
 import communityRecommendationsReducer from './slices/communityRecommendationsSlice';
 import personSearchReducer from './slices/personSearchSlice';
 import preferencesReducer from './slices/preferencesSlice';
+import profileTransferReducer from './slices/profileTransferSlice';
 import profilesReducer from './slices/profilesSlice';
 import ratingsReducer from './slices/ratingsSlice';
 import systemNotificationsReducer from './slices/systemNotificationsSlice';
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   calendar: calendarReducer,
   profiles: profilesReducer,
+  profileTransfer: profileTransferReducer,
   activeProfile: activeProfileReducer,
   activeShow: activeShowReducer,
   activeMovie: activeMovieReducer,

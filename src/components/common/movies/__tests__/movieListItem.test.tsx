@@ -76,13 +76,11 @@ describe('MovieListItem', () => {
     mpaRating: 'R',
   };
 
-  const mockGetFilters = jest.fn(
-    (): FilterProps => ({
-      genre: 'Drama',
-      streamingService: 'Netflix',
-      watchStatus: ['Not Watched'],
-    })
-  );
+  const mockGetFilters = jest.fn((): FilterProps => ({
+    genre: 'Drama',
+    streamingService: 'Netflix',
+    watchStatus: ['Not Watched'],
+  }));
 
   beforeEach(() => {
     jest.clearAllMocks();

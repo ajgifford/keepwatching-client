@@ -5,6 +5,7 @@ import {
   deleteProfile,
   editProfile,
   fetchProfiles,
+  profileRemovedRemotely,
   removeProfileImage,
   selectAllProfiles,
   selectProfileById,
@@ -149,6 +150,42 @@ describe('profilesSlice', () => {
       const state = store.getState().profiles;
       expect(state.loading).toBe(false);
       expect(state.error?.message).toBeTruthy();
+    });
+  });
+
+  describe('profileRemovedRemotely', () => {
+    it('should remove the profile from state without an API call', () => {
+      const otherProfile = { ...mockProfile, id: 2, name: 'Other Profile' };
+      const store = createMockStore({
+        profiles: {
+          ids: [1, 2],
+          entities: { 1: mockProfile, 2: otherProfile },
+          loading: false,
+          error: null,
+        },
+      });
+
+      store.dispatch(profileRemovedRemotely(1));
+
+      const state = store.getState().profiles;
+      expect(selectAllProfiles(store.getState())).toEqual([otherProfile]);
+      expect(mockAxiosInstance.delete).not.toHaveBeenCalled();
+      expect(state.error).toBeNull();
+    });
+
+    it('should persist the updated profile list to localStorage', () => {
+      const store = createMockStore({
+        profiles: {
+          ids: [1],
+          entities: { 1: mockProfile },
+          loading: false,
+          error: null,
+        },
+      });
+
+      store.dispatch(profileRemovedRemotely(1));
+
+      expect(localStorage.getItem('profiles')).toBe(JSON.stringify([]));
     });
   });
 

@@ -1,6 +1,9 @@
 import axiosInstance from '../../api/axiosInstance';
 import { createMockStore } from '../../testUtils';
 import {
+  claimProfileTransferWithGoogle,
+  claimProfileTransferWithPassword,
+  defaultProfileIdUpdatedRemotely,
   deleteAccount,
   googleLogin,
   login,
@@ -18,6 +21,7 @@ import { Account } from '@ajgifford/keepwatching-types';
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -39,6 +43,7 @@ jest.mock('firebase/auth', () => ({
   signOut: jest.fn(),
   updateProfile: jest.fn(),
   sendEmailVerification: jest.fn(),
+  getAdditionalUserInfo: jest.fn(),
   GoogleAuthProvider: jest.fn(),
 }));
 
@@ -82,6 +87,7 @@ const mockCreateUser = createUserWithEmailAndPassword as jest.Mock;
 const mockUpdateProfile = updateProfile as jest.Mock;
 const mockSendEmailVerification = sendEmailVerification as jest.Mock;
 const mockSignInWithPopup = signInWithPopup as jest.Mock;
+const mockGetAdditionalUserInfo = getAdditionalUserInfo as jest.Mock;
 
 describe('accountSlice', () => {
   beforeAll(() => {
@@ -379,6 +385,178 @@ describe('accountSlice', () => {
       const state = store.getState().auth;
       expect(state.loading).toBe(false);
       expect(state.error?.message).toBe('Google Login: Unexpected Error');
+    });
+  });
+
+  describe('claimProfileTransferWithPassword', () => {
+    it('should claim successfully and store the new account', async () => {
+      mockCreateUser.mockResolvedValueOnce({
+        user: { uid: 'firebase-uid-123', delete: jest.fn() },
+      });
+      mockUpdateProfile.mockResolvedValueOnce(undefined);
+
+      mockAxiosInstance.post.mockResolvedValueOnce({
+        data: { account: mockAccount, message: 'Welcome to your new account!' },
+      });
+
+      const store = createMockStore();
+      await store.dispatch(
+        claimProfileTransferWithPassword({
+          token: 'raw-token',
+          email: 'jamie@example.com',
+          password: 'password123',
+          name: 'Jamie',
+        })
+      );
+
+      expect(mockCreateUser).toHaveBeenCalledWith({}, 'jamie@example.com', 'password123');
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/profileTransferInvitations/raw-token/claim', {
+        name: 'Jamie',
+      });
+
+      const state = store.getState().auth;
+      expect(state.loading).toBe(false);
+      expect(selectCurrentAccount(store.getState())).toEqual(mockAccount);
+      expect(state.error).toBeNull();
+    });
+
+    it('should handle Firebase account creation failure without calling the backend', async () => {
+      mockCreateUser.mockRejectedValueOnce(new Error('Email already in use'));
+
+      const store = createMockStore();
+      await store.dispatch(
+        claimProfileTransferWithPassword({
+          token: 'raw-token',
+          email: 'jamie@example.com',
+          password: 'password123',
+        })
+      );
+
+      expect(mockAxiosInstance.post).not.toHaveBeenCalled();
+      const state = store.getState().auth;
+      expect(state.loading).toBe(false);
+      expect(state.error?.message).toBeTruthy();
+    });
+
+    it('should clean up the Firebase user when the backend claim fails', async () => {
+      const mockDeleteUser = jest.fn().mockResolvedValue(undefined);
+      mockCreateUser.mockResolvedValueOnce({
+        user: { uid: 'firebase-uid-123', delete: mockDeleteUser },
+      });
+      mockUpdateProfile.mockResolvedValueOnce(undefined);
+
+      mockAxiosInstance.post.mockRejectedValueOnce({
+        response: { data: { message: 'This invitation has already been claimed' } },
+      });
+
+      const store = createMockStore();
+      await store.dispatch(
+        claimProfileTransferWithPassword({
+          token: 'raw-token',
+          email: 'jamie@example.com',
+          password: 'password123',
+        })
+      );
+
+      expect(mockDeleteUser).toHaveBeenCalledTimes(1);
+      const state = store.getState().auth;
+      expect(state.error?.message).toBeTruthy();
+    });
+  });
+
+  describe('claimProfileTransferWithGoogle', () => {
+    it('should claim successfully and store the new account', async () => {
+      mockSignInWithPopup.mockResolvedValueOnce({
+        user: { uid: 'firebase-uid-123', displayName: 'Jamie', delete: jest.fn() },
+      });
+
+      mockAxiosInstance.post.mockResolvedValueOnce({
+        data: { account: mockAccount, message: 'Welcome to your new account!' },
+      });
+
+      const store = createMockStore();
+      await store.dispatch(claimProfileTransferWithGoogle({ token: 'raw-token' }));
+
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/profileTransferInvitations/raw-token/claim', {
+        name: 'Jamie',
+      });
+
+      const state = store.getState().auth;
+      expect(selectCurrentAccount(store.getState())).toEqual(mockAccount);
+      expect(state.error).toBeNull();
+    });
+
+    it('should handle Google sign-in failure without calling the backend', async () => {
+      mockSignInWithPopup.mockRejectedValueOnce(new Error('Popup closed by user'));
+
+      const store = createMockStore();
+      await store.dispatch(claimProfileTransferWithGoogle({ token: 'raw-token' }));
+
+      expect(mockAxiosInstance.post).not.toHaveBeenCalled();
+      const state = store.getState().auth;
+      expect(state.error?.message).toBeTruthy();
+    });
+
+    it('should clean up the Firebase user when the backend claim fails and Firebase confirms it was newly created', async () => {
+      const mockDeleteUser = jest.fn().mockResolvedValue(undefined);
+      mockSignInWithPopup.mockResolvedValueOnce({
+        user: { uid: 'firebase-uid-123', displayName: 'Jamie', delete: mockDeleteUser },
+      });
+      mockGetAdditionalUserInfo.mockReturnValueOnce({ isNewUser: true });
+
+      mockAxiosInstance.post.mockRejectedValueOnce({
+        response: { data: { message: 'Sign in with the email the invitation was sent to' } },
+      });
+
+      const store = createMockStore();
+      await store.dispatch(claimProfileTransferWithGoogle({ token: 'raw-token' }));
+
+      expect(mockDeleteUser).toHaveBeenCalledTimes(1);
+      const state = store.getState().auth;
+      expect(state.error?.message).toBeTruthy();
+    });
+
+    it('should NOT delete a pre-existing Firebase user when the backend claim fails', async () => {
+      // This Google identity signed in before (e.g. their own, unrelated account) — deleting it
+      // would destroy someone else's real login, so cleanup must be skipped.
+      const mockDeleteUser = jest.fn().mockResolvedValue(undefined);
+      mockSignInWithPopup.mockResolvedValueOnce({
+        user: { uid: 'firebase-uid-123', displayName: 'Jamie', delete: mockDeleteUser },
+      });
+      mockGetAdditionalUserInfo.mockReturnValueOnce({ isNewUser: false });
+
+      mockAxiosInstance.post.mockRejectedValueOnce({
+        response: { data: { message: 'Sign in with the email the invitation was sent to' } },
+      });
+
+      const store = createMockStore();
+      await store.dispatch(claimProfileTransferWithGoogle({ token: 'raw-token' }));
+
+      expect(mockDeleteUser).not.toHaveBeenCalled();
+      const state = store.getState().auth;
+      expect(state.error?.message).toBeTruthy();
+    });
+  });
+
+  describe('defaultProfileIdUpdatedRemotely', () => {
+    it("should update the account's default profile id and persist it to localStorage", () => {
+      const store = createMockStore({
+        auth: { account: mockAccount, loading: false, error: null },
+      });
+
+      store.dispatch(defaultProfileIdUpdatedRemotely(11));
+
+      expect(selectCurrentAccount(store.getState())?.defaultProfileId).toBe(11);
+      expect(JSON.parse(localStorageMock.setItem.mock.calls.slice(-1)[0][1]).defaultProfileId).toBe(11);
+    });
+
+    it('should do nothing when there is no account loaded', () => {
+      const store = createMockStore({
+        auth: { account: null, loading: false, error: null },
+      });
+
+      expect(() => store.dispatch(defaultProfileIdUpdatedRemotely(11))).not.toThrow();
+      expect(selectCurrentAccount(store.getState())).toBeNull();
     });
   });
 

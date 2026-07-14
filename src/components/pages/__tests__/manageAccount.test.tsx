@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { useAppSelector } from '../../../app/hooks';
 import { selectCurrentAccount } from '../../../app/slices/accountSlice';
-import { selectActiveProfile, selectLastUpdated } from '../../../app/slices/activeProfileSlice';
+import { selectActiveProfile, selectLastUpdated, setActiveProfile } from '../../../app/slices/activeProfileSlice';
 import { selectAllProfiles, selectProfileById } from '../../../app/slices/profilesSlice';
 import ManageAccount from '../manageAccount';
 import userEvent from '@testing-library/user-event';
@@ -327,6 +327,52 @@ describe('ManageAccount', () => {
       await waitFor(() => {
         expect(screen.queryByText(/Confirm Profile Deletion/i)).not.toBeInTheDocument();
       });
+    });
+
+    it('switches the active profile to the account default when the deleted profile was active', async () => {
+      // Regression test: deleting the active-but-not-default profile previously left the app
+      // pointed at the now-deleted profile (stale nav bar/home page) until a manual switch.
+      const user = userEvent.setup();
+      jest.mocked(selectActiveProfile).mockReturnValue(mockProfiles[1] as any); // Profile 2, not the default
+
+      renderWithRouter(<ManageAccount />);
+
+      const deleteButtons = screen.getAllByText('Delete');
+      await user.click(deleteButtons[1]); // Profile 2's card
+
+      await waitFor(() => {
+        expect(screen.getByText(/Confirm Profile Deletion/i)).toBeInTheDocument();
+      });
+
+      const confirmButton = screen.getByRole('button', { name: /^delete$/i });
+      await user.click(confirmButton);
+
+      await waitFor(() => {
+        expect(setActiveProfile).toHaveBeenCalledWith({
+          accountId: mockAccount.id,
+          profileId: mockAccount.defaultProfileId,
+        });
+      });
+    });
+
+    it('does not change the active profile when the deleted profile was not active', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(<ManageAccount />); // mockActiveProfile is Profile 1 (also the default)
+
+      const deleteButtons = screen.getAllByText('Delete');
+      await user.click(deleteButtons[2]); // Profile 3's card, not active
+
+      await waitFor(() => {
+        expect(screen.getByText(/Confirm Profile Deletion/i)).toBeInTheDocument();
+      });
+
+      const confirmButton = screen.getByRole('button', { name: /^delete$/i });
+      await user.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalled();
+      });
+      expect(setActiveProfile).not.toHaveBeenCalled();
     });
   });
 

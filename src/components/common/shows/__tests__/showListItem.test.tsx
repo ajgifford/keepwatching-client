@@ -108,13 +108,11 @@ describe('ShowListItem', () => {
     averageEpisodeRuntime: null,
   };
 
-  const mockGetFilters = jest.fn(
-    (): FilterProps => ({
-      genre: 'Drama',
-      streamingService: 'Netflix',
-      watchStatus: [WatchStatus.NOT_WATCHED],
-    })
-  );
+  const mockGetFilters = jest.fn((): FilterProps => ({
+    genre: 'Drama',
+    streamingService: 'Netflix',
+    watchStatus: [WatchStatus.NOT_WATCHED],
+  }));
 
   beforeEach(() => {
     jest.clearAllMocks();

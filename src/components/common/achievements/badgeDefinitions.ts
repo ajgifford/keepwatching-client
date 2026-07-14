@@ -119,7 +119,7 @@ export function getBadgeCatalog(milestoneStats: MilestoneStats | null): BadgeIns
     return [];
   }
 
-  const { milestones, allAchievements } = milestoneStats;
+  const { milestones = [], allAchievements = [] } = milestoneStats;
 
   const badges: BadgeInstance[] = [
     ...tieredBadges('episodes', milestones, allAchievements, CATEGORY_ACHIEVEMENT_TYPE.episodes),

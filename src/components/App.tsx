@@ -19,6 +19,7 @@ import ProtectedLayout from './navigation/protectedLayout';
 import ActivityNotificationBar from './notification/activityNotificationBar';
 import Achievements from './pages/achievements';
 import Calendar from './pages/calendar';
+import ClaimProfileTransfer from './pages/claimProfileTransfer';
 import Default from './pages/default';
 import Discover from './pages/discover';
 import Home from './pages/home';
@@ -110,6 +111,7 @@ function App() {
                         <Route path="/" element={<Default />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/claim/:token" element={<ClaimProfileTransfer />} />
                       </Route>
                       <Route element={<ProtectedLayout />}>
                         <Route

@@ -6,7 +6,7 @@ import { ActivityNotificationType, showActivityNotification } from './activityNo
 import { fetchAccountPreferences } from './preferencesSlice';
 import { fetchProfiles } from './profilesSlice';
 import { fetchSystemNotifications } from './systemNotificationsSlice';
-import { Account, AccountResponse } from '@ajgifford/keepwatching-types';
+import { Account, AccountResponse, ClaimProfileTransferResponse } from '@ajgifford/keepwatching-types';
 import { ApiErrorResponse } from '@ajgifford/keepwatching-ui';
 import { ThunkDispatch, UnknownAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -16,6 +16,7 @@ import {
   User,
   UserCredential,
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -258,6 +259,146 @@ export const googleLogin = createAsyncThunk<Account, void, { rejectValue: ApiErr
     }
   }
 );
+
+/**
+ * Shared by both claim thunks below. Throws the ApiErrorResponse (rather than calling
+ * rejectWithValue directly) so each thunk can pass it to its own strongly-typed rejectWithValue.
+ */
+async function finishClaimProfileTransfer(
+  token: string,
+  name: string | undefined,
+  dispatch: ThunkDispatch<unknown, unknown, UnknownAction>,
+  cleanupOnFailure: () => Promise<void>
+): Promise<Account> {
+  try {
+    const response: AxiosResponse<ClaimProfileTransferResponse> = await axiosInstance.post(
+      `/profileTransferInvitations/${token}/claim`,
+      { name }
+    );
+    const account = response.data.account;
+
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+    dispatch(
+      showActivityNotification({
+        message: response.data.message || 'Welcome to your new account!',
+        type: ActivityNotificationType.Success,
+      })
+    );
+
+    initializeAccount(dispatch, account);
+
+    return account;
+  } catch (error) {
+    // The Firebase user was already created for this claim attempt; without cleanup it would be
+    // left stranded (no password-reset path back to it since it owns no KeepWatching account).
+    try {
+      await cleanupOnFailure();
+    } catch {
+      // best-effort cleanup; swallow so the original claim error below is what surfaces
+    }
+
+    if (error instanceof AxiosError && error.response) {
+      const errorResponse: ApiErrorResponse = error.response.data;
+      dispatch(
+        showActivityNotification({
+          message: errorResponse.message || 'An error occurred',
+          type: ActivityNotificationType.Error,
+        })
+      );
+      throw errorResponse;
+    }
+    dispatch(
+      showActivityNotification({
+        message: 'An error occurred',
+        type: ActivityNotificationType.Error,
+      })
+    );
+    throw { message: 'Claim Profile Transfer: Unexpected Error' } as ApiErrorResponse;
+  }
+}
+
+export const claimProfileTransferWithPassword = createAsyncThunk<
+  Account,
+  { token: string; email: string; password: string; name?: string },
+  { rejectValue: ApiErrorResponse }
+>(
+  'account/claimProfileTransferWithPassword',
+  async ({ token, email, password, name }, { dispatch, rejectWithValue }) => {
+    let userCredential: UserCredential;
+    try {
+      userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (name) {
+        await updateProfile(userCredential.user, { displayName: name });
+      }
+
+      // Send verification email with action code settings, matching register()
+      const actionCodeSettings = {
+        url: window.location.origin + '/home', // Redirect to home after verification
+        handleCodeInApp: false,
+      };
+      await sendEmailVerification(userCredential.user, actionCodeSettings);
+    } catch (error) {
+      const errorMessage = getFirebaseAuthErrorMessage(
+        error as FirebaseError,
+        'An unknown error occurred creating your account. Please try again.'
+      );
+      dispatch(
+        showActivityNotification({
+          message: errorMessage,
+          type: ActivityNotificationType.Error,
+        })
+      );
+      return rejectWithValue({ message: errorMessage });
+    }
+
+    try {
+      return await finishClaimProfileTransfer(token, name, dispatch, () => userCredential.user.delete());
+    } catch (errorResponse) {
+      return rejectWithValue(errorResponse as ApiErrorResponse);
+    }
+  }
+);
+
+export const claimProfileTransferWithGoogle = createAsyncThunk<
+  Account,
+  { token: string; name?: string },
+  { rejectValue: ApiErrorResponse }
+>('account/claimProfileTransferWithGoogle', async ({ token, name }, { dispatch, rejectWithValue }) => {
+  let user: User;
+  let isNewFirebaseUser: boolean;
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    user = result.user;
+    // Google sign-in can resolve to a pre-existing Firebase identity (this person may already
+    // have their own, unrelated account). Only ever clean up a user we know we just created here
+    // — never delete an identity that existed before this sign-in attempt.
+    isNewFirebaseUser = getAdditionalUserInfo(result)?.isNewUser ?? false;
+  } catch (error) {
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error as FirebaseError,
+      'An unknown error occurred during Google sign-in. Please try again.'
+    );
+    dispatch(
+      showActivityNotification({
+        message: errorMessage,
+        type: ActivityNotificationType.Error,
+      })
+    );
+    return rejectWithValue({ message: errorMessage });
+  }
+
+  try {
+    return await finishClaimProfileTransfer(
+      token,
+      name || user.displayName || undefined,
+      dispatch,
+      isNewFirebaseUser ? () => user.delete() : async () => {}
+    );
+  } catch (errorResponse) {
+    return rejectWithValue(errorResponse as ApiErrorResponse);
+  }
+});
 
 export const logout = createAsyncThunk<void, void, { rejectValue: ApiErrorResponse }>(
   'account/logout',
@@ -509,7 +650,17 @@ export const deleteAccount = createAsyncThunk<void, { accountId: number }, { rej
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    // Updates the account's default profile without an API call — used when the server pushes
+    // notice (via WebSocket) that this account's default profile was reassigned as a side effect
+    // of a different profile being transferred out.
+    defaultProfileIdUpdatedRemotely: (state, action: { payload: number }) => {
+      if (state.account) {
+        state.account.defaultProfileId = action.payload;
+        localStorage.setItem(ACCOUNT_KEY, JSON.stringify(state.account));
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
@@ -550,6 +701,32 @@ const authSlice = createSlice({
       .addCase(googleLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || { message: 'Google Login Failed' };
+      })
+      .addCase(claimProfileTransferWithPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(claimProfileTransferWithPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.account = action.payload;
+        state.error = null;
+      })
+      .addCase(claimProfileTransferWithPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Claim Profile Transfer Failed' };
+      })
+      .addCase(claimProfileTransferWithGoogle.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(claimProfileTransferWithGoogle.fulfilled, (state, action) => {
+        state.loading = false;
+        state.account = action.payload;
+        state.error = null;
+      })
+      .addCase(claimProfileTransferWithGoogle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || { message: 'Claim Profile Transfer Failed' };
       })
       .addCase(logout.pending, (state) => {
         state.loading = true;
@@ -618,6 +795,8 @@ const authSlice = createSlice({
       });
   },
 });
+
+export const { defaultProfileIdUpdatedRemotely } = authSlice.actions;
 
 export const selectCurrentAccount = (state: RootState) => state.auth.account;
 export const selectAccountLoading = (state: RootState) => state.auth.loading;

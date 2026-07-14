@@ -282,7 +282,14 @@ export const removeProfileImage = createAsyncThunk<
 const profileSlice = createSlice({
   name: 'profiles',
   initialState,
-  reducers: {},
+  reducers: {
+    // Removes a profile from local state without an API call — used when the server pushes
+    // notice (via WebSocket) that this profile was just claimed into a different account.
+    profileRemovedRemotely: (state, action: { payload: number }) => {
+      profilesAdapter.removeOne(state, action.payload);
+      saveToLocalStorage(Object.values(state.entities));
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, () => {
@@ -392,6 +399,8 @@ const profileSlice = createSlice({
       });
   },
 });
+
+export const { profileRemovedRemotely } = profileSlice.actions;
 
 export const {
   selectAll: selectAllProfiles,
