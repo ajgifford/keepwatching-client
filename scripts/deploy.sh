@@ -143,7 +143,7 @@ sudo bash -c "cat > '$PROD_DIR/.deployment-meta' << EOF
 TIMESTAMP=$TIMESTAMP
 GIT_COMMIT=$NEW_COMMIT
 DEPLOYMENT_DATE=$(date '+%Y-%m-%d %H:%M:%S')
-DEPLOYED_BY=$(whoami)
+DEPLOYED_BY=ajgifford
 EOF"
 
 # Fix file permissions so NGINX can read the deployed files
@@ -157,7 +157,9 @@ log "Reloading NGINX..."
 sudo systemctl reload nginx
 
 # Tag this deployment and record it in the shared deployment log
+PREV_TAG=""
 if [ "$TAG_EXISTS" = false ]; then
+    PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
     log "Tagging $NEW_COMMIT as $TAG..."
     git tag -a "$TAG" -m "Deploy $TAG"
     git push origin "$TAG"
@@ -170,11 +172,22 @@ UI_VERSION=$(grep -A1 "^\"@ajgifford/keepwatching-ui@" yarn.lock 2>/dev/null | g
 COMMIT_DATE=$(git log -1 --format=%cd --date=short "$NEW_COMMIT")
 DEPLOY_DATETIME=$(date '+%Y-%m-%d %I:%M %p')
 BRANCH=$(git branch --show-current)
-LOG_SCRIPT=~/git/keepwatching-admin-doc/deployment/scripts/record-deployment.sh
+LOG_SCRIPT=~/git/keepwatching-releases/deployment/scripts/record-deployment.sh
+
+NOTES=""
+if [ "$TAG_EXISTS" = false ]; then
+    if [ -n "$PREV_TAG" ]; then
+        NOTES_BODY=$(git log --no-merges --pretty="- %s (%h)" "$PREV_TAG..$NEW_COMMIT")
+    else
+        NOTES_BODY="- Initial tagged release"
+    fi
+    NOTES="## $TAG — $(date '+%Y-%m-%d')
+$NOTES_BODY"
+fi
 
 if [ -x "$LOG_SCRIPT" ]; then
-    ROW="| $DEPLOY_DATETIME | v$VERSION | $TAG | $NEW_COMMIT | $COMMIT_DATE | $BRANCH | $(whoami) | deploy | ${TYPES_VERSION:-—} | ${UI_VERSION:-—} |  |"
-    "$LOG_SCRIPT" client "$ROW" || warning "Failed to record deployment in shared log."
+    ROW="| $DEPLOY_DATETIME | v$VERSION | $TAG | $NEW_COMMIT | $COMMIT_DATE | $BRANCH | ajgifford | deploy | ${TYPES_VERSION:-—} | ${UI_VERSION:-—} |  |"
+    "$LOG_SCRIPT" client "$ROW" "$NOTES" || warning "Failed to record deployment in shared log."
 else
     warning "Deployment log script not found at $LOG_SCRIPT — skipping log entry."
 fi

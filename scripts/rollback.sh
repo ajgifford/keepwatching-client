@@ -266,7 +266,7 @@ rollback() {
 TIMESTAMP=$TIMESTAMP
 GIT_COMMIT=$BACKUP_COMMIT
 DEPLOYMENT_DATE=$(date '+%Y-%m-%d %H:%M:%S')
-DEPLOYED_BY=$(whoami)
+DEPLOYED_BY=ajgifford
 ROLLBACK_FROM=$CURRENT_BACKUP
 ROLLBACK_SOURCE=$BACKUP_PATH
 EOF"
@@ -310,10 +310,10 @@ EOF"
         [ -n "$ROLLBACK_VERSION" ] && VERSION_CELL="v$ROLLBACK_VERSION"
 
         DEPLOY_DATETIME=$(date '+%Y-%m-%d %I:%M %p')
-        LOG_SCRIPT=~/git/keepwatching-admin-doc/deployment/scripts/record-deployment.sh
+        LOG_SCRIPT=~/git/keepwatching-releases/deployment/scripts/record-deployment.sh
 
         if [ -x "$LOG_SCRIPT" ]; then
-            ROW="| $DEPLOY_DATETIME | $VERSION_CELL | $ROLLBACK_TAG | $BACKUP_COMMIT | $COMMIT_DATE | $BRANCH | $(whoami) | rollback | $TYPES_VERSION | $UI_VERSION | Rolled back to $BACKUP_NAME |"
+            ROW="| $DEPLOY_DATETIME | $VERSION_CELL | $ROLLBACK_TAG | $BACKUP_COMMIT | $COMMIT_DATE | $BRANCH | ajgifford | rollback | $TYPES_VERSION | $UI_VERSION | Rolled back to $BACKUP_NAME |"
             "$LOG_SCRIPT" client "$ROW" || warning "Failed to record rollback in shared log."
         else
             warning "Deployment log script not found at $LOG_SCRIPT — skipping log entry."
