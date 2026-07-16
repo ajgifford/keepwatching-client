@@ -301,12 +301,14 @@ function Navigation() {
                   variant="h6"
                   noWrap
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    width: '100%',
+                    flexGrow: 1,
+                    flexShrink: 1,
+                    minWidth: 0,
+                    textAlign: 'center',
                     fontFamily: 'monospace',
                     fontWeight: 700,
-                    letterSpacing: '.3rem',
+                    fontSize: '1.1rem',
+                    letterSpacing: '.15rem',
                     color: 'inherit',
                     textDecoration: 'none',
                   }}
