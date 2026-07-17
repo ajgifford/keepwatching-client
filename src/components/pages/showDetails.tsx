@@ -1254,7 +1254,7 @@ function ShowDetails() {
                                       {buildEpisodeAirDate(episode.airDate, formatters.contentDate)} •{' '}
                                       {calculateRuntimeDisplay(episode.runtime)}
                                       {episode.watchedAt &&
-                                        ` • Last Watched: ${formatters.activityDate(episode.watchedAt.slice(0, 10))}`}
+                                        ` • Last Watched: ${formatters.activityDate(episode.watchedAt)}`}
                                     </Typography>
                                   </Box>
 

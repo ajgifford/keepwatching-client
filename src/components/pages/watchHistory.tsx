@@ -524,7 +524,7 @@ function HistoryListItem({ item, index, formatters, buildItemTitle }: HistoryLis
               color: 'text.secondary',
             }}
           >
-            {formatters.activityDate(item.watchedAt.slice(0, 10))}
+            {formatters.activityDate(item.watchedAt)}
             {item.runtime ? ` • ${calculateRuntimeDisplay(item.runtime)}` : ''}
           </Typography>
         </Box>
