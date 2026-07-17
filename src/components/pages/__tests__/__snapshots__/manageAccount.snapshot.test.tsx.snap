@@ -3,7 +3,7 @@
 exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] = `
 <div>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-1gwdtw3-MuiGrid-root"
+    class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-jxllhc-MuiGrid-root"
   >
     <div
       class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root"
@@ -26,7 +26,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
       />
     </div>
     <div
-      class="MuiStack-root css-12djm86-MuiStack-root"
+      class="MuiStack-root css-5andtu-MuiStack-root"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3 MuiTypography-gutterBottom css-b1n1zz-MuiTypography-root"
@@ -154,10 +154,10 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
     </div>
   </div>
   <div
-    class="MuiBox-root css-19midj6"
+    class="MuiBox-root css-13mt7ud"
   >
     <div
-      class="MuiStack-root css-1vih42b-MuiStack-root"
+      class="MuiStack-root css-164fsi1-MuiStack-root"
     >
       <h4
         class="MuiTypography-root MuiTypography-h4 css-f84ov1-MuiTypography-root"
@@ -189,7 +189,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
       </div>
     </div>
     <div
-      class="MuiStack-root css-1hqar67-MuiStack-root"
+      class="MuiStack-root css-1ylc4bt-MuiStack-root"
     >
       <div
         data-testid="profile-card"
@@ -233,7 +233,7 @@ exports[`ManageAccount - Snapshots should match snapshot for initial render 1`] 
 
 exports[`ManageAccount - Snapshots should match snapshot of account section 1`] = `
 <div
-  class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-1gwdtw3-MuiGrid-root"
+  class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-jxllhc-MuiGrid-root"
 >
   <div
     class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root"
@@ -256,7 +256,7 @@ exports[`ManageAccount - Snapshots should match snapshot of account section 1`] 
     />
   </div>
   <div
-    class="MuiStack-root css-12djm86-MuiStack-root"
+    class="MuiStack-root css-5andtu-MuiStack-root"
   >
     <h3
       class="MuiTypography-root MuiTypography-h3 MuiTypography-gutterBottom css-b1n1zz-MuiTypography-root"

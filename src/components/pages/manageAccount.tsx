@@ -325,7 +325,7 @@ const ManageAccount = () => {
         spacing={2}
         sx={{
           alignItems: 'center',
-          justifyContent: { xs: 'center', md: 'left' },
+          justifyContent: 'center',
         }}
       >
         <Grid>
@@ -426,7 +426,7 @@ const ManageAccount = () => {
         <Stack
           direction="column"
           sx={{
-            textAlign: { xs: 'center', sm: 'left' },
+            textAlign: 'center',
           }}
         >
           <Typography variant="h3" gutterBottom sx={{ mb: '5px', display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -484,8 +484,13 @@ const ManageAccount = () => {
           )}
         </Stack>
       </Grid>
-      <Box sx={{ p: 2 }}>
-        <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap sx={{ flexWrap: 'wrap', p: 1 }}>
+      <Box sx={{ p: 2, mt: 4 }}>
+        <Stack
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          useFlexGap
+          sx={{ flexWrap: 'wrap', p: 1, justifyContent: 'center' }}
+        >
           <Typography variant="h4">Profiles</Typography>
           <Chip
             id="addProfile"
@@ -501,7 +506,7 @@ const ManageAccount = () => {
           spacing={{ xs: 1, sm: 2 }}
           direction={{ xs: 'column', sm: 'row' }}
           useFlexGap
-          sx={{ flexWrap: 'wrap', p: 2, justifyContent: { xs: 'center', md: 'left' } }}
+          sx={{ flexWrap: 'wrap', p: 2, justifyContent: 'center', alignItems: 'center' }}
         >
           {profiles.map((profile) => (
             <ProfileCard
