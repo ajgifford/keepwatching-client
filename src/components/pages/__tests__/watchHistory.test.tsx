@@ -315,7 +315,7 @@ describe('WatchHistory', () => {
     it('shows the formatted watch date for an item', () => {
       setupMocks({ items: [mockEpisodeItem], totalCount: 1 });
       renderComponent();
-      expect(screen.getByText(/Watched on 2024-01-15/)).toBeInTheDocument();
+      expect(screen.getByText(/Watched on 2024-01-15T10:00:00Z/)).toBeInTheDocument();
     });
 
     it('shows the runtime in the item footer when runtime is present', () => {

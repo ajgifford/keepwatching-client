@@ -1,6 +1,6 @@
 {
   "name": "keepwatching-client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "dependencies": {
